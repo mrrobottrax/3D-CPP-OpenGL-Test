@@ -9,32 +9,129 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-GLuint positionBufferObject;
-GLuint vao;
-
-GLuint theProgram;
-
 const float vertexPositions[] = {
-0.75f, 0.75f, 0.0f, 1.0f,
-0.75f, -0.75f, 0.0f, 1.0f,
--0.75f, -0.75f, 0.0f, 1.0f,
+     0.25f,  0.25f, 0.75f, 1.0f,
+     0.25f, -0.25f, 0.75f, 1.0f,
+    -0.25f,  0.25f, 0.75f, 1.0f,
+
+     0.25f, -0.25f, 0.75f, 1.0f,
+    -0.25f, -0.25f, 0.75f, 1.0f,
+    -0.25f,  0.25f, 0.75f, 1.0f,
+
+     0.25f,  0.25f, -0.75f, 1.0f,
+    -0.25f,  0.25f, -0.75f, 1.0f,
+     0.25f, -0.25f, -0.75f, 1.0f,
+
+     0.25f, -0.25f, -0.75f, 1.0f,
+    -0.25f,  0.25f, -0.75f, 1.0f,
+    -0.25f, -0.25f, -0.75f, 1.0f,
+
+    -0.25f,  0.25f,  0.75f, 1.0f,
+    -0.25f, -0.25f,  0.75f, 1.0f,
+    -0.25f, -0.25f, -0.75f, 1.0f,
+
+    -0.25f,  0.25f,  0.75f, 1.0f,
+    -0.25f, -0.25f, -0.75f, 1.0f,
+    -0.25f,  0.25f, -0.75f, 1.0f,
+
+     0.25f,  0.25f,  0.75f, 1.0f,
+     0.25f, -0.25f, -0.75f, 1.0f,
+     0.25f, -0.25f,  0.75f, 1.0f,
+
+     0.25f,  0.25f,  0.75f, 1.0f,
+     0.25f,  0.25f, -0.75f, 1.0f,
+     0.25f, -0.25f, -0.75f, 1.0f,
+
+     0.25f,  0.25f, -0.75f, 1.0f,
+     0.25f,  0.25f,  0.75f, 1.0f,
+    -0.25f,  0.25f,  0.75f, 1.0f,
+
+     0.25f,  0.25f, -0.75f, 1.0f,
+    -0.25f,  0.25f,  0.75f, 1.0f,
+    -0.25f,  0.25f, -0.75f, 1.0f,
+
+     0.25f, -0.25f, -0.75f, 1.0f,
+    -0.25f, -0.25f,  0.75f, 1.0f,
+     0.25f, -0.25f,  0.75f, 1.0f,
+
+     0.25f, -0.25f, -0.75f, 1.0f,
+    -0.25f, -0.25f, -0.75f, 1.0f,
+    -0.25f, -0.25f,  0.75f, 1.0f,
+
+
+
+
+    0.0f, 0.0f, 1.0f, 1.0f,
+    0.0f, 0.0f, 1.0f, 1.0f,
+    0.0f, 0.0f, 1.0f, 1.0f,
+
+    0.0f, 0.0f, 1.0f, 1.0f,
+    0.0f, 0.0f, 1.0f, 1.0f,
+    0.0f, 0.0f, 1.0f, 1.0f,
+
+    0.8f, 0.8f, 0.8f, 1.0f,
+    0.8f, 0.8f, 0.8f, 1.0f,
+    0.8f, 0.8f, 0.8f, 1.0f,
+
+    0.8f, 0.8f, 0.8f, 1.0f,
+    0.8f, 0.8f, 0.8f, 1.0f,
+    0.8f, 0.8f, 0.8f, 1.0f,
+
+    0.0f, 1.0f, 0.0f, 1.0f,
+    0.0f, 1.0f, 0.0f, 1.0f,
+    0.0f, 1.0f, 0.0f, 1.0f,
+
+    0.0f, 1.0f, 0.0f, 1.0f,
+    0.0f, 1.0f, 0.0f, 1.0f,
+    0.0f, 1.0f, 0.0f, 1.0f,
+
+    0.5f, 0.5f, 0.0f, 1.0f,
+    0.5f, 0.5f, 0.0f, 1.0f,
+    0.5f, 0.5f, 0.0f, 1.0f,
+
+    0.5f, 0.5f, 0.0f, 1.0f,
+    0.5f, 0.5f, 0.0f, 1.0f,
+    0.5f, 0.5f, 0.0f, 1.0f,
+
+    1.0f, 0.0f, 0.0f, 1.0f,
+    1.0f, 0.0f, 0.0f, 1.0f,
+    1.0f, 0.0f, 0.0f, 1.0f,
+
+    1.0f, 0.0f, 0.0f, 1.0f,
+    1.0f, 0.0f, 0.0f, 1.0f,
+    1.0f, 0.0f, 0.0f, 1.0f,
+
+    0.0f, 1.0f, 1.0f, 1.0f,
+    0.0f, 1.0f, 1.0f, 1.0f,
+    0.0f, 1.0f, 1.0f, 1.0f,
+
+    0.0f, 1.0f, 1.0f, 1.0f,
+    0.0f, 1.0f, 1.0f, 1.0f,
+    0.0f, 1.0f, 1.0f, 1.0f,
 };
 
 const std::string strVertexShader(
     "#version 330\n"
     "layout(location = 0) in vec4 position;\n"
+    "layout(location = 1) in vec4 color;\n"
+    "uniform vec2 offset;\n"
+    "uniform mat4 perspMatrix;\n"
+    "smooth out vec4 theColor;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = position;\n"
+    "   vec4 cameraPos = position + vec4(offset.x, offset.y, -2, 0);\n"
+    "   gl_Position = perspMatrix * cameraPos;\n"
+    "   theColor = color;\n"
     "}\n"
 );
 
 const std::string strFragmentShader(
     "#version 330\n"
+    "smooth in vec4 theColor;\n"
     "out vec4 outputColor;\n"
     "void main()\n"
     "{\n"
-    "   outputColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
+    "   outputColor = theColor;\n"
     "}\n"
 );
 
@@ -42,6 +139,17 @@ void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
 }
+
+GLuint positionBufferObject;
+GLuint vao;
+
+GLuint offsetUniform;
+GLuint perspMatrixUniform;
+
+GLuint theProgram;
+
+float perspectiveMatrix[16];
+float nearPlane = 0.3f, farPlane = 1000.0f, frustumScale = 1.0f;
 
 GLuint CreateShader(GLenum eShaderType, const std::string& strShaderFile)
 {
@@ -104,6 +212,25 @@ GLuint CreateProgram(const std::vector<GLuint>& shaderList)
     return program;
 }
 
+void setPerspMatrixAspect(int width, int height)
+{
+    perspectiveMatrix[0] = frustumScale / (width / (float)height);
+    perspectiveMatrix[5] = frustumScale;
+
+    glUseProgram(theProgram);
+    glUniformMatrix4fv(perspMatrixUniform, 1, GL_FALSE, perspectiveMatrix);
+    glUseProgram(0);
+}
+
+void reshape(GLFWwindow* window, int width, int height)
+{
+    glfwGetFramebufferSize(window, &width, &height);
+    
+    setPerspMatrixAspect(width, height);
+
+    glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+}
+
 GLFWwindow* init()
 {
     if (!glfwInit())
@@ -120,10 +247,10 @@ GLFWwindow* init()
 
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
     // Create window
-    GLFWwindow *window = glfwCreateWindow(640, 480, "3D Test", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(800, 400, "3D Test", NULL, NULL);
     if (!window)
     {
         // Window or OpenGL context creation failed
@@ -144,12 +271,6 @@ GLFWwindow* init()
         exit(EXIT_FAILURE);
     }
 
-    int screenWidth, screenHeight;
-    glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
-
-    // Define the viewport dimensions 
-    glViewport(0, 0, screenWidth, screenHeight);
-
     // Init shader program
     std::vector<GLuint> shaderList;
 
@@ -157,6 +278,9 @@ GLFWwindow* init()
     shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragmentShader));
 
     theProgram = CreateProgram(shaderList);
+
+    offsetUniform = glGetUniformLocation(theProgram, "offset");
+    perspMatrixUniform = glGetUniformLocation(theProgram, "perspMatrix");
 
     std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
 
@@ -170,12 +294,34 @@ GLFWwindow* init()
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
+    // Cull backfaces
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);
+
+    // Set up uniforms
+    memset(perspectiveMatrix, 0, sizeof(float) * 16);
+
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    setPerspMatrixAspect(width, height);
+
+    perspectiveMatrix[10] = (farPlane + nearPlane) / (nearPlane - farPlane);
+    perspectiveMatrix[14] = (2 * farPlane * nearPlane) / (nearPlane - farPlane);
+    perspectiveMatrix[11] = -1.0f;
+
+    glUseProgram(theProgram);
+    glUniformMatrix4fv(perspMatrixUniform, 1, GL_FALSE, perspectiveMatrix);
+    glUseProgram(0);
+
     return window;
 }
 
 int main()
 {
     GLFWwindow *window = init();
+
+    glfwSetWindowSizeCallback(window, reshape);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -186,14 +332,19 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(theProgram);
+        glUniform2f(offsetUniform, sinf(glfwGetTime()) * 0.7f, cosf(glfwGetTime()) * 0.7f);
 
+        size_t colorData = sizeof(vertexPositions) / 2;
         glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
         glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)colorData);
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
         glUseProgram(0);
 
         glfwSwapBuffers(window);
