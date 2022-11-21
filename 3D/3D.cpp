@@ -265,6 +265,12 @@ GLFWwindow* init()
 
 	glUseProgram(shaderProgram);
 	glUniformMatrix4fv(perspectiveMatrixUnif, 1, GL_FALSE, perspectiveMatrix);
+
+	// Cull backfaces
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CW);
+
 	glUseProgram(0);
 
 	return window;
@@ -275,15 +281,12 @@ void display()
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// Cull backfaces
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CW);
-
 	glUseProgram(shaderProgram);
 
 	glUniform4f(colorUnif, 1, 1, 1, 1);
 	glUniform3f(offsetUnif, 3, 3, -6);
+
+	glUniformMatrix4fv(perspectiveMatrixUnif, 1, GL_FALSE, perspectiveMatrix);
 
 	glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
