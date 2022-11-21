@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <stdio.h>
+#include <glm/glm.hpp>
 
 #define GLFW_INCLUDE_NONE
 #define GLEW_STATIC
@@ -185,9 +186,10 @@ void setPerspMatrixAspect(int width, int height)
 	glUseProgram(0);
 }
 
-void window_size_callback(GLFWwindow* window, int height, int width)
+void window_size_callback(GLFWwindow* window, int width, int height)
 {
 	setPerspMatrixAspect(width, height);
+	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 }
 
 GLFWwindow* initializeWindow()
@@ -281,7 +283,7 @@ void display()
 	glUseProgram(shaderProgram);
 
 	glUniform4f(colorUnif, 1, 1, 1, 1);
-	glUniform3f(offsetUnif, 0, 0, -6);
+	glUniform3f(offsetUnif, 3, 3, -6);
 
 	glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);

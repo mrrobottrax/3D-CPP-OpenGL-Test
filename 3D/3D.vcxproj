@@ -108,7 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\mrrob\OneDrive\Documents\OpenGL Programming\glfw-3.3.8.bin.WIN64\include;C:\Users\mrrob\OneDrive\Documents\OpenGL Programming\glew-2.1.0\include;D:\REAL Documents\Code\glew-2.1.0\include\;D:\REAL Documents\Code\glfw-3.3.8\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\mrrob\OneDrive\Documents\OpenGL Programming\glm;C:\Users\mrrob\OneDrive\Documents\OpenGL Programming\glfw-3.3.8.bin.WIN64\include;C:\Users\mrrob\OneDrive\Documents\OpenGL Programming\glew-2.1.0\include;D:\REAL Documents\Code\glew-2.1.0\include\;D:\REAL Documents\Code\glfw-3.3.8\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
