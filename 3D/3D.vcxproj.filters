@@ -13,15 +13,32 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\glutil">
+      <UniqueIdentifier>{42779ebf-98bc-4cc7-ab3c-0b7013165d07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bin">
+      <UniqueIdentifier>{db42242c-4695-4f80-b8e0-cb33b59f1767}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glutil.cpp">
+      <Filter>Source Files\glutil</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="bin\glew32s.lib">
+      <Filter>bin</Filter>
+    </Library>
+    <Library Include="bin\glfw3.lib">
+      <Filter>bin</Filter>
+    </Library>
   </ItemGroup>
 </Project>
