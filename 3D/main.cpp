@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 
-#include <gl.h>
 #include <glutil.h>
 
 #include <main.h>

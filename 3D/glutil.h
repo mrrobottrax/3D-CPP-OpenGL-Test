@@ -1,8 +1,7 @@
 #pragma once
+#include <gl.h>
 
 #include <iostream>
-
-#include <gl.h>
 
 void error_callback(int error, const char* description)
 {
