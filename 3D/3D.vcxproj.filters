@@ -16,6 +16,9 @@
     <Filter Include="bin">
       <UniqueIdentifier>{db42242c-4695-4f80-b8e0-cb33b59f1767}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\gl">
+      <UniqueIdentifier>{38a26b61-c10d-4cc3-97e1-93b6d651c4f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -27,10 +30,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gl.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\gl</Filter>
     </ClInclude>
     <ClInclude Include="glutil.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\gl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
