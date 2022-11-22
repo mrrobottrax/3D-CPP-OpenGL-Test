@@ -18,6 +18,12 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -108,7 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\mrrob\OneDrive\Documents\OpenGL Programming\glm;C:\Users\mrrob\OneDrive\Documents\OpenGL Programming\glfw-3.3.8.bin.WIN64\include;C:\Users\mrrob\OneDrive\Documents\OpenGL Programming\glew-2.1.0\include;D:\REAL Documents\Code\glew-2.1.0\include\;D:\REAL Documents\Code\glfw-3.3.8\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);C:\Users\mrrob\OneDrive\Documents\OpenGL Programming\glm;C:\Users\mrrob\OneDrive\Documents\OpenGL Programming\glfw-3.3.8.bin.WIN64\include;C:\Users\mrrob\OneDrive\Documents\OpenGL Programming\glew-2.1.0\include;D:\REAL Documents\Code\glew-2.1.0\include\;D:\REAL Documents\Code\glfw-3.3.8\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,9 +142,6 @@
       <AdditionalLibraryDirectories>D:\REAL Documents\Code\glew-2.1.0\lib\Release\x64;D:\REAL Documents\Code\glfw-3.3.8\VSbuild\src\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="3D.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
