@@ -4,13 +4,8 @@
 #include <vector>
 #include <stdio.h>
 
-#define GLFW_INCLUDE_NONE
-#define GLEW_STATIC
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #include <main.h>
-#include <glutil/glutil.cpp>
+#include <glutil.cpp>
 
 GLFWwindow* init()
 {
