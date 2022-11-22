@@ -27,11 +27,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="glutil.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="glInclude.h" />
+    <ClInclude Include="gl.h" />
+    <ClInclude Include="glutil.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
