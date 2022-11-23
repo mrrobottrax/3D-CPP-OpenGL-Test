@@ -6,5 +6,5 @@ struct CameraComponent : Component
 {
 	float fov = 70;
 
-	float matrix[16];
+	float matrix[16]{};
 };

@@ -11,6 +11,12 @@ public:
 
 	void update() override;
 
-private:
+	float calcFrustumScale(float fov);
+	float* calcPerspectiveMatrix();
+
 	CameraComponent mainCamera;
+	float frustumScale, nearClip, farClip;
+
+private:
+	
 };

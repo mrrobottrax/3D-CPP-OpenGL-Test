@@ -1,6 +1,7 @@
 #include <gl.h>
 
 #include <iostream>
+#include <renderSystem.h>
 
 GLFWwindow* window;
 
@@ -17,6 +18,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void window_size_callback(GLFWwindow* window, int width, int height)
 {
+	/*
+	systemManager.
+
+	perspectiveMatrix[0] = RenderSystem::mainCamera / (width / (float)height);
+	perspectiveMatrix[5] = fFrustumScale;
+
+	glUseProgram(theProgram);
+	glUniformMatrix4fv(perspectiveMatrixUnif, 1, GL_FALSE, perspectiveMatrix);
+	glUseProgram(0);
+	*/
+
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 }
 
