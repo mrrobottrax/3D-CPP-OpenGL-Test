@@ -1,31 +1,50 @@
+#include <main.h>
+
 #include <algorithm>
 #include <string>
 #include <vector>
 
-#include <glutil.h>
+#include <glutil.cpp>
+#include <systemManager.h>
+#include <renderSystem.h>
+#include <entitySystem.h>
 
-#include <main.h>
+using namespace std;
 
-GLFWwindow* init()
+// Show memory leaks
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+void init()
 {
-	GLFWwindow* window = initializeWindow();
-	return window;
+	// Init OpenGL
+	initializeWindow();
+
+	// Init systems
+	systemManager::registerSystems();
 }
 
 int main()
 {
-	GLFWwindow* window = init();
+	init();
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
 
+		systemManager::updateSystems();
 		draw();
 
 		glfwSwapBuffers(window);
 	}
 
+	systemManager::deleteAllSystems();
 	glfwTerminate();
+
+	// Show memory leaks
+	_CrtDumpMemoryLeaks();
+
 	exit(EXIT_SUCCESS);
 }
 

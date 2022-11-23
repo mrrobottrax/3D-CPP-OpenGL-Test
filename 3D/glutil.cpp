@@ -1,7 +1,8 @@
-#pragma once
 #include <gl.h>
 
 #include <iostream>
+
+GLFWwindow* window;
 
 void error_callback(int error, const char* description)
 {
@@ -20,7 +21,7 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 }
 
 // Create a window and initialize GLEW
-GLFWwindow* initializeWindow()
+void initializeWindow()
 {
 	if (!glfwInit())
 	{
@@ -37,7 +38,7 @@ GLFWwindow* initializeWindow()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-	GLFWwindow* window = glfwCreateWindow(600, 600, "3D Test", NULL, NULL);
+	window = glfwCreateWindow(600, 600, "3D Test", NULL, NULL);
 	if (!window)
 	{
 		// Window or OpenGL context creation failed
@@ -64,6 +65,4 @@ GLFWwindow* initializeWindow()
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
-
-	return window;
 }
