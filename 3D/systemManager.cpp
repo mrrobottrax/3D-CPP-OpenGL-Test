@@ -1,16 +1,12 @@
 #include <systemManager.h>
 
 #include <iostream>
-#include <typeindex>
-#include <map>
 
 #include <renderSystem.h>
 #include <entitySystem.h>
 
 namespace systemManager {
-	using namespace std;
-
-	map<type_index, System*>* systems = new map<type_index, System*>();
+	std::map<std::type_index, System*>* systems = new std::map<std::type_index, System*>();
 	unsigned short systemCount;
 
 	void addSystem(System* s)
@@ -27,7 +23,7 @@ namespace systemManager {
 
 	void updateSystems()
 	{
-		for (map<type_index, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
+		for (std::map<std::type_index, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
 		{
 			(*it).second->update();
 		}
@@ -35,7 +31,7 @@ namespace systemManager {
 
 	void deleteAllSystems()
 	{
-		for (map<type_index, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
+		for (std::map<std::type_index, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
 		{
 			delete[](*it).second;
 		}

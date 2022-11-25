@@ -19,7 +19,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void window_size_callback(GLFWwindow* window, int width, int height)
 {
-	//RenderSystem* rs = systemManager::systems->
+	RenderSystem* rs = (RenderSystem*)(*systemManager::systems->find(typeid(RenderSystem))).second;
+
+	rs->updateMatrixAspect(width, height);
 
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 }
