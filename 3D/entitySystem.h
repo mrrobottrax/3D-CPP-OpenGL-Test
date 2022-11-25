@@ -11,6 +11,14 @@ struct Archetype
 {
 	std::type_index* components;
 	unsigned short componentCount;
+
+	friend bool operator==(const Archetype& lhs, const Archetype& rhs)
+	{
+		if (lhs.componentCount != rhs.componentCount)
+			return false;
+
+		return lhs.components == rhs.components;
+	}
 };
 
 struct ChunkElement
@@ -25,7 +33,7 @@ struct ChunkArchetypeElement
 	ChunkArchetypeElement* next;
 	ChunkElement* firstChunk;
 
-	std::type_index* archetype;
+	Archetype archetype;
 };
 
 class EntitySystem : public System
@@ -37,10 +45,11 @@ public:
 	void update() override;
 
 	void addEntity(std::type_index*);
-	void createChunk(std::type_index*);
+	void createChunk(Archetype*);
 	void createChunkArchetype(Archetype*);
-	ChunkArchetypeElement* findChunkArchetype(std::type_index*);
+	ChunkArchetypeElement* findChunkArchetype(Archetype*);
 
 private:
 	ChunkArchetypeElement* chunkArchetypeList;
+	ChunkArchetypeElement* chunkArchetypeListLast;
 };
