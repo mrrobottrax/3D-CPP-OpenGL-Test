@@ -1,13 +1,7 @@
 #include <main.h>
 
-#include <algorithm>
-#include <string>
-#include <vector>
-
 #include <glutil.cpp>
 #include <systemManager.h>
-#include <renderSystem.h>
-#include <entitySystem.h>
 
 using namespace std;
 
@@ -23,6 +17,9 @@ void init()
 
 	// Init systems
 	systemManager::registerSystems();
+
+	// Create player entity
+
 }
 
 int main()

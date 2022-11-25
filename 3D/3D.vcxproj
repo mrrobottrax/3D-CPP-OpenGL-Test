@@ -27,6 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="entityBlock.cpp" />
     <ClCompile Include="entitySystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrixStack.cpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="cameraComponent.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="entity.h" />
+    <ClInclude Include="entityBlock.h" />
     <ClInclude Include="entitySystem.h" />
     <ClInclude Include="gl.h" />
     <ClInclude Include="glutil.cpp" />
@@ -150,8 +152,8 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -166,7 +168,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>

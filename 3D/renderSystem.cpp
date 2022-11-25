@@ -17,9 +17,7 @@ RenderSystem::RenderSystem(CameraComponent* mainCamera)
 
 RenderSystem::~RenderSystem()
 {
-	// TODO: This is temporary
-	// Theoretically the entityManager should delete the main camera when it deletes all entities
-	delete[] mainCamera;
+
 }
 
 void RenderSystem::initMainCameraMatrix()
