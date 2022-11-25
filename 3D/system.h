@@ -2,8 +2,7 @@
 class System
 {
 public:
-	System();
-	~System();
+	virtual ~System();
 	virtual void update() = 0;
 
 private:

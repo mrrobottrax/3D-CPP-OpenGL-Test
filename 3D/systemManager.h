@@ -3,10 +3,8 @@
 #include <system.h>
 
 namespace systemManager {
-	using namespace std;
-
-	void addSystem(System*);
-	void registerSystems();
 	void updateSystems();
 	void deleteAllSystems();
+	void addSystem(System*);
+	void registerSystems();
 }

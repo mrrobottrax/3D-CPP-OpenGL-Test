@@ -7,15 +7,17 @@ class RenderSystem : public System
 {
 public:
 	RenderSystem();
+	RenderSystem(CameraComponent*);
 	~RenderSystem();
 
-	void update() override;
+	CameraComponent* mainCamera;
 
+	void initMainCameraMatrix();
 	float calcFrustumScale(float fov);
 	float* calcPerspectiveMatrix();
+	void updateMatrixAspect(int width, int height);
 
-	CameraComponent mainCamera;
-	float frustumScale, nearClip, farClip;
+	void update() override;
 
 private:
 	

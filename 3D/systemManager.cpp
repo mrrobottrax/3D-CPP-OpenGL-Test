@@ -1,46 +1,43 @@
 #include <systemManager.h>
 
 #include <iostream>
-#include <set>
+#include <typeindex>
+#include <map>
 
 #include <renderSystem.h>
 #include <entitySystem.h>
 
 namespace systemManager {
-	set<System*>* systems = new set<System*>();
+	using namespace std;
+
+	map<type_index, System*>* systems = new map<type_index, System*>();
 	unsigned short systemCount;
 
 	void addSystem(System* s)
 	{
-		systems->emplace(s);
+		systems->emplace(typeid(*s), s);
 		++systemCount;
 	}
 
 	void registerSystems()
 	{
 		addSystem(new EntitySystem());
-		addSystem(new RenderSystem());
-	}
-
-	template <class T>
-	T getSystem()
-	{
-		set<System>::iterator it = systems->find(T);
+		addSystem(new RenderSystem(new CameraComponent()));
 	}
 
 	void updateSystems()
 	{
-		for (set<System*>::iterator it = systems->begin(); it != systems->end(); ++it)
+		for (map<type_index, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
 		{
-			(*it)->update();
+			(*it).second->update();
 		}
 	}
 
 	void deleteAllSystems()
 	{
-		for (set<System*>::iterator it = systems->begin(); it != systems->end(); ++it)
+		for (map<type_index, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
 		{
-			delete (*it);
+			delete[](*it).second;
 		}
 
 		delete systems;
