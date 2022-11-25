@@ -1,8 +1,6 @@
 #pragma once
 
-#include <component.h>
-
-struct PositionComponent : Component
+struct PositionComponent
 {
 	double x, y, z;
 };

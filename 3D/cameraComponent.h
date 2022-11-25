@@ -1,8 +1,6 @@
 #pragma once
 
-#include <component.h>
-
-struct CameraComponent : Component
+struct CameraComponent
 {
 	float fov = 70;
 	float frustumScale = 1.0f;

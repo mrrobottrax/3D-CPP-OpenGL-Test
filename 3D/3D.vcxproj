@@ -36,11 +36,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraComponent.h" />
-    <ClInclude Include="component.h" />
-    <ClInclude Include="entity.h" />
     <ClInclude Include="entitySystem.h" />
     <ClInclude Include="gl.h" />
     <ClInclude Include="glutil.cpp" />
+    <ClInclude Include="idComponent.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="matrixStack.h" />
     <ClInclude Include="meshComponent.h" />

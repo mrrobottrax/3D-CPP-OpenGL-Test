@@ -2,8 +2,31 @@
 
 #include <system.h>
 #include <forward_list>
+#include <typeindex>
 
-const int chunkSize = 16384;
+// Each chunk is 16kB
+const unsigned short chunkSize = 16384;
+
+struct Archetype
+{
+	std::type_index* components;
+	unsigned short componentCount;
+};
+
+struct ChunkElement
+{
+	ChunkElement* next;
+	unsigned short numberOfEntities;
+};
+
+// Points to a linked list of chunks, each of the same archetype
+struct ChunkArchetypeElement
+{
+	ChunkArchetypeElement* next;
+	ChunkElement* firstChunk;
+
+	std::type_index* archetype;
+};
 
 class EntitySystem : public System
 {
@@ -13,6 +36,11 @@ public:
 
 	void update() override;
 
+	void addEntity(std::type_index*);
+	void createChunk(std::type_index*);
+	void createChunkArchetype(Archetype*);
+	ChunkArchetypeElement* findChunkArchetype(std::type_index*);
+
 private:
-	
+	ChunkArchetypeElement* chunkArchetypeList;
 };

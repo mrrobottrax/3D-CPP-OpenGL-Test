@@ -77,12 +77,6 @@
     <ClInclude Include="cameraComponent.h">
       <Filter>Header Files\engine\components</Filter>
     </ClInclude>
-    <ClInclude Include="component.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="entity.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
     <ClInclude Include="meshObject.h">
       <Filter>Header Files\engine</Filter>
     </ClInclude>
@@ -106,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="matrixStack.h">
       <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="idComponent.h">
+      <Filter>Header Files\engine\components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

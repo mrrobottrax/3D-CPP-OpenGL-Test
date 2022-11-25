@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include <renderSystem.h>
-//#include <entitySystem.h>
+#include <entitySystem.h>
 
 namespace systemManager {
 	std::map<std::type_index, System*>* systems = new std::map<std::type_index, System*>();
@@ -15,7 +15,7 @@ namespace systemManager {
 
 	void registerSystems()
 	{
-		//addSystem(new EntitySystem());
+		addSystem(new EntitySystem());
 		addSystem(new RenderSystem(new CameraComponent()));
 	}
 
