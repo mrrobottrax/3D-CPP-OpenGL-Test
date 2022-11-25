@@ -27,7 +27,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="entityBlock.cpp" />
     <ClCompile Include="entitySystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrixStack.cpp" />
@@ -39,7 +38,6 @@
     <ClInclude Include="cameraComponent.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="entity.h" />
-    <ClInclude Include="entityBlock.h" />
     <ClInclude Include="entitySystem.h" />
     <ClInclude Include="gl.h" />
     <ClInclude Include="glutil.cpp" />

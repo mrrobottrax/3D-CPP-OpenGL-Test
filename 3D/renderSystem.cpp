@@ -17,7 +17,7 @@ RenderSystem::RenderSystem(CameraComponent* mainCamera)
 
 RenderSystem::~RenderSystem()
 {
-
+	delete[] mainCamera;
 }
 
 void RenderSystem::initMainCameraMatrix()

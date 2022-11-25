@@ -60,9 +60,6 @@
     <ClCompile Include="systemManager.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
-    <ClCompile Include="entityBlock.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -109,9 +106,6 @@
     </ClInclude>
     <ClInclude Include="matrixStack.h">
       <Filter>Header Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="entityBlock.h">
-      <Filter>Header Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

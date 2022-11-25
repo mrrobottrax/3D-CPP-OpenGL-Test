@@ -3,21 +3,19 @@
 #include <iostream>
 
 #include <renderSystem.h>
-#include <entitySystem.h>
+//#include <entitySystem.h>
 
 namespace systemManager {
 	std::map<std::type_index, System*>* systems = new std::map<std::type_index, System*>();
-	unsigned short systemCount;
 
 	void addSystem(System* s)
 	{
 		systems->emplace(typeid(*s), s);
-		++systemCount;
 	}
 
 	void registerSystems()
 	{
-		addSystem(new EntitySystem());
+		//addSystem(new EntitySystem());
 		addSystem(new RenderSystem(new CameraComponent()));
 	}
 
