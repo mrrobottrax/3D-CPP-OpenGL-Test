@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClCompile Include="entitySystem.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="matrixStack.cpp" />
     <ClCompile Include="renderSystem.cpp" />
     <ClCompile Include="system.cpp" />
     <ClCompile Include="systemManager.cpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="gl.h" />
     <ClInclude Include="glutil.cpp" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="matrixStack.h" />
     <ClInclude Include="meshComponent.h" />
     <ClInclude Include="meshObject.h" />
     <ClInclude Include="renderSystem.h" />

@@ -16,14 +16,8 @@
     <Filter Include="bin">
       <UniqueIdentifier>{db42242c-4695-4f80-b8e0-cb33b59f1767}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\gl">
-      <UniqueIdentifier>{38a26b61-c10d-4cc3-97e1-93b6d651c4f3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\engine">
       <UniqueIdentifier>{1ea24871-7210-462d-b9c0-0d6233051380}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\systems">
-      <UniqueIdentifier>{fb86073b-ff66-4008-9af0-ed4507de2728}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\engine\components">
       <UniqueIdentifier>{b54045c1-10f3-4be8-afa7-82cb7fef2065}</UniqueIdentifier>
@@ -31,22 +25,40 @@
     <Filter Include="Header Files\engine\systems">
       <UniqueIdentifier>{6ee105f2-f601-4035-9a94-3f72c8f4c208}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\common">
+      <UniqueIdentifier>{2af777f4-5b5f-4173-bf05-171deaf19dac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{5fda1752-a25e-45cc-9d55-31b75ee62741}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\systems">
+      <UniqueIdentifier>{fb86073b-ff66-4008-9af0-ed4507de2728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\common">
+      <UniqueIdentifier>{2caea547-1434-48a2-bcfc-a90e08a4c8e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\common\gl">
+      <UniqueIdentifier>{38a26b61-c10d-4cc3-97e1-93b6d651c4f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="renderSystem.cpp">
-      <Filter>Source Files\systems</Filter>
+      <Filter>Source Files\engine\systems</Filter>
     </ClCompile>
     <ClCompile Include="entitySystem.cpp">
-      <Filter>Source Files\systems</Filter>
+      <Filter>Source Files\engine\systems</Filter>
     </ClCompile>
-    <ClCompile Include="systemManager.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="matrixStack.cpp">
+      <Filter>Source Files\common</Filter>
     </ClCompile>
     <ClCompile Include="system.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="systemManager.cpp">
+      <Filter>Source Files\engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -54,16 +66,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gl.h">
-      <Filter>Header Files\gl</Filter>
+      <Filter>Header Files\common\gl</Filter>
     </ClInclude>
     <ClInclude Include="positionComponent.h">
       <Filter>Header Files\engine\components</Filter>
     </ClInclude>
     <ClInclude Include="meshComponent.h">
       <Filter>Header Files\engine\components</Filter>
-    </ClInclude>
-    <ClInclude Include="glutil.cpp">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="cameraComponent.h">
       <Filter>Header Files\engine\components</Filter>
@@ -91,6 +100,12 @@
     </ClInclude>
     <ClInclude Include="shader.h">
       <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="glutil.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="matrixStack.h">
+      <Filter>Header Files\common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

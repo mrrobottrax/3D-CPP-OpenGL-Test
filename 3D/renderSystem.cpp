@@ -1,6 +1,7 @@
 #include <renderSystem.h>
 
 #include <iostream>
+#include <matrixStack.h>
 
 RenderSystem::RenderSystem()
 {
@@ -57,11 +58,16 @@ float* RenderSystem::calcPerspectiveMatrix()
 
 void RenderSystem::update()
 {
+	MatrixStack mStack;
+
 	if (mainCamera == nullptr)
 	{
 		return;
 	}
 
-	float matrix[16];
-	memcpy(matrix, mainCamera->matrix, sizeof(matrix));
+	mStack.Push(mainCamera->matrix);
+
+	//TODO: Draw frame
+
+	mStack.Pop();
 }
