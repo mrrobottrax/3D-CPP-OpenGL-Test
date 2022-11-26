@@ -13,7 +13,7 @@ EntitySystem::EntitySystem()
 	std::type_index components[] = { typeid(IdComponent), typeid(PositionComponent), typeid(CameraComponent)};
 
 	EntityArchetype player(components, 3);
-	createChunkArchetype(&player);
+	createChunk(&player);
 }
 
 EntitySystem::~EntitySystem()
@@ -22,6 +22,7 @@ EntitySystem::~EntitySystem()
 	if (chunkArchetypeList == nullptr)
 		return;
 
+	// Delete each chunk archetype element
 	ChunkArchetypeElement* nextElement = chunkArchetypeList->next;
 	while (true)
 	{
@@ -29,7 +30,9 @@ EntitySystem::~EntitySystem()
 		{
 			std::cout << (i != 0 ? ", " : "") << (chunkArchetypeList->archetype.components[i]).name();
 		}
-		delete[] chunkArchetypeList;
+		std::cout << "\n";
+
+		delete chunkArchetypeList;
 
 		if (nextElement == nullptr)
 		{
@@ -46,7 +49,7 @@ void EntitySystem::addEntity(std::type_index* archetype)
 
 }
 
-void EntitySystem::createChunkArchetype(EntityArchetype* archetype)
+ChunkArchetypeElement* EntitySystem::createChunkArchetype(EntityArchetype* archetype)
 {
 	unsigned short sizeOfChunkArchetype = sizeof(ChunkArchetypeElement);
 
@@ -56,17 +59,18 @@ void EntitySystem::createChunkArchetype(EntityArchetype* archetype)
 	if (arraySize <= 0)
 	{
 		std::cout << "Tried to create a chunk archetype with no components!";
-		return;
+		return nullptr;
 	}
 
 	unsigned short size = sizeOfChunkArchetype + arraySize;
 	ChunkArchetypeElement* element = (ChunkArchetypeElement*)(malloc(size));
 
 	if (element == nullptr)
-		return;
+		return nullptr;
 
 	element->next = nullptr;
 	element->firstChunk = nullptr;
+	element->lastChunk = nullptr;
 	element->archetype = *archetype;
 
 	// Get memory location of the archetype components array
@@ -80,28 +84,42 @@ void EntitySystem::createChunkArchetype(EntityArchetype* archetype)
 	{
 		chunkArchetypeList = element;
 		chunkArchetypeListLast = element;
-		return;
+		return element;
 	}
 
 	// Get last element
 	chunkArchetypeListLast->next = element;
 	chunkArchetypeListLast = element;
+
+	return element;
 }
 
 void EntitySystem::createChunk(EntityArchetype* archetype)
 {
-	// Check if this archetype is already in chunkArchetypeList
-	if (findChunkArchetype(archetype))
-	{
+	ChunkArchetypeElement* chunkArchetype = findChunkArchetype(archetype);
 
-	}
-	else
+	// Check if this archetype doesn't already exist
+	if (chunkArchetype == nullptr)
 	{
 		// Add archetype to list
-		createChunkArchetype(archetype);
+		chunkArchetype = createChunkArchetype(archetype);
 	}
 
-	ChunkArchetypeElement* chunk = (ChunkArchetypeElement*)(malloc(sizeof(ChunkArchetypeElement)));
+	Chunk* chunk = (Chunk*)(malloc(chunkSize));
+
+	chunk->numberOfEntities = 0;
+	chunk->next = nullptr;
+
+	// First chunk in archetype
+	if (chunkArchetype->firstChunk == nullptr)
+	{
+		chunkArchetype->firstChunk = chunk;
+		chunkArchetype->lastChunk = chunk;
+		return;
+	}
+
+	chunkArchetype->lastChunk->next = chunk;
+	chunkArchetype->lastChunk = chunk;
 }
 
 ChunkArchetypeElement* EntitySystem::findChunkArchetype(EntityArchetype* archetype)
