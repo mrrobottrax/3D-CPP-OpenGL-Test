@@ -13,7 +13,7 @@ EntitySystem::EntitySystem()
 	std::type_index components[] = { typeid(IdComponent), typeid(PositionComponent), typeid(CameraComponent)};
 
 	EntityArchetype player(components, 3);
-	createChunk(&player);
+	addEntity(&player);
 }
 
 EntitySystem::~EntitySystem()
@@ -26,6 +26,7 @@ EntitySystem::~EntitySystem()
 	ChunkArchetypeElement* nextElement = chunkArchetypeList->next;
 	while (true)
 	{
+		std::cout << "Deleting chunk archetype of: ";
 		for (int i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
 		{
 			std::cout << (i != 0 ? ", " : "") << (chunkArchetypeList->archetype.components[i]).name();
@@ -44,9 +45,41 @@ EntitySystem::~EntitySystem()
 	}
 }
 
-void EntitySystem::addEntity(std::type_index* archetype)
+void EntitySystem::addEntity(EntityArchetype* archetype)
 {
+	// Check if the chunk archetype exists
+	ChunkArchetypeElement* chunkArchetype = findChunkArchetype(archetype);
+	if (chunkArchetype == nullptr)
+	{
+		chunkArchetype = createChunkArchetype(archetype);
+	}
 
+	// Check if there are already any chunks
+	Chunk* chunk = chunkArchetype->firstChunk;
+	if (chunk == nullptr)
+	{
+		chunk = createChunk(chunkArchetype);
+	}
+
+	// Get the next free chunk
+	bool foundFreeChunk = false;
+	while (chunk->next != nullptr)
+	{
+		if (!chunk->isFull)
+		{
+			foundFreeChunk = true;
+			break;
+		}
+
+		chunk = chunk->next;
+	}
+
+	if (!foundFreeChunk)
+	{
+		chunk = createChunk(chunkArchetype);
+	}
+
+	chunk->numberOfEntities++;
 }
 
 ChunkArchetypeElement* EntitySystem::createChunkArchetype(EntityArchetype* archetype)
@@ -94,18 +127,29 @@ ChunkArchetypeElement* EntitySystem::createChunkArchetype(EntityArchetype* arche
 	return element;
 }
 
-void EntitySystem::createChunk(EntityArchetype* archetype)
+Chunk* EntitySystem::createChunk(EntityArchetype* archetype)
 {
 	ChunkArchetypeElement* chunkArchetype = findChunkArchetype(archetype);
 
-	// Check if this archetype doesn't already exist
+	// Check if this archetype exists
 	if (chunkArchetype == nullptr)
 	{
 		// Add archetype to list
 		chunkArchetype = createChunkArchetype(archetype);
 	}
 
+	return createChunk(chunkArchetype);
+}
+
+Chunk* EntitySystem::createChunk(ChunkArchetypeElement* chunkArchetype)
+{
 	Chunk* chunk = (Chunk*)(malloc(chunkSize));
+
+	if (chunk == nullptr)
+	{
+		std::cout << "Failed to allocate chunk.";
+		return nullptr;
+	}
 
 	chunk->numberOfEntities = 0;
 	chunk->next = nullptr;
@@ -115,11 +159,13 @@ void EntitySystem::createChunk(EntityArchetype* archetype)
 	{
 		chunkArchetype->firstChunk = chunk;
 		chunkArchetype->lastChunk = chunk;
-		return;
+		return chunk;
 	}
 
 	chunkArchetype->lastChunk->next = chunk;
 	chunkArchetype->lastChunk = chunk;
+
+	return chunk;
 }
 
 ChunkArchetypeElement* EntitySystem::findChunkArchetype(EntityArchetype* archetype)

@@ -17,8 +17,9 @@ public:
 
 	void update() override;
 
-	void addEntity(std::type_index*);
-	void createChunk(EntityArchetype*);
+	void addEntity(EntityArchetype*);
+	Chunk* createChunk(EntityArchetype*);
+	Chunk* createChunk(ChunkArchetypeElement*);
 	ChunkArchetypeElement* createChunkArchetype(EntityArchetype*);
 	ChunkArchetypeElement* findChunkArchetype(EntityArchetype*);
 
