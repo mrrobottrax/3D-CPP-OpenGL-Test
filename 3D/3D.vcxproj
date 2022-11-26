@@ -27,6 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="entityArchetype.cpp" />
     <ClCompile Include="entitySystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrixStack.cpp" />
@@ -36,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cameraComponent.h" />
+    <ClInclude Include="entityArchetype.h" />
     <ClInclude Include="entitySystem.h" />
     <ClInclude Include="gl.h" />
     <ClInclude Include="glutil.cpp" />

@@ -60,6 +60,9 @@
     <ClCompile Include="systemManager.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
+    <ClCompile Include="entityArchetype.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -103,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="idComponent.h">
       <Filter>Header Files\engine\components</Filter>
+    </ClInclude>
+    <ClInclude Include="entityArchetype.h">
+      <Filter>Header Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
