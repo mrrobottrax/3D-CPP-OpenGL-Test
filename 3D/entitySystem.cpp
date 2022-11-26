@@ -14,8 +14,6 @@ EntitySystem::EntitySystem()
 
 	EntityArchetype player(components, 3);
 	addEntity(&player);
-	addEntity(&player);
-	addEntity(&player);
 }
 
 EntitySystem::~EntitySystem()

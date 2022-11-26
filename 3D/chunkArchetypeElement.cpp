@@ -20,7 +20,7 @@ ChunkArchetypeElement::~ChunkArchetypeElement()
 	{
 		nextChunk = chunk->next;
 
-		std::cout << "	Deleting chunk";
+		std::cout << "	Deleting chunk.		Entities: " << chunk->numberOfEntities << "\n";
 		free(chunk);
 
 		chunk = nextChunk;
