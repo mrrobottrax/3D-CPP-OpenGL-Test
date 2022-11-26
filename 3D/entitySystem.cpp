@@ -54,7 +54,7 @@ Component EntitySystem::getComponent(std::type_index index, unsigned short size)
 	Component c;
 	c.hash = index.hash_code();
 	c.size = size;
-	c.name = new char[32];
+	//c.name = new char[32];
 	
 	//TODO: remove
 	for (int i = 0; i < 32; i++)

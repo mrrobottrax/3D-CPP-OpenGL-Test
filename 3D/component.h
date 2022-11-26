@@ -7,5 +7,5 @@ struct Component
 
 	// For debug only
 	// TODO: Remove
-	char* name;
+	char name[32];
 };
