@@ -12,6 +12,7 @@ public:
 
 	Component* components;
 	unsigned short componentCount;
+	unsigned short entitySize;
 
 	bool operator==(const EntityArchetype& other)
 	{

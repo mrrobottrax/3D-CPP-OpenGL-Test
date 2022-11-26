@@ -56,6 +56,7 @@ Component EntitySystem::getComponent(std::type_index index, unsigned short size)
 	c.size = size;
 	c.name = new char[32];
 	
+	//TODO: remove
 	for (int i = 0; i < 32; i++)
 	{
 		c.name[i] = index.name()[i];
@@ -177,8 +178,10 @@ Chunk* EntitySystem::createChunk(ChunkArchetypeElement* chunkArchetype)
 	}
 
 	chunk->numberOfEntities = 0;
-	chunk->maxEntities = 10; //TODO: calculate max number of entities
 	chunk->next = nullptr;
+
+	const unsigned short freeSpace = chunkSize - sizeof(*chunk);
+	chunk->maxEntities = freeSpace / chunkArchetype->archetype.entitySize;
 
 	// First chunk in archetype
 	if (chunkArchetype->firstChunk == nullptr)
