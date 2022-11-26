@@ -119,6 +119,9 @@
     <ClInclude Include="chunk.h">
       <Filter>Header Files\engine</Filter>
     </ClInclude>
+    <ClInclude Include="component.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="bin\glew32s.lib">

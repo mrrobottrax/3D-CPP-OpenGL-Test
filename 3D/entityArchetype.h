@@ -2,14 +2,15 @@
 
 #include <typeindex>
 #include <iostream>
+#include <component.h>
 
 class EntityArchetype
 {
 public:
 	EntityArchetype();
-	EntityArchetype(std::type_index*, unsigned short);
+	EntityArchetype(Component*, unsigned short);
 
-	std::type_index* components;
+	Component* components;
 	unsigned short componentCount;
 
 	bool operator==(const EntityArchetype& other)
@@ -18,10 +19,10 @@ public:
 			return false;
 
 		// Go through each component and make sure they're the same
-		// TODO: Use hashes
+		// TODO: Use hashes?
 		for (int i = 0; i < componentCount; i++)
 		{
-			if (components[i] != other.components[i])
+			if (components[i].hash != other.components[i].hash)
 			{
 				return false;
 			}

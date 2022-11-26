@@ -2,6 +2,6 @@
 struct Chunk
 {
 	Chunk* next;
-	unsigned short numberOfEntities;
-	bool isFull = false;
+	unsigned int numberOfEntities;
+	unsigned int maxEntities;
 };

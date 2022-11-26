@@ -40,6 +40,7 @@
     <ClInclude Include="cameraComponent.h" />
     <ClInclude Include="chunk.h" />
     <ClInclude Include="chunkArchetypeElement.h" />
+    <ClInclude Include="component.h" />
     <ClInclude Include="entityArchetype.h" />
     <ClInclude Include="entitySystem.h" />
     <ClInclude Include="gl.h" />

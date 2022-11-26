@@ -10,7 +10,11 @@ EntitySystem::EntitySystem()
 	chunkArchetypeListLast = nullptr;
 
 	// Create player
-	std::type_index components[] = { typeid(IdComponent), typeid(PositionComponent), typeid(CameraComponent)};
+	Component components[] = {
+		getComponent(typeid(IdComponent), sizeof(IdComponent)),
+		getComponent(typeid(PositionComponent), sizeof(PositionComponent)),
+		getComponent(typeid(CameraComponent), sizeof(CameraComponent))
+	};
 
 	EntityArchetype player(components, 3);
 	addEntity(&player);
@@ -29,7 +33,7 @@ EntitySystem::~EntitySystem()
 		std::cout << "Deleting chunk archetype of: ";
 		for (int i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
 		{
-			std::cout << (i != 0 ? ", " : "") << (chunkArchetypeList->archetype.components[i]).name();
+			std::cout << (i != 0 ? ", " : "") << chunkArchetypeList->archetype.components[i].name;
 		}
 		std::cout << "\n";
 
@@ -43,6 +47,25 @@ EntitySystem::~EntitySystem()
 		chunkArchetypeList = nextElement;
 		nextElement = chunkArchetypeList->next;
 	}
+}
+
+Component EntitySystem::getComponent(std::type_index index, unsigned short size)
+{
+	Component c;
+	c.hash = index.hash_code();
+	c.size = size;
+	c.name = new char[32];
+	
+	for (int i = 0; i < 32; i++)
+	{
+		c.name[i] = index.name()[i];
+		if (c.name[i] == '\0')
+		{
+			break;
+		}
+	}
+
+	return c;
 }
 
 void EntitySystem::addEntity(EntityArchetype* archetype)
@@ -66,7 +89,7 @@ void EntitySystem::addEntity(EntityArchetype* archetype)
 		bool foundFreeChunk = false;
 		while (chunk != nullptr)
 		{
-			if (!chunk->isFull)
+			if (chunk->numberOfEntities < chunk->maxEntities)
 			{
 				foundFreeChunk = true;
 				break;
@@ -89,7 +112,7 @@ ChunkArchetypeElement* EntitySystem::createChunkArchetype(EntityArchetype* arche
 	unsigned short sizeOfChunkArchetype = sizeof(ChunkArchetypeElement);
 
 	// Allocate space for archetype
-	unsigned short arraySize = archetype->componentCount * sizeof(std::type_index);
+	unsigned short arraySize = archetype->componentCount * sizeof(Component);
 
 	if (arraySize <= 0)
 	{
@@ -109,7 +132,7 @@ ChunkArchetypeElement* EntitySystem::createChunkArchetype(EntityArchetype* arche
 	element->archetype = *archetype;
 
 	// Get memory location of the archetype components array
-	std::type_index* componentsArray = (std::type_index*)(element + 1);
+	Component* componentsArray = (Component*)(element + 1);
 	memcpy(componentsArray, archetype->components, arraySize);
 
 	element->archetype.components = componentsArray;
@@ -154,7 +177,7 @@ Chunk* EntitySystem::createChunk(ChunkArchetypeElement* chunkArchetype)
 	}
 
 	chunk->numberOfEntities = 0;
-	chunk->isFull = 0;
+	chunk->maxEntities = 10; //TODO: calculate max number of entities
 	chunk->next = nullptr;
 
 	// First chunk in archetype

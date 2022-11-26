@@ -5,6 +5,7 @@
 #include <typeindex>
 #include <entityArchetype.h>
 #include <chunkArchetypeElement.h>
+#include <component.h>
 
 // Each chunk is 16kB
 const unsigned short chunkSize = 16384;
@@ -22,6 +23,7 @@ public:
 	Chunk* createChunk(ChunkArchetypeElement*);
 	ChunkArchetypeElement* createChunkArchetype(EntityArchetype*);
 	ChunkArchetypeElement* findChunkArchetype(EntityArchetype*);
+	Component getComponent(std::type_index, unsigned short);
 
 private:
 	ChunkArchetypeElement* chunkArchetypeList;

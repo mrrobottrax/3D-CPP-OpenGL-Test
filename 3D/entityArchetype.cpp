@@ -6,7 +6,7 @@ EntityArchetype::EntityArchetype()
 	EntityArchetype::components = nullptr;
 }
 
-EntityArchetype::EntityArchetype(std::type_index* components, unsigned short componentCount)
+EntityArchetype::EntityArchetype(Component* components, unsigned short componentCount)
 {
 	EntityArchetype::componentCount = componentCount;
 	EntityArchetype::components = components;
