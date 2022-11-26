@@ -14,6 +14,8 @@ EntitySystem::EntitySystem()
 
 	EntityArchetype player(components, 3);
 	addEntity(&player);
+	addEntity(&player);
+	addEntity(&player);
 }
 
 EntitySystem::~EntitySystem()
@@ -179,22 +181,14 @@ ChunkArchetypeElement* EntitySystem::findChunkArchetype(EntityArchetype* archety
 	// Scan through entire linked list
 	bool foundArchetype = false;
 	ChunkArchetypeElement* chunkArchetype = chunkArchetypeList;
-	while (true)
+	while (chunkArchetype != nullptr)
 	{
-		if (chunkArchetype->next != nullptr)
+		if (chunkArchetype->archetype == *archetype)
 		{
-			if (chunkArchetype->archetype == *archetype)
-			{
-				foundArchetype = true;
-				break;
-			}
-			chunkArchetype = chunkArchetype->next;
-		}
-		else
-		{
-			// End of list
+			foundArchetype = true;
 			break;
 		}
+		chunkArchetype = chunkArchetype->next;
 	}
 
 	if (foundArchetype)

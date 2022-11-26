@@ -18,6 +18,8 @@ ChunkArchetypeElement::~ChunkArchetypeElement()
 	Chunk* nextChunk = chunk->next;
 	while (true)
 	{
+		std::cout << "	Deleting chunk";
+
 		free(chunk);
 
 		if (nextChunk == nullptr)

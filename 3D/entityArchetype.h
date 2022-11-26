@@ -1,6 +1,7 @@
 #pragma once
 
 #include <typeindex>
+#include <iostream>
 
 class EntityArchetype
 {
@@ -11,11 +12,21 @@ public:
 	std::type_index* components;
 	unsigned short componentCount;
 
-	friend bool operator==(const EntityArchetype& lhs, const EntityArchetype& rhs)
+	bool operator==(const EntityArchetype& other)
 	{
-		if (lhs.componentCount != rhs.componentCount)
+		if (componentCount != other.componentCount)
 			return false;
 
-		return lhs.components == rhs.components;
+		// Go through each component and make sure they're the same
+		// TODO: Use hashes
+		for (int i = 0; i < componentCount; i++)
+		{
+			if (components[i] != other.components[i])
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 };
