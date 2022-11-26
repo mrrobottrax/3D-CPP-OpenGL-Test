@@ -29,7 +29,8 @@
   <ItemGroup>
     <ClCompile Include="chunkArchetypeElement.cpp" />
     <ClCompile Include="entityArchetype.cpp" />
-    <ClCompile Include="entitySystem.cpp" />
+    <ClCompile Include="entityManager.cpp" />
+    <ClCompile Include="linearVelocitySystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrixStack.cpp" />
     <ClCompile Include="renderSystem.cpp" />
@@ -42,10 +43,12 @@
     <ClInclude Include="chunkArchetypeElement.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="entityArchetype.h" />
-    <ClInclude Include="entitySystem.h" />
+    <ClInclude Include="entityManager.h" />
     <ClInclude Include="gl.h" />
     <ClInclude Include="glutil.cpp" />
     <ClInclude Include="idComponent.h" />
+    <ClInclude Include="linearVelocityComponent.h" />
+    <ClInclude Include="linearVelocitySystem.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="matrixStack.h" />
     <ClInclude Include="meshComponent.h" />

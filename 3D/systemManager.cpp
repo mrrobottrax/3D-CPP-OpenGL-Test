@@ -3,25 +3,27 @@
 #include <iostream>
 
 #include <renderSystem.h>
-#include <entitySystem.h>
+#include <entityManager.h>
+#include <linearVelocitySystem.h>
 
 namespace systemManager {
-	std::map<std::type_index, System*>* systems = new std::map<std::type_index, System*>();
+	std::map<size_t, System*>* systems = new std::map<size_t, System*>();
 
 	void addSystem(System* s)
 	{
-		systems->emplace(typeid(*s), s);
+		systems->emplace(typeid(*s).hash_code(), s);
 	}
 
 	void registerSystems()
 	{
-		addSystem(new EntitySystem());
+		addSystem(new EntityManager());
+		addSystem(new LinearVelocitySystem());
 		addSystem(new RenderSystem(new CameraComponent()));
 	}
 
 	void updateSystems()
 	{
-		for (std::map<std::type_index, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
+		for (std::map<size_t, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
 		{
 			(*it).second->update();
 		}
@@ -29,11 +31,16 @@ namespace systemManager {
 
 	void deleteAllSystems()
 	{
-		for (std::map<std::type_index, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
+		for (std::map<size_t, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
 		{
 			delete[](*it).second;
 		}
 
 		delete systems;
+	}
+
+	System* getSystem(size_t hash)
+	{
+		return systems->at(hash);
 	}
 }

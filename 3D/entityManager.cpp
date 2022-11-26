@@ -1,10 +1,12 @@
-#include <entitySystem.h>
+#include <entityManager.h>
 #include <idComponent.h>
 #include <positionComponent.h>
 #include <cameraComponent.h>
 #include <iostream>
+#include <linearVelocityComponent.h>
+#include <forward_list>
 
-EntitySystem::EntitySystem()
+EntityManager::EntityManager()
 {
 	chunkArchetypeList = nullptr;
 	chunkArchetypeListLast = nullptr;
@@ -13,14 +15,14 @@ EntitySystem::EntitySystem()
 	Component components[] = {
 		getComponent(typeid(IdComponent), sizeof(IdComponent)),
 		getComponent(typeid(PositionComponent), sizeof(PositionComponent)),
-		getComponent(typeid(CameraComponent), sizeof(CameraComponent))
+		getComponent(typeid(linearVelocityComponent), sizeof(linearVelocityComponent))
 	};
 
 	EntityArchetype player(components, 3);
 	addEntity(&player);
 }
 
-EntitySystem::~EntitySystem()
+EntityManager::~EntityManager()
 {
 	// Empty list
 	if (chunkArchetypeList == nullptr)
@@ -49,13 +51,12 @@ EntitySystem::~EntitySystem()
 	}
 }
 
-Component EntitySystem::getComponent(std::type_index index, unsigned short size)
+Component EntityManager::getComponent(std::type_index index, unsigned short size)
 {
 	Component c;
 	c.hash = index.hash_code();
 	c.size = size;
-	//c.name = new char[32];
-	
+
 	//TODO: remove
 	for (int i = 0; i < 32; i++)
 	{
@@ -69,7 +70,7 @@ Component EntitySystem::getComponent(std::type_index index, unsigned short size)
 	return c;
 }
 
-void EntitySystem::addEntity(EntityArchetype* archetype)
+void EntityManager::addEntity(EntityArchetype* archetype)
 {
 	// Check if the chunk archetype exists
 	ChunkArchetypeElement* chunkArchetype = findChunkArchetype(archetype);
@@ -108,7 +109,7 @@ void EntitySystem::addEntity(EntityArchetype* archetype)
 	chunk->numberOfEntities++;
 }
 
-ChunkArchetypeElement* EntitySystem::createChunkArchetype(EntityArchetype* archetype)
+ChunkArchetypeElement* EntityManager::createChunkArchetype(EntityArchetype* archetype)
 {
 	unsigned short sizeOfChunkArchetype = sizeof(ChunkArchetypeElement);
 
@@ -153,7 +154,7 @@ ChunkArchetypeElement* EntitySystem::createChunkArchetype(EntityArchetype* arche
 	return element;
 }
 
-Chunk* EntitySystem::createChunk(EntityArchetype* archetype)
+Chunk* EntityManager::createChunk(EntityArchetype* archetype)
 {
 	ChunkArchetypeElement* chunkArchetype = findChunkArchetype(archetype);
 
@@ -167,7 +168,7 @@ Chunk* EntitySystem::createChunk(EntityArchetype* archetype)
 	return createChunk(chunkArchetype);
 }
 
-Chunk* EntitySystem::createChunk(ChunkArchetypeElement* chunkArchetype)
+Chunk* EntityManager::createChunk(ChunkArchetypeElement* chunkArchetype)
 {
 	Chunk* chunk = (Chunk*)(malloc(chunkSize));
 
@@ -197,7 +198,7 @@ Chunk* EntitySystem::createChunk(ChunkArchetypeElement* chunkArchetype)
 	return chunk;
 }
 
-ChunkArchetypeElement* EntitySystem::findChunkArchetype(EntityArchetype* archetype)
+ChunkArchetypeElement* EntityManager::findChunkArchetype(EntityArchetype* archetype)
 {
 	// Return null if list is empty
 	if (chunkArchetypeList == nullptr)
@@ -226,6 +227,39 @@ ChunkArchetypeElement* EntitySystem::findChunkArchetype(EntityArchetype* archety
 	return nullptr;
 }
 
-void EntitySystem::update()
+std::forward_list<ChunkArchetypeElement*>* EntityManager::findChunkArchetypesWithComponent(Component* component)
+{
+	// Create linked list of pointers
+	std::forward_list<ChunkArchetypeElement*>* returnList = new std::forward_list<ChunkArchetypeElement*>();
+
+	// Scan through entire linked list
+	bool foundArchetype = false;
+	ChunkArchetypeElement* chunkArchetype = chunkArchetypeList;
+	while (chunkArchetype != nullptr)
+	{
+		// Check if this archetype contains this component
+		for (int i = 0; i < chunkArchetype->archetype.componentCount; i++)
+		{
+			if (chunkArchetype->archetype.components[i] == *component)
+			{
+				foundArchetype = true;
+				returnList->emplace_front(chunkArchetype);
+				break;
+			}
+		}
+
+		chunkArchetype = chunkArchetype->next;
+	}
+
+	if (foundArchetype)
+	{
+		return returnList;
+	}
+
+	delete returnList;
+	return nullptr;
+}
+
+void EntityManager::update()
 {
 }

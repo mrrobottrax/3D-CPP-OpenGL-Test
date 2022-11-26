@@ -10,11 +10,11 @@
 // Each chunk is 16kB
 const unsigned short chunkSize = 16384;
 
-class EntitySystem : public System
+class EntityManager : public System
 {
 public:
-	EntitySystem();
-	~EntitySystem();
+	EntityManager();
+	~EntityManager();
 
 	void update() override;
 
@@ -23,6 +23,7 @@ public:
 	Chunk* createChunk(ChunkArchetypeElement*);
 	ChunkArchetypeElement* createChunkArchetype(EntityArchetype*);
 	ChunkArchetypeElement* findChunkArchetype(EntityArchetype*);
+	std::forward_list<ChunkArchetypeElement*>* findChunkArchetypesWithComponent(Component*);
 	Component getComponent(std::type_index, unsigned short);
 
 private:

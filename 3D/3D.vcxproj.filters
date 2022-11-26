@@ -48,9 +48,6 @@
     <ClCompile Include="renderSystem.cpp">
       <Filter>Source Files\engine\systems</Filter>
     </ClCompile>
-    <ClCompile Include="entitySystem.cpp">
-      <Filter>Source Files\engine\systems</Filter>
-    </ClCompile>
     <ClCompile Include="matrixStack.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
@@ -65,6 +62,12 @@
     </ClCompile>
     <ClCompile Include="chunkArchetypeElement.cpp">
       <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="linearVelocitySystem.cpp">
+      <Filter>Source Files\engine\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="entityManager.cpp">
+      <Filter>Source Files\engine\systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -88,9 +91,6 @@
     </ClInclude>
     <ClInclude Include="system.h">
       <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="entitySystem.h">
-      <Filter>Header Files\engine\systems</Filter>
     </ClInclude>
     <ClInclude Include="renderSystem.h">
       <Filter>Header Files\engine\systems</Filter>
@@ -121,6 +121,15 @@
     </ClInclude>
     <ClInclude Include="component.h">
       <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="linearVelocityComponent.h">
+      <Filter>Header Files\engine\components</Filter>
+    </ClInclude>
+    <ClInclude Include="linearVelocitySystem.h">
+      <Filter>Header Files\engine\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="entityManager.h">
+      <Filter>Header Files\engine\systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

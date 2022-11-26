@@ -8,4 +8,12 @@ struct Component
 	// For debug only
 	// TODO: Remove
 	char name[32];
+
+	bool operator==(const Component& other)
+	{
+		if (hash != other.hash)
+			return false;
+
+		return true;
+	}
 };
