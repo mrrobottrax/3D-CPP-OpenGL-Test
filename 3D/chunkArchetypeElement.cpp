@@ -16,18 +16,13 @@ ChunkArchetypeElement::~ChunkArchetypeElement()
 
 	// Delete all chunks
 	Chunk* nextChunk = chunk->next;
-	while (true)
+	while (chunk != nullptr)
 	{
-		std::cout << "	Deleting chunk";
+		nextChunk = chunk->next;
 
+		std::cout << "	Deleting chunk";
 		free(chunk);
 
-		if (nextChunk == nullptr)
-		{
-			break;
-		}
-
 		chunk = nextChunk;
-		nextChunk = chunk->next;
 	}
 }

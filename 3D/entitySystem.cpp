@@ -62,23 +62,25 @@ void EntitySystem::addEntity(EntityArchetype* archetype)
 	{
 		chunk = createChunk(chunkArchetype);
 	}
-
-	// Get the next free chunk
-	bool foundFreeChunk = false;
-	while (chunk->next != nullptr)
+	else
 	{
-		if (!chunk->isFull)
+		// Get the next free chunk
+		bool foundFreeChunk = false;
+		while (chunk != nullptr)
 		{
-			foundFreeChunk = true;
-			break;
+			if (!chunk->isFull)
+			{
+				foundFreeChunk = true;
+				break;
+			}
+
+			chunk = chunk->next;
 		}
 
-		chunk = chunk->next;
-	}
-
-	if (!foundFreeChunk)
-	{
-		chunk = createChunk(chunkArchetype);
+		if (!foundFreeChunk)
+		{
+			chunk = createChunk(chunkArchetype);
+		}
 	}
 
 	chunk->numberOfEntities++;
@@ -154,6 +156,7 @@ Chunk* EntitySystem::createChunk(ChunkArchetypeElement* chunkArchetype)
 	}
 
 	chunk->numberOfEntities = 0;
+	chunk->isFull = 0;
 	chunk->next = nullptr;
 
 	// First chunk in archetype
