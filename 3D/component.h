@@ -1,7 +1,12 @@
 #pragma once
 
+#include <string>
+#include <typeindex>
+
 struct Component
 {
+	Component(std::type_index, unsigned short);
+
 	unsigned short size;
 	size_t hash;
 

@@ -24,7 +24,6 @@ public:
 	ChunkArchetypeElement* createChunkArchetype(EntityArchetype*);
 	ChunkArchetypeElement* findChunkArchetype(EntityArchetype*);
 	std::forward_list<ChunkArchetypeElement*>* findChunkArchetypesWithComponent(Component*);
-	Component getComponent(std::type_index, unsigned short);
 
 private:
 	ChunkArchetypeElement* chunkArchetypeList;

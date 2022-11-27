@@ -13,9 +13,9 @@ EntityManager::EntityManager()
 
 	// Create player
 	Component components[] = {
-		getComponent(typeid(IdComponent), sizeof(IdComponent)),
-		getComponent(typeid(PositionComponent), sizeof(PositionComponent)),
-		getComponent(typeid(linearVelocityComponent), sizeof(linearVelocityComponent))
+		Component(typeid(IdComponent), sizeof(IdComponent)),
+		Component(typeid(PositionComponent), sizeof(PositionComponent)),
+		Component(typeid(linearVelocityComponent), sizeof(linearVelocityComponent))
 	};
 
 	EntityArchetype player(components, 3);
@@ -49,25 +49,6 @@ EntityManager::~EntityManager()
 		chunkArchetypeList = nextElement;
 		nextElement = chunkArchetypeList->next;
 	}
-}
-
-Component EntityManager::getComponent(std::type_index index, unsigned short size)
-{
-	Component c;
-	c.hash = index.hash_code();
-	c.size = size;
-
-	//TODO: remove
-	for (int i = 0; i < 32; i++)
-	{
-		c.name[i] = index.name()[i];
-		if (c.name[i] == '\0')
-		{
-			break;
-		}
-	}
-
-	return c;
 }
 
 void EntityManager::addEntity(EntityArchetype* archetype)
