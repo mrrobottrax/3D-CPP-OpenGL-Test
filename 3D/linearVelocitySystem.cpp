@@ -1,4 +1,4 @@
-#include "linearVelocitySystem.h"
+#include <linearVelocitySystem.h>
 
 #include <systemManager.h>
 #include <entityManager.h>
@@ -15,9 +15,11 @@ LinearVelocitySystem::~LinearVelocitySystem()
 
 void LinearVelocitySystem::update()
 {
-	//EntityManager* em = (EntityManager*)systemManager::getSystem(typeid(EntityManager).hash_code());
+	EntityManager* em = (EntityManager*)systemManager::getSystem(typeid(EntityManager).hash_code());
 
-	//Component transformComponent = 
+	Component positionComponent;
+	positionComponent.
+	em->findChunkArchetypesWithComponent(PositionComponent());
 
 	//em->findChunkArchetypesWithComponent();
 }
