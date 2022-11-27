@@ -15,7 +15,7 @@ EntityManager::EntityManager()
 	Component components[] = {
 		Component(typeid(IdComponent), sizeof(IdComponent)),
 		Component(typeid(PositionComponent), sizeof(PositionComponent)),
-		Component(typeid(linearVelocityComponent), sizeof(linearVelocityComponent))
+		Component(typeid(LinearVelocityComponent), sizeof(LinearVelocityComponent))
 	};
 
 	EntityArchetype player(components, 3);

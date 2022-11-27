@@ -8,6 +8,7 @@ struct Component
 	Component(std::type_index, unsigned short);
 
 	unsigned short size;
+	unsigned short offset;
 	size_t hash;
 
 	// For debug only

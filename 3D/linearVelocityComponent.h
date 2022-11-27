@@ -1,5 +1,5 @@
 #pragma once
-struct linearVelocityComponent
+struct LinearVelocityComponent
 {
 	float x, y, z;
 };
