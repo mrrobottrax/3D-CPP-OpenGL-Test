@@ -40,6 +40,12 @@
     <Filter Include="Header Files\common\gl">
       <UniqueIdentifier>{38a26b61-c10d-4cc3-97e1-93b6d651c4f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\engine\memory">
+      <UniqueIdentifier>{162b515b-34bf-4771-a7ac-8bd21620676b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\memory">
+      <UniqueIdentifier>{8d42d344-d6af-438f-b400-e84e5ae6249e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -51,29 +57,29 @@
     <ClCompile Include="matrixStack.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
-    <ClCompile Include="system.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="systemManager.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="entityArchetype.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="chunkArchetypeElement.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
     <ClCompile Include="linearVelocitySystem.cpp">
       <Filter>Source Files\engine\systems</Filter>
     </ClCompile>
     <ClCompile Include="entityManager.cpp">
       <Filter>Source Files\engine\systems</Filter>
     </ClCompile>
+    <ClCompile Include="chunkArchetypeElement.cpp">
+      <Filter>Source Files\engine\memory</Filter>
+    </ClCompile>
     <ClCompile Include="component.cpp">
-      <Filter>Source Files\engine</Filter>
+      <Filter>Source Files\engine\memory</Filter>
     </ClCompile>
     <ClCompile Include="entity.cpp">
-      <Filter>Source Files\engine</Filter>
+      <Filter>Source Files\engine\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="entityArchetype.cpp">
+      <Filter>Source Files\engine\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="system.cpp">
+      <Filter>Source Files\engine\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="systemManager.cpp">
+      <Filter>Source Files\engine\memory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,14 +101,8 @@
     <ClInclude Include="meshObject.h">
       <Filter>Header Files\engine</Filter>
     </ClInclude>
-    <ClInclude Include="system.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
     <ClInclude Include="renderSystem.h">
       <Filter>Header Files\engine\systems</Filter>
-    </ClInclude>
-    <ClInclude Include="systemManager.h">
-      <Filter>Header Files\engine</Filter>
     </ClInclude>
     <ClInclude Include="shader.h">
       <Filter>Header Files\engine</Filter>
@@ -116,18 +116,6 @@
     <ClInclude Include="idComponent.h">
       <Filter>Header Files\engine\components</Filter>
     </ClInclude>
-    <ClInclude Include="entityArchetype.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="chunkArchetypeElement.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="chunk.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="component.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
     <ClInclude Include="linearVelocityComponent.h">
       <Filter>Header Files\engine\components</Filter>
     </ClInclude>
@@ -137,8 +125,26 @@
     <ClInclude Include="entityManager.h">
       <Filter>Header Files\engine\systems</Filter>
     </ClInclude>
+    <ClInclude Include="chunk.h">
+      <Filter>Header Files\engine\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="chunkArchetypeElement.h">
+      <Filter>Header Files\engine\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="component.h">
+      <Filter>Header Files\engine\memory</Filter>
+    </ClInclude>
     <ClInclude Include="entity.h">
-      <Filter>Header Files\engine</Filter>
+      <Filter>Header Files\engine\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="entityArchetype.h">
+      <Filter>Header Files\engine\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="systemManager.h">
+      <Filter>Header Files\engine\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="system.h">
+      <Filter>Header Files\engine\memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
