@@ -5,6 +5,7 @@
 #include <positionComponent.h>
 #include <linearVelocityComponent.h>
 #include <forward_list>
+#include <component.h>
 
 LinearVelocitySystem::LinearVelocitySystem()
 {
@@ -16,11 +17,9 @@ LinearVelocitySystem::~LinearVelocitySystem()
 
 void LinearVelocitySystem::update()
 {
-	Component linearVelocityComponent = Component(typeid(LinearVelocityComponent), sizeof(LinearVelocityComponent));
-	Component positionComponent = Component(typeid(PositionComponent), sizeof(PositionComponent));
+	EntityManager& em = EntityManager::getInstance();
 
-	EntityManager* em = (EntityManager*)systemManager::getSystem(typeid(EntityManager).hash_code());
-	std::forward_list<ChunkArchetypeElement*>* archetypes = em->findChunkArchetypesWithComponent(&linearVelocityComponent);
+	std::forward_list<ChunkArchetypeElement*>* archetypes = em.findChunkArchetypesWithComponent(Component().init<LinearVelocityComponent>());
 
 	// For each archetype
 	for (std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
@@ -28,20 +27,16 @@ void LinearVelocitySystem::update()
 		// For each chunk
 		for (Chunk* chunk = (*chunkArchetypeIt)->firstChunk; chunk != nullptr; chunk = chunk->next)
 		{
-			// Get pointer to component stream
-			char* componentStream = (char*)(chunk + 1);
-			PositionComponent* positionComponentStream = (PositionComponent*)(componentStream + ((*chunkArchetypeIt)->archetype.getComponentOffset(&positionComponent)));
-			LinearVelocityComponent* linearVelocityComponentStream = (LinearVelocityComponent*)(componentStream + ((*chunkArchetypeIt)->archetype.getComponentOffset(&linearVelocityComponent)));
-
 			// For each entity
-			for (int i = 0; i < chunk->numberOfEntities; i++)
+			for (unsigned short i = 0; i < chunk->numberOfEntities; i++)
 			{
-				// Get position of component in component stream
-				PositionComponent* positionComponent = positionComponentStream + i;
-				LinearVelocityComponent* velocityComponent = linearVelocityComponentStream + i;
-				positionComponent->x += velocityComponent->x;
-				positionComponent->y += velocityComponent->y;
-				positionComponent->z += velocityComponent->z;
+				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
+				PositionComponent& position = em.getComponent<PositionComponent>(entity);
+				LinearVelocityComponent& velocity = em.getComponent<LinearVelocityComponent>(entity);
+
+				position.x += velocity.x;
+				position.y += velocity.y;
+				position.z += velocity.z;
 			}
 		}
 	}

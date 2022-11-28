@@ -12,7 +12,6 @@ public:
 
 	ChunkArchetypeElement* next;
 	Chunk* firstChunk;
-	Chunk* lastChunk;
 
 	EntityArchetype archetype;
 };

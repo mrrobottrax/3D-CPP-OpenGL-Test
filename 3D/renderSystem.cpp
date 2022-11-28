@@ -2,28 +2,34 @@
 
 #include <iostream>
 #include <matrixStack.h>
+#include <entityManager.h>
+
+RenderSystem::RenderSystem(Entity& mainEntity)
+{
+	RenderSystem::mainCamera = &EntityManager::getInstance().getComponent<CameraComponent>(mainEntity);
+
+	initMainCameraMatrix();
+}
 
 RenderSystem::RenderSystem()
 {
 	mainCamera = nullptr;
 }
 
-RenderSystem::RenderSystem(CameraComponent* mainCamera)
-{
-	RenderSystem::mainCamera = mainCamera;
-
-	initMainCameraMatrix();
-}
-
 RenderSystem::~RenderSystem()
 {
-	delete[] mainCamera;
+	
 }
 
 void RenderSystem::initMainCameraMatrix()
 {
 	float* matrix = calcPerspectiveMatrix();
-	memcpy(RenderSystem::mainCamera->matrix, matrix, sizeof(matrix));
+
+	for (int i = 0; i < 16; i++)
+	{
+		mainCamera->matrix[i] = matrix[i];
+	}
+
 	delete[] matrix;
 }
 
@@ -36,6 +42,9 @@ float RenderSystem::calcFrustumScale(float fov)
 
 void RenderSystem::updateMatrixAspect(int width, int height)
 {
+	if (mainCamera == nullptr)
+		return;
+
 	mainCamera->matrix[0] = mainCamera->frustumScale / (width / (float)height);
 	mainCamera->matrix[5] = mainCamera->frustumScale;
 }
@@ -56,12 +65,12 @@ float* RenderSystem::calcPerspectiveMatrix()
 
 void RenderSystem::update()
 {
-	MatrixStack mStack;
-
 	if (mainCamera == nullptr)
 	{
 		return;
 	}
+
+	MatrixStack mStack;
 
 	mStack.Push(mainCamera->matrix);
 

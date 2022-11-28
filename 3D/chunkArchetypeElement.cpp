@@ -4,7 +4,6 @@ ChunkArchetypeElement::ChunkArchetypeElement()
 {
 	next = nullptr;
 	firstChunk = nullptr;
-	lastChunk = nullptr;
 }
 
 ChunkArchetypeElement::~ChunkArchetypeElement()

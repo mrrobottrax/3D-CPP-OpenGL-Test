@@ -1,19 +1,11 @@
 #pragma once
 #include <component.h>
 
-Component::Component(std::type_index index, unsigned short size)
+Component::Component()
 {
-	Component::hash = index.hash_code();
-	Component::size = size;
+	Component::size = 0;
+	Component::hash = 0;
 	Component::offset = 0;
 
-	//TODO: remove
-	for (int i = 0; i < 32; i++)
-	{
-		Component::name[i] = index.name()[i];
-		if (Component::name[i] == '\0')
-		{
-			break;
-		}
-	}
+	Component::name[0] = 0;
 }

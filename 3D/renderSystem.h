@@ -2,12 +2,13 @@
 
 #include <system.h>
 #include <cameraComponent.h>
+#include <entity.h>
 
 class RenderSystem : public System
 {
 public:
+	RenderSystem(Entity&);
 	RenderSystem();
-	RenderSystem(CameraComponent*);
 	~RenderSystem();
 
 	CameraComponent* mainCamera;

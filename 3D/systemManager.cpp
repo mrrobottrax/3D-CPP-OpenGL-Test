@@ -9,20 +9,16 @@
 namespace systemManager {
 	std::map<size_t, System*>* systems = new std::map<size_t, System*>();
 
-	void addSystem(System* s)
-	{
-		systems->emplace(typeid(*s).hash_code(), s);
-	}
-
 	void registerSystems()
 	{
-		addSystem(new EntityManager());
-		addSystem(new LinearVelocitySystem());
-		addSystem(new RenderSystem(new CameraComponent()));
+		addSystem<LinearVelocitySystem>();
+		addSystem<RenderSystem>();
 	}
 
 	void updateSystems()
 	{
+		EntityManager::getInstance().update();
+
 		for (std::map<size_t, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
 		{
 			(*it).second->update();
@@ -37,10 +33,5 @@ namespace systemManager {
 		}
 
 		delete systems;
-	}
-
-	System* getSystem(size_t hash)
-	{
-		return systems->at(hash);
 	}
 }

@@ -5,7 +5,10 @@
 
 struct Component
 {
-	Component(std::type_index, unsigned short);
+	Component();
+
+	template <class T>
+	Component& init();
 
 	unsigned short size;
 	unsigned short offset;
@@ -23,3 +26,25 @@ struct Component
 		return true;
 	}
 };
+
+template <class T>
+inline Component& Component::init()
+{
+	Component::offset = 0;
+	Component::hash = typeid(T).hash_code();
+	Component::size = sizeof(T);
+
+	const char* name = typeid(T).name();
+
+	//TODO: remove
+	for (int i = 0; i < 32; i++)
+	{
+		Component::name[i] = name[i];
+		if (Component::name[i] == '\0')
+		{
+			break;
+		}
+	}
+
+	return *this;
+}
