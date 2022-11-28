@@ -17,9 +17,12 @@ LinearVelocitySystem::~LinearVelocitySystem()
 
 void LinearVelocitySystem::update()
 {
-	EntityManager& em = EntityManager::getInstance();
+	EntityManager& em = EntityManager::GetInstance();
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.findChunkArchetypesWithComponent(Component().init<LinearVelocityComponent>());
+
+	if (archetypes == nullptr)
+		return;
 
 	// For each archetype
 	for (std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)

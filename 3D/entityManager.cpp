@@ -5,9 +5,25 @@
 #include <iostream>
 #include <linearVelocityComponent.h>
 #include <forward_list>
+#include <meshComponent.h>
+
+EntityManager* EntityManager::instance{ nullptr };
+std::mutex EntityManager::mutex;
+
+EntityManager& EntityManager::GetInstance()
+{
+	std::lock_guard<std::mutex> lock(mutex);
+	if (instance == nullptr)
+	{
+		instance = new EntityManager();
+	}
+
+	return *instance;
+};
 
 EntityManager::EntityManager()
 {
+	nextEntityIndex = 0;
 	chunkArchetypeList = nullptr;
 
 	// Create player
@@ -29,8 +45,8 @@ EntityManager::~EntityManager()
 		return;
 
 	// Delete each chunk archetype element
-	ChunkArchetypeElement* nextElement = chunkArchetypeList->next;
-	while (true)
+	ChunkArchetypeElement* elementToDelete;
+	while (chunkArchetypeList != nullptr)
 	{
 		std::cout << "Deleting chunk archetype of: ";
 		for (int i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
@@ -39,15 +55,10 @@ EntityManager::~EntityManager()
 		}
 		std::cout << "\n";
 
-		delete chunkArchetypeList;
+		elementToDelete = chunkArchetypeList;
+		chunkArchetypeList = chunkArchetypeList->next;
 
-		if (nextElement == nullptr)
-		{
-			break;
-		}
-
-		chunkArchetypeList = nextElement;
-		nextElement = chunkArchetypeList->next;
+		delete elementToDelete;
 	}
 }
 

@@ -7,27 +7,31 @@
 #include <chunkArchetypeElement.h>
 #include <component.h>
 #include <entity.h>
+#include <mutex>
 
 // Each chunk is 16kB
 const unsigned short chunkSize = 16384;
 
 class EntityManager
 {
-public:
+private:
+	static EntityManager* instance;
+	static std::mutex mutex;
+
+protected:
 	EntityManager();
+
+public:
 	~EntityManager();
+
+	// Signleton
+	EntityManager(EntityManager& other);
+	void operator=(const EntityManager&) = delete;
+	static EntityManager& GetInstance();
 
 	int nextEntityIndex;
 
 	void update();
-
-	static EntityManager& getInstance()
-	{
-		static EntityManager instance;
-		return instance;
-	};
-	EntityManager(EntityManager const&) = delete;
-	void operator=(EntityManager const&) = delete;
 
 	template <class T>
 	T& getComponent(Entity&);

@@ -6,7 +6,7 @@
 
 RenderSystem::RenderSystem(Entity& mainEntity)
 {
-	RenderSystem::mainCamera = &EntityManager::getInstance().getComponent<CameraComponent>(mainEntity);
+	RenderSystem::mainCamera = &EntityManager::GetInstance().getComponent<CameraComponent>(mainEntity);
 
 	initMainCameraMatrix();
 }

@@ -17,7 +17,7 @@ namespace systemManager {
 
 	void updateSystems()
 	{
-		EntityManager::getInstance().update();
+		EntityManager::GetInstance().update();
 
 		for (std::map<size_t, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
 		{
@@ -29,9 +29,10 @@ namespace systemManager {
 	{
 		for (std::map<size_t, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
 		{
-			delete[](*it).second;
+			delete (*it).second;
 		}
 
 		delete systems;
+		delete &EntityManager::GetInstance();
 	}
 }
