@@ -33,11 +33,11 @@ void RenderSystem::setMainCameraEntity(Entity& entity)
 void RenderSystem::initMainCameraMatrix()
 {
 	mainCamera->frustumScale = calcFrustumScale(mainCamera->fov);
-	float* matrix = calcPerspectiveMatrix();
+	glm::mat4 matrix = calcPerspectiveMatrix();
 
 	for (int i = 0; i < 16; i++)
 	{
-		mainCamera->matrix[i] = matrix[i];
+		mainCamera->matrix = matrix;
 	}
 }
 
@@ -53,20 +53,19 @@ void RenderSystem::updateMatrixAspect(int width, int height)
 	if (mainCamera == nullptr)
 		return;
 
-	mainCamera->matrix[0] = mainCamera->frustumScale / (width / (float)height);
-	mainCamera->matrix[5] = mainCamera->frustumScale;
+	mainCamera->matrix[0][0] = mainCamera->frustumScale / (width / (float)height);
+	mainCamera->matrix[1][1] = mainCamera->frustumScale;
 }
 
-float* RenderSystem::calcPerspectiveMatrix()
+glm::mat4 RenderSystem::calcPerspectiveMatrix()
 {
-	float matrix[16];
-	memset(matrix, 0, sizeof(matrix));
+	glm::mat4 matrix = glm::mat4(0.0f);
 
-	matrix[0] = mainCamera->frustumScale;
-	matrix[5] = mainCamera->frustumScale;
-	matrix[10] = (mainCamera->farClip + mainCamera->nearClip) / (mainCamera->nearClip - mainCamera->farClip);
-	matrix[11] = -1.0f;
-	matrix[14] = (2 * mainCamera->farClip * mainCamera->nearClip) / (mainCamera->nearClip - mainCamera->farClip);
+	matrix[0][0] = mainCamera->frustumScale;
+	matrix[1][1] = mainCamera->frustumScale;
+	matrix[2][2] = (mainCamera->farClip + mainCamera->nearClip) / (mainCamera->nearClip - mainCamera->farClip);
+	matrix[2][3] = -1.0f;
+	matrix[3][2] = (2 * mainCamera->farClip * mainCamera->nearClip) / (mainCamera->nearClip - mainCamera->farClip);
 
 	return matrix;
 }
@@ -80,7 +79,7 @@ void RenderSystem::update()
 
 	MatrixStack mStack;
 
-	mStack.Push(mainCamera->matrix);
+	mStack.push(mainCamera->matrix);
 
 	EntityManager& em = EntityManager::GetInstance();
 
@@ -102,20 +101,22 @@ void RenderSystem::update()
 				MeshComponent& mesh = em.getComponent<MeshComponent>(entity);
 				PositionComponent& position = em.getComponent<PositionComponent>(entity);
 
-				mStack.Push(MatrixStack::TranslationMatrix(position.value));
+				mStack.pushCpy();
+				mStack.translate(position.value);
 
 				// Draw object
 				glUniform4f(colorUniform, 1, 1, 1, 1);
-				glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, mainCamera->matrix);
+				glUniform3f(offsetUniform, 0, 0, 0);
+				glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &mStack.top()[0][0]);
 
 				glDrawElements(GL_TRIANGLES, mesh.mesh->indicesCount, GL_UNSIGNED_SHORT, 0);
 
-				mStack.Pop();
+				mStack.pop();
 			}
 		}
 	}
 
 	delete archetypes;
 
-	mStack.Pop();
+	mStack.pop();
 }

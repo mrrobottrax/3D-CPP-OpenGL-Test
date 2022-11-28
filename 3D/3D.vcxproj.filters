@@ -149,6 +149,9 @@
     <ClInclude Include="floats.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
+    <ClInclude Include="rotationComponent.h">
+      <Filter>Header Files\engine\components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="bin\glew32s.lib">

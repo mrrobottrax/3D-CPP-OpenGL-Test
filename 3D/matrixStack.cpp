@@ -1,23 +1,38 @@
 #include <matrixStack.h>
+#include <glm/glm.hpp>
 
-void MatrixStack::Push(float* matrix)
+void MatrixStack::push()
+{
+	mStack.push(glm::mat4(1.0f));
+}
+
+void MatrixStack::push(glm::mat4& matrix)
 {
 	mStack.push(matrix);
 }
 
-void MatrixStack::Pop()
+void MatrixStack::pushCpy()
+{
+	mStack.push(mStack.top());
+}
+
+void MatrixStack::pop()
 {
 	mStack.pop();
 }
 
-float* MatrixStack::TranslationMatrix(Float3 offset)
+glm::mat4& MatrixStack::top()
 {
-	float matrix[16] = {
-		1, 0, 0, offset.x,
-		0, 1, 0, offset.y,
-		0, 0, 1, offset.z,
-		0, 0, 0, 1,
-	};
+	return mStack.top();
+}
 
-	return matrix;
+void MatrixStack::translate(Float3& offset)
+{
+	glm::mat4 matrix = glm::mat4(1.0f);
+
+	matrix[3][0] = offset.x;
+	matrix[3][1] = offset.y;
+	matrix[3][2] = offset.z;
+
+	mStack.top() = mStack.top() * matrix;
 }

@@ -11,6 +11,7 @@
 #include <meshComponent.h>
 #include <entityManager.h>
 #include <algorithm>
+#include <rotationComponent.h>
 
 using namespace std;
 
@@ -110,12 +111,14 @@ void init()
 			Component().init<PositionComponent>(),
 			Component().init<VelocityComponent>(),
 			Component().init<CameraComponent>(),
+			Component().init<RotationComponent>(),
 		};
 
-		Entity entity = em.addEntity(EntityArchetype(4, components));
+		Entity entity = em.addEntity(EntityArchetype(5, components));
 		em.getComponent<PositionComponent>(entity) = { 0, 0, 0 };
 		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0 };
 		em.getComponent<CameraComponent>(entity) = { 80.0f, 0.03f, 1000.0f };
+		em.getComponent<RotationComponent>(entity) = { 0, 0, 0, 1 };
 
 		systemManager::getSystem<RenderSystem>()->setMainCameraEntity(entity);
 	}
@@ -126,11 +129,13 @@ void init()
 			Component().init<PositionComponent>(),
 			Component().init<VelocityComponent>(),
 			Component().init<MeshComponent>(),
+			Component().init<RotationComponent>(),
 		};
 
-		Entity entity = em.addEntity(EntityArchetype(4, components));
-		em.getComponent<PositionComponent>(entity) = { 0, 0, 5 };
-		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0 };
+		Entity entity = em.addEntity(EntityArchetype(5, components));
+		em.getComponent<PositionComponent>(entity) = { 0, -3, 0 };
+		em.getComponent<VelocityComponent>(entity) = { 0, 0, -0.01f };
+		em.getComponent<RotationComponent>(entity) = { 0, 0, 0, 1 };
 		em.getComponent<MeshComponent>(entity) = { &mesh };
 	}
 }
@@ -151,8 +156,6 @@ int main()
 		
 		glBindVertexArray(vao);
 
-		glUniform3f(offsetUniform, 0, 0, 0);
-
 		systemManager::updateSystems();
 
 		glBindVertexArray(0);
@@ -160,8 +163,6 @@ int main()
 
 		glfwSwapBuffers(window);
 	}
-
-	//delete mesh;
 
 	systemManager::deleteAllSystems();
 	glfwTerminate();

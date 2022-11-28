@@ -51,6 +51,7 @@
     <ClInclude Include="gl.h" />
     <ClInclude Include="glutil.cpp" />
     <ClInclude Include="idComponent.h" />
+    <ClInclude Include="rotationComponent.h" />
     <ClInclude Include="velocityComponent.h" />
     <ClInclude Include="velocitySystem.h" />
     <ClInclude Include="main.h" />

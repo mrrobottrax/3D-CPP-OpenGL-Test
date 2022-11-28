@@ -2,14 +2,18 @@
 
 #include <stack>
 #include <floats.h>
+#include <glm/glm.hpp>
 
 class MatrixStack
 {
 public:
-	void Push(float*);
-	void Pop();
-	static float* TranslationMatrix(Float3);
+	void push(glm::mat4&);
+	void push();
+	void pushCpy();
+	void pop();
+	void translate(Float3&);
+	glm::mat4& top();
 
 private:
-	std::stack<float*> mStack;
+	std::stack<glm::mat4> mStack;
 };

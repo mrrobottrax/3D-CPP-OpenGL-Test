@@ -3,6 +3,7 @@
 #include <system.h>
 #include <cameraComponent.h>
 #include <entity.h>
+#include <glm/glm.hpp>
 
 class RenderSystem : public System
 {
@@ -16,7 +17,7 @@ public:
 	void setMainCameraEntity(Entity&);
 	void initMainCameraMatrix();
 	float calcFrustumScale(float fov);
-	float* calcPerspectiveMatrix();
+	glm::mat4 calcPerspectiveMatrix();
 	void updateMatrixAspect(int width, int height);
 
 	void update() override;
