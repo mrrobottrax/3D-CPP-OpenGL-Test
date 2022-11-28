@@ -1,5 +1,10 @@
 #pragma once
+
+#include <floats.h>
+
 struct PositionComponent
 {
-	float x, y, z;
+	Float3 value;
+
+	PositionComponent(float a, float b, float c) : value(a, b, c) {}
 };

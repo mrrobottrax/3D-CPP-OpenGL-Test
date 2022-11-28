@@ -8,7 +8,7 @@ class EntityArchetype
 {
 public:
 	EntityArchetype();
-	EntityArchetype(Component*, unsigned short);
+	EntityArchetype(unsigned short, Component*);
 
 	Component* components;
 	unsigned short componentCount;

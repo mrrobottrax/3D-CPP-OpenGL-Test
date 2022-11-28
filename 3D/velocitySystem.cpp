@@ -1,25 +1,25 @@
-#include <linearVelocitySystem.h>
+#include <velocitySystem.h>
 
 #include <systemManager.h>
 #include <entityManager.h>
 #include <positionComponent.h>
-#include <linearVelocityComponent.h>
+#include <velocityComponent.h>
 #include <forward_list>
 #include <component.h>
 
-LinearVelocitySystem::LinearVelocitySystem()
+VelocitySystem::VelocitySystem()
 {
 }
 
-LinearVelocitySystem::~LinearVelocitySystem()
+VelocitySystem::~VelocitySystem()
 {
 }
 
-void LinearVelocitySystem::update()
+void VelocitySystem::update()
 {
 	EntityManager& em = EntityManager::GetInstance();
 
-	std::forward_list<ChunkArchetypeElement*>* archetypes = em.findChunkArchetypesWithComponent(Component().init<LinearVelocityComponent>());
+	std::forward_list<ChunkArchetypeElement*>* archetypes = em.findChunkArchetypesWithComponent(Component().init<VelocityComponent>());
 
 	if (archetypes == nullptr)
 		return;
@@ -35,11 +35,11 @@ void LinearVelocitySystem::update()
 			{
 				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
 				PositionComponent& position = em.getComponent<PositionComponent>(entity);
-				LinearVelocityComponent& velocity = em.getComponent<LinearVelocityComponent>(entity);
+				VelocityComponent& velocity = em.getComponent<VelocityComponent>(entity);
 
-				position.x += velocity.x;
-				position.y += velocity.y;
-				position.z += velocity.z;
+				position.value.x += velocity.linear.x;
+				position.value.y += velocity.linear.y;
+				position.value.z += velocity.linear.z;
 			}
 		}
 	}

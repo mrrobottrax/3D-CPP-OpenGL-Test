@@ -8,7 +8,7 @@ EntityArchetype::EntityArchetype()
 	EntityArchetype::components = nullptr;
 }
 
-EntityArchetype::EntityArchetype(Component* components, unsigned short componentCount)
+EntityArchetype::EntityArchetype(unsigned short componentCount, Component* components)
 {
 	EntityArchetype::componentCount = componentCount;
 	EntityArchetype::components = components;
@@ -32,7 +32,7 @@ unsigned short EntityArchetype::getComponentOffset(Component* component)
 	{
 		if (components[i] == *component)
 		{
-			return component->offset;
+			return components[i].offset;
 		}
 	}
 

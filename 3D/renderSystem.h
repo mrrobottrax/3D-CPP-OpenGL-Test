@@ -13,6 +13,7 @@ public:
 
 	CameraComponent* mainCamera;
 
+	void setMainCameraEntity(Entity&);
 	void initMainCameraMatrix();
 	float calcFrustumScale(float fov);
 	float* calcPerspectiveMatrix();

@@ -57,7 +57,7 @@
     <ClCompile Include="matrixStack.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
-    <ClCompile Include="linearVelocitySystem.cpp">
+    <ClCompile Include="velocitySystem.cpp">
       <Filter>Source Files\engine\systems</Filter>
     </ClCompile>
     <ClCompile Include="entityManager.cpp">
@@ -116,10 +116,10 @@
     <ClInclude Include="idComponent.h">
       <Filter>Header Files\engine\components</Filter>
     </ClInclude>
-    <ClInclude Include="linearVelocityComponent.h">
+    <ClInclude Include="velocityComponent.h">
       <Filter>Header Files\engine\components</Filter>
     </ClInclude>
-    <ClInclude Include="linearVelocitySystem.h">
+    <ClInclude Include="velocitySystem.h">
       <Filter>Header Files\engine\systems</Filter>
     </ClInclude>
     <ClInclude Include="entityManager.h">
@@ -145,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="system.h">
       <Filter>Header Files\engine\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="floats.h">
+      <Filter>Header Files\common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

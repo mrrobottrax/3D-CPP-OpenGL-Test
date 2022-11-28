@@ -24,8 +24,8 @@ protected:
 public:
 	~EntityManager();
 
-	// Signleton
-	EntityManager(EntityManager& other);
+	// Singleton
+	EntityManager(EntityManager& other) = delete;
 	void operator=(const EntityManager&) = delete;
 	static EntityManager& GetInstance();
 
@@ -52,7 +52,7 @@ inline T& EntityManager::getComponent(Entity& entity)
 {
 	// Get pointer to component stream
 	char* componentStream = (char*)(entity.chunk + 1);
-	T* tComponentStream = (T*)(componentStream + entity.archetype->getComponentOffset(&Component().init<T>()));
+	T* tComponentStream = (T*)(componentStream + entity.chunk->maxEntities * entity.archetype->getComponentOffset(&Component().init<T>()));
 	T& ref = *(tComponentStream + entity.index);
 	return ref;
 }

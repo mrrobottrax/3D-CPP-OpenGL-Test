@@ -4,14 +4,14 @@
 
 #include <renderSystem.h>
 #include <entityManager.h>
-#include <linearVelocitySystem.h>
+#include <velocitySystem.h>
 
 namespace systemManager {
 	std::map<size_t, System*>* systems = new std::map<size_t, System*>();
 
 	void registerSystems()
 	{
-		addSystem<LinearVelocitySystem>();
+		addSystem<VelocitySystem>();
 		addSystem<RenderSystem>();
 	}
 

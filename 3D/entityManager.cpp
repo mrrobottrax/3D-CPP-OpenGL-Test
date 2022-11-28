@@ -3,7 +3,7 @@
 #include <positionComponent.h>
 #include <cameraComponent.h>
 #include <iostream>
-#include <linearVelocityComponent.h>
+#include <velocityComponent.h>
 #include <forward_list>
 #include <meshComponent.h>
 
@@ -25,17 +25,6 @@ EntityManager::EntityManager()
 {
 	nextEntityIndex = 0;
 	chunkArchetypeList = nullptr;
-
-	// Create player
-	Component components[] = {
-		Component().init<IdComponent>(),
-		Component().init<PositionComponent>(),
-		Component().init<LinearVelocityComponent>()
-	};
-
-	Entity entity = addEntity(EntityArchetype(components, 3));
-	getComponent<PositionComponent>(entity) = PositionComponent();
-	getComponent<LinearVelocityComponent>(entity) = LinearVelocityComponent();
 }
 
 EntityManager::~EntityManager()

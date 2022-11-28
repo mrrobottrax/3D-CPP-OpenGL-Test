@@ -32,7 +32,7 @@
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="entityArchetype.cpp" />
     <ClCompile Include="entityManager.cpp" />
-    <ClCompile Include="linearVelocitySystem.cpp" />
+    <ClCompile Include="velocitySystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrixStack.cpp" />
     <ClCompile Include="renderSystem.cpp" />
@@ -47,11 +47,12 @@
     <ClInclude Include="entity.h" />
     <ClInclude Include="entityArchetype.h" />
     <ClInclude Include="entityManager.h" />
+    <ClInclude Include="floats.h" />
     <ClInclude Include="gl.h" />
     <ClInclude Include="glutil.cpp" />
     <ClInclude Include="idComponent.h" />
-    <ClInclude Include="linearVelocityComponent.h" />
-    <ClInclude Include="linearVelocitySystem.h" />
+    <ClInclude Include="velocityComponent.h" />
+    <ClInclude Include="velocitySystem.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="matrixStack.h" />
     <ClInclude Include="meshComponent.h" />
