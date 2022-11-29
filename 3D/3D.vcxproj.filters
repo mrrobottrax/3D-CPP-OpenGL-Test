@@ -87,6 +87,9 @@
     <ClCompile Include="freecamSystem.cpp">
       <Filter>Source Files\engine\systems</Filter>
     </ClCompile>
+    <ClCompile Include="inputManager.cpp">
+      <Filter>Source Files\engine\systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -162,6 +165,9 @@
       <Filter>Header Files\engine\components</Filter>
     </ClInclude>
     <ClInclude Include="freecamSystem.h">
+      <Filter>Header Files\engine\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="inputManager.h">
       <Filter>Header Files\engine\systems</Filter>
     </ClInclude>
   </ItemGroup>

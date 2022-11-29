@@ -117,11 +117,12 @@ void init()
 			Component().init<FreecamComponent>(),
 		};
 
-		Entity entity = em.addEntity(EntityArchetype(5, components));
+		Entity entity = em.addEntity(EntityArchetype(6, components));
 		em.getComponent<PositionComponent>(entity) = { 0, 0, 0 };
 		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 		em.getComponent<CameraComponent>(entity) = { 80.0f, 0.03f, 1000.0f };
 		em.getComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
+		em.getComponent<FreecamComponent>(entity) = { 6, 40, 20 };
 
 		systemManager::getSystem<RenderSystem>()->setMainCameraEntity(entity);
 	}

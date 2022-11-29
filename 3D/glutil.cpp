@@ -4,6 +4,7 @@
 #include <renderSystem.h>
 #include <systemManager.h>
 #include <vector>
+#include <inputManager.h>
 
 GLFWwindow* window;
 
@@ -14,6 +15,8 @@ void error_callback(int error, const char* description)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	inputManager::keyCallback(key, action);
+
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }

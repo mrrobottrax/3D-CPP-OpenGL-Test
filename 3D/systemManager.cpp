@@ -5,6 +5,7 @@
 #include <renderSystem.h>
 #include <entityManager.h>
 #include <velocitySystem.h>
+#include <freecamSystem.h>
 
 namespace systemManager {
 	std::map<size_t, System*>* systems = new std::map<size_t, System*>();
@@ -12,6 +13,8 @@ namespace systemManager {
 	void registerSystems()
 	{
 		addSystem<VelocitySystem>();
+		addSystem<FreecamSystem>();
+
 		addSystem<RenderSystem>();
 	}
 

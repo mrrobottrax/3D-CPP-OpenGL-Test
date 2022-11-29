@@ -2,8 +2,11 @@
 
 #include <system.h>
 
-class FreecamSystem : System
+class FreecamSystem : public System
 {
 public:
+	FreecamSystem();
+	~FreecamSystem();
+
 	void update() override;
 };
