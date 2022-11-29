@@ -7,6 +7,8 @@
 #include <entityManager.h>
 #include <freecamComponent.h>
 #include <velocityComponent.h>
+#include <rotationComponent.h>
+
 #include <timeManager.h>
 
 class System

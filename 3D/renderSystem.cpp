@@ -84,8 +84,8 @@ void RenderSystem::update()
 	MatrixStack mStack;
 
 	mStack.push(mainCamera->matrix);
-	mStack.translate(-em.getComponent<PositionComponent>(mainCameraEntity).value);
 	mStack.applyMatrix(glm::mat4_cast(-em.getComponent<RotationComponent>(mainCameraEntity).value));
+	mStack.translate(-em.getComponent<PositionComponent>(mainCameraEntity).value);
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.findChunkArchetypesWithComponent(Component().init<MeshComponent>());
 

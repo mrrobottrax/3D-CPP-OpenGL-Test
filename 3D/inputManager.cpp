@@ -4,7 +4,7 @@
 #include <gl.h>
 
 namespace inputManager {
-	char keybindings[256];
+	char keybindings[1024];
 
 	void bindKey(int key, char action)
 	{
