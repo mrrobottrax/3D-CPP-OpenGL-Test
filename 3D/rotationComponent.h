@@ -1,10 +1,10 @@
 #pragma once
 
-#include <floats.h>
+#include <glm/gtc/quaternion.hpp>
 
 struct RotationComponent
 {
-	Float4 value;
+	glm::fquat value;
 
 	RotationComponent(float a, float b, float c, float d) : value(a, b, c, d) {}
 };

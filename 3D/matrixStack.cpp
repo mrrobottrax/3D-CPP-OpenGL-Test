@@ -26,7 +26,7 @@ glm::mat4& MatrixStack::top()
 	return mStack.top();
 }
 
-void MatrixStack::translate(Float3& offset)
+void MatrixStack::translate(glm::vec3 offset)
 {
 	glm::mat4 matrix = glm::mat4(1.0f);
 
@@ -34,5 +34,10 @@ void MatrixStack::translate(Float3& offset)
 	matrix[3][1] = offset.y;
 	matrix[3][2] = offset.z;
 
-	mStack.top() = mStack.top() * matrix;
+	applyMatrix(matrix);
+}
+
+void MatrixStack::applyMatrix(glm::mat4 matrix)
+{
+	mStack.top() *= matrix;
 }

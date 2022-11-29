@@ -118,7 +118,7 @@ void init()
 		em.getComponent<PositionComponent>(entity) = { 0, 0, 0 };
 		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0 };
 		em.getComponent<CameraComponent>(entity) = { 80.0f, 0.03f, 1000.0f };
-		em.getComponent<RotationComponent>(entity) = { 0, 0, 0, 1 };
+		em.getComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
 		systemManager::getSystem<RenderSystem>()->setMainCameraEntity(entity);
 	}
@@ -134,8 +134,8 @@ void init()
 
 		Entity entity = em.addEntity(EntityArchetype(5, components));
 		em.getComponent<PositionComponent>(entity) = { 0, -3, 0 };
-		em.getComponent<VelocityComponent>(entity) = { 0, 0, -0.01f };
-		em.getComponent<RotationComponent>(entity) = { 0, 0, 0, 1 };
+		em.getComponent<VelocityComponent>(entity) = { 0, 0, -0.01f, 0.01f, 0, 1, 0 };
+		em.getComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 		em.getComponent<MeshComponent>(entity) = { &mesh };
 	}
 }

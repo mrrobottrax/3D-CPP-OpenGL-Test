@@ -3,6 +3,7 @@
 #include <systemManager.h>
 #include <entityManager.h>
 #include <positionComponent.h>
+#include <rotationComponent.h>
 #include <velocityComponent.h>
 #include <forward_list>
 #include <component.h>
@@ -35,11 +36,15 @@ void VelocitySystem::update()
 			{
 				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
 				PositionComponent& position = em.getComponent<PositionComponent>(entity);
+				RotationComponent& rotation = em.getComponent<RotationComponent>(entity);
 				VelocityComponent& velocity = em.getComponent<VelocityComponent>(entity);
 
 				position.value.x += velocity.linear.x;
 				position.value.y += velocity.linear.y;
 				position.value.z += velocity.linear.z;
+
+				rotation.value = velocity.angular * rotation.value;
+				rotation.value = glm::normalize(rotation.value);
 			}
 		}
 	}

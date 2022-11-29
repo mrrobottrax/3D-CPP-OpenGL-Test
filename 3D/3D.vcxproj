@@ -47,7 +47,6 @@
     <ClInclude Include="entity.h" />
     <ClInclude Include="entityArchetype.h" />
     <ClInclude Include="entityManager.h" />
-    <ClInclude Include="floats.h" />
     <ClInclude Include="gl.h" />
     <ClInclude Include="glutil.cpp" />
     <ClInclude Include="idComponent.h" />

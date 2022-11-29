@@ -1,10 +1,10 @@
 #pragma once
 
-#include <floats.h>
+#include <glm/glm.hpp>
 
 struct PositionComponent
 {
-	Float3 value;
+	glm::vec3 value;
 
 	PositionComponent(float a, float b, float c) : value(a, b, c) {}
 };

@@ -5,6 +5,7 @@
 #include <entityManager.h>
 #include <meshComponent.h>
 #include <positionComponent.h>
+#include <rotationComponent.h>
 #include <main.h>
 
 RenderSystem::RenderSystem(Entity& mainEntity)
@@ -100,9 +101,11 @@ void RenderSystem::update()
 				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
 				MeshComponent& mesh = em.getComponent<MeshComponent>(entity);
 				PositionComponent& position = em.getComponent<PositionComponent>(entity);
+				RotationComponent& rotation = em.getComponent<RotationComponent>(entity);
 
 				mStack.pushCpy();
 				mStack.translate(position.value);
+				mStack.applyMatrix(glm::mat4_cast(rotation.value));
 
 				// Draw object
 				glUniform4f(colorUniform, 1, 1, 1, 1);

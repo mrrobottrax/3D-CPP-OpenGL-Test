@@ -11,8 +11,10 @@ public:
 	void push();
 	void pushCpy();
 	void pop();
-	void translate(Float3&);
 	glm::mat4& top();
+
+	void translate(glm::vec3);
+	void applyMatrix(glm::mat4);
 
 private:
 	std::stack<glm::mat4> mStack;

@@ -146,9 +146,6 @@
     <ClInclude Include="system.h">
       <Filter>Header Files\engine\memory</Filter>
     </ClInclude>
-    <ClInclude Include="floats.h">
-      <Filter>Header Files\common</Filter>
-    </ClInclude>
     <ClInclude Include="rotationComponent.h">
       <Filter>Header Files\engine\components</Filter>
     </ClInclude>
