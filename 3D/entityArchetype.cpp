@@ -25,12 +25,12 @@ EntityArchetype::EntityArchetype(unsigned short componentCount, Component* compo
 	EntityArchetype::entitySize = size;
 }
 
-unsigned short EntityArchetype::getComponentOffset(Component* component)
+unsigned short EntityArchetype::getComponentOffset(Component& component)
 {
 	// Scan through component list
 	for (int i = 0; i < componentCount; ++i)
 	{
-		if (components[i] == *component)
+		if (components[i] == component)
 		{
 			return components[i].offset;
 		}

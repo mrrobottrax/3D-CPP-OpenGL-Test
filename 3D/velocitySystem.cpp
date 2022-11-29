@@ -7,6 +7,7 @@
 #include <velocityComponent.h>
 #include <forward_list>
 #include <component.h>
+#include <timeManager.h>
 
 VelocitySystem::VelocitySystem()
 {
@@ -39,11 +40,21 @@ void VelocitySystem::update()
 				RotationComponent& rotation = em.getComponent<RotationComponent>(entity);
 				VelocityComponent& velocity = em.getComponent<VelocityComponent>(entity);
 
-				position.value.x += velocity.linear.x;
-				position.value.y += velocity.linear.y;
-				position.value.z += velocity.linear.z;
+				position.value += velocity.linear * timeManager::deltaTime;
 
-				rotation.value = velocity.angular * rotation.value;
+				glm::vec3 deltaVec = velocity.angular * timeManager::deltaTime;
+				float length = glm::length(deltaVec);
+
+				// Prevent divide by 0
+				if (length < 1E-16f)
+					continue;
+
+				float half = length / 2.0f;
+				float sin = std::sin(half);
+				float cos = std::cos(half);
+
+				glm::fquat deltaRot(length * cos, deltaVec.x * sin, deltaVec.y * sin, deltaVec.z * sin);
+				rotation.value = deltaRot * rotation.value;
 				rotation.value = glm::normalize(rotation.value);
 			}
 		}

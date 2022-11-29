@@ -28,6 +28,7 @@ RenderSystem::~RenderSystem()
 void RenderSystem::setMainCameraEntity(Entity& entity)
 {
 	RenderSystem::mainCamera = &EntityManager::GetInstance().getComponent<CameraComponent>(entity);
+	RenderSystem::mainCameraEntity = entity;
 	initMainCameraMatrix();
 }
 
@@ -78,11 +79,13 @@ void RenderSystem::update()
 		return;
 	}
 
+	EntityManager& em = EntityManager::GetInstance();
+
 	MatrixStack mStack;
 
 	mStack.push(mainCamera->matrix);
-
-	EntityManager& em = EntityManager::GetInstance();
+	mStack.translate(-em.getComponent<PositionComponent>(mainCameraEntity).value);
+	mStack.applyMatrix(glm::mat4_cast(-em.getComponent<RotationComponent>(mainCameraEntity).value));
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.findChunkArchetypesWithComponent(Component().init<MeshComponent>());
 

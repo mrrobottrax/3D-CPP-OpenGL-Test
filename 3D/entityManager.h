@@ -1,6 +1,5 @@
 #pragma once
 
-#include <system.h>
 #include <forward_list>
 #include <typeindex>
 #include <entityArchetype.h>
@@ -52,7 +51,7 @@ inline T& EntityManager::getComponent(Entity& entity)
 {
 	// Get pointer to component stream
 	char* componentStream = (char*)(entity.chunk + 1);
-	T* tComponentStream = (T*)(componentStream + entity.chunk->maxEntities * entity.archetype->getComponentOffset(&Component().init<T>()));
+	T* tComponentStream = (T*)(componentStream + entity.chunk->maxEntities * entity.archetype->getComponentOffset(Component().init<T>()));
 	T& ref = *(tComponentStream + entity.index);
 	return ref;
 }

@@ -13,6 +13,7 @@ public:
 	~RenderSystem();
 
 	CameraComponent* mainCamera;
+	Entity mainCameraEntity;
 
 	void setMainCameraEntity(Entity&);
 	void initMainCameraMatrix();

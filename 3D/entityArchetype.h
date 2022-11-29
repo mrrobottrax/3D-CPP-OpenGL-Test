@@ -14,7 +14,7 @@ public:
 	unsigned short componentCount;
 	unsigned short entitySize;
 
-	unsigned short getComponentOffset(Component* component);
+	unsigned short getComponentOffset(Component&);
 
 	bool operator==(const EntityArchetype& other)
 	{

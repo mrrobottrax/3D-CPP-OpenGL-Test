@@ -81,6 +81,12 @@
     <ClCompile Include="systemManager.cpp">
       <Filter>Source Files\engine\memory</Filter>
     </ClCompile>
+    <ClCompile Include="timeManager.cpp">
+      <Filter>Source Files\engine\systems</Filter>
+    </ClCompile>
+    <ClCompile Include="freecamSystem.cpp">
+      <Filter>Source Files\engine\systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -148,6 +154,15 @@
     </ClInclude>
     <ClInclude Include="rotationComponent.h">
       <Filter>Header Files\engine\components</Filter>
+    </ClInclude>
+    <ClInclude Include="timeManager.h">
+      <Filter>Header Files\engine\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="freecamComponent.h">
+      <Filter>Header Files\engine\components</Filter>
+    </ClInclude>
+    <ClInclude Include="freecamSystem.h">
+      <Filter>Header Files\engine\systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

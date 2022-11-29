@@ -2,6 +2,7 @@
 
 #include <string>
 #include <typeindex>
+#include <iostream>
 
 struct Component
 {

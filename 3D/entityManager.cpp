@@ -92,7 +92,7 @@ Entity EntityManager::addEntity(EntityArchetype& archetype)
 
 	chunk->numberOfEntities++;
 
-	Entity entity(archetype, *chunk, index);
+	Entity entity(chunkArchetype->archetype, *chunk, index);
 
 	getComponent<IdComponent>(entity).index = nextEntityIndex;
 	nextEntityIndex++;

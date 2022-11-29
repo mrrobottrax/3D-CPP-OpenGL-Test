@@ -12,6 +12,8 @@
 #include <entityManager.h>
 #include <algorithm>
 #include <rotationComponent.h>
+#include <timeManager.h>
+#include <freecamComponent.h>
 
 using namespace std;
 
@@ -112,11 +114,12 @@ void init()
 			Component().init<VelocityComponent>(),
 			Component().init<CameraComponent>(),
 			Component().init<RotationComponent>(),
+			Component().init<FreecamComponent>(),
 		};
 
 		Entity entity = em.addEntity(EntityArchetype(5, components));
 		em.getComponent<PositionComponent>(entity) = { 0, 0, 0 };
-		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0 };
+		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 		em.getComponent<CameraComponent>(entity) = { 80.0f, 0.03f, 1000.0f };
 		em.getComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
@@ -134,8 +137,8 @@ void init()
 
 		Entity entity = em.addEntity(EntityArchetype(5, components));
 		em.getComponent<PositionComponent>(entity) = { 0, -3, 0 };
-		em.getComponent<VelocityComponent>(entity) = { 0, 0, -0.01f, 0.01f, 0, 1, 0 };
-		em.getComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
+		em.getComponent<VelocityComponent>(entity) = { 0, 0, -1, 0, 3.14f, 0 };
+		em.getComponent<RotationComponent>(entity) = { 0.8535534f, 0.3535534f, 0.1464466f, 0.3535534f };
 		em.getComponent<MeshComponent>(entity) = { &mesh };
 	}
 }
@@ -146,6 +149,7 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
+		timeManager::update();
 		glfwPollEvents();
 
 		// Clear the screen
