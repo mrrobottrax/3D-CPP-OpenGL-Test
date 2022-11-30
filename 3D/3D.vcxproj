@@ -34,6 +34,7 @@
     <ClCompile Include="entityManager.cpp" />
     <ClCompile Include="freecamSystem.cpp" />
     <ClCompile Include="inputManager.cpp" />
+    <ClCompile Include="modelLoader.cpp" />
     <ClCompile Include="timeManager.cpp" />
     <ClCompile Include="velocitySystem.cpp" />
     <ClCompile Include="main.cpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="glutil.cpp" />
     <ClInclude Include="idComponent.h" />
     <ClInclude Include="inputManager.h" />
+    <ClInclude Include="modelLoader.h" />
     <ClInclude Include="rotationComponent.h" />
     <ClInclude Include="timeManager.h" />
     <ClInclude Include="velocityComponent.h" />

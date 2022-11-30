@@ -90,6 +90,9 @@
     <ClCompile Include="inputManager.cpp">
       <Filter>Source Files\engine\systems</Filter>
     </ClCompile>
+    <ClCompile Include="modelLoader.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -169,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="inputManager.h">
       <Filter>Header Files\engine\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="modelLoader.h">
+      <Filter>Header Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

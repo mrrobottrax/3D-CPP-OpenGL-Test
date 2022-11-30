@@ -14,6 +14,7 @@
 #include <rotationComponent.h>
 #include <timeManager.h>
 #include <freecamComponent.h>
+#include <modelLoader.h>
 
 using namespace std;
 
@@ -128,6 +129,8 @@ void init()
 	}
 	// Create cube
 	{
+		//modelLoader::loadModel("");
+
 		Component components[] = {
 			Component().init<IdComponent>(),
 			Component().init<PositionComponent>(),
