@@ -101,6 +101,10 @@ void FreecamSystem::update()
 
 					velocity.linear *= m;
 				}
+				else
+				{
+					velocity.linear *= 0;
+				}
 
 				// Acceleration
 				velocity.linear += moveVector * freeCam.acceleration * timeManager::deltaTime;

@@ -27,6 +27,7 @@ using namespace std;
 // TODO: Remove
 // Cube mesh
 MeshObject* monkeyMesh = new MeshObject();
+MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
 GLuint shaderProgram;
@@ -83,7 +84,7 @@ void init()
 		};
 
 		Entity entity = em.addEntity(EntityArchetype(6, components));
-		em.getComponent<PositionComponent>(entity) = { 0, 0, 0 };
+		em.getComponent<PositionComponent>(entity) = { 0, 2, 0 };
 		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 		em.getComponent<CameraComponent>(entity) = { 80.0f, 0.03f, 1000.0f };
 		em.getComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
@@ -91,7 +92,26 @@ void init()
 
 		systemManager::getSystem<RenderSystem>()->setMainCameraEntity(entity);
 	}
-	// Create cube
+	// Create monkey
+	{
+		Component components[] = {
+			Component().init<IdComponent>(),
+			Component().init<PositionComponent>(),
+			Component().init<VelocityComponent>(),
+			Component().init<MeshComponent>(),
+			Component().init<RotationComponent>(),
+		};
+
+		Entity entity = em.addEntity(EntityArchetype(5, components));
+		em.getComponent<PositionComponent>(entity) = { 0, 2, -4 };
+		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 3.14f / 4.0f, 0 };
+		em.getComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
+
+		const char* path = "data/monkey.glb";
+		modelLoader::loadModel(*monkeyMesh, path);
+		em.getComponent<MeshComponent>(entity) = { monkeyMesh };
+	}
+	// Create map
 	{
 		Component components[] = {
 			Component().init<IdComponent>(),
@@ -103,12 +123,12 @@ void init()
 
 		Entity entity = em.addEntity(EntityArchetype(5, components));
 		em.getComponent<PositionComponent>(entity) = { 0, 0, -4 };
-		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 3.14f / 4.0f, 0 };
+		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 		em.getComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
-		const char* path = "data/monkey.glb";
-		modelLoader::loadModel(*monkeyMesh, path);
-		em.getComponent<MeshComponent>(entity) = { monkeyMesh };
+		const char* path = "data/test_map.glb";
+		modelLoader::loadModel(*testMap, path);
+		em.getComponent<MeshComponent>(entity) = { testMap };
 	}
 	// Create cube
 	{
@@ -121,11 +141,11 @@ void init()
 		};
 
 		Entity entity = em.addEntity(EntityArchetype(5, components));
-		em.getComponent<PositionComponent>(entity) = { 0, 8, -4 };
-		em.getComponent<VelocityComponent>(entity) = { 0, -0.5f, 0, 0.5f, -3.14f / 8.0f, 0 };
-		em.getComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
+		em.getComponent<PositionComponent>(entity) = { -6, 0, 0 };
+		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
+		em.getComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
 
-		const char* path = "data/test_model2.glb";
+		const char* path = "data/teapot.glb";
 		modelLoader::loadModel(*testMesh, path);
 		em.getComponent<MeshComponent>(entity) = { testMesh };
 	}
@@ -154,6 +174,7 @@ int main()
 
 	delete monkeyMesh;
 	delete testMesh;
+	delete testMap;
 
 	systemManager::deleteAllSystems();
 	glfwTerminate();
