@@ -92,6 +92,9 @@ void RenderSystem::update()
 	if (archetypes == nullptr)
 		return;
 
+	glUseProgram(shaderProgram);
+	glBindVertexArray(vao);
+
 	// For each archetype
 	for (std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
 	{
@@ -121,6 +124,9 @@ void RenderSystem::update()
 			}
 		}
 	}
+
+	glBindVertexArray(0);
+	glUseProgram(0);
 
 	delete archetypes;
 

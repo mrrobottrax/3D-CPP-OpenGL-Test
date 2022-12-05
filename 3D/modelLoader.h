@@ -1,22 +1,9 @@
 #pragma once
 
-#include <tinygltf/tiny_gltf.h>
-#include <mutex>
+#include <iostream>
+#include <meshObject.h>
 
-class ModelLoader {
-
-private:
-	static ModelLoader* instance;
-	static std::mutex mutex;
-
-public:
-	//~ModelLoader();
-
-	// Singleton
-	//ModelLoader(ModelLoader& other) = delete;
-	//void operator=(const ModelLoader&) = delete;
-	//static ModelLoader& GetInstance();
-
-private:
-	tinygltf::TinyGLTF loader;
-};
+namespace modelLoader {
+	void loadModel(MeshObject&, const char*);
+	unsigned int parseUInt32(std::ifstream&);
+}

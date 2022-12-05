@@ -24,6 +24,7 @@ using namespace std;
 #include <crtdbg.h>
 
 // TEMP
+// TODO: Remove
 // Cube mesh
 float verts[] = {
 	-1, -1, -1,
@@ -129,8 +130,6 @@ void init()
 	}
 	// Create cube
 	{
-		//modelLoader::loadModel("");
-
 		Component components[] = {
 			Component().init<IdComponent>(),
 			Component().init<PositionComponent>(),
@@ -143,6 +142,10 @@ void init()
 		em.getComponent<PositionComponent>(entity) = { 0, -3, 0 };
 		em.getComponent<VelocityComponent>(entity) = { 0, 0, -1, 0, 3.14f, 0 };
 		em.getComponent<RotationComponent>(entity) = { 0.8535534f, 0.3535534f, 0.1464466f, 0.3535534f };
+
+		const char* path = "data/test_model.glb";
+		modelLoader::loadModel(mesh, path);
+
 		em.getComponent<MeshComponent>(entity) = { &mesh };
 	}
 }
@@ -160,14 +163,7 @@ int main()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgram);
-		
-		glBindVertexArray(vao);
-
 		systemManager::updateSystems();
-
-		glBindVertexArray(0);
-		glUseProgram(0);
 
 		glfwSwapBuffers(window);
 	}
