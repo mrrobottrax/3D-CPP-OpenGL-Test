@@ -24,7 +24,7 @@ const std::string strVertexShader(
 	"{\n"
 	"	vec4 cameraPos = position + vec4(offset.x, offset.y, offset.z, 0.0);\n"
 	"	gl_Position = perspectiveMatrix * cameraPos;\n"
-	"	theColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z), 1);\n"
+	"	theColor = vec4(normal.x, normal.y, normal.z, 1.0);\n"
 	"}"
 );
 

@@ -34,6 +34,7 @@
     <ClCompile Include="entityManager.cpp" />
     <ClCompile Include="freecamSystem.cpp" />
     <ClCompile Include="inputManager.cpp" />
+    <ClCompile Include="meshObject.cpp" />
     <ClCompile Include="modelLoader.cpp" />
     <ClCompile Include="timeManager.cpp" />
     <ClCompile Include="velocitySystem.cpp" />

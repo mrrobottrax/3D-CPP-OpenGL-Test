@@ -71,6 +71,8 @@ namespace modelLoader {
 		}
 		mesh.normals = normals;
 
+		mesh.genBuffers();
+
 		delete[] str_json;
 		f.close();
 	}

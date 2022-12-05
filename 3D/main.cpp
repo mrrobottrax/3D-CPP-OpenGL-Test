@@ -26,12 +26,10 @@ using namespace std;
 // TEMP
 // TODO: Remove
 // Cube mesh
-MeshObject mesh;
+MeshObject* monkeyMesh = new MeshObject();
+MeshObject* testMesh = new MeshObject();
 
 GLuint shaderProgram;
-GLuint positionBufferObject;
-GLuint normalBufferObject;
-GLuint elementBufferObject;
 GLuint vao;
 GLuint offsetUniform;
 GLuint colorUniform;
@@ -39,6 +37,35 @@ GLuint matrixUniform;
 
 void init()
 {
+	// Init OpenGL
+	initializeWindow();
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glDepthFunc(GL_LEQUAL);
+	glDepthRange(0.0f, 1.0f);
+
+	std::vector<GLuint> shaderList;
+	shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertexShader));
+	shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragmentShader));
+
+	shaderProgram = CreateProgram(shaderList);
+	std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
+
+	offsetUniform = glGetUniformLocation(shaderProgram, "offset");
+	colorUniform = glGetUniformLocation(shaderProgram, "color");
+	matrixUniform = glGetUniformLocation(shaderProgram, "perspectiveMatrix");
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
 	// Init systems
 	systemManager::registerSystems();
 
@@ -75,65 +102,35 @@ void init()
 		};
 
 		Entity entity = em.addEntity(EntityArchetype(5, components));
-		em.getComponent<PositionComponent>(entity) = { 0, -3, 0 };
-		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 3.14f / 2.0f, 0 };
+		em.getComponent<PositionComponent>(entity) = { 0, 0, -4 };
+		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 3.14f / 4.0f, 0 };
 		em.getComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
-		const char* path = "data/test_model.glb";
-		modelLoader::loadModel(mesh, path);
-		em.getComponent<MeshComponent>(entity) = { &mesh };
+		const char* path = "data/monkey.glb";
+		modelLoader::loadModel(*monkeyMesh, path);
+		em.getComponent<MeshComponent>(entity) = { monkeyMesh };
+	}
+	// Create cube
+	{
+		Component components[] = {
+			Component().init<IdComponent>(),
+			Component().init<PositionComponent>(),
+			Component().init<VelocityComponent>(),
+			Component().init<MeshComponent>(),
+			Component().init<RotationComponent>(),
+		};
+
+		Entity entity = em.addEntity(EntityArchetype(5, components));
+		em.getComponent<PositionComponent>(entity) = { 0, 8, -4 };
+		em.getComponent<VelocityComponent>(entity) = { 0, -0.5f, 0, 0.5f, -3.14f / 8.0f, 0 };
+		em.getComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
+
+		const char* path = "data/test_model2.glb";
+		modelLoader::loadModel(*testMesh, path);
+		em.getComponent<MeshComponent>(entity) = { testMesh };
 	}
 
-	// Init OpenGL
-	initializeWindow();
-
-	std::vector<GLuint> shaderList;
-	shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertexShader));
-	shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragmentShader));
-
-	shaderProgram = CreateProgram(shaderList);
-	std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
-
-	offsetUniform = glGetUniformLocation(shaderProgram, "offset");
-	colorUniform = glGetUniformLocation(shaderProgram, "color");
-	matrixUniform = glGetUniformLocation(shaderProgram, "perspectiveMatrix");
-
-	glGenBuffers(1, &positionBufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, mesh.vertCount * sizeof(float), mesh.verts, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glGenBuffers(1, &normalBufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, mesh.normalCount * sizeof(float), mesh.normals, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glGenBuffers(1, &elementBufferObject);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indicesCount * sizeof(GLshort), mesh.indices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, normalBufferObject);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
-
 	glBindVertexArray(0);
-
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
-
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
-	glDepthRange(0.0f, 1.0f);
 }
 
 int main()
@@ -155,8 +152,8 @@ int main()
 		glfwSwapBuffers(window);
 	}
 
-	delete[] mesh.indices;
-	delete[] mesh.verts;
+	delete monkeyMesh;
+	delete testMesh;
 
 	systemManager::deleteAllSystems();
 	glfwTerminate();

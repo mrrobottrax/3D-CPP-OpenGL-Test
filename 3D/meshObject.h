@@ -5,6 +5,10 @@
 
 struct MeshObject
 {
+	GLuint positionBufferObject;
+	GLuint normalBufferObject;
+	GLuint elementBufferObject;
+
 	unsigned short vertCount;
 	unsigned short normalCount;
 	unsigned short indicesCount;
@@ -12,5 +16,8 @@ struct MeshObject
 	float* normals;
 	GLshort* indices;
 
-	MeshObject() : vertCount(0), normalCount(0), indicesCount(0), verts(nullptr), indices(nullptr), normals(nullptr) {};
+	~MeshObject();
+	MeshObject() : vertCount(0), normalCount(0), indicesCount(0), verts(nullptr), indices(nullptr), normals(nullptr), positionBufferObject(0), normalBufferObject(0), elementBufferObject(0) {};
+
+	void genBuffers();
 };

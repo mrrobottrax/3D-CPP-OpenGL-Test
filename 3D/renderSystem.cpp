@@ -114,6 +114,12 @@ void RenderSystem::update()
 				mStack.applyMatrix(glm::mat4_cast(rotation.value));
 
 				// Draw object
+				glBindBuffer(GL_ARRAY_BUFFER, mesh.mesh->positionBufferObject);
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+				glBindBuffer(GL_ARRAY_BUFFER, mesh.mesh->normalBufferObject);
+				glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, 0);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.mesh->elementBufferObject);
+
 				glUniform4f(colorUniform, 1, 1, 1, 1);
 				glUniform3f(offsetUniform, 0, 0, 0);
 				glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &mStack.top()[0][0]);
