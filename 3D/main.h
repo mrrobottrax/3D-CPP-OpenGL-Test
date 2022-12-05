@@ -15,6 +15,7 @@ extern GLuint matrixUniform;
 const std::string strVertexShader(
 	"#version 330\n"
 	"layout(location = 0) in vec4 position;\n"
+	"layout(location = 1) in vec3 normal;\n"
 	"uniform vec4 color;\n"
 	"smooth out vec4 theColor;\n"
 	"uniform vec3 offset;\n"
@@ -23,7 +24,7 @@ const std::string strVertexShader(
 	"{\n"
 	"	vec4 cameraPos = position + vec4(offset.x, offset.y, offset.z, 0.0);\n"
 	"	gl_Position = perspectiveMatrix * cameraPos;\n"
-	"	theColor = color;\n"
+	"	theColor = vec4(abs(normal.x), abs(normal.y), abs(normal.z), 1);\n"
 	"}"
 );
 
