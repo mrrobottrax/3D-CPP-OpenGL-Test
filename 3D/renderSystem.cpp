@@ -120,9 +120,7 @@ void RenderSystem::update()
 				glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, 0);
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.mesh->elementBufferObject);
 
-				glUniform4f(colorUniform, 1, 1, 1, 1);
-				glUniform3f(offsetUniform, 0, 0, 0);
-				glUniformMatrix4fv(matrixUniform, 1, GL_FALSE, &mStack.top()[0][0]);
+				glUniformMatrix4fv(perspMatrixUniform, 1, GL_FALSE, &mStack.top()[0][0]);
 
 				glDrawElements(GL_TRIANGLES, mesh.mesh->indicesCount, GL_UNSIGNED_SHORT, 0);
 

@@ -36,6 +36,7 @@
     <ClCompile Include="inputManager.cpp" />
     <ClCompile Include="meshObject.cpp" />
     <ClCompile Include="modelLoader.cpp" />
+    <ClCompile Include="shaderLoader.cpp" />
     <ClCompile Include="timeManager.cpp" />
     <ClCompile Include="velocitySystem.cpp" />
     <ClCompile Include="main.cpp" />
@@ -60,6 +61,7 @@
     <ClInclude Include="inputManager.h" />
     <ClInclude Include="modelLoader.h" />
     <ClInclude Include="rotationComponent.h" />
+    <ClInclude Include="shaderLoader.h" />
     <ClInclude Include="timeManager.h" />
     <ClInclude Include="velocityComponent.h" />
     <ClInclude Include="velocitySystem.h" />

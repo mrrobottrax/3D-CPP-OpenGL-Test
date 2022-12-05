@@ -96,6 +96,9 @@
     <ClCompile Include="meshObject.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
+    <ClCompile Include="shaderLoader.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -177,6 +180,9 @@
       <Filter>Header Files\engine\systems</Filter>
     </ClInclude>
     <ClInclude Include="modelLoader.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="shaderLoader.h">
       <Filter>Header Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
