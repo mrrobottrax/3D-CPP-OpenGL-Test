@@ -33,7 +33,13 @@ MeshObject* testMesh = new MeshObject();
 
 GLuint shaderProgram;
 GLuint vao;
-GLuint perspMatrixUniform;
+GLuint perspectiveMatrix;
+GLuint positionMatrix;
+GLuint normalMatrix;
+GLuint sunDirUnif;
+GLuint sunIntensityUnif;
+GLuint ambientIntensityUnif;
+GLuint colorUnif;
 
 void init()
 {
@@ -60,7 +66,13 @@ void init()
 	shaderProgram = CreateProgram(shaderList);
 	std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
 
-	perspMatrixUniform = glGetUniformLocation(shaderProgram, "matrix");
+	perspectiveMatrix = glGetUniformLocation(shaderProgram, "perspectiveMatrix");
+	positionMatrix = glGetUniformLocation(shaderProgram, "positionMatrix");
+	normalMatrix = glGetUniformLocation(shaderProgram, "normalMatrix");
+	sunDirUnif = glGetUniformLocation(shaderProgram, "sunDir");
+	sunIntensityUnif = glGetUniformLocation(shaderProgram, "sunIntensity");
+	ambientIntensityUnif = glGetUniformLocation(shaderProgram, "ambientIntensity");
+	colorUnif = glGetUniformLocation(shaderProgram, "diffuseColor");
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);

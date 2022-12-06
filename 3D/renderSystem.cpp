@@ -81,19 +81,32 @@ void RenderSystem::update()
 
 	EntityManager& em = EntityManager::GetInstance();
 
-	MatrixStack mStack;
-
-	mStack.push(mainCamera->matrix);
-	mStack.applyMatrix(glm::mat4_cast(-em.getComponent<RotationComponent>(mainCameraEntity).value));
-	mStack.translate(-em.getComponent<PositionComponent>(mainCameraEntity).value);
-
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.findChunkArchetypesWithComponent(Component().init<MeshComponent>());
-
 	if (archetypes == nullptr)
 		return;
 
 	glUseProgram(shaderProgram);
 	glBindVertexArray(vao);
+
+	MatrixStack mStack;
+	glm::mat3 normalMat;
+
+	mStack.push();
+	mStack.applyMatrix(glm::mat4_cast(-em.getComponent<RotationComponent>(mainCameraEntity).value));
+	mStack.translate(-em.getComponent<PositionComponent>(mainCameraEntity).value);
+
+	normalMat = mStack.top();
+
+	glm::vec3 sunDir(1, 2, .2f);
+	sunDir = normalMat * sunDir;
+	sunDir = glm::normalize(sunDir);
+
+	float sunIntensity = 1.5f;
+	float ambientIntensity = 0.05f;
+
+	glUniformMatrix4fv(perspectiveMatrix, 1, GL_FALSE, &mainCamera->matrix[0][0]);
+	glUniform1f(sunIntensityUnif, sunIntensity);
+	glUniform1f(ambientIntensityUnif, ambientIntensity);
 
 	// For each archetype
 	for (std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
@@ -113,6 +126,8 @@ void RenderSystem::update()
 				mStack.translate(position.value);
 				mStack.applyMatrix(glm::mat4_cast(rotation.value));
 
+				normalMat = mStack.top();
+
 				// Draw object
 				glBindBuffer(GL_ARRAY_BUFFER, mesh.mesh->positionBufferObject);
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -120,7 +135,10 @@ void RenderSystem::update()
 				glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, 0);
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.mesh->elementBufferObject);
 
-				glUniformMatrix4fv(perspMatrixUniform, 1, GL_FALSE, &mStack.top()[0][0]);
+				glUniformMatrix4fv(positionMatrix, 1, GL_FALSE, &mStack.top()[0][0]);
+				glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, &normalMat[0][0]);
+				glUniform3f(sunDirUnif, sunDir.x, sunDir.y, sunDir.z);
+				glUniform4f(colorUnif, 1, 1, 1, 1);
 
 				glDrawElements(GL_TRIANGLES, mesh.mesh->indicesCount, GL_UNSIGNED_SHORT, 0);
 
@@ -129,10 +147,10 @@ void RenderSystem::update()
 		}
 	}
 
+	mStack.pop();
+
 	glBindVertexArray(0);
 	glUseProgram(0);
 
 	delete archetypes;
-
-	mStack.pop();
 }
