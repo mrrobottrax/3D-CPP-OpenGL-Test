@@ -101,8 +101,8 @@ void RenderSystem::update()
 	sunDir = normalMat * sunDir;
 	sunDir = glm::normalize(sunDir);
 
-	float sunIntensity = 1.5f;
-	float ambientIntensity = 0.05f;
+	float sunIntensity = 1.3f;
+	float ambientIntensity = 0.1f;
 
 	glUniformMatrix4fv(perspectiveMatrix, 1, GL_FALSE, &mainCamera->matrix[0][0]);
 	glUniform1f(sunIntensityUnif, sunIntensity);

@@ -143,7 +143,7 @@ void init()
 		modelLoader::loadModel(*testMap, path);
 		em.getComponent<MeshComponent>(entity) = { testMap };
 	}
-	// Create cube
+	// Create teapot
 	{
 		Component components[] = {
 			Component().init<IdComponent>(),
@@ -155,7 +155,7 @@ void init()
 
 		Entity entity = em.addEntity(EntityArchetype(5, components));
 		em.getComponent<PositionComponent>(entity) = { -6, 0, 0 };
-		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
+		em.getComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, -0.1f, 0 };
 		em.getComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
 
 		const char* path = "data/models/teapot.glb";
