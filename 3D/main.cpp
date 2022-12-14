@@ -56,8 +56,8 @@ void init()
 	glDepthRange(0.0f, 1.0f);
 
 	std::vector<GLuint> shaderList;
-	const char* strVertShader = shaderLoader::loadShader("data/shaders/standard.vert");
-	const char* strFragShader = shaderLoader::loadShader("data/shaders/standard.frag");
+	const char* strVertShader = shaderLoader::loadShader("data/shaders/normal.vert");
+	const char* strFragShader = shaderLoader::loadShader("data/shaders/normal.frag");
 	shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
 	shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
 	delete[] strVertShader;
