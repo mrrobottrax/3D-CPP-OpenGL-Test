@@ -92,13 +92,11 @@ void RenderSystem::update()
 	glm::mat3 normalMat;
 
 	mStack.push();
+	normalMat = mStack.top();
 	mStack.applyMatrix(glm::mat4_cast(-em.getComponent<RotationComponent>(mainCameraEntity).value));
 	mStack.translate(-em.getComponent<PositionComponent>(mainCameraEntity).value);
 
-	normalMat = mStack.top();
-
 	glm::vec3 sunDir(1, 2, .2f);
-	sunDir = normalMat * sunDir;
 	sunDir = glm::normalize(sunDir);
 
 	float sunIntensity = 1.3f;
@@ -107,6 +105,8 @@ void RenderSystem::update()
 	glUniformMatrix4fv(perspectiveMatrix, 1, GL_FALSE, &mainCamera->matrix[0][0]);
 	glUniform1f(sunIntensityUnif, sunIntensity);
 	glUniform1f(ambientIntensityUnif, ambientIntensity);
+
+	glm::mat3 newNormalMat;
 
 	// For each archetype
 	for (std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
@@ -126,7 +126,7 @@ void RenderSystem::update()
 				mStack.translate(position.value);
 				mStack.applyMatrix(glm::mat4_cast(rotation.value));
 
-				normalMat = mStack.top();
+				newNormalMat = glm::mat3_cast(rotation.value) * normalMat;
 
 				// Draw object
 				glBindBuffer(GL_ARRAY_BUFFER, mesh.mesh->positionBufferObject);
@@ -136,7 +136,7 @@ void RenderSystem::update()
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.mesh->elementBufferObject);
 
 				glUniformMatrix4fv(positionMatrix, 1, GL_FALSE, &mStack.top()[0][0]);
-				glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, &normalMat[0][0]);
+				glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, &newNormalMat[0][0]);
 				glUniform3f(sunDirUnif, sunDir.x, sunDir.y, sunDir.z);
 				glUniform4f(colorUnif, 1, 1, 1, 1);
 

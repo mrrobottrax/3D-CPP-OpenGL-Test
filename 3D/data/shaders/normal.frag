@@ -5,5 +5,5 @@ void main()
 {
 	vec3 newNormal = normalize(outNormal);
 
-	outputColor = vec4(newNormal.x, newNormal.y, newNormal.z, 1);
+	outputColor = vec4(abs(newNormal.x), abs(newNormal.y), abs(newNormal.z), 1);
 }

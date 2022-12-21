@@ -19,5 +19,5 @@ void main()
 {
 	gl_Position = perspectiveMatrix * (positionMatrix * vec4(position, 1.0));
 
-	outNormal = normal;
+	outNormal = normalMatrix * normal;
 }
