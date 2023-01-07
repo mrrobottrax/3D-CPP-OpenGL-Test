@@ -1,37 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.3.32929.385
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3D", "3D\3D.vcxproj", "{FFBBC9BB-0563-4C54-A725-68193B1CD682}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3D", "3D\3D.vcxproj", "{1C715900-08FD-870B-71AB-880B5D56880B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Desktop|x64 = Desktop|x64
-		Desktop|x86 = Desktop|x86
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
+		Dist|x64 = Dist|x64
+		Test|x64 = Test|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Debug|x64.ActiveCfg = Debug|x64
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Debug|x64.Build.0 = Debug|x64
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Debug|x86.ActiveCfg = Debug|Win32
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Debug|x86.Build.0 = Debug|Win32
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Desktop|x64.ActiveCfg = Desktop|x64
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Desktop|x64.Build.0 = Desktop|x64
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Desktop|x86.ActiveCfg = Desktop|Win32
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Desktop|x86.Build.0 = Desktop|Win32
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Release|x64.ActiveCfg = Release|x64
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Release|x64.Build.0 = Release|x64
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Release|x86.ActiveCfg = Release|Win32
-		{FFBBC9BB-0563-4C54-A725-68193B1CD682}.Release|x86.Build.0 = Release|Win32
+		{1C715900-08FD-870B-71AB-880B5D56880B}.Debug|x64.ActiveCfg = Debug|x64
+		{1C715900-08FD-870B-71AB-880B5D56880B}.Debug|x64.Build.0 = Debug|x64
+		{1C715900-08FD-870B-71AB-880B5D56880B}.Dist|x64.ActiveCfg = Dist|x64
+		{1C715900-08FD-870B-71AB-880B5D56880B}.Dist|x64.Build.0 = Dist|x64
+		{1C715900-08FD-870B-71AB-880B5D56880B}.Test|x64.ActiveCfg = Test|x64
+		{1C715900-08FD-870B-71AB-880B5D56880B}.Test|x64.Build.0 = Test|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {AA730752-72D8-4802-9632-5847E92D77E6}
 	EndGlobalSection
 EndGlobal
