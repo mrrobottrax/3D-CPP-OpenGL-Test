@@ -49,7 +49,6 @@
     <ClCompile Include="src\velocitySystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="glutil.h" />
     <ClInclude Include="src\cameraComponent.h" />
     <ClInclude Include="src\chunk.h" />
     <ClInclude Include="src\chunkArchetypeElement.h" />
@@ -61,6 +60,7 @@
     <ClInclude Include="src\freecamComponent.h" />
     <ClInclude Include="src\freecamSystem.h" />
     <ClInclude Include="src\gl.h" />
+    <ClInclude Include="src\glutil.h" />
     <ClInclude Include="src\idComponent.h" />
     <ClInclude Include="src\init.h" />
     <ClInclude Include="src\inputManager.h" />

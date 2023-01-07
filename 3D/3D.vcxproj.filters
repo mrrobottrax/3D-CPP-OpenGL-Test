@@ -158,7 +158,7 @@
     <ClInclude Include="src\velocitySystem.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="glutil.h">
+    <ClInclude Include="src\glutil.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
