@@ -27,57 +27,62 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="chunkArchetypeElement.cpp" />
-    <ClCompile Include="component.cpp" />
-    <ClCompile Include="entity.cpp" />
-    <ClCompile Include="entityArchetype.cpp" />
-    <ClCompile Include="entityManager.cpp" />
-    <ClCompile Include="freecamSystem.cpp" />
-    <ClCompile Include="inputManager.cpp" />
-    <ClCompile Include="meshObject.cpp" />
-    <ClCompile Include="modelLoader.cpp" />
-    <ClCompile Include="shaderLoader.cpp" />
-    <ClCompile Include="timeManager.cpp" />
-    <ClCompile Include="velocitySystem.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="matrixStack.cpp" />
-    <ClCompile Include="renderSystem.cpp" />
-    <ClCompile Include="system.cpp" />
-    <ClCompile Include="systemManager.cpp" />
+    <ClCompile Include="src\chunkArchetypeElement.cpp" />
+    <ClCompile Include="src\component.cpp" />
+    <ClCompile Include="src\entity.cpp" />
+    <ClCompile Include="src\entityArchetype.cpp" />
+    <ClCompile Include="src\entityManager.cpp" />
+    <ClCompile Include="src\freecamSystem.cpp" />
+    <ClCompile Include="src\gameObject.cpp" />
+    <ClCompile Include="src\glutil.cpp" />
+    <ClCompile Include="src\inputManager.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\matrixStack.cpp" />
+    <ClCompile Include="src\meshObject.cpp" />
+    <ClCompile Include="src\modelLoader.cpp" />
+    <ClCompile Include="src\renderSystem.cpp" />
+    <ClCompile Include="src\shaderLoader.cpp" />
+    <ClCompile Include="src\system.cpp" />
+    <ClCompile Include="src\systemManager.cpp" />
+    <ClCompile Include="src\timeManager.cpp" />
+    <ClCompile Include="src\transform.cpp" />
+    <ClCompile Include="src\velocitySystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cameraComponent.h" />
-    <ClInclude Include="chunk.h" />
-    <ClInclude Include="chunkArchetypeElement.h" />
-    <ClInclude Include="component.h" />
-    <ClInclude Include="entity.h" />
-    <ClInclude Include="entityArchetype.h" />
-    <ClInclude Include="entityManager.h" />
-    <ClInclude Include="freecamComponent.h" />
-    <ClInclude Include="freecamSystem.h" />
-    <ClInclude Include="gl.h" />
-    <ClInclude Include="glutil.cpp" />
-    <ClInclude Include="idComponent.h" />
-    <ClInclude Include="inputManager.h" />
-    <ClInclude Include="modelLoader.h" />
-    <ClInclude Include="rotationComponent.h" />
-    <ClInclude Include="shaderLoader.h" />
-    <ClInclude Include="timeManager.h" />
-    <ClInclude Include="velocityComponent.h" />
-    <ClInclude Include="velocitySystem.h" />
-    <ClInclude Include="main.h" />
-    <ClInclude Include="matrixStack.h" />
-    <ClInclude Include="meshComponent.h" />
-    <ClInclude Include="meshObject.h" />
-    <ClInclude Include="renderSystem.h" />
-    <ClInclude Include="shader.h" />
-    <ClInclude Include="system.h" />
-    <ClInclude Include="systemManager.h" />
-    <ClInclude Include="positionComponent.h" />
+    <ClInclude Include="glutil.h" />
+    <ClInclude Include="src\cameraComponent.h" />
+    <ClInclude Include="src\chunk.h" />
+    <ClInclude Include="src\chunkArchetypeElement.h" />
+    <ClInclude Include="src\component.h" />
+    <ClInclude Include="src\entity.h" />
+    <ClInclude Include="src\entityArchetype.h" />
+    <ClInclude Include="src\entityManager.h" />
+    <ClInclude Include="src\floats.h" />
+    <ClInclude Include="src\freecamComponent.h" />
+    <ClInclude Include="src\freecamSystem.h" />
+    <ClInclude Include="src\gl.h" />
+    <ClInclude Include="src\idComponent.h" />
+    <ClInclude Include="src\init.h" />
+    <ClInclude Include="src\inputManager.h" />
+    <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\matrixStack.h" />
+    <ClInclude Include="src\meshComponent.h" />
+    <ClInclude Include="src\meshObject.h" />
+    <ClInclude Include="src\modelLoader.h" />
+    <ClInclude Include="src\positionComponent.h" />
+    <ClInclude Include="src\renderSystem.h" />
+    <ClInclude Include="src\rotationComponent.h" />
+    <ClInclude Include="src\shader.h" />
+    <ClInclude Include="src\shaderLoader.h" />
+    <ClInclude Include="src\system.h" />
+    <ClInclude Include="src\systemManager.h" />
+    <ClInclude Include="src\timeManager.h" />
+    <ClInclude Include="src\velocityComponent.h" />
+    <ClInclude Include="src\velocitySystem.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="bin\glew32s.lib" />
-    <Library Include="bin\glfw3.lib" />
+    <Library Include="lib\glew32s.lib" />
+    <Library Include="lib\glfw3.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -174,14 +179,14 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir);$(ProjectDir)src</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)bin</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -190,7 +195,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir);$(ProjectDir)src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -198,7 +203,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)bin</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Desktop|x64'">
@@ -212,10 +217,10 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Desktop|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir);$(ProjectDir)src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(ProjectDir)bin</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

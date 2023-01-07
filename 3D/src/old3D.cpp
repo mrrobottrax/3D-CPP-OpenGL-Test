@@ -332,7 +332,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(theProgram);
-        glUniform2f(offsetUniform, sinf(glfwGetTime()) * 0.7f, cosf(glfwGetTime()) * 0.7f);
+        glUniform2f(offsetUniform, sinf((float)glfwGetTime()) * 0.7f, cosf((float)glfwGetTime()) * 0.7f);
 
         size_t colorData = sizeof(vertexPositions) / 2;
         glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);

@@ -1,10 +1,4 @@
-#include <gl.h>
-
-#include <iostream>
-#include <renderSystem.h>
-#include <systemManager.h>
-#include <vector>
-#include <inputManager.h>
+#include <glutil.h>
 
 GLFWwindow* window;
 
@@ -63,7 +57,7 @@ void initializeWindow()
 	glfwSetWindowSizeCallback(window, window_size_callback);
 
 	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);    // Vsync
+	glfwSwapInterval(0);    // Vsync
 
 	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions 
 	glewExperimental = GL_TRUE;

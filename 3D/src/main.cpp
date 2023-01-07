@@ -1,5 +1,3 @@
-#include <glutil.cpp>
-
 #include <main.h>
 
 #include <systemManager.h>

@@ -1,197 +1,173 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="src">
+      <UniqueIdentifier>{6defef62-87d9-40fb-ba2c-22080f8e2264}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="bin">
-      <UniqueIdentifier>{db42242c-4695-4f80-b8e0-cb33b59f1767}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\engine">
-      <UniqueIdentifier>{1ea24871-7210-462d-b9c0-0d6233051380}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\engine\components">
-      <UniqueIdentifier>{b54045c1-10f3-4be8-afa7-82cb7fef2065}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\engine\systems">
-      <UniqueIdentifier>{6ee105f2-f601-4035-9a94-3f72c8f4c208}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\common">
-      <UniqueIdentifier>{2af777f4-5b5f-4173-bf05-171deaf19dac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\engine">
-      <UniqueIdentifier>{5fda1752-a25e-45cc-9d55-31b75ee62741}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\engine\systems">
-      <UniqueIdentifier>{fb86073b-ff66-4008-9af0-ed4507de2728}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\common">
-      <UniqueIdentifier>{2caea547-1434-48a2-bcfc-a90e08a4c8e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\common\gl">
-      <UniqueIdentifier>{38a26b61-c10d-4cc3-97e1-93b6d651c4f3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\engine\memory">
-      <UniqueIdentifier>{162b515b-34bf-4771-a7ac-8bd21620676b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\engine\memory">
-      <UniqueIdentifier>{8d42d344-d6af-438f-b400-e84e5ae6249e}</UniqueIdentifier>
+    <Filter Include="lib">
+      <UniqueIdentifier>{919367a7-8d92-45dc-9450-0e548dc7e240}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="renderSystem.cpp">
-      <Filter>Source Files\engine\systems</Filter>
+    <ClCompile Include="src\chunkArchetypeElement.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="matrixStack.cpp">
-      <Filter>Source Files\common</Filter>
+    <ClCompile Include="src\component.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="velocitySystem.cpp">
-      <Filter>Source Files\engine\systems</Filter>
+    <ClCompile Include="src\entity.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="entityManager.cpp">
-      <Filter>Source Files\engine\systems</Filter>
+    <ClCompile Include="src\entityArchetype.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="chunkArchetypeElement.cpp">
-      <Filter>Source Files\engine\memory</Filter>
+    <ClCompile Include="src\entityManager.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="component.cpp">
-      <Filter>Source Files\engine\memory</Filter>
+    <ClCompile Include="src\freecamSystem.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="entity.cpp">
-      <Filter>Source Files\engine\memory</Filter>
+    <ClCompile Include="src\gameObject.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="entityArchetype.cpp">
-      <Filter>Source Files\engine\memory</Filter>
+    <ClCompile Include="src\inputManager.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="system.cpp">
-      <Filter>Source Files\engine\memory</Filter>
+    <ClCompile Include="src\matrixStack.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="systemManager.cpp">
-      <Filter>Source Files\engine\memory</Filter>
+    <ClCompile Include="src\meshObject.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="timeManager.cpp">
-      <Filter>Source Files\engine\systems</Filter>
+    <ClCompile Include="src\modelLoader.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="freecamSystem.cpp">
-      <Filter>Source Files\engine\systems</Filter>
+    <ClCompile Include="src\renderSystem.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="inputManager.cpp">
-      <Filter>Source Files\engine\systems</Filter>
+    <ClCompile Include="src\shaderLoader.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="modelLoader.cpp">
-      <Filter>Source Files\engine</Filter>
+    <ClCompile Include="src\system.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="meshObject.cpp">
-      <Filter>Source Files\engine</Filter>
+    <ClCompile Include="src\systemManager.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="shaderLoader.cpp">
-      <Filter>Source Files\engine</Filter>
+    <ClCompile Include="src\timeManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\transform.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\velocitySystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glutil.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\main.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="gl.h">
-      <Filter>Header Files\common\gl</Filter>
+    <ClInclude Include="src\cameraComponent.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="positionComponent.h">
-      <Filter>Header Files\engine\components</Filter>
+    <ClInclude Include="src\chunk.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="meshComponent.h">
-      <Filter>Header Files\engine\components</Filter>
+    <ClInclude Include="src\chunkArchetypeElement.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="cameraComponent.h">
-      <Filter>Header Files\engine\components</Filter>
+    <ClInclude Include="src\component.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="meshObject.h">
-      <Filter>Header Files\engine</Filter>
+    <ClInclude Include="src\entity.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="renderSystem.h">
-      <Filter>Header Files\engine\systems</Filter>
+    <ClInclude Include="src\entityArchetype.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>Header Files\engine</Filter>
+    <ClInclude Include="src\entityManager.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="glutil.cpp">
-      <Filter>Source Files\common</Filter>
+    <ClInclude Include="src\floats.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="matrixStack.h">
-      <Filter>Header Files\common</Filter>
+    <ClInclude Include="src\freecamComponent.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="idComponent.h">
-      <Filter>Header Files\engine\components</Filter>
+    <ClInclude Include="src\freecamSystem.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="velocityComponent.h">
-      <Filter>Header Files\engine\components</Filter>
+    <ClInclude Include="src\gl.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="velocitySystem.h">
-      <Filter>Header Files\engine\systems</Filter>
+    <ClInclude Include="src\idComponent.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="entityManager.h">
-      <Filter>Header Files\engine\systems</Filter>
+    <ClInclude Include="src\init.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="chunk.h">
-      <Filter>Header Files\engine\memory</Filter>
+    <ClInclude Include="src\inputManager.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="chunkArchetypeElement.h">
-      <Filter>Header Files\engine\memory</Filter>
+    <ClInclude Include="src\matrixStack.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="component.h">
-      <Filter>Header Files\engine\memory</Filter>
+    <ClInclude Include="src\meshComponent.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="entity.h">
-      <Filter>Header Files\engine\memory</Filter>
+    <ClInclude Include="src\meshObject.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="entityArchetype.h">
-      <Filter>Header Files\engine\memory</Filter>
+    <ClInclude Include="src\modelLoader.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="systemManager.h">
-      <Filter>Header Files\engine\memory</Filter>
+    <ClInclude Include="src\positionComponent.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="system.h">
-      <Filter>Header Files\engine\memory</Filter>
+    <ClInclude Include="src\renderSystem.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="rotationComponent.h">
-      <Filter>Header Files\engine\components</Filter>
+    <ClInclude Include="src\rotationComponent.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="timeManager.h">
-      <Filter>Header Files\engine\systems</Filter>
+    <ClInclude Include="src\shader.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="freecamComponent.h">
-      <Filter>Header Files\engine\components</Filter>
+    <ClInclude Include="src\shaderLoader.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="freecamSystem.h">
-      <Filter>Header Files\engine\systems</Filter>
+    <ClInclude Include="src\system.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="inputManager.h">
-      <Filter>Header Files\engine\systems</Filter>
+    <ClInclude Include="src\systemManager.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="modelLoader.h">
-      <Filter>Header Files\engine</Filter>
+    <ClInclude Include="src\timeManager.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="shaderLoader.h">
-      <Filter>Header Files\engine</Filter>
+    <ClInclude Include="src\velocityComponent.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\velocitySystem.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="glutil.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="bin\glew32s.lib">
-      <Filter>bin</Filter>
+    <Library Include="lib\glew32s.lib">
+      <Filter>lib</Filter>
     </Library>
-    <Library Include="bin\glfw3.lib">
-      <Filter>bin</Filter>
+    <Library Include="lib\glfw3.lib">
+      <Filter>lib</Filter>
     </Library>
   </ItemGroup>
 </Project>

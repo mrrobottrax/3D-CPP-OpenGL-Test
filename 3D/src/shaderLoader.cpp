@@ -9,7 +9,7 @@ namespace shaderLoader {
 		std::ifstream f;
 		f.open(path, std::ios::ate | std::ios::binary);
 
-		int length = f.tellg();
+		int length = (int)f.tellg();
 
 		char* s = new char[length + 1];
 		f.seekg(0, std::ios::beg);

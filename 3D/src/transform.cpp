@@ -1,3 +1,5 @@
+#include <component.h>
+
 struct Transform : Component
 {
 	float x;
