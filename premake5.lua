@@ -10,6 +10,11 @@ workspace "3D"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+IncludeDir = {}
+IncludeDir["Glad"] = "3D/vendor/Glad/include"
+
+include "3D/vendor/Glad"
+
 project "3D"
 	location "3D"
 	kind "ConsoleApp"
@@ -27,18 +32,22 @@ project "3D"
 	includedirs
 	{
 		"%{prj.name}/vendor/include",
-		"%{prj.name}/src"
+		"%{prj.name}/vendor/src",
+		"%{prj.name}/src",
+		"%{IncludeDir.Glad}"
 	}
 
 	libdirs
 	{
 		"%{prj.name}/lib"
 	}
+
 	links
 	{
 		"opengl32.lib",
 		"glew32s.lib",
-		"glfw3.lib"
+		"glfw3.lib",
+		"Glad"
 	}
 
 	filter "system:windows"

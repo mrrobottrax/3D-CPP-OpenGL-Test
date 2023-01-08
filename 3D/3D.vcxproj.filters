@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="common">
+      <UniqueIdentifier>{AEFEE3F6-9AA0-0ECD-835B-22216F9C951D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gl">
+      <UniqueIdentifier>{F8775900-E403-880B-4DB2-880B395D880B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{DEA8820D-CA4A-ADE3-B305-C1379F463434}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\cameraComponent.h" />
+    <ClInclude Include="src\common\floats.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\freecamComponent.h" />
+    <ClInclude Include="src\freecamSystem.h" />
+    <ClInclude Include="src\gl\gl.h">
+      <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl\glutil.h">
+      <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\idComponent.h" />
+    <ClInclude Include="src\inputManager.h" />
+    <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\matrixStack.h" />
+    <ClInclude Include="src\memory\chunk.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\chunkArchetypeElement.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\component.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\entity.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\entityArchetype.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\entityManager.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\system.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory\systemManager.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\meshComponent.h" />
+    <ClInclude Include="src\meshObject.h" />
+    <ClInclude Include="src\modelLoader.h" />
+    <ClInclude Include="src\positionComponent.h" />
+    <ClInclude Include="src\renderSystem.h" />
+    <ClInclude Include="src\rotationComponent.h" />
+    <ClInclude Include="src\shader.h" />
+    <ClInclude Include="src\shaderLoader.h" />
+    <ClInclude Include="src\timeManager.h" />
+    <ClInclude Include="src\velocityComponent.h" />
+    <ClInclude Include="src\velocitySystem.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\freecamSystem.cpp" />
+    <ClCompile Include="src\gl\glutil.cpp">
+      <Filter>gl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\inputManager.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\matrixStack.cpp" />
+    <ClCompile Include="src\memory\chunkArchetypeElement.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\memory\component.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\memory\entity.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\memory\entityArchetype.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\memory\entityManager.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\memory\system.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\memory\systemManager.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\meshObject.cpp" />
+    <ClCompile Include="src\modelLoader.cpp" />
+    <ClCompile Include="src\renderSystem.cpp" />
+    <ClCompile Include="src\shaderLoader.cpp" />
+    <ClCompile Include="src\timeManager.cpp" />
+    <ClCompile Include="src\transform.cpp" />
+    <ClCompile Include="src\velocitySystem.cpp" />
+  </ItemGroup>
+</Project>
