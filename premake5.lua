@@ -12,8 +12,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 IncludeDir["Glad"] = "3D/vendor/Glad/include"
+IncludeDir["GLEW"] = "3D/vendor/GLEW/include"
+IncludeDir["GLFW"] = "3D/vendor/GLFW/include"
 
 include "3D/vendor/Glad"
+include "3D/vendor/GLEW"
+include "3D/vendor/GLFW"
 
 project "3D"
 	location "3D"
@@ -34,20 +38,22 @@ project "3D"
 		"%{prj.name}/vendor/include",
 		"%{prj.name}/vendor/src",
 		"%{prj.name}/src",
-		"%{IncludeDir.Glad}"
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.GLEW}",
+		"%{IncludeDir.GLFW}",
 	}
 
 	libdirs
 	{
-		"%{prj.name}/lib"
+		
 	}
 
 	links
 	{
 		"opengl32.lib",
-		"glew32s.lib",
-		"glfw3.lib",
-		"Glad"
+		"Glad",
+		"GLEW",
+		"GLFW"
 	}
 
 	filter "system:windows"
@@ -57,12 +63,7 @@ project "3D"
 
 		defines
 		{
-
-		}
-
-		postbuildcommands
-		{
-
+			"_GLFW_WIN32"
 		}
 
 	filter "configurations:Debug"
