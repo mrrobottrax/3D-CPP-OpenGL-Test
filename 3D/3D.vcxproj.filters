@@ -12,93 +12,95 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\cameraComponent.h" />
-    <ClInclude Include="src\common\floats.h">
+    <ClInclude Include="src\engine\cameraComponent.h" />
+    <ClInclude Include="src\engine\common\floats.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="src\freecamComponent.h" />
-    <ClInclude Include="src\freecamSystem.h" />
-    <ClInclude Include="src\gl\gl.h">
+    <ClInclude Include="src\engine\common\matrixStack.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\freecamComponent.h" />
+    <ClInclude Include="src\engine\freecamSystem.h" />
+    <ClInclude Include="src\engine\gl\gl.h">
       <Filter>gl</Filter>
     </ClInclude>
-    <ClInclude Include="src\gl\glutil.h">
+    <ClInclude Include="src\engine\gl\glutil.h">
       <Filter>gl</Filter>
     </ClInclude>
-    <ClInclude Include="src\idComponent.h" />
-    <ClInclude Include="src\inputManager.h" />
-    <ClInclude Include="src\main.h" />
-    <ClInclude Include="src\matrixStack.h" />
-    <ClInclude Include="src\memory\chunk.h">
+    <ClInclude Include="src\engine\gl\shader.h">
+      <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\gl\shaderLoader.h">
+      <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\idComponent.h" />
+    <ClInclude Include="src\engine\inputManager.h" />
+    <ClInclude Include="src\engine\main.h" />
+    <ClInclude Include="src\engine\memory\chunk.h">
       <Filter>memory</Filter>
     </ClInclude>
-    <ClInclude Include="src\memory\chunkArchetypeElement.h">
+    <ClInclude Include="src\engine\memory\chunkArchetypeElement.h">
       <Filter>memory</Filter>
     </ClInclude>
-    <ClInclude Include="src\memory\component.h">
+    <ClInclude Include="src\engine\memory\component.h">
       <Filter>memory</Filter>
     </ClInclude>
-    <ClInclude Include="src\memory\entity.h">
+    <ClInclude Include="src\engine\memory\entity.h">
       <Filter>memory</Filter>
     </ClInclude>
-    <ClInclude Include="src\memory\entityArchetype.h">
+    <ClInclude Include="src\engine\memory\entityArchetype.h">
       <Filter>memory</Filter>
     </ClInclude>
-    <ClInclude Include="src\memory\entityManager.h">
+    <ClInclude Include="src\engine\memory\entityManager.h">
       <Filter>memory</Filter>
     </ClInclude>
-    <ClInclude Include="src\memory\system.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="src\memory\systemManager.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="src\meshComponent.h" />
-    <ClInclude Include="src\meshObject.h" />
-    <ClInclude Include="src\modelLoader.h" />
-    <ClInclude Include="src\positionComponent.h" />
-    <ClInclude Include="src\renderSystem.h" />
-    <ClInclude Include="src\rotationComponent.h" />
-    <ClInclude Include="src\shader.h" />
-    <ClInclude Include="src\shaderLoader.h" />
-    <ClInclude Include="src\timeManager.h" />
-    <ClInclude Include="src\velocityComponent.h" />
-    <ClInclude Include="src\velocitySystem.h" />
+    <ClInclude Include="src\engine\meshComponent.h" />
+    <ClInclude Include="src\engine\meshObject.h" />
+    <ClInclude Include="src\engine\modelLoader.h" />
+    <ClInclude Include="src\engine\positionComponent.h" />
+    <ClInclude Include="src\engine\renderSystem.h" />
+    <ClInclude Include="src\engine\rotationComponent.h" />
+    <ClInclude Include="src\engine\system.h" />
+    <ClInclude Include="src\engine\systemManager.h" />
+    <ClInclude Include="src\engine\timeManager.h" />
+    <ClInclude Include="src\engine\velocityComponent.h" />
+    <ClInclude Include="src\engine\velocitySystem.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\freecamSystem.cpp" />
-    <ClCompile Include="src\gl\glutil.cpp">
+    <ClCompile Include="src\engine\common\matrixStack.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\freecamSystem.cpp" />
+    <ClCompile Include="src\engine\gl\glutil.cpp">
       <Filter>gl</Filter>
     </ClCompile>
-    <ClCompile Include="src\inputManager.cpp" />
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\matrixStack.cpp" />
-    <ClCompile Include="src\memory\chunkArchetypeElement.cpp">
+    <ClCompile Include="src\engine\gl\shaderLoader.cpp">
+      <Filter>gl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\inputManager.cpp" />
+    <ClCompile Include="src\engine\main.cpp" />
+    <ClCompile Include="src\engine\memory\chunkArchetypeElement.cpp">
       <Filter>memory</Filter>
     </ClCompile>
-    <ClCompile Include="src\memory\component.cpp">
+    <ClCompile Include="src\engine\memory\component.cpp">
       <Filter>memory</Filter>
     </ClCompile>
-    <ClCompile Include="src\memory\entity.cpp">
+    <ClCompile Include="src\engine\memory\entity.cpp">
       <Filter>memory</Filter>
     </ClCompile>
-    <ClCompile Include="src\memory\entityArchetype.cpp">
+    <ClCompile Include="src\engine\memory\entityArchetype.cpp">
       <Filter>memory</Filter>
     </ClCompile>
-    <ClCompile Include="src\memory\entityManager.cpp">
+    <ClCompile Include="src\engine\memory\entityManager.cpp">
       <Filter>memory</Filter>
     </ClCompile>
-    <ClCompile Include="src\memory\system.cpp">
-      <Filter>memory</Filter>
-    </ClCompile>
-    <ClCompile Include="src\memory\systemManager.cpp">
-      <Filter>memory</Filter>
-    </ClCompile>
-    <ClCompile Include="src\meshObject.cpp" />
-    <ClCompile Include="src\modelLoader.cpp" />
-    <ClCompile Include="src\renderSystem.cpp" />
-    <ClCompile Include="src\shaderLoader.cpp" />
-    <ClCompile Include="src\timeManager.cpp" />
-    <ClCompile Include="src\transform.cpp" />
-    <ClCompile Include="src\velocitySystem.cpp" />
+    <ClCompile Include="src\engine\meshObject.cpp" />
+    <ClCompile Include="src\engine\modelLoader.cpp" />
+    <ClCompile Include="src\engine\renderSystem.cpp" />
+    <ClCompile Include="src\engine\system.cpp" />
+    <ClCompile Include="src\engine\systemManager.cpp" />
+    <ClCompile Include="src\engine\timeManager.cpp" />
+    <ClCompile Include="src\engine\transform.cpp" />
+    <ClCompile Include="src\engine\velocitySystem.cpp" />
   </ItemGroup>
 </Project>
