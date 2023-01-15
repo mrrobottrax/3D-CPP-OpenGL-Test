@@ -59,15 +59,26 @@ void initializeWindow()
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(0);    // Vsync
 
-	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions 
-	glewExperimental = GL_TRUE;
+	#ifdef USE_GLEW
+		// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions 
+		glewExperimental = GL_TRUE;
 
-	// Initialize GLEW to setup the OpenGL Function pointers 
-	if (GLEW_OK != glewInit())
-	{
-		std::cout << "Failed to initialize GLEW" << std::endl;
-		exit(EXIT_FAILURE);
-	}
+		// Initialize GLEW to setup the OpenGL Function pointers 
+		if (GLEW_OK != glewInit())
+		{
+			std::cout << "Failed to initialize GLEW" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+	#endif // USE_GLEW
+
+	#ifdef USE_GLAD
+			// Initialize GLEW to setup the OpenGL Function pointers 
+			if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+			{
+				std::cout << "Failed to initialize GLAD" << std::endl;
+				exit(EXIT_FAILURE);
+			}
+	#endif // USE_GLEW
 
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
