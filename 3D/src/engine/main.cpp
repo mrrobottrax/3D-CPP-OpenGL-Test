@@ -15,6 +15,10 @@
 #include <engine/modelLoader.h>
 #include <engine/gl/shaderLoader.h>
 
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+
 using namespace std;
 
 // Show memory leaks
@@ -77,6 +81,9 @@ void init()
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+
+	// Init IMGUI
+	IMGUI_CHECKVERSION();
 
 	// Init systems
 	systemManager::registerSystems();

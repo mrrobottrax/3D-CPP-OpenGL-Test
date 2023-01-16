@@ -14,10 +14,12 @@ IncludeDir = {}
 IncludeDir["Glad"] = "3D/vendor/Glad/include"
 IncludeDir["GLEW"] = "3D/vendor/GLEW/include"
 IncludeDir["GLFW"] = "3D/vendor/GLFW/include"
+IncludeDir["IMGUI"] = "3D/vendor/IMGUI"
 
 include "3D/vendor/Glad"
 include "3D/vendor/GLEW"
 include "3D/vendor/GLFW"
+include "3D/vendor/IMGUI"
 
 project "3D"
 	location "3D"
@@ -41,6 +43,7 @@ project "3D"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.GLEW}",
 		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.IMGUI}",
 	}
 
 	libdirs
@@ -53,7 +56,8 @@ project "3D"
 		"opengl32.lib",
 		"Glad",
 		"GLEW",
-		"GLFW"
+		"GLFW",
+		"IMGUI"
 	}
 
 	filter "system:windows"

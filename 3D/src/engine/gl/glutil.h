@@ -8,6 +8,7 @@
 #include <engine/inputManager.h>
 
 extern GLFWwindow* window;
+extern const char* glsl_version;
 
 void error_callback(int, const char*);
 void key_callback(GLFWwindow*, int, int, int, int);

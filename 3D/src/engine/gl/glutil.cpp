@@ -27,6 +27,8 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 }
 
+const char* glsl_version = "#version 460";
+
 // Create a window and initialize GLEW
 void initializeWindow()
 {
@@ -38,8 +40,8 @@ void initializeWindow()
 
 	glfwSetErrorCallback(error_callback);
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -72,13 +74,13 @@ void initializeWindow()
 	#endif // USE_GLEW
 
 	#ifdef USE_GLAD
-			// Initialize GLEW to setup the OpenGL Function pointers 
+			// Initialize GLAD to setup the OpenGL Function pointers 
 			if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			{
 				std::cout << "Failed to initialize GLAD" << std::endl;
 				exit(EXIT_FAILURE);
 			}
-	#endif // USE_GLEW
+	#endif // USE_GLAD
 
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
