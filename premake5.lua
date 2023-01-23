@@ -12,14 +12,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 IncludeDir["Glad"] = "3D/vendor/Glad/include"
-IncludeDir["GLEW"] = "3D/vendor/GLEW/include"
 IncludeDir["GLFW"] = "3D/vendor/GLFW/include"
 IncludeDir["IMGUI"] = "3D/vendor/IMGUI"
 IncludeDir["JSON"] = "3D/vendor/JSON"
 IncludeDir["GLM"] = "3D/vendor/GLM"
 
 include "3D/vendor/Glad"
-include "3D/vendor/GLEW"
 include "3D/vendor/GLFW"
 include "3D/vendor/IMGUI"
 
@@ -43,7 +41,6 @@ project "3D"
 		"%{prj.name}/vendor/src",
 		"%{prj.name}/src",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.GLEW}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.IMGUI}",
 		"%{IncludeDir.JSON}",
@@ -59,7 +56,6 @@ project "3D"
 	{
 		"opengl32.lib",
 		"Glad",
-		"GLEW",
 		"GLFW",
 		"IMGUI",
 	}
