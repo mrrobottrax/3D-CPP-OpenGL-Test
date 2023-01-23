@@ -82,9 +82,6 @@ void init()
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 
-	// Init IMGUI
-	IMGUI_CHECKVERSION();
-
 	// Init systems
 	systemManager::registerSystems();
 

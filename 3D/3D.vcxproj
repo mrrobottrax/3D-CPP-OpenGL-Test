@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_GLFW_WIN32;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\include;vendor\src;src;vendor\Glad\include;vendor\GLEW\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\include;vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -98,7 +98,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_GLFW_WIN32;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\include;vendor\src;src;vendor\Glad\include;vendor\GLEW\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\include;vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -121,7 +121,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_GLFW_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\include;vendor\src;src;vendor\Glad\include;vendor\GLEW\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\include;vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -187,9 +187,6 @@
   <ItemGroup>
     <ProjectReference Include="vendor\Glad\Glad.vcxproj">
       <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="vendor\GLEW\GLEW.vcxproj">
-      <Project>{F44A857C-E081-860D-896E-6C107584020F}</Project>
     </ProjectReference>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">
       <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
