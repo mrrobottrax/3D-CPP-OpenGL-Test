@@ -2,7 +2,7 @@
 
 #include <engine/inputManager.h>
 #include <engine/gl/gl.h>
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 #include <iostream>
 

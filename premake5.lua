@@ -15,6 +15,8 @@ IncludeDir["Glad"] = "3D/vendor/Glad/include"
 IncludeDir["GLEW"] = "3D/vendor/GLEW/include"
 IncludeDir["GLFW"] = "3D/vendor/GLFW/include"
 IncludeDir["IMGUI"] = "3D/vendor/IMGUI"
+IncludeDir["JSON"] = "3D/vendor/JSON"
+IncludeDir["GLM"] = "3D/vendor/GLM"
 
 include "3D/vendor/Glad"
 include "3D/vendor/GLEW"
@@ -44,6 +46,8 @@ project "3D"
 		"%{IncludeDir.GLEW}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.IMGUI}",
+		"%{IncludeDir.JSON}",
+		"%{IncludeDir.GLM}",
 	}
 
 	libdirs
@@ -57,7 +61,7 @@ project "3D"
 		"Glad",
 		"GLEW",
 		"GLFW",
-		"IMGUI"
+		"IMGUI",
 	}
 
 	filter "system:windows"

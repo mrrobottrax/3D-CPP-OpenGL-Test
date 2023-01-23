@@ -2,7 +2,7 @@
 
 #include <stack>
 #include <engine/common/floats.h>
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 class MatrixStack
 {

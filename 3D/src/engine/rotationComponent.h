@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/gtc/quaternion.hpp>
+#include <gtc/quaternion.hpp>
 
 struct RotationComponent
 {

@@ -1,5 +1,5 @@
 #include <engine/common/matrixStack.h>
-#include <glm/glm.hpp>
+#include <glm.hpp>
 
 void MatrixStack::push()
 {

@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <engine/meshObject.h>
-#include <json/json.hpp>
+#include <json.hpp>
 
 namespace modelLoader {
 	using json = nlohmann::json;
