@@ -7,6 +7,9 @@
     <Filter Include="gl">
       <UniqueIdentifier>{F8775900-E403-880B-4DB2-880B395D880B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="memory">
       <UniqueIdentifier>{DEA8820D-CA4A-ADE3-B305-C1379F463434}</UniqueIdentifier>
     </Filter>
@@ -34,6 +37,15 @@
       <Filter>gl</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\idComponent.h" />
+    <ClInclude Include="src\engine\imgui\imgui_impl_glfw.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\imgui\imgui_impl_opengl3.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\imgui\imgui_impl_opengl3_loader.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
     <ClInclude Include="src\engine\inputManager.h" />
     <ClInclude Include="src\engine\main.h" />
     <ClInclude Include="src\engine\memory\chunk.h">
@@ -76,6 +88,12 @@
     </ClCompile>
     <ClCompile Include="src\engine\gl\shaderLoader.cpp">
       <Filter>gl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\imgui\imgui_impl_glfw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\imgui\imgui_impl_opengl3.cpp">
+      <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\engine\inputManager.cpp" />
     <ClCompile Include="src\engine\main.cpp" />

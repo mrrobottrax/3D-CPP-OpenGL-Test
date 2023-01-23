@@ -143,6 +143,9 @@
     <ClInclude Include="src\engine\gl\shader.h" />
     <ClInclude Include="src\engine\gl\shaderLoader.h" />
     <ClInclude Include="src\engine\idComponent.h" />
+    <ClInclude Include="src\engine\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="src\engine\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\engine\imgui\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="src\engine\inputManager.h" />
     <ClInclude Include="src\engine\main.h" />
     <ClInclude Include="src\engine\memory\chunk.h" />
@@ -168,6 +171,8 @@
     <ClCompile Include="src\engine\freecamSystem.cpp" />
     <ClCompile Include="src\engine\gl\glutil.cpp" />
     <ClCompile Include="src\engine\gl\shaderLoader.cpp" />
+    <ClCompile Include="src\engine\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\engine\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\engine\inputManager.cpp" />
     <ClCompile Include="src\engine\main.cpp" />
     <ClCompile Include="src\engine\memory\chunkArchetypeElement.cpp" />
