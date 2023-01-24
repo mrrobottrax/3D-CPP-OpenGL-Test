@@ -9,6 +9,8 @@
 #include <engine/rotationComponent.h>
 #include <engine/main.h>
 
+#include <gl/glutil.h>
+
 RenderSystem::RenderSystem(Entity& mainEntity)
 {
 	RenderSystem::mainCamera = &EntityManager::GetInstance().getComponent<CameraComponent>(mainEntity);
@@ -64,7 +66,10 @@ glm::mat4 RenderSystem::calcPerspectiveMatrix()
 {
 	glm::mat4 matrix = glm::mat4(0.0f);
 
-	matrix[0][0] = mainCamera->frustumScale;
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+
+	matrix[0][0] = mainCamera->frustumScale / (width / (float)height);
 	matrix[1][1] = mainCamera->frustumScale;
 	matrix[2][2] = (mainCamera->farClip + mainCamera->nearClip) / (mainCamera->nearClip - mainCamera->farClip);
 	matrix[2][3] = -1.0f;
