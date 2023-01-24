@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_GLFW_WIN32;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\src;src\engine;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -98,7 +98,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_GLFW_WIN32;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\src;src\engine;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -123,7 +123,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_GLFW_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\src;src\engine;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -137,63 +137,62 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\engine\cameraComponent.h" />
-    <ClInclude Include="src\engine\common\matrixStack.h" />
-    <ClInclude Include="src\engine\freecamComponent.h" />
-    <ClInclude Include="src\engine\freecamSystem.h" />
-    <ClInclude Include="src\engine\gl\glload.h" />
-    <ClInclude Include="src\engine\gl\glutil.h" />
-    <ClInclude Include="src\engine\gl\shader.h" />
-    <ClInclude Include="src\engine\gl\shaderLoader.h" />
-    <ClInclude Include="src\engine\idComponent.h" />
-    <ClInclude Include="src\engine\imgui\imgui_impl_glfw.h" />
-    <ClInclude Include="src\engine\imgui\imgui_impl_opengl3.h" />
-    <ClInclude Include="src\engine\imgui\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="src\engine\inputManager.h" />
-    <ClInclude Include="src\engine\main.h" />
-    <ClInclude Include="src\engine\memory\chunk.h" />
-    <ClInclude Include="src\engine\memory\chunkArchetypeElement.h" />
-    <ClInclude Include="src\engine\memory\component.h" />
-    <ClInclude Include="src\engine\memory\entity.h" />
-    <ClInclude Include="src\engine\memory\entityArchetype.h" />
-    <ClInclude Include="src\engine\memory\entityManager.h" />
-    <ClInclude Include="src\engine\meshComponent.h" />
-    <ClInclude Include="src\engine\meshObject.h" />
-    <ClInclude Include="src\engine\modelLoader.h" />
-    <ClInclude Include="src\engine\pch.h" />
-    <ClInclude Include="src\engine\positionComponent.h" />
-    <ClInclude Include="src\engine\renderSystem.h" />
-    <ClInclude Include="src\engine\rotationComponent.h" />
-    <ClInclude Include="src\engine\system.h" />
-    <ClInclude Include="src\engine\systemManager.h" />
-    <ClInclude Include="src\engine\timeManager.h" />
-    <ClInclude Include="src\engine\velocityComponent.h" />
-    <ClInclude Include="src\engine\velocitySystem.h" />
+    <ClInclude Include="src\common\matrixstack.h" />
+    <ClInclude Include="src\components\cameracomponent.h" />
+    <ClInclude Include="src\components\freecamcomponent.h" />
+    <ClInclude Include="src\components\idcomponent.h" />
+    <ClInclude Include="src\components\meshcomponent.h" />
+    <ClInclude Include="src\components\positioncomponent.h" />
+    <ClInclude Include="src\components\rotationcomponent.h" />
+    <ClInclude Include="src\components\velocitycomponent.h" />
+    <ClInclude Include="src\gl\glload.h" />
+    <ClInclude Include="src\gl\glutil.h" />
+    <ClInclude Include="src\gl\shader.h" />
+    <ClInclude Include="src\gl\shaderloader.h" />
+    <ClInclude Include="src\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="src\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="src\inputmanager.h" />
+    <ClInclude Include="src\memory\chunk.h" />
+    <ClInclude Include="src\memory\chunkarchetypeelement.h" />
+    <ClInclude Include="src\memory\component.h" />
+    <ClInclude Include="src\memory\entity.h" />
+    <ClInclude Include="src\memory\entityarchetype.h" />
+    <ClInclude Include="src\memory\entitymanager.h" />
+    <ClInclude Include="src\meshobject.h" />
+    <ClInclude Include="src\modelloader.h" />
+    <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\systems\systemmanager.h" />
+    <ClInclude Include="src\systems\freecamsystem.h" />
+    <ClInclude Include="src\systems\rendersystem.h" />
+    <ClInclude Include="src\systems\system.h" />
+    <ClInclude Include="src\systems\systemslist.h" />
+    <ClInclude Include="src\systems\velocitysystem.h" />
+    <ClInclude Include="src\timemanager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\engine\common\matrixStack.cpp" />
-    <ClCompile Include="src\engine\freecamSystem.cpp" />
-    <ClCompile Include="src\engine\gl\glutil.cpp" />
-    <ClCompile Include="src\engine\gl\shaderLoader.cpp" />
-    <ClCompile Include="src\engine\imgui\imgui_impl_glfw.cpp" />
-    <ClCompile Include="src\engine\imgui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="src\engine\inputManager.cpp" />
-    <ClCompile Include="src\engine\main.cpp" />
-    <ClCompile Include="src\engine\memory\chunkArchetypeElement.cpp" />
-    <ClCompile Include="src\engine\memory\component.cpp" />
-    <ClCompile Include="src\engine\memory\entity.cpp" />
-    <ClCompile Include="src\engine\memory\entityArchetype.cpp" />
-    <ClCompile Include="src\engine\memory\entityManager.cpp" />
-    <ClCompile Include="src\engine\meshObject.cpp" />
-    <ClCompile Include="src\engine\modelLoader.cpp" />
-    <ClCompile Include="src\engine\pch.cpp">
+    <ClCompile Include="src\common\matrixstack.cpp" />
+    <ClCompile Include="src\gl\glutil.cpp" />
+    <ClCompile Include="src\gl\shaderloader.cpp" />
+    <ClCompile Include="src\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\inputmanager.cpp" />
+    <ClCompile Include="src\memory\chunkarchetypeelement.cpp" />
+    <ClCompile Include="src\memory\component.cpp" />
+    <ClCompile Include="src\memory\entity.cpp" />
+    <ClCompile Include="src\memory\entityarchetype.cpp" />
+    <ClCompile Include="src\memory\entitymanager.cpp" />
+    <ClCompile Include="src\meshobject.cpp" />
+    <ClCompile Include="src\modelloader.cpp" />
+    <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\engine\renderSystem.cpp" />
-    <ClCompile Include="src\engine\system.cpp" />
-    <ClCompile Include="src\engine\systemManager.cpp" />
-    <ClCompile Include="src\engine\timeManager.cpp" />
-    <ClCompile Include="src\engine\velocitySystem.cpp" />
+    <ClCompile Include="src\systems\systemmanager.cpp" />
+    <ClCompile Include="src\systems\freecamsystem.cpp" />
+    <ClCompile Include="src\systems\rendersystem.cpp" />
+    <ClCompile Include="src\systems\system.cpp" />
+    <ClCompile Include="src\systems\velocitysystem.cpp" />
+    <ClCompile Include="src\timemanager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\Glad\Glad.vcxproj">

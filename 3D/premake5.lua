@@ -6,7 +6,7 @@ project "3D"
 	objdir    ("%{wks.location}/obj/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "pch.h"
-	pchsource "%{wks.location}/3D/src/engine/pch.cpp"
+	pchsource "%{wks.location}/3D/src/pch.cpp"
 
 	files
 	{
@@ -17,7 +17,6 @@ project "3D"
 	includedirs
 	{
 		"%{wks.location}/3D/vendor/src",
-		"%{wks.location}/3D/src/engine",
 		"%{wks.location}/3D/src",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.GLFW}",

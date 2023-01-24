@@ -22,8 +22,7 @@ project "Mallet"
 		"%{IncludeDir.IMGUI}",
 		"%{IncludeDir.JSON}",
 		"%{IncludeDir.GLM}",
-		"%{IncludeDir.engine}",
-		"%{IncludeDir.engine}/engine",
+		"%{IncludeDir.Engine}",
 	}
 
 	libdirs
