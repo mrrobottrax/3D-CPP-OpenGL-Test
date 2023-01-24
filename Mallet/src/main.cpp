@@ -9,10 +9,6 @@
 int main()
 {   
 	InitializeWindow();
-	//InitializeOpenGL();
-
-	/*
-	InitializeWindow();
 	InitializeOpenGL();
 
 	while (!glfwWindowShouldClose(window))
@@ -25,7 +21,6 @@ int main()
 
 		glfwSwapBuffers(window);
 	}
-	*/
 
 	glfwTerminate();
 
