@@ -21,7 +21,7 @@
     </ClInclude>
     <ClInclude Include="src\engine\freecamComponent.h" />
     <ClInclude Include="src\engine\freecamSystem.h" />
-    <ClInclude Include="src\engine\gl\gl.h">
+    <ClInclude Include="src\engine\gl\glload.h">
       <Filter>gl</Filter>
     </ClInclude>
     <ClInclude Include="src\engine\gl\glutil.h">

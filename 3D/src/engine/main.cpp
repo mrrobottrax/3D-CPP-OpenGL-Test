@@ -2,6 +2,8 @@
 
 #include <main.h>
 
+#include <engine/gl/glutil.h>
+
 #include <systemManager.h>
 #include <engine/meshObject.h>
 #include <engine/idComponent.h>

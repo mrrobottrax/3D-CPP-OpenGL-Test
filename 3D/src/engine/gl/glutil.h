@@ -1,7 +1,5 @@
 #pragma once
 
-#include <engine/gl/gl.h>
-
 extern GLFWwindow* window;
 extern const char* glsl_version;
 

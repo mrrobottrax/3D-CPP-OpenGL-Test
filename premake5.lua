@@ -17,7 +17,7 @@ IncludeDir["GLFW"]  = "%{wks.location}/3D/vendor/GLFW/include"
 IncludeDir["IMGUI"] = "%{wks.location}/3D/vendor/IMGUI"
 IncludeDir["JSON"]  = "%{wks.location}/3D/vendor/JSON"
 IncludeDir["GLM"]   = "%{wks.location}/3D/vendor/GLM"
-IncludeDir["engine"]    = "%{wks.location}/3D/src/engine"
+IncludeDir["engine"]    = "%{wks.location}/3D/src"
 
 include "3D"
 include "Mallet"

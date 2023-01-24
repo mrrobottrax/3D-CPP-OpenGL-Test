@@ -5,8 +5,8 @@ project "Mallet"
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir    ("%{wks.location}/obj/" .. outputdir .. "/%{prj.name}")
 
-	--pchheader "pch.h"
-	--pchsource "%{wks.location}/Mallet/src/pch.cpp"
+	pchheader "pch.h"
+	pchsource "%{wks.location}/Mallet/src/pch.cpp"
 
 	files
 	{
@@ -23,6 +23,7 @@ project "Mallet"
 		"%{IncludeDir.JSON}",
 		"%{IncludeDir.GLM}",
 		"%{IncludeDir.engine}",
+		"%{IncludeDir.engine}/engine",
 	}
 
 	libdirs

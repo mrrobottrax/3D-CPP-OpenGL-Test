@@ -1,7 +1,6 @@
 #include <pch.h>
 
 #include <engine/timeManager.h>
-#include <engine/gl/gl.h>
 
 namespace TimeManager {
 	double dDeltaTime;
