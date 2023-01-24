@@ -216,6 +216,11 @@ int main()
 	delete testMesh;
 	delete testMap;
 
+	// Cleanup
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
 	systemManager::deleteAllSystems();
 	glfwTerminate();
 
