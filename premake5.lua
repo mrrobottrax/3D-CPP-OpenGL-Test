@@ -30,7 +30,7 @@ project "3D"
 	objdir    ("obj/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "pch.h"
-	pchsource "pch.cpp"
+	pchsource "%{prj.name}/src/engine/pch.cpp"
 
 	files
 	{

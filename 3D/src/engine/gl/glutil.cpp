@@ -49,7 +49,7 @@ void initializeWindow()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-	window = glfwCreateWindow(600, 600, "3D Test", NULL, NULL);
+	window = glfwCreateWindow(1200, 600, "3D Test", NULL, NULL);
 	if (!window)
 	{
 		// Window or OpenGL context creation failed

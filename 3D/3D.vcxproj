@@ -184,9 +184,7 @@
     <ClCompile Include="src\engine\meshObject.cpp" />
     <ClCompile Include="src\engine\modelLoader.cpp" />
     <ClCompile Include="src\engine\pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Test|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\engine\renderSystem.cpp" />
     <ClCompile Include="src\engine\system.cpp" />
