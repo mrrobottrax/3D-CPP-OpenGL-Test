@@ -21,8 +21,8 @@ project "IMGUI"
 	}
 
 	filter "system:windows"
+        staticruntime "On"
 		systemversion "latest"
-		staticruntime "On"
 
 	filter "configurations:Debug"
 		runtime "Debug"
