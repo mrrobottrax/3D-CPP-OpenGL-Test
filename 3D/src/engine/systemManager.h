@@ -1,8 +1,6 @@
 #pragma once
 
 #include <engine/system.h>
-#include <map>
-#include <typeindex>
 
 namespace systemManager {
 	extern std::map<size_t, System*>* systems;

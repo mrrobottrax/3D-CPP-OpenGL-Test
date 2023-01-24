@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm.hpp>
-
 struct CameraComponent
 {
 	float fov = 70;

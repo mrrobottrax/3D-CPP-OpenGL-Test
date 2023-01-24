@@ -1,9 +1,5 @@
 #pragma once
 
-#include <string>
-#include <typeindex>
-#include <iostream>
-
 struct Component
 {
 	Component();

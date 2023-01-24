@@ -1,9 +1,5 @@
 #pragma once
 
-#include <stack>
-#include <engine/common/floats.h>
-#include <glm.hpp>
-
 class MatrixStack
 {
 public:

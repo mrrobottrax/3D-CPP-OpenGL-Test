@@ -1,4 +1,5 @@
 #pragma once
+
 struct IdComponent
 {
 	unsigned int index;

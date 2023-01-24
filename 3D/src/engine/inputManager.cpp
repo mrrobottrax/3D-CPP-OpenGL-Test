@@ -1,7 +1,7 @@
-#include <engine/inputManager.h>
+#include <pch.h>
 
-#include <iostream>
-#include <engine/gl/gl.h>
+#include <inputManager.h>
+#include <gl/gl.h>
 
 namespace inputManager {
 	char keybindings[1024];

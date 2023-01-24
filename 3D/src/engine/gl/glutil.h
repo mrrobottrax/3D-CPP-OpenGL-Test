@@ -1,10 +1,9 @@
 #pragma once
+
 #include <engine/gl/gl.h>
 
-#include <iostream>
 #include <engine/renderSystem.h>
 #include <engine/systemManager.h>
-#include <vector>
 #include <engine/inputManager.h>
 
 extern GLFWwindow* window;

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <typeindex>
-#include <iostream>
 #include <engine/memory/component.h>
 
 class EntityArchetype

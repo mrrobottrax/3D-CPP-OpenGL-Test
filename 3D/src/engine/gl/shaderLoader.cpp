@@ -1,7 +1,6 @@
-#include <engine/gl/shaderLoader.h>
+#include <pch.h>
 
-#include <iostream>
-#include <fstream>
+#include <engine/gl/shaderLoader.h>
 
 namespace shaderLoader {
 	const char* loadShader(const char* path)

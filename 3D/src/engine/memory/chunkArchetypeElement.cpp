@@ -1,3 +1,5 @@
+#include <pch.h>
+
 #include <engine/memory/chunkArchetypeElement.h>
 
 ChunkArchetypeElement::ChunkArchetypeElement()

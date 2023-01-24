@@ -1,10 +1,9 @@
-#include <engine/freecamSystem.h>
+#include <pch.h>
+
+#include <freecamSystem.h>
 
 #include <engine/inputManager.h>
-#include <engine/gl/gl.h>
-#include <glm.hpp>
-
-#include <iostream>
+#include <gl/gl.h>
 
 FreecamSystem::FreecamSystem()
 {

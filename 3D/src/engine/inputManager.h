@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm.hpp>
-
 namespace inputManager {
 	extern char keybindings[1024];
 

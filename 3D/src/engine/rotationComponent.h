@@ -1,7 +1,5 @@
 #pragma once
 
-#include <gtc/quaternion.hpp>
-
 struct RotationComponent
 {
 	glm::fquat value;

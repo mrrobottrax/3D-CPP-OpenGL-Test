@@ -1,7 +1,6 @@
 #pragma once
 
-#include <engine/common/floats.h>
-#include <engine/gl/gl.h>
+#include <gl/gl.h>
 
 struct MeshObject
 {

@@ -3,7 +3,6 @@
 #include <engine/system.h>
 #include <engine/cameraComponent.h>
 #include <engine/memory/entity.h>
-#include <glm.hpp>
 
 class RenderSystem : public System
 {

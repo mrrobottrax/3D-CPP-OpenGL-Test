@@ -1,5 +1,6 @@
+#include <pch.h>
+
 #include <engine/modelLoader.h>
-#include <fstream>
 
 namespace modelLoader {
 

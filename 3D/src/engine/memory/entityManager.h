@@ -1,12 +1,9 @@
 #pragma once
 
-#include <forward_list>
-#include <typeindex>
 #include <engine/memory/entityArchetype.h>
 #include <engine/memory/chunkArchetypeElement.h>
 #include <engine/memory/component.h>
 #include <engine/memory/entity.h>
-#include <mutex>
 
 // Each chunk is 16kB
 const unsigned short chunkSize = 16384;
@@ -51,7 +48,7 @@ inline T& EntityManager::getComponent(Entity& entity)
 {
 	// Get pointer to component stream
 	char* componentStream = (char*)(entity.chunk + 1);
-	T* tComponentStream = (T*)(componentStream + (uint64_t)(entity.chunk->maxEntities * entity.archetype->getComponentOffset(Component().init<T>())));
+	T* tComponentStream = (T*)(componentStream + static_cast<uint64_t>(entity.chunk->maxEntities) * entity.archetype->getComponentOffset(Component().init<T>()));
 	T& ref = *(tComponentStream + entity.index);
 	return ref;
 }

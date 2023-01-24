@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm.hpp>
-
 struct VelocityComponent
 {
 	glm::vec3 linear;

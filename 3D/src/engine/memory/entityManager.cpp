@@ -1,10 +1,10 @@
+#include <pch.h>
+
 #include <engine/memory/entityManager.h>
 #include <engine/idComponent.h>
 #include <engine/positionComponent.h>
 #include <engine/cameraComponent.h>
-#include <iostream>
 #include <engine/velocityComponent.h>
-#include <forward_list>
 #include <engine/meshComponent.h>
 
 EntityManager* EntityManager::instance{ nullptr };

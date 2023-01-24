@@ -1,6 +1,7 @@
+#include <pch.h>
+
 #include <engine/renderSystem.h>
 
-#include <iostream>
 #include <engine/common/matrixStack.h>
 #include <engine/memory/entityManager.h>
 #include <engine/meshComponent.h>

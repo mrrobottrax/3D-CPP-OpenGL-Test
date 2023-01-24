@@ -1,6 +1,5 @@
 #pragma once
 
-#include <forward_list>
 #include <engine/memory/chunk.h>
 #include <engine/memory/chunkArchetypeElement.h>
 #include <engine/memory/entity.h>

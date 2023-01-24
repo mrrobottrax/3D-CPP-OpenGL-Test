@@ -1,4 +1,7 @@
 #pragma once
+
+#include <pch.h>
+
 #include <engine/memory/component.h>
 
 Component::Component()

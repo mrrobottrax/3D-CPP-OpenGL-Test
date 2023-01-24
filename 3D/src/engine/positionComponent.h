@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm.hpp>
-
 struct PositionComponent
 {
 	glm::vec3 value;

@@ -29,6 +29,9 @@ project "3D"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir    ("obj/" .. outputdir .. "/%{prj.name}")
 
+	pchheader "pch.h"
+	pchsource "pch.cpp"
+
 	files
 	{
 		"%{prj.name}/src/**.h",
@@ -37,8 +40,8 @@ project "3D"
 
 	includedirs
 	{
-		"%{prj.name}/vendor/include",
 		"%{prj.name}/vendor/src",
+		"%{prj.name}/src/engine",
 		"%{prj.name}/src",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.GLFW}",

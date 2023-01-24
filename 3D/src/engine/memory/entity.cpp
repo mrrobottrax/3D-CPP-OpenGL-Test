@@ -1,3 +1,5 @@
+#include <pch.h>
+
 #include <engine/memory/entity.h>
 
 Entity::Entity(EntityArchetype& archetype, Chunk& chunk, unsigned short index)

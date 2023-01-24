@@ -1,3 +1,5 @@
+#include <pch.h>
+
 #include <engine/meshObject.h>
 
 void MeshObject::genBuffers()

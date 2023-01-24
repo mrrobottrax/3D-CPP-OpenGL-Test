@@ -1,14 +1,14 @@
-#include <engine/main.h>
+#include <pch.h>
 
-#include <engine/systemManager.h>
-#include <engine/common/floats.h>
+#include <main.h>
+
+#include <systemManager.h>
 #include <engine/meshObject.h>
 #include <engine/idComponent.h>
 #include <engine/positionComponent.h>
 #include <engine/velocityComponent.h>
 #include <engine/meshComponent.h>
 #include <engine/memory/entityManager.h>
-#include <algorithm>
 #include <engine/rotationComponent.h>
 #include <engine/timeManager.h>
 #include <engine/freecamComponent.h>
@@ -23,8 +23,6 @@ using namespace std;
 
 // Show memory leaks
 #define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
 
 // TEMP
 // TODO: Remove

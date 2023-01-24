@@ -1,5 +1,6 @@
+#include <pch.h>
+
 #include <engine/memory/entityArchetype.h>
-#include <iostream>
 
 EntityArchetype::EntityArchetype()
 {

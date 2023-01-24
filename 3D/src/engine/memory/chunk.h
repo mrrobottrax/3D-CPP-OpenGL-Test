@@ -1,4 +1,5 @@
 #pragma once
+
 struct Chunk
 {
 	Chunk* next;

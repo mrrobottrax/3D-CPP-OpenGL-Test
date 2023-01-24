@@ -16,9 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\cameraComponent.h" />
-    <ClInclude Include="src\engine\common\floats.h">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="src\engine\common\matrixStack.h">
       <Filter>common</Filter>
     </ClInclude>
@@ -69,6 +66,7 @@
     <ClInclude Include="src\engine\meshComponent.h" />
     <ClInclude Include="src\engine\meshObject.h" />
     <ClInclude Include="src\engine\modelLoader.h" />
+    <ClInclude Include="src\engine\pch.h" />
     <ClInclude Include="src\engine\positionComponent.h" />
     <ClInclude Include="src\engine\renderSystem.h" />
     <ClInclude Include="src\engine\rotationComponent.h" />
@@ -114,11 +112,11 @@
     </ClCompile>
     <ClCompile Include="src\engine\meshObject.cpp" />
     <ClCompile Include="src\engine\modelLoader.cpp" />
+    <ClCompile Include="src\engine\pch.cpp" />
     <ClCompile Include="src\engine\renderSystem.cpp" />
     <ClCompile Include="src\engine\system.cpp" />
     <ClCompile Include="src\engine\systemManager.cpp" />
     <ClCompile Include="src\engine\timeManager.cpp" />
-    <ClCompile Include="src\engine\transform.cpp" />
     <ClCompile Include="src\engine\velocitySystem.cpp" />
   </ItemGroup>
 </Project>
