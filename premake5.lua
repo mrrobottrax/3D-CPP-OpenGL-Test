@@ -83,10 +83,10 @@ project "3D"
 		optimize "On"
 
 	filter { "system:windows", "configurations:Debug" }
-		buildoptions "/MDd"
+		runtime "Debug"
 
 	filter { "system:windows", "configurations:Test" }
-		buildoptions "/MD"
+		runtime "Release"
 
 	filter { "system:windows", "configurations:Release" }
-		buildoptions "/MD"
+		runtime "Release"
