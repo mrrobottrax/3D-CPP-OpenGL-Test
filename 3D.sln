@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Glad", "3D\vendor\Glad\Glad
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IMGUI", "3D\vendor\IMGUI\IMGUI.vcxproj", "{606F530D-CC83-7BBE-9505-1F1E01D977EF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mallet", "Mallet\Mallet.vcxproj", "{E49794C2-D039-BF98-B9F4-D2ECA53546E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -40,6 +42,12 @@ Global
 		{606F530D-CC83-7BBE-9505-1F1E01D977EF}.Dist|x64.Build.0 = Dist|x64
 		{606F530D-CC83-7BBE-9505-1F1E01D977EF}.Test|x64.ActiveCfg = Test|x64
 		{606F530D-CC83-7BBE-9505-1F1E01D977EF}.Test|x64.Build.0 = Test|x64
+		{E49794C2-D039-BF98-B9F4-D2ECA53546E9}.Debug|x64.ActiveCfg = Debug|x64
+		{E49794C2-D039-BF98-B9F4-D2ECA53546E9}.Debug|x64.Build.0 = Debug|x64
+		{E49794C2-D039-BF98-B9F4-D2ECA53546E9}.Dist|x64.ActiveCfg = Dist|x64
+		{E49794C2-D039-BF98-B9F4-D2ECA53546E9}.Dist|x64.Build.0 = Dist|x64
+		{E49794C2-D039-BF98-B9F4-D2ECA53546E9}.Test|x64.ActiveCfg = Test|x64
+		{E49794C2-D039-BF98-B9F4-D2ECA53546E9}.Test|x64.Build.0 = Test|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

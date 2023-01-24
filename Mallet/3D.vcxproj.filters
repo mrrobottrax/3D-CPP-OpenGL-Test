@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="common">
+      <UniqueIdentifier>{AEFEE3F6-9AA0-0ECD-835B-22216F9C951D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gl">
+      <UniqueIdentifier>{F8775900-E403-880B-4DB2-880B395D880B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="memory">
+      <UniqueIdentifier>{DEA8820D-CA4A-ADE3-B305-C1379F463434}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\engine\cameraComponent.h" />
+    <ClInclude Include="src\engine\common\matrixStack.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\freecamComponent.h" />
+    <ClInclude Include="src\engine\freecamSystem.h" />
+    <ClInclude Include="src\engine\gl\gl.h">
+      <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\gl\glutil.h">
+      <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\gl\shader.h">
+      <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\gl\shaderLoader.h">
+      <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\idComponent.h" />
+    <ClInclude Include="src\engine\imgui\imgui_impl_glfw.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\imgui\imgui_impl_opengl3.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\imgui\imgui_impl_opengl3_loader.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\inputManager.h" />
+    <ClInclude Include="src\engine\main.h" />
+    <ClInclude Include="src\engine\memory\chunk.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\memory\chunkArchetypeElement.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\memory\component.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\memory\entity.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\memory\entityArchetype.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\memory\entityManager.h">
+      <Filter>memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\meshComponent.h" />
+    <ClInclude Include="src\engine\meshObject.h" />
+    <ClInclude Include="src\engine\modelLoader.h" />
+    <ClInclude Include="src\engine\pch.h" />
+    <ClInclude Include="src\engine\positionComponent.h" />
+    <ClInclude Include="src\engine\renderSystem.h" />
+    <ClInclude Include="src\engine\rotationComponent.h" />
+    <ClInclude Include="src\engine\system.h" />
+    <ClInclude Include="src\engine\systemManager.h" />
+    <ClInclude Include="src\engine\timeManager.h" />
+    <ClInclude Include="src\engine\velocityComponent.h" />
+    <ClInclude Include="src\engine\velocitySystem.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\engine\common\matrixStack.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\freecamSystem.cpp" />
+    <ClCompile Include="src\engine\gl\glutil.cpp">
+      <Filter>gl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\gl\shaderLoader.cpp">
+      <Filter>gl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\imgui\imgui_impl_glfw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\imgui\imgui_impl_opengl3.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\inputManager.cpp" />
+    <ClCompile Include="src\engine\main.cpp" />
+    <ClCompile Include="src\engine\memory\chunkArchetypeElement.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\memory\component.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\memory\entity.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\memory\entityArchetype.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\memory\entityManager.cpp">
+      <Filter>memory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\meshObject.cpp" />
+    <ClCompile Include="src\engine\modelLoader.cpp" />
+    <ClCompile Include="src\engine\pch.cpp" />
+    <ClCompile Include="src\engine\renderSystem.cpp" />
+    <ClCompile Include="src\engine\system.cpp" />
+    <ClCompile Include="src\engine\systemManager.cpp" />
+    <ClCompile Include="src\engine\timeManager.cpp" />
+    <ClCompile Include="src\engine\velocitySystem.cpp" />
+  </ItemGroup>
+</Project>
