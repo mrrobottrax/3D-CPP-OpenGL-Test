@@ -3,7 +3,7 @@
 #include <engine/timeManager.h>
 #include <engine/gl/gl.h>
 
-namespace timeManager {
+namespace TimeManager {
 	double dDeltaTime;
 	float deltaTime;
 	double lastTime;

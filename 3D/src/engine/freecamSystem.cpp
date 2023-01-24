@@ -43,20 +43,20 @@ void FreecamSystem::update()
 	// Look keys
 	if (inputManager::keybindings[GLFW_KEY_UP])
 	{
-		pitchDelta -= timeManager::deltaTime * rotSpeed;
+		pitchDelta -= TimeManager::deltaTime * rotSpeed;
 	}
 	if (inputManager::keybindings[GLFW_KEY_DOWN])
 	{
-		pitchDelta += timeManager::deltaTime * rotSpeed;
+		pitchDelta += TimeManager::deltaTime * rotSpeed;
 	}
 
 	if (inputManager::keybindings[GLFW_KEY_LEFT])
 	{
-		yawDelta -= timeManager::deltaTime * rotSpeed;
+		yawDelta -= TimeManager::deltaTime * rotSpeed;
 	}
 	if (inputManager::keybindings[GLFW_KEY_RIGHT])
 	{
-		yawDelta += timeManager::deltaTime * rotSpeed;
+		yawDelta += TimeManager::deltaTime * rotSpeed;
 	}
 
 	EntityManager& em = EntityManager::GetInstance();
@@ -91,7 +91,7 @@ void FreecamSystem::update()
 
 				float speed = glm::length(velocity.linear);
 
-				float drop = freeCam.friction * timeManager::deltaTime;
+				float drop = freeCam.friction * TimeManager::deltaTime;
 
 				// Friction
 				if (speed > drop)
@@ -106,7 +106,7 @@ void FreecamSystem::update()
 				}
 
 				// Acceleration
-				velocity.linear += moveVector * freeCam.acceleration * timeManager::deltaTime;
+				velocity.linear += moveVector * freeCam.acceleration * TimeManager::deltaTime;
 
 				if (speed > freeCam.speed)
 				{

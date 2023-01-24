@@ -41,9 +41,9 @@ void VelocitySystem::update()
 				RotationComponent& rotation = em.getComponent<RotationComponent>(entity);
 				VelocityComponent& velocity = em.getComponent<VelocityComponent>(entity);
 
-				position.value += velocity.linear * timeManager::deltaTime;
+				position.value += velocity.linear * TimeManager::deltaTime;
 
-				glm::vec3 deltaVec = velocity.angular * timeManager::deltaTime;
+				glm::vec3 deltaVec = velocity.angular * TimeManager::deltaTime;
 				float length = glm::length(deltaVec);
 
 				// Prevent divide by 0

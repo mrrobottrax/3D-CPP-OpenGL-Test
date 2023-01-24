@@ -13,7 +13,8 @@
 #include <engine/timeManager.h>
 #include <engine/freecamComponent.h>
 #include <engine/modelLoader.h>
-#include <engine/gl/shaderLoader.h>
+#include <renderSystem.h>
+#include <cameraComponent.h>
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
@@ -31,54 +32,11 @@ MeshObject* monkeyMesh = new MeshObject();
 MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
-GLuint shaderProgram;
-GLuint vao;
-GLuint perspectiveMatrix;
-GLuint positionMatrix;
-GLuint normalMatrix;
-GLuint sunDirUnif;
-GLuint sunIntensityUnif;
-GLuint ambientIntensityUnif;
-GLuint colorUnif;
-
-void init()
+void Init()
 {
 	// Init OpenGL
-	initializeWindow();
-
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
-
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
-	glDepthRange(0.0f, 1.0f);
-
-	std::vector<GLuint> shaderList;
-	const char* strVertShader = shaderLoader::loadShader("data/shaders/normal.vert");
-	const char* strFragShader = shaderLoader::loadShader("data/shaders/normal.frag");
-	shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
-	shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
-	delete[] strVertShader;
-	delete[] strFragShader;
-
-	shaderProgram = CreateProgram(shaderList);
-	std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
-
-	perspectiveMatrix = glGetUniformLocation(shaderProgram, "perspectiveMatrix");
-	positionMatrix = glGetUniformLocation(shaderProgram, "positionMatrix");
-	normalMatrix = glGetUniformLocation(shaderProgram, "normalMatrix");
-	sunDirUnif = glGetUniformLocation(shaderProgram, "sunDir");
-	sunIntensityUnif = glGetUniformLocation(shaderProgram, "sunIntensity");
-	ambientIntensityUnif = glGetUniformLocation(shaderProgram, "ambientIntensity");
-	colorUnif = glGetUniformLocation(shaderProgram, "diffuseColor");
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	InitializeWindow();
+	InitializeOpenGL();
 
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -177,17 +135,15 @@ void init()
 		modelLoader::loadModel(*testMesh, path);
 		em.getComponent<MeshComponent>(entity) = { testMesh };
 	}
-
-	glBindVertexArray(0);
 }
 
 int main()
 {
-	init();
+	Init();
 
 	while (!glfwWindowShouldClose(window))
 	{
-		timeManager::update();
+		TimeManager::update();
 		glfwPollEvents();
 
 		// Start the Dear ImGui frame

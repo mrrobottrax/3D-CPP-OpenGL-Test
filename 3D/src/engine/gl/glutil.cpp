@@ -1,15 +1,29 @@
 #include <pch.h>
 
 #include <engine/gl/glutil.h>
+#include <engine/gl/shaderLoader.h>
+#include <engine/inputManager.h>
+#include <engine/systemManager.h>
+#include <engine/renderSystem.h>
 
 GLFWwindow* window;
 
-void error_callback(int error, const char* description)
+GLuint shaderProgram;
+GLuint vao;
+GLuint perspectiveMatrix;
+GLuint positionMatrix;
+GLuint normalMatrix;
+GLuint sunDirUnif;
+GLuint sunIntensityUnif;
+GLuint ambientIntensityUnif;
+GLuint colorUnif;
+
+void ErrorCallback(int error, const char* description)
 {
 	fprintf(stderr, "Error: %s\n", description);
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	inputManager::keyCallback(key, action);
 
@@ -17,7 +31,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-void window_size_callback(GLFWwindow* window, int width, int height)
+void WindowSizeCallback(GLFWwindow* window, int width, int height)
 {
 	RenderSystem* rs = systemManager::getSystem<RenderSystem>();
 
@@ -32,7 +46,7 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 const char* glsl_version = "#version 460";
 
 // Create a window and initialize GLEW
-void initializeWindow()
+void InitializeWindow()
 {
 	if (!glfwInit())
 	{
@@ -40,7 +54,7 @@ void initializeWindow()
 		exit(EXIT_FAILURE);
 	}
 
-	glfwSetErrorCallback(error_callback);
+	glfwSetErrorCallback(ErrorCallback);
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -57,8 +71,8 @@ void initializeWindow()
 		exit(EXIT_FAILURE);
 	}
 
-	glfwSetKeyCallback(window, key_callback);
-	glfwSetWindowSizeCallback(window, window_size_callback);
+	glfwSetKeyCallback(window, KeyCallback);
+	glfwSetWindowSizeCallback(window, WindowSizeCallback);
 
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(0);    // Vsync
@@ -87,6 +101,45 @@ void initializeWindow()
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
+}
+
+void InitializeOpenGL()
+{
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glDepthFunc(GL_LEQUAL);
+	glDepthRange(0.0f, 1.0f);
+
+	std::vector<GLuint> shaderList;
+	const char* strVertShader = shaderLoader::loadShader("data/shaders/normal.vert");
+	const char* strFragShader = shaderLoader::loadShader("data/shaders/normal.frag");
+	shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
+	shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
+	delete[] strVertShader;
+	delete[] strFragShader;
+
+	shaderProgram = CreateProgram(shaderList);
+	std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
+
+	perspectiveMatrix = glGetUniformLocation(shaderProgram, "perspectiveMatrix");
+	positionMatrix = glGetUniformLocation(shaderProgram, "positionMatrix");
+	normalMatrix = glGetUniformLocation(shaderProgram, "normalMatrix");
+	sunDirUnif = glGetUniformLocation(shaderProgram, "sunDir");
+	sunIntensityUnif = glGetUniformLocation(shaderProgram, "sunIntensity");
+	ambientIntensityUnif = glGetUniformLocation(shaderProgram, "ambientIntensity");
+	colorUnif = glGetUniformLocation(shaderProgram, "diffuseColor");
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
 }
 
 GLuint CreateShader(GLenum eShaderType, const std::string& strShaderFile)

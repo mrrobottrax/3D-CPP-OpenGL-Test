@@ -1,6 +1,6 @@
 #pragma once
 
-namespace timeManager {
+namespace TimeManager {
 	extern float deltaTime;
 	extern double dDeltaTime;
 	extern double lastTime;
