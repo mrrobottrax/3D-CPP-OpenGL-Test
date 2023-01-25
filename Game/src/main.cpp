@@ -3,6 +3,7 @@
 #include <main.h>
 
 #include <gl/glutil.h>
+#include <input/gameinputlayer.h>
 
 #include <meshobject.h>
 #include <memory/entitymanager.h>
@@ -36,10 +37,14 @@ MeshObject* monkeyMesh = new MeshObject();
 MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
+bool showDemoWindow = false;
+
 void Init()
 {
 	// Init OpenGL
 	InitializeWindow();
+	glfwSetKeyCallback(window, GameKeyCallback);
+
 	InitializeOpenGL();
 
 	// Setup Dear ImGui context
@@ -155,7 +160,8 @@ int main()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::ShowDemoWindow();
+		if (showDemoWindow)
+			ImGui::ShowDemoWindow(&showDemoWindow);
 
 		// Rendering
 		ImGui::Render();

@@ -134,11 +134,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\gl\malletglutil.h" />
     <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\input\malletinputlayer.h" />
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\gl\malletglutil.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\input\malletinputlayer.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

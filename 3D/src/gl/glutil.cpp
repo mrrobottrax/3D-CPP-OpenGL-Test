@@ -26,12 +26,9 @@ void ErrorCallback(int error, const char* description)
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	inputManager::KeyCallback(key, action);
-
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
-void WindowSizeCallback(GLFWwindow* window, int width, int height)
+void DefaultWindowSizeCallback(GLFWwindow* window, int width, int height)
 {
 	RenderSystem* rs = systemManager::GetSystem<RenderSystem>();
 
@@ -72,7 +69,7 @@ void InitializeWindow()
 	}
 
 	glfwSetKeyCallback(window, KeyCallback);
-	glfwSetWindowSizeCallback(window, WindowSizeCallback);
+	glfwSetWindowSizeCallback(window, DefaultWindowSizeCallback);
 
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(0);    // Vsync
