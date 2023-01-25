@@ -6,7 +6,7 @@
 #include <systems/systemManager.h>
 #include <systems/renderSystem.h>
 
-GLFWwindow* window;
+GLFWwindow* mainWindow;
 
 GLuint shaderProgram;
 GLuint vao;
@@ -60,18 +60,18 @@ void InitializeWindow()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-	window = glfwCreateWindow(1200, 600, "3D Test", NULL, NULL);
-	if (!window)
+	mainWindow = glfwCreateWindow(1200, 600, "3D Test", NULL, NULL);
+	if (!mainWindow)
 	{
 		// Window or OpenGL context creation failed
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
-	glfwSetKeyCallback(window, KeyCallback);
-	glfwSetWindowSizeCallback(window, DefaultWindowSizeCallback);
+	glfwSetKeyCallback(mainWindow, KeyCallback);
+	glfwSetWindowSizeCallback(mainWindow, DefaultWindowSizeCallback);
 
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(mainWindow);
 	glfwSwapInterval(0);    // Vsync
 
 	#ifdef USE_GLEW
@@ -96,7 +96,7 @@ void InitializeWindow()
 	#endif // USE_GLAD
 
 	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
+	glfwGetFramebufferSize(mainWindow, &width, &height);
 	glViewport(0, 0, width, height);
 }
 

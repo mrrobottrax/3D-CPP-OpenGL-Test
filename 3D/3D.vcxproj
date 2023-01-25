@@ -149,10 +149,10 @@
     <ClInclude Include="src\gl\glutil.h" />
     <ClInclude Include="src\gl\shader.h" />
     <ClInclude Include="src\gl\shaderloader.h" />
-    <ClInclude Include="src\imgui\imguiutils.h" />
     <ClInclude Include="src\imgui\imgui_impl_glfw.h" />
     <ClInclude Include="src\imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="src\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="src\imgui\imguiutils.h" />
     <ClInclude Include="src\inputmanager.h" />
     <ClInclude Include="src\memory\chunk.h" />
     <ClInclude Include="src\memory\chunkarchetypeelement.h" />
@@ -163,10 +163,10 @@
     <ClInclude Include="src\meshobject.h" />
     <ClInclude Include="src\modelloader.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\systems\systemmanager.h" />
     <ClInclude Include="src\systems\freecamsystem.h" />
     <ClInclude Include="src\systems\rendersystem.h" />
     <ClInclude Include="src\systems\system.h" />
+    <ClInclude Include="src\systems\systemmanager.h" />
     <ClInclude Include="src\systems\systemslist.h" />
     <ClInclude Include="src\systems\velocitysystem.h" />
     <ClInclude Include="src\timemanager.h" />
@@ -175,9 +175,9 @@
     <ClCompile Include="src\common\matrixstack.cpp" />
     <ClCompile Include="src\gl\glutil.cpp" />
     <ClCompile Include="src\gl\shaderloader.cpp" />
-    <ClCompile Include="src\imgui\imguiutils.cpp" />
     <ClCompile Include="src\imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\imgui\imguiutils.cpp" />
     <ClCompile Include="src\inputmanager.cpp" />
     <ClCompile Include="src\memory\chunkarchetypeelement.cpp" />
     <ClCompile Include="src\memory\component.cpp" />
@@ -189,10 +189,10 @@
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\systems\systemmanager.cpp" />
     <ClCompile Include="src\systems\freecamsystem.cpp" />
     <ClCompile Include="src\systems\rendersystem.cpp" />
     <ClCompile Include="src\systems\system.cpp" />
+    <ClCompile Include="src\systems\systemmanager.cpp" />
     <ClCompile Include="src\systems\velocitysystem.cpp" />
     <ClCompile Include="src\timemanager.cpp" />
   </ItemGroup>

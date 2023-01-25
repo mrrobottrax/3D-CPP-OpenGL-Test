@@ -66,7 +66,7 @@ glm::mat4 RenderSystem::CalcPerspectiveMatrix()
 	glm::mat4 matrix = glm::mat4(0.0f);
 
 	int width, height;
-	glfwGetWindowSize(window, &width, &height);
+	glfwGetWindowSize(mainWindow, &width, &height);
 
 	matrix[0][0] = mainCamera->frustumScale / (width / (float)height);
 	matrix[1][1] = mainCamera->frustumScale;

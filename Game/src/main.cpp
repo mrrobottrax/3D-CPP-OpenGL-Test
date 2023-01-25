@@ -39,11 +39,11 @@ void Init()
 {
 	// Init OpenGL
 	InitializeWindow();
-	glfwSetKeyCallback(window, GameKeyCallback);
+	glfwSetKeyCallback(mainWindow, GameKeyCallback);
 
 	InitializeOpenGL();
 
-	SetupImGui(window);
+	SetupImGui(mainWindow);
 
 	// Init systems
 	systemManager::RegisterSystems();
@@ -133,7 +133,7 @@ int main()
 {
 	Init();
 
-	while (!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(mainWindow))
 	{
 		TimeManager::Update();
 		glfwPollEvents();
@@ -148,17 +148,14 @@ int main()
 
 		EndImGuiFrame();
 
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(mainWindow);
 	}
 
 	delete monkeyMesh;
 	delete testMesh;
 	delete testMap;
 
-	// Cleanup
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
+	ImGuiTerminate();
 
 	systemManager::DeleteAllSystems();
 	glfwTerminate();

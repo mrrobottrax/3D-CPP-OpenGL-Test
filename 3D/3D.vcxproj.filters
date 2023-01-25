@@ -66,6 +66,9 @@
     <ClInclude Include="src\imgui\imgui_impl_opengl3_loader.h">
       <Filter>imgui</Filter>
     </ClInclude>
+    <ClInclude Include="src\imgui\imguiutils.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
     <ClInclude Include="src\inputmanager.h" />
     <ClInclude Include="src\memory\chunk.h">
       <Filter>memory</Filter>
@@ -88,7 +91,6 @@
     <ClInclude Include="src\meshobject.h" />
     <ClInclude Include="src\modelloader.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\systems\systemmanager.h" />
     <ClInclude Include="src\systems\freecamsystem.h">
       <Filter>systems</Filter>
     </ClInclude>
@@ -98,12 +100,16 @@
     <ClInclude Include="src\systems\system.h">
       <Filter>systems</Filter>
     </ClInclude>
+    <ClInclude Include="src\systems\systemmanager.h">
+      <Filter>systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\systems\systemslist.h">
+      <Filter>systems</Filter>
+    </ClInclude>
     <ClInclude Include="src\systems\velocitysystem.h">
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\timemanager.h" />
-    <ClInclude Include="src\systems\systemslist.h" />
-    <ClInclude Include="src\imgui\imguiutils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">
@@ -119,6 +125,9 @@
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\imgui\imgui_impl_opengl3.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui\imguiutils.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\inputmanager.cpp" />
@@ -140,7 +149,6 @@
     <ClCompile Include="src\meshobject.cpp" />
     <ClCompile Include="src\modelloader.cpp" />
     <ClCompile Include="src\pch.cpp" />
-    <ClCompile Include="src\systems\systemmanager.cpp" />
     <ClCompile Include="src\systems\freecamsystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
@@ -150,10 +158,12 @@
     <ClCompile Include="src\systems\system.cpp">
       <Filter>systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\systems\systemmanager.cpp">
+      <Filter>systems</Filter>
+    </ClCompile>
     <ClCompile Include="src\systems\velocitysystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
-    <ClCompile Include="src\imgui\imguiutils.cpp" />
   </ItemGroup>
 </Project>

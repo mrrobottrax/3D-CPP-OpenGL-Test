@@ -12,4 +12,9 @@ void GameKeyCallback(GLFWwindow* window, int key, int scancode, int action, int 
 	{
 		showDemoWindow = !showDemoWindow;
 	}
+
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
 }

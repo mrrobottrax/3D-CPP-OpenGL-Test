@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="gl">
+      <UniqueIdentifier>{F8775900-E403-880B-4DB2-880B395D880B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{B54AA90F-215F-D1C0-EAE0-742056B4CDF1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\gl\malletglutil.h">
+      <Filter>gl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\input\malletinputlayer.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\gl\malletglutil.cpp">
+      <Filter>gl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\malletinputlayer.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\pch.cpp" />
+  </ItemGroup>
+</Project>
