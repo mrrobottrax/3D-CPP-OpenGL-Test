@@ -103,6 +103,7 @@
     </ClInclude>
     <ClInclude Include="src\timemanager.h" />
     <ClInclude Include="src\systems\systemslist.h" />
+    <ClInclude Include="src\imgui\imguiutils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">
@@ -153,5 +154,6 @@
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
+    <ClCompile Include="src\imgui\imguiutils.cpp" />
   </ItemGroup>
 </Project>

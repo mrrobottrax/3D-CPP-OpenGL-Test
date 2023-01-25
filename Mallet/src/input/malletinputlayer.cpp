@@ -2,7 +2,7 @@
 #include <input/malletinputlayer.h>
 
 #include <inputmanager.h>
-#include <main.h>
+#include <imgui/imguiutils.h>
 
 void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {

@@ -22,9 +22,7 @@
 #include <components/positioncomponent.h>
 #include <components/idcomponent.h>
 
-#include <imgui.h>
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
+#include <imgui/imguiutils.h>
 
 using namespace std;
 
@@ -47,20 +45,7 @@ void Init()
 
 	InitializeOpenGL();
 
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsLight();
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init(glsl_version);
+	SetupImGui(window);
 
 	// Init systems
 	systemManager::RegisterSystems();
@@ -146,8 +131,6 @@ void Init()
 	}
 }
 
-bool showDemoWindow = false;
-
 int main()
 {
 	Init();
@@ -157,24 +140,16 @@ int main()
 		TimeManager::Update();
 		glfwPollEvents();
 
-		// Start the Dear ImGui frame
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		if (showDemoWindow)
-			ImGui::ShowDemoWindow(&showDemoWindow);
-
-		// Rendering
-		ImGui::Render();
-
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		StartImGuiFrame();
+
 		systemManager::UpdateSystems();
 
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		EndImGuiFrame();
+
 		glfwSwapBuffers(window);
 	}
 
