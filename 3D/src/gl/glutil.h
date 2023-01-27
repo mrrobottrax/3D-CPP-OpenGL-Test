@@ -15,7 +15,7 @@ extern GLuint colorUnif;
 
 void ErrorCallback(int, const char*);
 void KeyCallback(GLFWwindow*, int, int, int, int);
-void WindowSizeCallback(GLFWwindow*, int, int);
+void DefaultWindowSizeCallback(GLFWwindow*, int, int);
 void InitializeWindow();
 void InitializeOpenGL();
 
