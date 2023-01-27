@@ -37,7 +37,7 @@ MeshObject* monkeyMesh = new MeshObject();
 MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
-MalletUiLayer* ui;
+MalletUiLayer ui;
 
 void Init()
 {
@@ -49,7 +49,7 @@ void Init()
 	InitializeOpenGL();
 
 	SetupImGui(mainWindow);
-	ui = new MalletUiLayer();
+	ui = MalletUiLayer();
 
 	// Init systems
 	systemManager::RegisterSystems();
@@ -161,7 +161,6 @@ int main()
 	delete testMesh;
 	delete testMap;
 
-	delete ui;
 	ImGuiTerminate();
 
 	systemManager::DeleteAllSystems();
