@@ -1,4 +1,4 @@
-#include <pch.h>
+#include <malletpch.h>
 
 #include <main.h>
 
@@ -23,6 +23,7 @@
 #include <components/idcomponent.h>
 
 #include <imgui/imguiutils.h>
+#include <ui/malletuilayer.h>
 
 using namespace std;
 
@@ -36,6 +37,8 @@ MeshObject* monkeyMesh = new MeshObject();
 MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
+MalletUiLayer* ui;
+
 void Init()
 {
 	// Init OpenGL
@@ -46,6 +49,7 @@ void Init()
 	InitializeOpenGL();
 
 	SetupImGui(mainWindow);
+	ui = new MalletUiLayer();
 
 	// Init systems
 	systemManager::RegisterSystems();
@@ -157,6 +161,7 @@ int main()
 	delete testMesh;
 	delete testMap;
 
+	delete ui;
 	ImGuiTerminate();
 
 	systemManager::DeleteAllSystems();

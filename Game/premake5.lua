@@ -5,8 +5,8 @@ project "Game"
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir    ("%{wks.location}/obj/" .. outputdir .. "/%{prj.name}")
 
-	pchheader "pch.h"
-	pchsource "%{wks.location}/Game/src/pch.cpp"
+	pchheader "gamepch.h"
+	pchsource "%{wks.location}/Game/src/gamepch.cpp"
 
 	files
 	{

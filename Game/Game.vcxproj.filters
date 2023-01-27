@@ -6,17 +6,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\gamepch.h" />
     <ClInclude Include="src\input\gameinputlayer.h">
       <Filter>input</Filter>
     </ClInclude>
     <ClInclude Include="src\main.h" />
-    <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\gamepch.cpp" />
     <ClCompile Include="src\input\gameinputlayer.cpp">
       <Filter>input</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\pch.cpp" />
   </ItemGroup>
 </Project>
