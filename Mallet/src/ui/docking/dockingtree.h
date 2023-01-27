@@ -3,6 +3,8 @@
 #include <ui/docking/dockingleaf.h>
 #include <ui/docking/dockingnode.h>
 
+#define MAX_PARTITIONS 20
+
 class DockingTree
 {
 public:
@@ -11,8 +13,8 @@ public:
 
 public:
 	int firstNodeIndex;
-	DockingNode nodeArray[20];
-	DockingLeaf leafArray[20];
+	DockingNode nodeArray[MAX_PARTITIONS];
+	DockingLeaf leafArray[MAX_PARTITIONS];
 
 public:
 	void UpdateTree();
