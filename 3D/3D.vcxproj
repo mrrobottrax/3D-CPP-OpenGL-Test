@@ -152,7 +152,7 @@
     <ClInclude Include="src\imgui\imgui_impl_glfw.h" />
     <ClInclude Include="src\imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="src\imgui\imgui_impl_opengl3_loader.h" />
-    <ClInclude Include="src\imgui\imguiutils.h" />
+    <ClInclude Include="src\imgui\imguiutil.h" />
     <ClInclude Include="src\inputmanager.h" />
     <ClInclude Include="src\memory\chunk.h" />
     <ClInclude Include="src\memory\chunkarchetypeelement.h" />
@@ -177,7 +177,7 @@
     <ClCompile Include="src\gl\shaderloader.cpp" />
     <ClCompile Include="src\imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\imgui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="src\imgui\imguiutils.cpp" />
+    <ClCompile Include="src\imgui\imguiutil.cpp" />
     <ClCompile Include="src\inputmanager.cpp" />
     <ClCompile Include="src\memory\chunkarchetypeelement.cpp" />
     <ClCompile Include="src\memory\component.cpp" />

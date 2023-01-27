@@ -10,4 +10,8 @@ public:
 
 private:
 	DockingTree tree;
+
+public:
+	void DrawTreeDebug();
+	void SplitLeaf(int, DockingDirection, float);
 };

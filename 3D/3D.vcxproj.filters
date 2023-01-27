@@ -66,7 +66,7 @@
     <ClInclude Include="src\imgui\imgui_impl_opengl3_loader.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="src\imgui\imguiutils.h">
+    <ClInclude Include="src\imgui\imguiutil.h">
       <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="src\inputmanager.h" />
@@ -127,7 +127,7 @@
     <ClCompile Include="src\imgui\imgui_impl_opengl3.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="src\imgui\imguiutils.cpp">
+    <ClCompile Include="src\imgui\imguiutil.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\inputmanager.cpp" />

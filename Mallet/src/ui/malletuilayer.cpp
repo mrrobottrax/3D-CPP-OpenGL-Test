@@ -11,3 +11,13 @@ MalletUiLayer::~MalletUiLayer()
 {
 
 }
+
+void MalletUiLayer::DrawTreeDebug()
+{
+	tree.DrawTreeDebug();
+}
+
+void MalletUiLayer::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
+{
+	tree.SplitLeaf(leafIndex, dir, ratio);
+}
