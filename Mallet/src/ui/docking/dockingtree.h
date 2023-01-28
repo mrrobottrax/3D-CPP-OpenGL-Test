@@ -19,11 +19,10 @@ public:
 public:
 	void UpdateTree();
 	void DrawTreeDebug();
-	void SplitLeaf(int, DockingDirection, float);
+	int SplitLeaf(int, DockingDirection, float);
 
 private:
 	bool IsLeaf(int);
-	int GetLiteralLeafIndex(int);
 	int AddNode(int, int, DockingDirection, float);
 	int AddLeaf(int);
 	void DrawNodeRecursiveDebug(int, int, int, int, int);

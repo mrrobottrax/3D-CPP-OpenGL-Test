@@ -12,14 +12,12 @@ ImGuiWindowFlags_NoMove;
 
 DockingTree::DockingTree() : nodeArray(), leafArray()
 {
-	rootNode = 0;
+	int leaf = AddLeaf(-1);
+	rootNode = -(leaf + 1);
 
-	AddNode(-1, -2, DockingDirection::horizontal, 0.25f);
-
-	AddLeaf(0);
-	AddLeaf(0);
-
-	SplitLeaf(1, DockingDirection::vertical, 0.75f);
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.8f);
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.8f);
+	//leaf = SplitLeaf(1, DockingDirection::horizontal, 0.75f);
 }
 
 DockingTree::~DockingTree()
@@ -36,23 +34,24 @@ bool DockingTree::IsLeaf(int index)
 	return index < 0;
 }
 
-int DockingTree::GetLiteralLeafIndex(int leafIndex)
-{
-	return abs(leafIndex) - 1;
-}
-
-void DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
+int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
 {
 	int newLeafIndex = AddLeaf(0);
 	int newNodeIndex = AddNode(-(leafIndex + 1), -(newLeafIndex + 1), dir, ratio);
 
 	leafArray[newLeafIndex].parentNodeIndex = newNodeIndex;
 
+	if (leafArray[leafIndex].parentNodeIndex < 0)
+	{
+		rootNode = newNodeIndex;
+		return newLeafIndex;
+	}
+
 	DockingNode& parentNode = nodeArray[leafArray[leafIndex].parentNodeIndex];
 
 	parentNode.frontIndex = newNodeIndex;
 
-	std::cout << newNodeIndex << "\n";
+	return newLeafIndex;
 }
 
 int DockingTree::AddNode(int backIndex, int frontIndex, DockingDirection dir, float ratio)
@@ -85,6 +84,8 @@ int DockingTree::AddLeaf(int parentNodeIndex)
 
 void DockingTree::DrawTreeDebug()
 {
+	srand(0);
+
 	int windowSizeX, windowSizeY;
 	int workingSizeX, workingSizeY;
 	int workingPosX, workingPosY;
@@ -96,22 +97,29 @@ void DockingTree::DrawTreeDebug()
 	workingPosX = 0;
 	workingPosY = 0;
 
-	DrawNodeRecursiveDebug(0, workingPosX, workingPosY, workingSizeX, workingSizeY);
+	DrawNodeRecursiveDebug(rootNode, workingPosX, workingPosY, workingSizeX, workingSizeY);
 }
 
 void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, int workingPosX, int workingPosY, int workingSizeX, int workingSizeY)
 {
+	if (IsLeaf(nodeIndex))
+	{
+		DrawLeafDebug(nodeIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
+		return;
+	}
+
 	const int startSizeX = workingSizeX;
 	const int startSizeY = workingSizeY;
 
+	// Scale window
 	switch (nodeArray[nodeIndex].direction)
 	{
 	case horizontal:
-		workingSizeX *= nodeArray[nodeIndex].ratio;
+		workingSizeY *= nodeArray[nodeIndex].ratio;
 		break;
 
 	case vertical:
-		workingSizeY *= nodeArray[nodeIndex].ratio;
+		workingSizeX *= nodeArray[nodeIndex].ratio;
 		break;
 
 	default:
@@ -126,11 +134,11 @@ void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, int workingPosX, int wor
 		switch (nodeArray[nodeIndex].direction)
 		{
 		case horizontal:
-			workingPosX += workingSizeX;
+			workingPosY += workingSizeY;
 			break;
 
 		case vertical:
-			workingPosY += workingSizeY;
+			workingPosX += workingSizeX;
 			break;
 
 		default:
@@ -142,23 +150,24 @@ void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, int workingPosX, int wor
 		DrawNodeRecursiveDebug(nodeArray[nodeIndex].backIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
 	}
 
+	// Inverse scale window
+	switch (nodeArray[nodeIndex].direction)
+	{
+	case horizontal:
+		workingSizeY = startSizeY * (1.0f - nodeArray[nodeIndex].ratio);
+		break;
+
+	case vertical:
+		workingSizeX = startSizeX * (1.0f - nodeArray[nodeIndex].ratio);
+		break;
+
+	default:
+		break;
+	}
+
 	// Front
 	if (IsLeaf(nodeArray[nodeIndex].frontIndex))
 	{
-		switch (nodeArray[nodeIndex].direction)
-		{
-		case horizontal:
-			workingSizeX = startSizeX * (1 / nodeArray[nodeIndex].ratio);
-			break;
-
-		case vertical:
-			workingSizeY = startSizeY * (1 / nodeArray[nodeIndex].ratio);
-			break;
-
-		default:
-			break;
-		}
-
 		DrawLeafDebug(nodeArray[nodeIndex].frontIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
 	}
 	else
@@ -169,7 +178,7 @@ void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, int workingPosX, int wor
 
 void DockingTree::DrawLeafDebug(int leafIndex, int workingPosX, int workingPosY, int workingSizeX, int workingSizeY)
 {
-	int literalLeafIndex = GetLiteralLeafIndex(leafIndex);
+	int literalLeafIndex = abs(leafIndex) - 1;
 
 	ImGui::SetNextWindowPos(ImVec2(workingPosX, workingPosY));
 	ImGui::SetNextWindowSize(ImVec2(workingSizeX, workingSizeY));
@@ -178,8 +187,8 @@ void DockingTree::DrawLeafDebug(int leafIndex, int workingPosX, int workingPosY,
 	std::string name = std::to_string(literalLeafIndex);
 
 	int R, G, B;
-	RandomHueColor(literalLeafIndex, &R, &G, &B);
-	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, ImVec4(R, G, B, 0.5f));
+	RandomHueColor(&R, &G, &B);
+	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, ImVec4(R, G, B, 0.7f));
 
 	ImGui::Begin(name.c_str(), &pOpen, window_flags);
 	ImGui::Text(name.c_str());

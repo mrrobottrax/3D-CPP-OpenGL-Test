@@ -31,12 +31,12 @@ inline void HSVtoRGB(float H, float S, float V, int* R, int* G, int* B) {
     else {
         r = C, g = 0, b = X;
     }
-    *R = (r + m) * 255;
-    *G = (g + m) * 255;
-    *B = (b + m) * 255;
+    *R = int(r + m) * 255;
+    *G = int(g + m) * 255;
+    *B = int(b + m) * 255;
 }
 
-inline void RandomHueColor(int seed, int* R, int* G, int* B)
+inline void RandomHueColor(int* R, int* G, int* B)
 {
-    HSVtoRGB(seed * 907 % 360, 100, 100, R, G, B);
+    HSVtoRGB(rand() % 360, 100, 100, R, G, B);
 }
