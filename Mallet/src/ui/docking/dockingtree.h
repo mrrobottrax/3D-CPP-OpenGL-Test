@@ -25,6 +25,6 @@ private:
 	bool IsLeaf(int);
 	int AddNode(int, int, DockingDirection, float);
 	int AddLeaf(int);
-	void DrawNodeRecursiveDebug(int, int, int, int, int);
-	void DrawLeafDebug(int, int, int, int, int);
+	void DrawNodeRecursiveDebug(int, float, float, float, float);
+	void DrawLeafDebug(int, float, float, float, float);
 };

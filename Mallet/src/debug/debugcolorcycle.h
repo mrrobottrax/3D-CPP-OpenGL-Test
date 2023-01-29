@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-inline void HSVtoRGB(float H, float S, float V, int* R, int* G, int* B) {
+inline void HSVtoRGB(float H, float S, float V, float* R, float* G, float* B) {
     if (H > 360 || H < 0 || S>100 || S < 0 || V>100 || V < 0) {
         std::cout << "The given HSV values are not in valid range" << std::endl;
         return;
@@ -10,7 +10,7 @@ inline void HSVtoRGB(float H, float S, float V, int* R, int* G, int* B) {
     float s = S / 100;
     float v = V / 100;
     float C = s * v;
-    float X = C * (1 - abs(fmod(H / 60.0, 2) - 1));
+    float X = float(C * (1 - abs(fmod(H / 60.0, 2) - 1)));
     float m = v - C;
     float r, g, b;
     if (H >= 0 && H < 60) {
@@ -31,12 +31,12 @@ inline void HSVtoRGB(float H, float S, float V, int* R, int* G, int* B) {
     else {
         r = C, g = 0, b = X;
     }
-    *R = int(r + m) * 255;
-    *G = int(g + m) * 255;
-    *B = int(b + m) * 255;
+    *R = r + m;
+    *G = g + m;
+    *B = b + m;
 }
 
-inline void RandomHueColor(int* R, int* G, int* B)
+inline void RandomHueColor(float* R, float* G, float* B)
 {
     HSVtoRGB(float(rand() % 360), 100, 100, R, G, B);
 }

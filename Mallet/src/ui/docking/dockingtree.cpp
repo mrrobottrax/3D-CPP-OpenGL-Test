@@ -66,6 +66,8 @@ int DockingTree::AddNode(int backIndex, int frontIndex, DockingDirection dir, fl
 			return index;
 		}
 	}
+
+	return -1;
 }
 
 int DockingTree::AddLeaf(int parentNodeIndex)
@@ -80,6 +82,8 @@ int DockingTree::AddLeaf(int parentNodeIndex)
 			return index;
 		}
 	}
+
+	return -1;
 }
 
 void DockingTree::DrawTreeDebug()
@@ -87,12 +91,12 @@ void DockingTree::DrawTreeDebug()
 	srand(0);
 
 	int windowSizeX, windowSizeY;
-	int workingSizeX, workingSizeY;
-	int workingPosX, workingPosY;
+	float workingSizeX, workingSizeY;
+	float workingPosX, workingPosY;
 	glfwGetWindowSize(mainWindow, &windowSizeX, &windowSizeY);
 
-	workingSizeX = windowSizeX;
-	workingSizeY = windowSizeY;
+	workingSizeX = float(windowSizeX);
+	workingSizeY = float(windowSizeY);
 
 	workingPosX = 0;
 	workingPosY = 0;
@@ -100,7 +104,7 @@ void DockingTree::DrawTreeDebug()
 	DrawNodeRecursiveDebug(rootNode, workingPosX, workingPosY, workingSizeX, workingSizeY);
 }
 
-void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, int workingPosX, int workingPosY, int workingSizeX, int workingSizeY)
+void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
 {
 	if (IsLeaf(nodeIndex))
 	{
@@ -108,8 +112,8 @@ void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, int workingPosX, int wor
 		return;
 	}
 
-	const int startSizeX = workingSizeX;
-	const int startSizeY = workingSizeY;
+	const float startSizeX = workingSizeX;
+	const float startSizeY = workingSizeY;
 
 	// Scale window
 	switch (nodeArray[nodeIndex].direction)
@@ -176,7 +180,7 @@ void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, int workingPosX, int wor
 	}
 }
 
-void DockingTree::DrawLeafDebug(int leafIndex, int workingPosX, int workingPosY, int workingSizeX, int workingSizeY)
+void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
 {
 	int literalLeafIndex = abs(leafIndex) - 1;
 
@@ -186,12 +190,14 @@ void DockingTree::DrawLeafDebug(int leafIndex, int workingPosX, int workingPosY,
 
 	std::string name = std::to_string(literalLeafIndex);
 
-	int R, G, B;
+	float R, G, B;
 	RandomHueColor(&R, &G, &B);
-	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, ImVec4(R, G, B, 0.7f));
+	ImVec4 color = ImVec4(R, G, B, 0.8f);
+	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, color);
 
 	ImGui::Begin(name.c_str(), &pOpen, window_flags);
 	ImGui::Text(name.c_str());
+	ImGui::Text("Color: %f, %f, %f", R, G, B);
 	ImGui::End();
 
 	ImGui::PopStyleColor();
