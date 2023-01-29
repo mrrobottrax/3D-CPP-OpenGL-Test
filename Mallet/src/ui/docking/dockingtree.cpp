@@ -15,8 +15,8 @@ DockingTree::DockingTree() : nodeArray(), leafArray()
 	int leaf = AddLeaf(-1);
 	rootNode = -(leaf + 1);
 
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.8f);
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.8f);
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f);
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f);
 	//leaf = SplitLeaf(1, DockingDirection::horizontal, 0.75f);
 }
 

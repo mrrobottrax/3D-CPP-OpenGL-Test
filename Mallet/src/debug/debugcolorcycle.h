@@ -38,5 +38,5 @@ inline void HSVtoRGB(float H, float S, float V, int* R, int* G, int* B) {
 
 inline void RandomHueColor(int* R, int* G, int* B)
 {
-    HSVtoRGB(rand() % 360, 100, 100, R, G, B);
+    HSVtoRGB(float(rand() % 360), 100, 100, R, G, B);
 }

@@ -2,7 +2,7 @@
 #include <input/gameinputlayer.h>
 
 #include <inputmanager.h>
-#include <imgui/imguiutils.h>
+#include <imgui/imguiutil.h>
 
 void GameKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
