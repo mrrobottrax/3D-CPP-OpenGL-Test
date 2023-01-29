@@ -15,9 +15,11 @@ DockingTree::DockingTree() : nodeArray(), leafArray()
 	int leaf = AddLeaf(-1);
 	rootNode = -(leaf + 1);
 
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.15f);
 	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f);
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f);
-	//leaf = SplitLeaf(1, DockingDirection::horizontal, 0.75f);
+	leaf = SplitLeaf(0, DockingDirection::horizontal, 0.5f);
+
+	PrintTree();
 }
 
 DockingTree::~DockingTree()
@@ -29,6 +31,39 @@ void DockingTree::UpdateTree()
 {
 }
 
+void DockingTree::PrintTree()
+{
+	std::cout << "Start Node: " << rootNode << "\n\n";
+
+	// Print nodes
+	std::cout << "Nodes:" << "\n";
+	for (int i = 0; i < MAX_PARTITIONS; i++)
+	{
+		std::cout << "Node " << i << "\n";
+		std::cout << "   " << "Flags: " << "\n";
+		std::cout << "      " << nodeArray[i].flags << "\n";
+		std::cout << "   " << "Direction: " << "\n";
+		std::cout << "      " << nodeArray[i].direction << "\n";
+		std::cout << "   " << "Ratio: " << "\n";
+		std::cout << "      " << nodeArray[i].ratio << "\n";
+		std::cout << "   " << "Back: " << "\n";
+		std::cout << "      " << nodeArray[i].backIndex << "\n";
+		std::cout << "   " << "Front: " << "\n";
+		std::cout << "      " << nodeArray[i].frontIndex << "\n";
+	}
+
+	// Print leafs
+	std::cout << "Leafs:" << "\n";
+	for (int i = 0; i < MAX_PARTITIONS; i++)
+	{
+		std::cout << "Leaf " << i << "\n";
+		std::cout << "   " << "Flags: " << "\n";
+		std::cout << "      " << leafArray[i].flags << "\n";
+		std::cout << "   " << "Parent Node: " << "\n";
+		std::cout << "      " << leafArray[i].parentNodeIndex << "\n";
+	}
+}
+
 bool DockingTree::IsLeaf(int index)
 {
 	return index < 0;
@@ -36,7 +71,8 @@ bool DockingTree::IsLeaf(int index)
 
 int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
 {
-	int newLeafIndex = AddLeaf(0);
+	/*
+	int newLeafIndex = AddLeaf(-1);
 	int newNodeIndex = AddNode(-(leafIndex + 1), -(newLeafIndex + 1), dir, ratio);
 
 	leafArray[newLeafIndex].parentNodeIndex = newNodeIndex;
@@ -44,12 +80,44 @@ int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
 	if (leafArray[leafIndex].parentNodeIndex < 0)
 	{
 		rootNode = newNodeIndex;
-		return newLeafIndex;
+	}
+	else
+	{
+		DockingNode& parentNode = nodeArray[leafArray[leafIndex].parentNodeIndex];
+		parentNode.frontIndex = newNodeIndex;
 	}
 
-	DockingNode& parentNode = nodeArray[leafArray[leafIndex].parentNodeIndex];
+	leafArray[leafIndex].parentNodeIndex = newNodeIndex;
 
-	parentNode.frontIndex = newNodeIndex;
+	return newLeafIndex;
+	*/
+
+	DockingLeaf& leafToSplit = leafArray[leafIndex];
+	DockingNode& parentNode = nodeArray[leafToSplit.parentNodeIndex];
+	bool isLeafToSplitBack = -(leafIndex + 1) == parentNode.backIndex;
+
+	int newLeafIndex = AddLeaf(-1);
+	int newNodeIndex = AddNode(-(leafIndex + 1), -(newLeafIndex + 1), dir, ratio);
+	
+	DockingLeaf& newLeaf = leafArray[newLeafIndex];
+
+	// Leaf was not connected to any node
+	if (leafToSplit.parentNodeIndex < 0)
+	{
+		rootNode = newNodeIndex;
+	}
+
+	leafToSplit.parentNodeIndex = newNodeIndex;
+	newLeaf.parentNodeIndex = newNodeIndex;
+
+	if (isLeafToSplitBack)
+	{
+		parentNode.backIndex = newNodeIndex;
+	}
+	else
+	{
+		parentNode.frontIndex = newNodeIndex;
+	}
 
 	return newLeafIndex;
 }

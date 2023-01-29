@@ -18,6 +18,7 @@ public:
 
 public:
 	void UpdateTree();
+	void PrintTree();
 	void DrawTreeDebug();
 	int SplitLeaf(int, DockingDirection, float);
 
