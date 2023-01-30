@@ -171,13 +171,7 @@ float DockingTree::GetNodeOffsetRecursive(int nodeIndex, DockingDirection direct
 	{
 		bool isBackNode = nodeArray[node.parentNodeIndex].backIndex == nodeIndex;
 
-		/*
-		float workingSize = isBackNode ? parentOffset : windowSize - parentOffset;
-		//std::cout << isBackNode << ", " << windowSize << ", " << parentOffset << "\n";
-
-		offset = parentOffset + node.ratio * workingSize;
-		*/
-		if (isBackNode)
+		if (isBackNode && parentOffset != 0)
 		{
 			float workingSize = parentOffset;
 			offset = workingSize * node.ratio;
