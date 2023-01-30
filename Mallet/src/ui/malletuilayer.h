@@ -12,6 +12,6 @@ private:
 	DockingTree tree;
 
 public:
-	void DrawTreeDebug();
+	void DrawTree();
 	void SplitLeaf(int, DockingDirection, float);
 };

@@ -17,15 +17,15 @@ public:
 	DockingLeaf leafArray[MAX_PARTITIONS];
 
 public:
-	void UpdateTree();
 	void PrintTree();
-	void DrawTreeDebug();
+	void DrawTree();
 	int SplitLeaf(int, DockingDirection, float);
 
 private:
 	bool IsLeaf(int);
 	int AddNode(int, int, DockingDirection, float);
 	int AddLeaf(int);
-	void DrawNodeRecursiveDebug(int, float, float, float, float);
+	void DrawNodeRecursive(int, float, float, float, float);
 	void DrawLeafDebug(int, float, float, float, float);
+	void DrawLeaf(int, float, float, float, float);
 };

@@ -152,7 +152,7 @@ int main()
 
 		systemManager::UpdateSystems();
 
-		ui->DrawTreeDebug();
+		ui->DrawTree();
 
 		EndImGuiFrame();
 

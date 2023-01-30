@@ -12,9 +12,9 @@ MalletUiLayer::~MalletUiLayer()
 
 }
 
-void MalletUiLayer::DrawTreeDebug()
+void MalletUiLayer::DrawTree()
 {
-	tree.DrawTreeDebug();
+	tree.DrawTree();
 }
 
 void MalletUiLayer::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)

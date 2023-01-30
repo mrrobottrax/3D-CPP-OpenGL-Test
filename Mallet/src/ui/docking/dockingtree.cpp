@@ -6,8 +6,10 @@
 
 #include <debug/debugcolorcycle.h>
 
-const static ImGuiWindowFlags window_flags =ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
-ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav |
+//#define DRAW_DEBUG
+
+const static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration |
+ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
 ImGuiWindowFlags_NoMove;
 
 DockingTree::DockingTree() : nodeArray(), leafArray()
@@ -25,10 +27,6 @@ DockingTree::DockingTree() : nodeArray(), leafArray()
 DockingTree::~DockingTree()
 {
 	
-}
-
-void DockingTree::UpdateTree()
-{
 }
 
 void DockingTree::PrintTree()
@@ -133,7 +131,7 @@ int DockingTree::AddLeaf(int parentNodeIndex)
 	return -1;
 }
 
-void DockingTree::DrawTreeDebug()
+void DockingTree::DrawTree()
 {
 	srand(0);
 
@@ -148,14 +146,19 @@ void DockingTree::DrawTreeDebug()
 	workingPosX = 0;
 	workingPosY = 0;
 
-	DrawNodeRecursiveDebug(rootNode, workingPosX, workingPosY, workingSizeX, workingSizeY);
+	DrawNodeRecursive(rootNode, workingPosX, workingPosY, workingSizeX, workingSizeY);
 }
 
-void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
+void DockingTree::DrawNodeRecursive(int nodeIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
 {
 	if (IsLeaf(nodeIndex))
 	{
-		DrawLeafDebug(nodeIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
+		#ifdef DRAW_DEBUG
+			DrawLeafDebug(nodeIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
+		#else
+			DrawLeaf(nodeIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
+		#endif // DRAW_DEBUG
+
 		return;
 	}
 
@@ -179,7 +182,7 @@ void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, float workingPosX, float
 			break;
 		}
 
-		DrawNodeRecursiveDebug(nodeArray[nodeIndex].backIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
+		DrawNodeRecursive(nodeArray[nodeIndex].backIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
 	}
 
 	// Move window
@@ -214,7 +217,7 @@ void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, float workingPosX, float
 			break;
 		}
 
-		DrawNodeRecursiveDebug(nodeArray[nodeIndex].frontIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
+		DrawNodeRecursive(nodeArray[nodeIndex].frontIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
 	}
 }
 
@@ -222,14 +225,14 @@ void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingP
 {
 	int literalLeafIndex = abs(leafIndex) - 1;
 
-	int posX, posY;
-	int sizeX, sizeY;
+	float posX, posY;
+	float sizeX, sizeY;
 
 	posX = roundf(workingPosX);
 	posY = roundf(workingPosY);
 
-	sizeX = roundf(workingSizeX);
-	sizeY = roundf(workingSizeY);
+	sizeX = roundf(workingSizeX) + 1;
+	sizeY = roundf(workingSizeY) + 1;
 
 	ImGui::SetNextWindowPos(ImVec2(posX, posY));
 	ImGui::SetNextWindowSize(ImVec2(sizeX, sizeY));
@@ -239,7 +242,7 @@ void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingP
 
 	float R, G, B;
 	RandomHueColor(&R, &G, &B);
-	ImVec4 color = ImVec4(R, G, B, 0.8f);
+	ImVec4 color = ImVec4(R, G, B, 0.5f);
 	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, color);
 
 	ImGui::Begin(name.c_str(), &pOpen, window_flags);
@@ -248,4 +251,32 @@ void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingP
 	ImGui::End();
 
 	ImGui::PopStyleColor();
+}
+
+void DockingTree::DrawLeaf(int leafIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
+{
+	int literalLeafIndex = abs(leafIndex) - 1;
+
+	float posX, posY;
+	float sizeX, sizeY;
+
+	posX = roundf(workingPosX);
+	posY = roundf(workingPosY);
+
+	sizeX = roundf(workingSizeX) + 1;
+	sizeY = roundf(workingSizeY) + 1;
+
+	ImGui::SetNextWindowPos(ImVec2(posX, posY));
+	ImGui::SetNextWindowSize(ImVec2(sizeX, sizeY));
+	bool pOpen = true;
+
+	std::string name = std::to_string(literalLeafIndex);
+
+	//ImVec4 color = ImVec4(.1f, .1f, .1f, 1);
+	//ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, color);
+
+	ImGui::Begin(name.c_str(), &pOpen, window_flags);
+	ImGui::End();
+
+	//ImGui::PopStyleColor();
 }
