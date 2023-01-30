@@ -7,6 +7,11 @@ namespace MalletUi
 {
 	DockingTree tree;
 
+	void PrintTree()
+	{
+		tree.PrintTree();
+	}
+
 	void DrawTree()
 	{
 		tree.DrawTree();

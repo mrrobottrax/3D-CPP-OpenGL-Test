@@ -4,6 +4,7 @@
 
 namespace MalletUi
 {
+	void PrintTree();
 	void DrawTree();
 	void RecalculateTree();
 	void SplitLeaf(int, DockingDirection, float);

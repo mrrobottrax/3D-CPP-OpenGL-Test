@@ -10,7 +10,7 @@ enum DockingLeafFlags
 struct DockingLeaf
 {
 public:
-	DockingLeaf() : parentNodeIndex(), window(), flags(0), absPos(), absSize()
+	DockingLeaf() : parentNodeIndex(-1), window(), flags(0), absPos(), absSize()
 	{
 
 	}

@@ -48,6 +48,10 @@ void DockingTree::PrintTree()
 		std::cout << "      " << nodeArray[i].backIndex << "\n";
 		std::cout << "   " << "Front: " << "\n";
 		std::cout << "      " << nodeArray[i].frontIndex << "\n";
+		std::cout << "   " << "Offset: " << "\n";
+		std::cout << "      " << nodeArray[i].absOffset << "\n";
+		std::cout << "   " << "Parent: " << "\n";
+		std::cout << "      " << nodeArray[i].parentNodeIndex << "\n";
 	}
 
 	// Print leafs
@@ -99,18 +103,13 @@ int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
 	return newLeafIndex;
 }
 
-void RecalculateSizesRecursive(float workingWidth, float workingHeight)
-{
-
-}
-
 void DockingTree::RecalculateSizes()
 {
-	int h, w;
-	glfwGetWindowSize(mainWindow, &h, &w);
+	int w, h;
+	glfwGetWindowSize(mainWindow, &w, &h);
 
-	const float windowWidth = float(h);
-	const float windowHeight = float(w);
+	const float windowWidth = float(w);
+	const float windowHeight = float(h);
 
 	if (IsLeaf(rootNode))
 	{
@@ -125,10 +124,72 @@ void DockingTree::RecalculateSizes()
 		return;
 	}
 
-	float workingWidth = windowWidth;
-	float workingHeight = windowHeight;
+	for (int i = 0; i < MAX_PARTITIONS; i++)
+	{
+		DockingNode& node = nodeArray[i];
 
-	RecalculateSizesRecursive(workingWidth, workingHeight);
+		if (!(node.flags & DockingNodeFlags::nodeIsUsed))
+		{
+			continue;
+		}
+
+		switch (node.direction)
+		{
+		case horizontal:
+			node.absOffset = GetNodeOffsetRecursive(i, node.direction, windowHeight);
+			break;
+		case vertical:
+			node.absOffset = GetNodeOffsetRecursive(i, node.direction, windowWidth);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+float DockingTree::GetNodeOffsetRecursive(int nodeIndex, DockingDirection direction, float windowSize)
+{
+	DockingNode& node = nodeArray[nodeIndex];
+
+	if (node.parentNodeIndex < 0)
+	{
+		float offset = 0;
+
+		if (node.direction == direction)
+		{
+			offset = windowSize * node.ratio;
+		}
+
+		return offset;
+	}
+
+	float parentOffset = GetNodeOffsetRecursive(node.parentNodeIndex, direction, windowSize);
+
+	float offset = 0;
+
+	if (node.direction == direction)
+	{
+		bool isBackNode = nodeArray[node.parentNodeIndex].backIndex == nodeIndex;
+
+		/*
+		float workingSize = isBackNode ? parentOffset : windowSize - parentOffset;
+		//std::cout << isBackNode << ", " << windowSize << ", " << parentOffset << "\n";
+
+		offset = parentOffset + node.ratio * workingSize;
+		*/
+		if (isBackNode)
+		{
+			float workingSize = parentOffset;
+			offset = workingSize * node.ratio;
+		}
+		else
+		{
+			float workingSize = windowSize - parentOffset;
+			offset = workingSize * node.ratio + parentOffset;
+		}
+	}
+
+	return offset;
 }
 
 int DockingTree::AddNode(int parentNodeIndex, int backIndex, int frontIndex, DockingDirection dir, float ratio)
