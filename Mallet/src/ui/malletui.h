@@ -4,8 +4,8 @@
 
 namespace MalletUi
 {
-	extern DockingTree tree;
-
 	void DrawTree();
+	void RecalculateTree();
 	void SplitLeaf(int, DockingDirection, float);
+	int GetNodeToMove();
 };

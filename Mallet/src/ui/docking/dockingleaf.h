@@ -10,12 +10,12 @@ enum DockingLeafFlags
 struct DockingLeaf
 {
 public:
-	DockingLeaf() : parentNodeIndex(), window(), flags(0)
+	DockingLeaf() : parentNodeIndex(), window(), flags(0), absPos(), absSize()
 	{
 
 	}
 
-	DockingLeaf(int parentNodeIndex) : parentNodeIndex(parentNodeIndex), window(), flags(0)
+	DockingLeaf(int parentNodeIndex) : parentNodeIndex(parentNodeIndex), window(), flags(0), absPos(), absSize()
 	{
 		flags |= DockingLeafFlags::leafIsUsed;
 	}
@@ -31,4 +31,7 @@ public:
 public:
 	int parentNodeIndex;
 	int flags;
+
+	float absPos[2];
+	float absSize[2];
 };

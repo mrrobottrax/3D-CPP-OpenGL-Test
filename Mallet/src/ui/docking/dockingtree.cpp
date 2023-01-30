@@ -74,7 +74,7 @@ int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
 	bool isLeafToSplitBack = -(leafIndex + 1) == parentNode.backIndex;
 
 	int newLeafIndex = AddLeaf(-1);
-	int newNodeIndex = AddNode(-(leafIndex + 1), -(newLeafIndex + 1), dir, ratio);
+	int newNodeIndex = AddNode(leafToSplit.parentNodeIndex, -(leafIndex + 1), -(newLeafIndex + 1), dir, ratio);
 	
 	DockingLeaf& newLeaf = leafArray[newLeafIndex];
 
@@ -99,7 +99,34 @@ int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
 	return newLeafIndex;
 }
 
-int DockingTree::AddNode(int backIndex, int frontIndex, DockingDirection dir, float ratio)
+void DockingTree::RecalculateSizes()
+{
+	int h, w;
+	glfwGetWindowSize(mainWindow, &h, &w);
+
+	const float windowWidth = float(h);
+	const float windowHeight = float(w);
+
+	if (IsLeaf(rootNode))
+	{
+		DockingLeaf& leaf = leafArray[abs(rootNode) + 1];
+
+		leaf.absPos[0] = 0;
+		leaf.absPos[1] = 0;
+
+		leaf.absSize[0] = windowWidth;
+		leaf.absSize[1] = windowHeight;
+
+		return;
+	}
+
+	float workingWidth = windowWidth;
+	float workingHeight = windowHeight;
+
+
+}
+
+int DockingTree::AddNode(int parentNodeIndex, int backIndex, int frontIndex, DockingDirection dir, float ratio)
 {
 	// Find free space in array
 	int index;
@@ -107,7 +134,7 @@ int DockingTree::AddNode(int backIndex, int frontIndex, DockingDirection dir, fl
 	{
 		if (!(nodeArray[index].flags & DockingNodeFlags::nodeIsUsed))
 		{
-			nodeArray[index] = DockingNode(backIndex, frontIndex, dir, ratio);
+			nodeArray[index] = DockingNode(parentNodeIndex, backIndex, frontIndex, dir, ratio);
 			return index;
 		}
 	}
@@ -231,8 +258,8 @@ void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingP
 	posX = roundf(workingPosX);
 	posY = roundf(workingPosY);
 
-	sizeX = roundf(workingSizeX) + 1;
-	sizeY = roundf(workingSizeY) + 1;
+	sizeX = roundf(workingSizeX);
+	sizeY = roundf(workingSizeY);
 
 	ImGui::SetNextWindowPos(ImVec2(posX, posY));
 	ImGui::SetNextWindowSize(ImVec2(sizeX, sizeY));
@@ -257,17 +284,10 @@ void DockingTree::DrawLeaf(int leafIndex, float workingPosX, float workingPosY, 
 {
 	int literalLeafIndex = abs(leafIndex) - 1;
 
-	float posX, posY;
-	float sizeX, sizeY;
+	DockingLeaf& leaf = leafArray[leafIndex];
 
-	posX = roundf(workingPosX);
-	posY = roundf(workingPosY);
-
-	sizeX = roundf(workingSizeX) + 1;
-	sizeY = roundf(workingSizeY) + 1;
-
-	ImGui::SetNextWindowPos(ImVec2(posX, posY));
-	ImGui::SetNextWindowSize(ImVec2(sizeX, sizeY));
+	ImGui::SetNextWindowPos(ImVec2(leaf.absPos[0], leaf.absPos[1]));
+	ImGui::SetNextWindowSize(ImVec2(leaf.absSize[0], leaf.absSize[1]));
 	bool pOpen = true;
 
 	std::string name = std::to_string(literalLeafIndex);
@@ -276,6 +296,8 @@ void DockingTree::DrawLeaf(int leafIndex, float workingPosX, float workingPosY, 
 	//ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, color);
 
 	ImGui::Begin(name.c_str(), &pOpen, window_flags);
+	ImGui::Text(name.c_str());
+	//ImGui::Text("Color: %f, %f, %f", R, G, B);
 	ImGui::End();
 
 	//ImGui::PopStyleColor();

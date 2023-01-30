@@ -20,10 +20,11 @@ public:
 	void PrintTree();
 	void DrawTree();
 	int SplitLeaf(int, DockingDirection, float);
+	void RecalculateSizes();
 
 private:
 	bool IsLeaf(int);
-	int AddNode(int, int, DockingDirection, float);
+	int AddNode(int, int, int, DockingDirection, float);
 	int AddLeaf(int);
 	void DrawNodeRecursive(int, float, float, float, float);
 	void DrawLeafDebug(int, float, float, float, float);
