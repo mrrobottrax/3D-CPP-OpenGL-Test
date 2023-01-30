@@ -6,7 +6,7 @@
 
 #include <debug/debugcolorcycle.h>
 
-//#define DRAW_DEBUG
+#define DRAW_DEBUG
 
 const static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration |
 ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
@@ -99,6 +99,11 @@ int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
 	return newLeafIndex;
 }
 
+void RecalculateSizesRecursive(float workingWidth, float workingHeight)
+{
+
+}
+
 void DockingTree::RecalculateSizes()
 {
 	int h, w;
@@ -123,7 +128,7 @@ void DockingTree::RecalculateSizes()
 	float workingWidth = windowWidth;
 	float workingHeight = windowHeight;
 
-
+	RecalculateSizesRecursive(workingWidth, workingHeight);
 }
 
 int DockingTree::AddNode(int parentNodeIndex, int backIndex, int frontIndex, DockingDirection dir, float ratio)
@@ -181,9 +186,9 @@ void DockingTree::DrawNodeRecursive(int nodeIndex, float workingPosX, float work
 	if (IsLeaf(nodeIndex))
 	{
 		#ifdef DRAW_DEBUG
-			DrawLeafDebug(nodeIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
+			DrawLeafDebug(abs(nodeIndex) - 1, workingPosX, workingPosY, workingSizeX, workingSizeY);
 		#else
-			DrawLeaf(nodeIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
+			DrawLeaf(abs(nodeIndex) - 1, workingPosX, workingPosY, workingSizeX, workingSizeY);
 		#endif // DRAW_DEBUG
 
 		return;
@@ -250,7 +255,7 @@ void DockingTree::DrawNodeRecursive(int nodeIndex, float workingPosX, float work
 
 void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
 {
-	int literalLeafIndex = abs(leafIndex) - 1;
+	DockingLeaf& leaf = leafArray[leafIndex];
 
 	float posX, posY;
 	float sizeX, sizeY;
@@ -265,7 +270,7 @@ void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingP
 	ImGui::SetNextWindowSize(ImVec2(sizeX, sizeY));
 	bool pOpen = true;
 
-	std::string name = std::to_string(literalLeafIndex);
+	std::string name = std::to_string(leafIndex);
 
 	float R, G, B;
 	RandomHueColor(&R, &G, &B);
@@ -275,6 +280,8 @@ void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingP
 	ImGui::Begin(name.c_str(), &pOpen, window_flags);
 	ImGui::Text(name.c_str());
 	ImGui::Text("Color: %f, %f, %f", R, G, B);
+	ImGui::Text("Position: %f, %f", leaf.absPos[0], leaf.absPos[1]);
+	ImGui::Text("Size: %f, %f", leaf.absSize[0], leaf.absSize[1]);
 	ImGui::End();
 
 	ImGui::PopStyleColor();
@@ -282,15 +289,13 @@ void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingP
 
 void DockingTree::DrawLeaf(int leafIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
 {
-	int literalLeafIndex = abs(leafIndex) - 1;
-
 	DockingLeaf& leaf = leafArray[leafIndex];
 
 	ImGui::SetNextWindowPos(ImVec2(leaf.absPos[0], leaf.absPos[1]));
 	ImGui::SetNextWindowSize(ImVec2(leaf.absSize[0], leaf.absSize[1]));
 	bool pOpen = true;
 
-	std::string name = std::to_string(literalLeafIndex);
+	std::string name = std::to_string(leafIndex);
 
 	//ImVec4 color = ImVec4(.1f, .1f, .1f, 1);
 	//ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, color);
