@@ -143,7 +143,7 @@
     <ClInclude Include="src\ui\docking\dockingleaf.h" />
     <ClInclude Include="src\ui\docking\dockingnode.h" />
     <ClInclude Include="src\ui\docking\dockingtree.h" />
-    <ClInclude Include="src\ui\malletuilayer.h" />
+    <ClInclude Include="src\ui\malletui.h" />
     <ClInclude Include="src\ui\malletwindow.h" />
   </ItemGroup>
   <ItemGroup>
@@ -154,7 +154,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\ui\docking\dockingtree.cpp" />
-    <ClCompile Include="src\ui\malletuilayer.cpp" />
+    <ClCompile Include="src\ui\malletui.cpp" />
     <ClCompile Include="src\ui\malletwindow.cpp" />
   </ItemGroup>
   <ItemGroup>

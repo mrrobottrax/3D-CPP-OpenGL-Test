@@ -2,16 +2,10 @@
 
 #include <ui/docking/dockingtree.h>
 
-class MalletUiLayer
+namespace MalletUi
 {
-public:
-	MalletUiLayer();
-	~MalletUiLayer();
+	extern DockingTree tree;
 
-private:
-	DockingTree tree;
-
-public:
 	void DrawTree();
 	void SplitLeaf(int, DockingDirection, float);
 };

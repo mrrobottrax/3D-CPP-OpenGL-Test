@@ -35,7 +35,7 @@
     <ClInclude Include="src\ui\docking\dockingtree.h">
       <Filter>ui\docking</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\malletuilayer.h">
+    <ClInclude Include="src\ui\malletui.h">
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\malletwindow.h">
@@ -55,7 +55,7 @@
     <ClCompile Include="src\ui\docking\dockingtree.cpp">
       <Filter>ui\docking</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\malletuilayer.cpp">
+    <ClCompile Include="src\ui\malletui.cpp">
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\malletwindow.cpp">
