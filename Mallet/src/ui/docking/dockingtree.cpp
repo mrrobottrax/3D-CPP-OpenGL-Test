@@ -15,11 +15,11 @@ DockingTree::DockingTree() : nodeArray(), leafArray()
 	int leaf = AddLeaf(-1);
 	rootNode = -(leaf + 1);
 
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.15f);
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f);
-	leaf = SplitLeaf(0, DockingDirection::horizontal, 0.5f);
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.2f);
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.7f);
+	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.8f);
 
-	PrintTree();
+	//PrintTree();
 }
 
 DockingTree::~DockingTree()
@@ -71,27 +71,6 @@ bool DockingTree::IsLeaf(int index)
 
 int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
 {
-	/*
-	int newLeafIndex = AddLeaf(-1);
-	int newNodeIndex = AddNode(-(leafIndex + 1), -(newLeafIndex + 1), dir, ratio);
-
-	leafArray[newLeafIndex].parentNodeIndex = newNodeIndex;
-
-	if (leafArray[leafIndex].parentNodeIndex < 0)
-	{
-		rootNode = newNodeIndex;
-	}
-	else
-	{
-		DockingNode& parentNode = nodeArray[leafArray[leafIndex].parentNodeIndex];
-		parentNode.frontIndex = newNodeIndex;
-	}
-
-	leafArray[leafIndex].parentNodeIndex = newNodeIndex;
-
-	return newLeafIndex;
-	*/
-
 	DockingLeaf& leafToSplit = leafArray[leafIndex];
 	DockingNode& parentNode = nodeArray[leafToSplit.parentNodeIndex];
 	bool isLeafToSplitBack = -(leafIndex + 1) == parentNode.backIndex;
@@ -183,54 +162,35 @@ void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, float workingPosX, float
 	const float startSizeX = workingSizeX;
 	const float startSizeY = workingSizeY;
 
-	// Scale window
-	switch (nodeArray[nodeIndex].direction)
-	{
-	case horizontal:
-		workingSizeY *= nodeArray[nodeIndex].ratio;
-		break;
-
-	case vertical:
-		workingSizeX *= nodeArray[nodeIndex].ratio;
-		break;
-
-	default:
-		break;
-	}
-
 	// Back
-	if (IsLeaf(nodeArray[nodeIndex].backIndex))
 	{
-		DrawLeafDebug(nodeArray[nodeIndex].backIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
-
+		// Scale window
 		switch (nodeArray[nodeIndex].direction)
 		{
 		case horizontal:
-			workingPosY += workingSizeY;
+			workingSizeY *= nodeArray[nodeIndex].ratio;
 			break;
 
 		case vertical:
-			workingPosX += workingSizeX;
+			workingSizeX *= nodeArray[nodeIndex].ratio;
 			break;
 
 		default:
 			break;
 		}
-	}
-	else
-	{
+
 		DrawNodeRecursiveDebug(nodeArray[nodeIndex].backIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
 	}
 
-	// Inverse scale window
+	// Move window
 	switch (nodeArray[nodeIndex].direction)
 	{
 	case horizontal:
-		workingSizeY = startSizeY * (1.0f - nodeArray[nodeIndex].ratio);
+		workingPosY += workingSizeY;
 		break;
 
 	case vertical:
-		workingSizeX = startSizeX * (1.0f - nodeArray[nodeIndex].ratio);
+		workingPosX += workingSizeX;
 		break;
 
 	default:
@@ -238,12 +198,22 @@ void DockingTree::DrawNodeRecursiveDebug(int nodeIndex, float workingPosX, float
 	}
 
 	// Front
-	if (IsLeaf(nodeArray[nodeIndex].frontIndex))
 	{
-		DrawLeafDebug(nodeArray[nodeIndex].frontIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
-	}
-	else
-	{
+		// Inverse scale window
+		switch (nodeArray[nodeIndex].direction)
+		{
+		case horizontal:
+			workingSizeY = startSizeY * (1.0f - nodeArray[nodeIndex].ratio);
+			break;
+
+		case vertical:
+			workingSizeX = startSizeX * (1.0f - nodeArray[nodeIndex].ratio);
+			break;
+
+		default:
+			break;
+		}
+
 		DrawNodeRecursiveDebug(nodeArray[nodeIndex].frontIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
 	}
 }
