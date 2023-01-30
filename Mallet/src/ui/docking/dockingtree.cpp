@@ -222,8 +222,17 @@ void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingP
 {
 	int literalLeafIndex = abs(leafIndex) - 1;
 
-	ImGui::SetNextWindowPos(ImVec2(workingPosX, workingPosY));
-	ImGui::SetNextWindowSize(ImVec2(workingSizeX, workingSizeY));
+	int posX, posY;
+	int sizeX, sizeY;
+
+	posX = roundf(workingPosX);
+	posY = roundf(workingPosY);
+
+	sizeX = roundf(workingSizeX);
+	sizeY = roundf(workingSizeY);
+
+	ImGui::SetNextWindowPos(ImVec2(posX, posY));
+	ImGui::SetNextWindowSize(ImVec2(sizeX, sizeY));
 	bool pOpen = true;
 
 	std::string name = std::to_string(literalLeafIndex);
