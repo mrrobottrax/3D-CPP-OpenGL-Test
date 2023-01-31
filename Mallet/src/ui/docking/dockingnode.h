@@ -38,5 +38,5 @@ public:
 	DockingDirection direction;
 
 	float ratio;
-	float absOffset;
+	int absOffset;
 };

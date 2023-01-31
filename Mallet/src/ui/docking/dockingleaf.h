@@ -10,28 +10,28 @@ enum DockingLeafFlags
 struct DockingLeaf
 {
 public:
-	DockingLeaf() : parentNodeIndex(-1), window(), flags(0), absPos(), absSize()
+	DockingLeaf() : parentNodeIndex(-1), flags(0), absPos(), absSize()
 	{
 
 	}
 
-	DockingLeaf(int parentNodeIndex) : parentNodeIndex(parentNodeIndex), window(), flags(0), absPos(), absSize()
+	DockingLeaf(int parentNodeIndex) : parentNodeIndex(parentNodeIndex), flags(0), absPos(), absSize()
 	{
 		flags |= DockingLeafFlags::leafIsUsed;
 	}
 
 	~DockingLeaf()
 	{
-		delete window;
+		//delete window;
 	}
 
 public:
-	MalletWindow* window;
+	//MalletWindow* window;
 
 public:
 	int parentNodeIndex;
 	int flags;
 
-	float absPos[2];
-	float absSize[2];
+	int absPos[2];
+	int absSize[2];
 };

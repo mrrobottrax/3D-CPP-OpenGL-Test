@@ -29,5 +29,5 @@ private:
 	void DrawNodeRecursive(int, float, float, float, float);
 	void DrawLeafDebug(int, float, float, float, float);
 	void DrawLeaf(int, float, float, float, float);
-	float GetNodeOffsetRecursive(int, DockingDirection, float);
+	void GetSizesRecursive(int, int, int, int, int);
 };

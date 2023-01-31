@@ -9,8 +9,3 @@ MalletWindow::MalletWindow()
 MalletWindow::~MalletWindow()
 {
 }
-
-void MalletWindow::Update()
-{
-
-}

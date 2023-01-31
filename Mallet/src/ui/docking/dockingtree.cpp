@@ -6,22 +6,16 @@
 
 #include <debug/debugcolorcycle.h>
 
-#define DRAW_DEBUG
-
-const static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration |
-ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
-ImGuiWindowFlags_NoMove;
+//#define DRAW_DEBUG
 
 DockingTree::DockingTree() : nodeArray(), leafArray()
 {
 	int leaf = AddLeaf(-1);
 	rootNode = -(leaf + 1);
 
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.2f);
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.7f);
-	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.8f);
-
-	//PrintTree();
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f);
+	//leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.7f);
+	//leaf = SplitLeaf(1, DockingDirection::horizontal, 0.8f);
 }
 
 DockingTree::~DockingTree()
@@ -37,6 +31,9 @@ void DockingTree::PrintTree()
 	std::cout << "Nodes:" << "\n";
 	for (int i = 0; i < MAX_PARTITIONS; i++)
 	{
+		if (!(nodeArray[i].flags & DockingNodeFlags::nodeIsUsed))
+			continue;
+
 		std::cout << "Node " << i << "\n";
 		std::cout << "   " << "Flags: " << "\n";
 		std::cout << "      " << nodeArray[i].flags << "\n";
@@ -58,6 +55,9 @@ void DockingTree::PrintTree()
 	std::cout << "Leafs:" << "\n";
 	for (int i = 0; i < MAX_PARTITIONS; i++)
 	{
+		if (!(leafArray[i].flags & DockingLeafFlags::leafIsUsed))
+			continue;
+
 		std::cout << "Leaf " << i << "\n";
 		std::cout << "   " << "Flags: " << "\n";
 		std::cout << "      " << leafArray[i].flags << "\n";
@@ -105,15 +105,12 @@ int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
 
 void DockingTree::RecalculateSizes()
 {
-	int w, h;
-	glfwGetWindowSize(mainWindow, &w, &h);
-
-	const float windowWidth = float(w);
-	const float windowHeight = float(h);
+	int windowWidth, windowHeight;
+	glfwGetWindowSize(mainWindow, &windowWidth, &windowHeight);
 
 	if (IsLeaf(rootNode))
 	{
-		DockingLeaf& leaf = leafArray[abs(rootNode) + 1];
+		DockingLeaf& leaf = leafArray[abs(rootNode) - 1];
 
 		leaf.absPos[0] = 0;
 		leaf.absPos[1] = 0;
@@ -124,66 +121,82 @@ void DockingTree::RecalculateSizes()
 		return;
 	}
 
-	for (int i = 0; i < MAX_PARTITIONS; i++)
-	{
-		DockingNode& node = nodeArray[i];
+	GetSizesRecursive(rootNode, 0, 0, windowWidth, windowHeight);
+}
 
-		if (!(node.flags & DockingNodeFlags::nodeIsUsed))
+void DockingTree::GetSizesRecursive(int index, int boundsXLower, int boundsYLower, int boundsXHigher, int boundsYHigher)
+{
+	if (IsLeaf(index))
+	{
+		DockingLeaf& leaf = leafArray[abs(index) - 1];
+
+		leaf.absPos[0] = boundsXLower;
+		leaf.absPos[1] = boundsYLower;
+
+		leaf.absSize[0] = boundsXHigher - boundsXLower;
+		leaf.absSize[1] = boundsYHigher - boundsYLower;
+
+		return;
+	}
+
+	DockingNode& node = nodeArray[index];
+
+	switch (node.direction)
+	{
+	case horizontal:
+		node.absOffset = int(node.ratio * (boundsYHigher - boundsYLower)) + boundsYLower;
+		break;
+
+	case vertical:
+		node.absOffset = int(node.ratio * (boundsXHigher - boundsXLower)) + boundsXLower;
+		break;
+
+	default:
+		break;
+	}
+
+	// Back
+	int backBoundsXHigher = boundsXHigher;
+	int backBoundsYHigher = boundsYHigher;
+	{
+		switch (node.direction)
 		{
-			continue;
+		case horizontal:
+			backBoundsYHigher = node.absOffset;
+			break;
+
+		case vertical:
+			backBoundsXHigher = node.absOffset;
+			break;
+
+		default:
+			break;
 		}
+
+		GetSizesRecursive(node.backIndex, boundsXLower, boundsYLower, backBoundsXHigher, backBoundsYHigher);
+	}
+
+	// Front
+	{
+		int frontBoundsXLower = boundsXLower;
+		int frontBoundsYLower = boundsYLower;
 
 		switch (node.direction)
 		{
 		case horizontal:
-			node.absOffset = GetNodeOffsetRecursive(i, node.direction, windowHeight);
+			frontBoundsYLower = backBoundsYHigher;
 			break;
+
 		case vertical:
-			node.absOffset = GetNodeOffsetRecursive(i, node.direction, windowWidth);
+			frontBoundsXLower = backBoundsXHigher;
 			break;
+
 		default:
 			break;
 		}
+
+		GetSizesRecursive(node.frontIndex, frontBoundsXLower, frontBoundsYLower, boundsXHigher, boundsYHigher);
 	}
-}
-
-float DockingTree::GetNodeOffsetRecursive(int nodeIndex, DockingDirection direction, float windowSize)
-{
-	DockingNode& node = nodeArray[nodeIndex];
-
-	if (node.parentNodeIndex < 0)
-	{
-		float offset = 0;
-
-		if (node.direction == direction)
-		{
-			offset = windowSize * node.ratio;
-		}
-
-		return offset;
-	}
-
-	float parentOffset = GetNodeOffsetRecursive(node.parentNodeIndex, direction, windowSize);
-
-	float offset = 0;
-
-	if (node.direction == direction)
-	{
-		bool isBackNode = nodeArray[node.parentNodeIndex].backIndex == nodeIndex;
-
-		if (isBackNode && parentOffset != 0)
-		{
-			float workingSize = parentOffset;
-			offset = workingSize * node.ratio;
-		}
-		else
-		{
-			float workingSize = windowSize - parentOffset;
-			offset = workingSize * node.ratio + parentOffset;
-		}
-	}
-
-	return offset;
 }
 
 int DockingTree::AddNode(int parentNodeIndex, int backIndex, int frontIndex, DockingDirection dir, float ratio)
@@ -345,20 +358,6 @@ void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingP
 void DockingTree::DrawLeaf(int leafIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
 {
 	DockingLeaf& leaf = leafArray[leafIndex];
-
-	ImGui::SetNextWindowPos(ImVec2(leaf.absPos[0], leaf.absPos[1]));
-	ImGui::SetNextWindowSize(ImVec2(leaf.absSize[0], leaf.absSize[1]));
-	bool pOpen = true;
-
-	std::string name = std::to_string(leafIndex);
-
-	//ImVec4 color = ImVec4(.1f, .1f, .1f, 1);
-	//ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, color);
-
-	ImGui::Begin(name.c_str(), &pOpen, window_flags);
-	ImGui::Text(name.c_str());
-	//ImGui::Text("Color: %f, %f, %f", R, G, B);
-	ImGui::End();
-
-	//ImGui::PopStyleColor();
+	
+	//leaf.window->Draw();
 }
