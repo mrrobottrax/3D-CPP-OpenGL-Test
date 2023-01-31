@@ -19,13 +19,13 @@ public:
 public:
 	void PrintTree();
 	void DrawTree();
-	int SplitLeaf(int, DockingDirection, float);
+	int SplitLeaf(int, DockingDirection, float, MalletWindow*);
 	void RecalculateSizes();
 
 private:
 	bool IsLeaf(int);
 	int AddNode(int, int, int, DockingDirection, float);
-	int AddLeaf(int);
+	int AddLeaf(int, MalletWindow*);
 	void DrawNodeRecursive(int, float, float, float, float);
 	void DrawLeafDebug(int, float, float, float, float);
 	void DrawLeaf(int, float, float, float, float);

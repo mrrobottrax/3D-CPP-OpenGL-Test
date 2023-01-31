@@ -10,10 +10,10 @@
 
 DockingTree::DockingTree() : nodeArray(), leafArray()
 {
-	int leaf = AddLeaf(-1);
+	int leaf = AddLeaf(-1, nullptr);
 	rootNode = -(leaf + 1);
 
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f);
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f, nullptr);
 	//leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.7f);
 	//leaf = SplitLeaf(1, DockingDirection::horizontal, 0.8f);
 }
@@ -71,13 +71,13 @@ bool DockingTree::IsLeaf(int index)
 	return index < 0;
 }
 
-int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
+int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio, MalletWindow* window)
 {
 	DockingLeaf& leafToSplit = leafArray[leafIndex];
 	DockingNode& parentNode = nodeArray[leafToSplit.parentNodeIndex];
 	bool isLeafToSplitBack = -(leafIndex + 1) == parentNode.backIndex;
 
-	int newLeafIndex = AddLeaf(-1);
+	int newLeafIndex = AddLeaf(-1, window);
 	int newNodeIndex = AddNode(leafToSplit.parentNodeIndex, -(leafIndex + 1), -(newLeafIndex + 1), dir, ratio);
 	
 	DockingLeaf& newLeaf = leafArray[newLeafIndex];
@@ -215,7 +215,7 @@ int DockingTree::AddNode(int parentNodeIndex, int backIndex, int frontIndex, Doc
 	return -1;
 }
 
-int DockingTree::AddLeaf(int parentNodeIndex)
+int DockingTree::AddLeaf(int parentNodeIndex, MalletWindow* window)
 {
 	// Find free space in array
 	int index;
@@ -223,7 +223,7 @@ int DockingTree::AddLeaf(int parentNodeIndex)
 	{
 		if (!(leafArray[index].flags & DockingLeafFlags::leafIsUsed))
 		{
-			leafArray[index] = DockingLeaf(parentNodeIndex);
+			leafArray[index] = DockingLeaf(parentNodeIndex, window);
 			return index;
 		}
 	}
@@ -320,6 +320,10 @@ void DockingTree::DrawNodeRecursive(int nodeIndex, float workingPosX, float work
 		DrawNodeRecursive(nodeArray[nodeIndex].frontIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
 	}
 }
+
+const static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration |
+ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+ImGuiWindowFlags_NoMove;
 
 void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
 {

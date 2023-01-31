@@ -22,9 +22,9 @@ namespace MalletUi
 		tree.RecalculateSizes();
 	}
 
-	void SplitLeaf(int leafIndex, DockingDirection dir, float ratio)
+	void SplitLeaf(int leafIndex, DockingDirection dir, float ratio, MalletWindow* window)
 	{
-		tree.SplitLeaf(leafIndex, dir, ratio);
+		tree.SplitLeaf(leafIndex, dir, ratio, window);
 	}
 
 	int GetNodeRecursive(float mousePosX, float mousePosY)
