@@ -16,6 +16,5 @@ public:
 	~MalletWindow();
 
 public:
-	std::string name;
 	virtual void Draw(DockingLeaf& leaf, int leafIndex);
 };
