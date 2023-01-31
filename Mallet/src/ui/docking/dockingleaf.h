@@ -7,6 +7,8 @@ enum DockingLeafFlags
 	leafIsUsed = 1 << 0,
 };
 
+class MalletWindow;
+
 struct DockingLeaf
 {
 public:
