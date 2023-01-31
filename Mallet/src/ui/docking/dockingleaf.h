@@ -12,7 +12,7 @@ class MalletWindow;
 struct DockingLeaf
 {
 public:
-	DockingLeaf() : parentNodeIndex(-1), flags(0), absPos(), absSize(), window(nullptr)
+	DockingLeaf() : parentNodeIndex(-1), flags(0), absPos(), absSize(), window()
 	{
 
 	}
@@ -24,7 +24,10 @@ public:
 
 	~DockingLeaf()
 	{
-		//delete window;
+		if (window)
+		{
+			delete window;
+		}
 	}
 
 public:

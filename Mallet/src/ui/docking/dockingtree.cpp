@@ -6,21 +6,23 @@
 
 #include <debug/debugcolorcycle.h>
 
+// Windows - TEMP
+#include <ui/windows/viewport3d.h>
+
 //#define DRAW_DEBUG
 
 DockingTree::DockingTree() : nodeArray(), leafArray()
 {
-	int leaf = AddLeaf(-1, nullptr);
+	int leaf = AddLeaf(-1, new Viewport3D());
 	rootNode = -(leaf + 1);
 
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f, nullptr);
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f, new MalletWindow());
 	//leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.7f);
 	//leaf = SplitLeaf(1, DockingDirection::horizontal, 0.8f);
 }
 
 DockingTree::~DockingTree()
 {
-	
 }
 
 void DockingTree::PrintTree()
@@ -223,7 +225,9 @@ int DockingTree::AddLeaf(int parentNodeIndex, MalletWindow* window)
 	{
 		if (!(leafArray[index].flags & DockingLeafFlags::leafIsUsed))
 		{
-			leafArray[index] = DockingLeaf(parentNodeIndex, window);
+			DockingLeaf leaf(parentNodeIndex, window);
+			leafArray[index] = leaf;
+			leaf.window = nullptr;
 			return index;
 		}
 	}
@@ -321,10 +325,6 @@ void DockingTree::DrawNodeRecursive(int nodeIndex, float workingPosX, float work
 	}
 }
 
-const static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration |
-ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
-ImGuiWindowFlags_NoMove;
-
 void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
 {
 	DockingLeaf& leaf = leafArray[leafIndex];
@@ -363,5 +363,10 @@ void DockingTree::DrawLeaf(int leafIndex, float workingPosX, float workingPosY, 
 {
 	DockingLeaf& leaf = leafArray[leafIndex];
 	
-	//leaf.window->Draw();
+	if (leaf.window == nullptr)
+	{
+		return;
+	}
+
+	leaf.window->Draw(leaf, leafIndex);
 }
