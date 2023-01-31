@@ -5,26 +5,36 @@
 
 namespace MalletUi
 {
-	DockingTree tree;
+	DockingTree* tree;
+
+	void Setup()
+	{
+		tree = new DockingTree();
+	}
+
+	void Destroy()
+	{
+		delete tree;
+	}
 
 	void PrintTree()
 	{
-		tree.PrintTree();
+		tree->PrintTree();
 	}
 
 	void DrawTree()
 	{
-		tree.DrawTree();
+		tree->DrawTree();
 	}
 
 	void RecalculateTree()
 	{
-		tree.RecalculateSizes();
+		tree->RecalculateSizes();
 	}
 
 	void SplitLeaf(int leafIndex, DockingDirection dir, float ratio, MalletWindow* window)
 	{
-		tree.SplitLeaf(leafIndex, dir, ratio, window);
+		tree->SplitLeaf(leafIndex, dir, ratio, window);
 	}
 
 	int GetNodeRecursive(float mousePosX, float mousePosY)

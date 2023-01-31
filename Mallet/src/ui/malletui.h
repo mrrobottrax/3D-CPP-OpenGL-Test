@@ -4,6 +4,9 @@
 
 namespace MalletUi
 {
+	void Setup();
+	void Destroy();
+
 	void PrintTree();
 	void DrawTree();
 	void RecalculateTree();

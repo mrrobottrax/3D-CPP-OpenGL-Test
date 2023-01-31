@@ -47,7 +47,9 @@ void Init()
 
 	InitializeOpenGL();
 
+	// UI
 	SetupImGui(mainWindow);
+	MalletUi::Setup();
 
 	// Init systems
 	systemManager::RegisterSystems();
@@ -162,6 +164,7 @@ int main()
 	delete testMap;
 
 	ImGuiTerminate();
+	MalletUi::Destroy();
 
 	systemManager::DeleteAllSystems();
 	glfwTerminate();

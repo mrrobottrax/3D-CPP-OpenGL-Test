@@ -19,6 +19,8 @@ DockingTree::DockingTree() : nodeArray(), leafArray()
 	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f, new MalletWindow());
 	//leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.7f);
 	//leaf = SplitLeaf(1, DockingDirection::horizontal, 0.8f);
+
+	RecalculateSizes();
 }
 
 DockingTree::~DockingTree()
@@ -365,6 +367,14 @@ void DockingTree::DrawLeaf(int leafIndex, float workingPosX, float workingPosY, 
 	
 	if (leaf.window == nullptr)
 	{
+		ImGui::SetNextWindowPos(ImVec2(float(leaf.absPos[0]), float(leaf.absPos[1])));
+		ImGui::SetNextWindowSize(ImVec2(float(leaf.absSize[0]), float(leaf.absSize[1])));
+
+		std::string name = std::to_string(leafIndex);
+
+		ImGui::Begin(name.c_str(), (bool*)0, window_flags);
+		ImGui::End();
+
 		return;
 	}
 
