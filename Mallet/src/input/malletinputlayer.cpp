@@ -4,6 +4,16 @@
 #include <inputmanager.h>
 #include <imgui/imguiutil.h>
 #include <ui/malletui.h>
+#include <gl/malletglutil.h>
+
+void SetupInputCallbacks(GLFWwindow* window)
+{
+	glfwSetWindowSizeCallback(window, MalletWindowSizeCallback);
+
+	glfwSetKeyCallback(window, MalletKeyCallback);
+	glfwSetMouseButtonCallback(window, MalletMouseCallback);
+	glfwSetCursorPosCallback(window, MalletMousePosCallback);
+}
 
 void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -13,4 +23,9 @@ void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 void MalletMouseCallback(GLFWwindow* window, int button, int action, int mods)
 {
 	MalletUi::MouseCallback(window, button, action, mods);
+}
+
+void MalletMousePosCallback(GLFWwindow* window, double xPos, double yPos)
+{
+	MalletUi::MousePosCallback(window, xPos, yPos);
 }

@@ -17,4 +17,5 @@ namespace MalletUi
 
 	void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	void MouseCallback(GLFWwindow* window, int button, int action, int mods);
+	void MousePosCallback(GLFWwindow* window, double xPos, double yPos);
 };

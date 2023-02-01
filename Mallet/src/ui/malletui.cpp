@@ -90,4 +90,8 @@ namespace MalletUi
 				leaf.window->MouseCallback(window, button, action, mods);
 		}
 	}
+
+	void MousePosCallback(GLFWwindow* window, double xPos, double yPos)
+	{
+	}
 }

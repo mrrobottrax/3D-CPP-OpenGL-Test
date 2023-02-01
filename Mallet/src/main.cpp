@@ -41,18 +41,13 @@ void Init()
 {
 	// Init OpenGL
 	InitializeWindow();
-	glfwSetWindowSizeCallback(mainWindow, MalletWindowSizeCallback);
-	glfwSetKeyCallback(mainWindow, MalletKeyCallback);
-	glfwSetMouseButtonCallback(mainWindow, MalletMouseCallback);
+
+	SetupInputCallbacks(mainWindow);
 
 	InitializeOpenGL();
 
 	// Init systems
 	SystemManager::RegisterSystems();
-
-	// UI
-	SetupImGui(mainWindow);
-	MalletUi::Setup();
 
 	EntityManager& em = EntityManager::GetInstance();
 
@@ -133,6 +128,10 @@ void Init()
 		modelLoader::LoadModel(*testMesh, path);
 		em.GetComponent<MeshComponent>(entity) = { testMesh };
 	}
+
+	// UI
+	SetupImGui(mainWindow);
+	MalletUi::Setup();
 }
 
 int main()

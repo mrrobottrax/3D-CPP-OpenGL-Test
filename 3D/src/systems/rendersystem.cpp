@@ -12,7 +12,7 @@
 
 RenderSystem::RenderSystem(Entity& mainEntity)
 {
-	RenderSystem::mainCamera = &EntityManager::GetInstance().GetComponent<CameraComponent>(mainEntity);
+	mainCamera = &EntityManager::GetInstance().GetComponent<CameraComponent>(mainEntity);
 
 	InitMainCameraMatrix();
 }
