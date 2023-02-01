@@ -30,7 +30,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 void DefaultWindowSizeCallback(GLFWwindow* window, int width, int height)
 {
-	RenderSystem* rs = systemManager::GetSystem<RenderSystem>();
+	RenderSystem* rs = SystemManager::GetSystem<RenderSystem>();
 
 	if (rs == nullptr)
 		return;

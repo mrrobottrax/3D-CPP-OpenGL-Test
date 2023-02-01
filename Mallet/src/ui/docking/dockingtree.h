@@ -30,6 +30,6 @@ private:
 	void DrawNodeRecursive(int, float, float, float, float);
 	void DrawLeafDebug(int, float, float, float, float);
 	void DrawLeaf(int, float, float, float, float);
-	void GetSizesRecursive(int, int, int, int, int);
+	void GetSizesRecursive(int, int, int, int, int, int&, int&);
 	int SelectNodeRecursive(int nodeIndex, float mousePosX, float mousePosY);
 };

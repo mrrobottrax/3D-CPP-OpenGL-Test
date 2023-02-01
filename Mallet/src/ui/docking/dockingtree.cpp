@@ -15,12 +15,12 @@
 
 DockingTree::DockingTree() : nodeArray(), leafArray()
 {
-	int leaf = AddLeaf(-1, new Viewport3D());
+	int leaf = AddLeaf(-1, new MalletWindow());
 	rootNode = -(leaf + 1);
 
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.2f, new MalletWindow());
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.7f, new MalletWindow());
-	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.8f, new MalletWindow());
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.2f, new Viewport3D());
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.7f, nullptr);
+	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.8f, nullptr);
 
 	RecalculateSizes();
 }
@@ -124,23 +124,29 @@ void DockingTree::RecalculateSizes()
 		leaf.absSize[0] = windowWidth;
 		leaf.absSize[1] = windowHeight;
 
+		leaf.window->OnResize(leaf, windowWidth, windowHeight);
+
 		return;
 	}
 
-	GetSizesRecursive(rootNode, 0, 0, windowWidth, windowHeight);
+	GetSizesRecursive(rootNode, 0, 0, windowWidth, windowHeight, windowWidth, windowHeight);
 }
 
-void DockingTree::GetSizesRecursive(int index, int boundsXLower, int boundsYLower, int boundsXHigher, int boundsYHigher)
+void DockingTree::GetSizesRecursive(int index, int lowerBoundX, int lowerBoundY, int higherBoundX, int higherBoundY,
+	int& windowWidth, int& windowHeight)
 {
 	if (IsLeaf(index))
 	{
 		DockingLeaf& leaf = leafArray[abs(index) - 1];
 
-		leaf.absPos[0] = boundsXLower;
-		leaf.absPos[1] = boundsYLower;
+		leaf.absPos[0] = lowerBoundX;
+		leaf.absPos[1] = lowerBoundY;
 
-		leaf.absSize[0] = boundsXHigher - boundsXLower;
-		leaf.absSize[1] = boundsYHigher - boundsYLower;
+		leaf.absSize[0] = higherBoundX - lowerBoundX;
+		leaf.absSize[1] = higherBoundY - lowerBoundY;
+
+		if (leaf.window != nullptr)
+			leaf.window->OnResize(leaf, windowWidth, windowHeight);
 
 		return;
 	}
@@ -150,11 +156,11 @@ void DockingTree::GetSizesRecursive(int index, int boundsXLower, int boundsYLowe
 	switch (node.direction)
 	{
 	case horizontal:
-		node.absOffset = int(node.ratio * (boundsYHigher - boundsYLower)) + boundsYLower;
+		node.absOffset = int(node.ratio * (higherBoundY - lowerBoundY)) + lowerBoundY;
 		break;
 
 	case vertical:
-		node.absOffset = int(node.ratio * (boundsXHigher - boundsXLower)) + boundsXLower;
+		node.absOffset = int(node.ratio * (higherBoundX - lowerBoundX)) + lowerBoundX;
 		break;
 
 	default:
@@ -162,46 +168,46 @@ void DockingTree::GetSizesRecursive(int index, int boundsXLower, int boundsYLowe
 	}
 
 	// Back
-	int backBoundsXHigher = boundsXHigher;
-	int backBoundsYHigher = boundsYHigher;
+	int backHigherBoundX = higherBoundX;
+	int backHigherBoundY = higherBoundY;
 	{
 		switch (node.direction)
 		{
 		case horizontal:
-			backBoundsYHigher = node.absOffset;
+			backHigherBoundY = node.absOffset;
 			break;
 
 		case vertical:
-			backBoundsXHigher = node.absOffset;
+			backHigherBoundX = node.absOffset;
 			break;
 
 		default:
 			break;
 		}
 
-		GetSizesRecursive(node.backIndex, boundsXLower, boundsYLower, backBoundsXHigher, backBoundsYHigher);
+		GetSizesRecursive(node.backIndex, lowerBoundX, lowerBoundY, backHigherBoundX, backHigherBoundY, windowWidth, windowHeight);
 	}
 
 	// Front
 	{
-		int frontBoundsXLower = boundsXLower;
-		int frontBoundsYLower = boundsYLower;
+		int frontHigherBoundX = lowerBoundX;
+		int frontHigherBoundY = lowerBoundY;
 
 		switch (node.direction)
 		{
 		case horizontal:
-			frontBoundsYLower = backBoundsYHigher;
+			frontHigherBoundY = backHigherBoundY;
 			break;
 
 		case vertical:
-			frontBoundsXLower = backBoundsXHigher;
+			frontHigherBoundX = backHigherBoundX;
 			break;
 
 		default:
 			break;
 		}
 
-		GetSizesRecursive(node.frontIndex, frontBoundsXLower, frontBoundsYLower, boundsXHigher, boundsYHigher);
+		GetSizesRecursive(node.frontIndex, frontHigherBoundX, frontHigherBoundY, higherBoundX, higherBoundY, windowWidth, windowHeight);
 	}
 }
 
@@ -356,8 +362,8 @@ void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingP
 	ImGui::Begin(name.c_str(), &pOpen, window_flags);
 	ImGui::Text(name.c_str());
 	ImGui::Text("Color: %f, %f, %f", R, G, B);
-	ImGui::Text("Position: %f, %f", leaf.absPos[0], leaf.absPos[1]);
-	ImGui::Text("Size: %f, %f", leaf.absSize[0], leaf.absSize[1]);
+	ImGui::Text("Position: %d, %d", leaf.absPos[0], leaf.absPos[1]);
+	ImGui::Text("Size: %d, %d", leaf.absSize[0], leaf.absSize[1]);
 	ImGui::End();
 
 	ImGui::PopStyleColor();

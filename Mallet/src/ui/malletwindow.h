@@ -17,4 +17,6 @@ public:
 
 public:
 	virtual void Draw(DockingLeaf& leaf, int leafIndex);
+	
+	inline virtual void OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight) {};
 };

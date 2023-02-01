@@ -5,7 +5,7 @@
 
 #include <memory/entitymanager.h>
 
-namespace systemManager {
+namespace SystemManager {
 	std::map<size_t, System*>* systems = new std::map<size_t, System*>();
 
 	void RegisterSystems()

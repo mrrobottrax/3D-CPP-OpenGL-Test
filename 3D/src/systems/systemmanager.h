@@ -2,7 +2,7 @@
 
 #include <systems/system.h>
 
-namespace systemManager {
+namespace SystemManager {
 	extern std::map<size_t, System*>* systems;
 
 	void RegisterSystems();

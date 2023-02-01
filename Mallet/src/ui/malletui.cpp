@@ -48,6 +48,5 @@ namespace MalletUi
 		float fMousePosY = float(mousePosY);
 
 		selectedNodeIndex = tree->SelectNode(fMousePosX, fMousePosY);
-		std::cout << selectedNodeIndex << "\n";
 	}
 }

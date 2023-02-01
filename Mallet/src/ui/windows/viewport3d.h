@@ -17,4 +17,5 @@ public:
 	};
 
 	void Draw(DockingLeaf& leaf, int leafIndex);
+	void OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight);
 };

@@ -47,12 +47,12 @@ void Init()
 
 	InitializeOpenGL();
 
+	// Init systems
+	SystemManager::RegisterSystems();
+
 	// UI
 	SetupImGui(mainWindow);
 	MalletUi::Setup();
-
-	// Init systems
-	systemManager::RegisterSystems();
 
 	EntityManager& em = EntityManager::GetInstance();
 
@@ -74,7 +74,7 @@ void Init()
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 		em.GetComponent<FreecamComponent>(entity) = { 6, 40, 20 };
 
-		systemManager::GetSystem<RenderSystem>()->SetMainCameraEntity(entity);
+		SystemManager::GetSystem<RenderSystem>()->SetMainCameraEntity(entity);
 	}
 	// Create monkey
 	{
@@ -150,7 +150,7 @@ int main()
 
 		StartImGuiFrame();
 
-		systemManager::UpdateSystems();
+		SystemManager::UpdateSystems();
 
 		MalletUi::DrawTree();
 
@@ -166,7 +166,7 @@ int main()
 	ImGuiTerminate();
 	MalletUi::Destroy();
 
-	systemManager::DeleteAllSystems();
+	SystemManager::DeleteAllSystems();
 	glfwTerminate();
 
 	// Show memory leaks
