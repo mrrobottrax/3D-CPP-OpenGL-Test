@@ -17,6 +17,12 @@ void SetupInputCallbacks(GLFWwindow* window)
 
 void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	if (key == GLFW_KEY_DELETE && mods & GLFW_MOD_CONTROL && action == GLFW_PRESS)
+	{
+		showDemoWindow = !showDemoWindow;
+		return;
+	}
+
 	MalletUi::KeyCallback(window, key, scancode, action, mods);
 }
 

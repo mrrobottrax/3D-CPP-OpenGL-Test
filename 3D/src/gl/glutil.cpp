@@ -71,6 +71,9 @@ void InitializeWindow()
 	glfwSetKeyCallback(mainWindow, KeyCallback);
 	glfwSetWindowSizeCallback(mainWindow, DefaultWindowSizeCallback);
 
+	if (glfwRawMouseMotionSupported())
+		glfwSetInputMode(mainWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+
 	glfwMakeContextCurrent(mainWindow);
 	glfwSwapInterval(0);    // Vsync
 

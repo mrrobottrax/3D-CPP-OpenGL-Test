@@ -17,6 +17,7 @@ public:
 	DockingLeaf leafArray[MAX_PARTITIONS];
 
 public:
+	bool IsLeaf(int);
 	void PrintTree();
 	void DrawTree();
 	int SplitLeaf(int, DockingDirection, float, MalletWindow*);
@@ -24,7 +25,6 @@ public:
 	int SelectNode(float mousePosX, float mousePosY);
 
 private:
-	bool IsLeaf(int);
 	int AddNode(int, int, int, DockingDirection, float);
 	int AddLeaf(int, MalletWindow*);
 	void DrawNodeRecursive(int, float, float, float, float);

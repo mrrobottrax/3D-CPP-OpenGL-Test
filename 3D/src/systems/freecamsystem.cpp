@@ -59,6 +59,12 @@ void FreecamSystem::Update()
 		yawDelta += TimeManager::deltaTime * rotSpeed;
 	}
 
+	// Look mouse
+	double xDelta, yDelta;
+	InputManager::GetCursorDelta(&xDelta, &yDelta);
+	pitchDelta += yDelta * 0.002f;
+	yawDelta += xDelta * 0.002f;
+
 	EntityManager& em = EntityManager::GetInstance();
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<FreecamComponent>());

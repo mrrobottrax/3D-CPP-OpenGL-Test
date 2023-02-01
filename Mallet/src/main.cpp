@@ -5,6 +5,7 @@
 #include <gl/glutil.h>
 #include <gl/malletglutil.h>
 #include <input/malletinputlayer.h>
+#include <inputmanager.h>
 
 #include <meshobject.h>
 #include <memory/entitymanager.h>
@@ -142,6 +143,10 @@ int main()
 	{
 		TimeManager::Update();
 		glfwPollEvents();
+
+		double xPos, yPos;
+		glfwGetCursorPos(mainWindow, &xPos, &yPos);
+		InputManager::UpdateCursorDelta(xPos, yPos);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClearDepth(1.0f);
