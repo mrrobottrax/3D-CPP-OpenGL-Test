@@ -7,18 +7,10 @@
 
 void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	inputManager::KeyCallback(key, action);
-
-	if (key == GLFW_KEY_DELETE && mods & GLFW_MOD_CONTROL && action == GLFW_PRESS)
-	{
-		showDemoWindow = !showDemoWindow;
-	}
+	MalletUi::KeyCallback(window, key, scancode, action, mods);
 }
 
 void MalletMouseCallback(GLFWwindow* window, int button, int action, int mods)
 {
-	if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
-	{
-		MalletUi::SelectNode();
-	}
+	MalletUi::MouseCallback(window, button, action, mods);
 }

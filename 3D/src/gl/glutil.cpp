@@ -25,7 +25,7 @@ void ErrorCallback(int error, const char* description)
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	inputManager::KeyCallback(key, action);
+	InputManager::KeyCallback(key, action);
 }
 
 void DefaultWindowSizeCallback(GLFWwindow* window, int width, int height)

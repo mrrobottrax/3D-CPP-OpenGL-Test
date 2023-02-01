@@ -20,20 +20,20 @@ void FreecamSystem::Update()
 	float yawDelta = 0;
 
 	// Move keys
-	if (inputManager::keybindings[GLFW_KEY_W])
+	if (InputManager::keybindings[GLFW_KEY_W])
 	{
 		moveVector.z -= 1;
 	}
-	if (inputManager::keybindings[GLFW_KEY_S])
+	if (InputManager::keybindings[GLFW_KEY_S])
 	{
 		moveVector.z += 1;
 	}
 
-	if (inputManager::keybindings[GLFW_KEY_A])
+	if (InputManager::keybindings[GLFW_KEY_A])
 	{
 		moveVector.x -= 1;
 	}
-	if (inputManager::keybindings[GLFW_KEY_D])
+	if (InputManager::keybindings[GLFW_KEY_D])
 	{
 		moveVector.x += 1;
 	}
@@ -41,20 +41,20 @@ void FreecamSystem::Update()
 	float rotSpeed = 2;
 
 	// Look keys
-	if (inputManager::keybindings[GLFW_KEY_UP])
+	if (InputManager::keybindings[GLFW_KEY_UP])
 	{
 		pitchDelta -= TimeManager::deltaTime * rotSpeed;
 	}
-	if (inputManager::keybindings[GLFW_KEY_DOWN])
+	if (InputManager::keybindings[GLFW_KEY_DOWN])
 	{
 		pitchDelta += TimeManager::deltaTime * rotSpeed;
 	}
 
-	if (inputManager::keybindings[GLFW_KEY_LEFT])
+	if (InputManager::keybindings[GLFW_KEY_LEFT])
 	{
 		yawDelta -= TimeManager::deltaTime * rotSpeed;
 	}
-	if (inputManager::keybindings[GLFW_KEY_RIGHT])
+	if (InputManager::keybindings[GLFW_KEY_RIGHT])
 	{
 		yawDelta += TimeManager::deltaTime * rotSpeed;
 	}

@@ -2,7 +2,7 @@
 
 #include <inputManager.h>
 
-namespace inputManager {
+namespace InputManager {
 	char keybindings[1024];
 
 	void BindKey(int key, char action)

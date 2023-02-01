@@ -18,5 +18,7 @@ public:
 public:
 	virtual void Draw(DockingLeaf& leaf, int leafIndex);
 	
-	inline virtual void OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight) {};
+	inline virtual void OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight){};
+	inline virtual void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods){};
+	inline virtual void MouseCallback(GLFWwindow* window, int button, int action, int mods){};
 };
