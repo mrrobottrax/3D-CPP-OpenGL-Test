@@ -16,8 +16,8 @@ FreecamSystem::~FreecamSystem()
 void FreecamSystem::Update()
 {
 	glm::vec3 moveVector(0);
-	float pitchDelta = 0;
-	float yawDelta = 0;
+	double pitchDelta = 0;
+	double yawDelta = 0;
 
 	// Move keys
 	if (InputManager::keybindings[GLFW_KEY_W])
@@ -82,7 +82,13 @@ void FreecamSystem::Update()
 			for (unsigned short i = 0; i < chunk->numberOfEntities; i++)
 			{
 				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
-				FreecamComponent&  freeCam  = em.GetComponent<FreecamComponent>(entity);
+				FreecamComponent& freeCam  = em.GetComponent<FreecamComponent>(entity);
+
+				if (!freeCam.enabled)
+				{
+					continue;
+				}
+
 				VelocityComponent& velocity = em.GetComponent<VelocityComponent>(entity);
 				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
 

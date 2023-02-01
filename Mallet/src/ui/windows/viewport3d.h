@@ -2,19 +2,13 @@
 
 #include <ui/malletwindow.h>
 #include <ui/docking/dockingleaf.h>
+#include <memory/entity.h>
 
 class Viewport3D : public MalletWindow
 {
 public:
-	Viewport3D()
-	{
-
-	};
-
-	~Viewport3D()
-	{
-
-	};
+	Viewport3D();
+	~Viewport3D();
 
 	void Draw(DockingLeaf& leaf, int leafIndex);
 	void OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight);
@@ -24,4 +18,7 @@ public:
 	void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	void MouseCallback(GLFWwindow* window, int button, int action, int mods);
 	void MousePosCallback(GLFWwindow* window, double xPos, double yPos);
+
+private:
+	Entity cameraEntity;
 };

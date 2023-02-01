@@ -52,26 +52,6 @@ void Init()
 
 	EntityManager& em = EntityManager::GetInstance();
 
-	// Create player
-	{
-		Component components[] = {
-			Component().init<IdComponent>(),
-			Component().init<PositionComponent>(),
-			Component().init<VelocityComponent>(),
-			Component().init<CameraComponent>(),
-			Component().init<RotationComponent>(),
-			Component().init<FreecamComponent>(),
-		};
-
-		Entity entity = em.AddEntity(EntityArchetype(6, components));
-		em.GetComponent<PositionComponent>(entity) = { 0, 2, 0 };
-		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
-		em.GetComponent<CameraComponent>(entity) = { 80.0f, 0.03f, 1000.0f };
-		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
-		em.GetComponent<FreecamComponent>(entity) = { 6, 40, 20 };
-
-		SystemManager::GetSystem<RenderSystem>()->SetMainCameraEntity(entity);
-	}
 	// Create monkey
 	{
 		Component components[] = {

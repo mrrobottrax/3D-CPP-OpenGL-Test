@@ -2,6 +2,8 @@
 
 struct FreecamComponent
 {
+	bool enabled;
+
 	float speed;
 	float acceleration;
 	float friction;
