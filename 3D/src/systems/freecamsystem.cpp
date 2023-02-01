@@ -83,14 +83,14 @@ void FreecamSystem::Update()
 			{
 				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
 				FreecamComponent& freeCam  = em.GetComponent<FreecamComponent>(entity);
+				VelocityComponent& velocity = em.GetComponent<VelocityComponent>(entity);
+				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
 
 				if (!freeCam.enabled)
 				{
+					velocity.linear *= 0;
 					continue;
 				}
-
-				VelocityComponent& velocity = em.GetComponent<VelocityComponent>(entity);
-				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
 
 				// Look
 				glm::fquat deltaRot(glm::vec3(pitchDelta, 0, 0));

@@ -23,6 +23,8 @@ void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 		return;
 	}
 
+	InputManager::KeyCallback(key, action);
+
 	MalletUi::KeyCallback(window, key, scancode, action, mods);
 }
 

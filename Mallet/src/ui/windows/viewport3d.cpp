@@ -79,7 +79,7 @@ void Viewport3D::OnDeselect(DockingLeaf& leaf)
 
 void Viewport3D::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	InputManager::KeyCallback(key, action);
+	
 }
 
 void Viewport3D::MouseCallback(GLFWwindow* window, int button, int action, int mods)
