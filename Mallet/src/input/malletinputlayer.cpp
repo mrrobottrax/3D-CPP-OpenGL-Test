@@ -19,6 +19,6 @@ void MalletMouseCallback(GLFWwindow* window, int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
 	{
-		//MalletUi::
+		MalletUi::SelectNode();
 	}
 }

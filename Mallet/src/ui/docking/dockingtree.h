@@ -21,6 +21,7 @@ public:
 	void DrawTree();
 	int SplitLeaf(int, DockingDirection, float, MalletWindow*);
 	void RecalculateSizes();
+	int SelectNode(float mousePosX, float mousePosY);
 
 private:
 	bool IsLeaf(int);
@@ -30,4 +31,5 @@ private:
 	void DrawLeafDebug(int, float, float, float, float);
 	void DrawLeaf(int, float, float, float, float);
 	void GetSizesRecursive(int, int, int, int, int);
+	int SelectNodeRecursive(int nodeIndex, float mousePosX, float mousePosY);
 };

@@ -37,13 +37,9 @@ namespace MalletUi
 		tree->SplitLeaf(leafIndex, dir, ratio, window);
 	}
 
-	int GetNodeRecursive(float mousePosX, float mousePosY)
-	{
+	int selectedNodeIndex;
 
-		return 0;
-	}
-
-	int GetNodeToMove()
+	void SelectNode()
 	{
 		double mousePosX, mousePosY;
 		glfwGetCursorPos(mainWindow, &mousePosX, &mousePosY);
@@ -51,6 +47,7 @@ namespace MalletUi
 		float fMousePosX = float(mousePosX);
 		float fMousePosY = float(mousePosY);
 
-		return GetNodeRecursive(fMousePosX, fMousePosY);
+		selectedNodeIndex = tree->SelectNode(fMousePosX, fMousePosY);
+		std::cout << selectedNodeIndex << "\n";
 	}
 }

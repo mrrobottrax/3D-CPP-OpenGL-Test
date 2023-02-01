@@ -11,14 +11,16 @@
 
 //#define DRAW_DEBUG
 
+#define NODE_MIN_MOUSE_DIST 5
+
 DockingTree::DockingTree() : nodeArray(), leafArray()
 {
 	int leaf = AddLeaf(-1, new Viewport3D());
 	rootNode = -(leaf + 1);
 
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f, new MalletWindow());
-	//leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.7f);
-	//leaf = SplitLeaf(1, DockingDirection::horizontal, 0.8f);
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.2f, new MalletWindow());
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.7f, new MalletWindow());
+	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.8f, new MalletWindow());
 
 	RecalculateSizes();
 }
@@ -379,4 +381,53 @@ void DockingTree::DrawLeaf(int leafIndex, float workingPosX, float workingPosY, 
 	}
 
 	leaf.window->Draw(leaf, leafIndex);
+}
+
+int DockingTree::SelectNodeRecursive(int nodeIndex, float mousePosX, float mousePosY)
+{
+	if (IsLeaf(nodeIndex))
+	{
+		return nodeIndex;
+	}
+
+	DockingNode& node = nodeArray[nodeIndex];
+
+	float usedPos;
+
+	switch (node.direction)
+	{
+	case horizontal:
+		usedPos = mousePosY;
+		break;
+
+	case vertical:
+		usedPos = mousePosX;
+		break;
+
+	default:
+		usedPos = 0;
+		break;
+	}
+
+	if (abs(usedPos - node.absOffset) <= NODE_MIN_MOUSE_DIST)
+	{
+		return nodeIndex;
+	}
+
+	int nextIndex;
+	if (usedPos > node.absOffset)
+	{
+		nextIndex = node.frontIndex;
+	}
+	else
+	{
+		nextIndex = node.backIndex;
+	}
+
+	return SelectNodeRecursive(nextIndex, mousePosX, mousePosY);
+}
+
+int DockingTree::SelectNode(float mousePosX, float mousePosY)
+{
+	return SelectNodeRecursive(rootNode, mousePosX, mousePosY);
 }
