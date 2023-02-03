@@ -154,6 +154,7 @@
     <ClCompile Include="src\malletpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\ui\docking\dockingleaf.cpp" />
     <ClCompile Include="src\ui\docking\dockingtree.cpp" />
     <ClCompile Include="src\ui\malletui.cpp" />
     <ClCompile Include="src\ui\malletwindow.cpp" />

@@ -12,23 +12,10 @@ class MalletWindow;
 struct DockingLeaf
 {
 public:
-	DockingLeaf() : parentNodeIndex(-1), flags(0), absPos(), absSize(), window()
-	{
+	DockingLeaf();
+	DockingLeaf(int parentNodeIndex, MalletWindow* window);
 
-	}
-
-	DockingLeaf(int parentNodeIndex, MalletWindow* window) : parentNodeIndex(parentNodeIndex), flags(0), absPos(), absSize(), window(window)
-	{
-		flags |= DockingLeafFlags::leafIsUsed;
-	}
-
-	~DockingLeaf()
-	{
-		if (window)
-		{
-			delete window;
-		}
-	}
+	~DockingLeaf();
 
 public:
 	int parentNodeIndex;

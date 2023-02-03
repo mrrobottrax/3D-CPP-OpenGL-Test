@@ -63,5 +63,6 @@
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\windows\viewport3d.cpp" />
+    <ClCompile Include="src\ui\docking\dockingleaf.cpp" />
   </ItemGroup>
 </Project>
