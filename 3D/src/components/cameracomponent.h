@@ -8,7 +8,8 @@ struct CameraComponent
 
 	glm::mat4 matrix;
 
-	CameraComponent(float _fov, float _nearClip, float _farClip) : fov(_fov), nearClip(_nearClip), farClip(_farClip) {
+	CameraComponent(float _fov, float _nearClip, float _farClip) : fov(_fov), nearClip(_nearClip), farClip(_farClip)
+	{
 		matrix = glm::mat4(1.0f);
 	}
 };

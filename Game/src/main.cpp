@@ -37,7 +37,7 @@ MeshObject* monkeyMesh = new MeshObject();
 MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
-SystemManager* sm;
+SystemManager* systemManager;
 
 void Init()
 {
@@ -50,13 +50,11 @@ void Init()
 	SetupImGui(mainWindow);
 
 	// Init systems
-	sm = new SystemManager();
+	systemManager = new SystemManager();
 
-	sm->AddSystem<VelocitySystem>();
-	sm->AddSystem<FreecamSystem>();
-	sm->AddSystem<RenderSystem>();
-
-	//sm->RegisterSystems();
+	systemManager->AddSystem<VelocitySystem>();
+	systemManager->AddSystem<FreecamSystem>();
+	systemManager->AddSystem<RenderSystem>();
 
 	EntityManager& em = EntityManager::GetInstance();
 
@@ -74,11 +72,17 @@ void Init()
 		Entity entity = em.AddEntity(EntityArchetype(6, components));
 		em.GetComponent<PositionComponent>(entity) = { 0, 2, 0 };
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
-		em.GetComponent<CameraComponent>(entity) = { 80.0f, 0.03f, 1000.0f };
+		CameraComponent& cc = em.GetComponent<CameraComponent>(entity) = { 80.0f, 0.03f, 1000.0f };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 		em.GetComponent<FreecamComponent>(entity) = { true, 6, 40, 20 };
 
-		sm->GetSystem<RenderSystem>()->SetMainCameraEntity(entity);
+		int w, h;
+		glfwGetWindowSize(mainWindow, &w, &h);
+
+		RenderSystem& rs = systemManager->GetSystem<RenderSystem>();
+		rs.SetMainCameraEntity(entity);
+		rs.CalcFrustumScale(&cc);
+		rs.CalcPerspectiveMatrix(&cc, w, h);
 	}
 	// Create monkey
 	{
@@ -158,7 +162,7 @@ int main()
 
 		StartImGuiFrame();
 
-		sm->UpdateSystems();
+		systemManager->UpdateSystems();
 
 		EndImGuiFrame();
 
@@ -171,8 +175,7 @@ int main()
 
 	ImGuiTerminate();
 
-	delete sm;
-	//sm->DeleteAllSystems();
+	delete systemManager;
 	glfwTerminate();
 
 	// Show memory leaks

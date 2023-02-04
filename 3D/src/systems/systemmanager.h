@@ -16,14 +16,16 @@ public:
 
 public:
 	template <class T>
-	inline T* GetSystem()
+	inline T& GetSystem()
 	{
-		return (T*)systems->at(typeid(T).hash_code());
+		return *(T*)systems->at(typeid(T).hash_code());
 	}
 
 	template <class T>
-	inline void AddSystem()
+	inline T& AddSystem()
 	{
-		systems->emplace(typeid(T).hash_code(), new T());
+		T* system = new T();
+		systems->emplace(typeid(T).hash_code(), system);
+		return *system;
 	}
 };

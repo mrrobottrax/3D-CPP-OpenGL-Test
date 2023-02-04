@@ -21,4 +21,11 @@ public:
 
 private:
 	Entity cameraEntity;
+	GLint viewPosX;
+	GLint viewPosY;
+	GLsizei viewSizeX;
+	GLsizei viewSizeY;
+
+private:
+	void CalculateViewportVars(DockingLeaf&, int, int);
 };

@@ -7,18 +7,20 @@
 class RenderSystem : public System
 {
 public:
-	RenderSystem(Entity&);
 	RenderSystem();
 	~RenderSystem();
+
+	bool autoDraw;
 
 	CameraComponent* mainCamera;
 	Entity mainCameraEntity;
 
 	void SetMainCameraEntity(Entity&);
-	void InitMainCameraMatrix();
-	float CalcFrustumScale(float fov);
-	glm::mat4 CalcPerspectiveMatrix();
-	void UpdateMatrixAspect(int width, int height);
+	void InitMainCameraMatrix(int, int);
+
+	static void CalcFrustumScale(CameraComponent*);
+	static void CalcPerspectiveMatrix(CameraComponent*, int, int);
+	static void UpdateMatrixAspect(CameraComponent*, int width, int height);
 
 	void Update() override;
 

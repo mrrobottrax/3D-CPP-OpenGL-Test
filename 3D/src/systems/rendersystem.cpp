@@ -10,16 +10,8 @@
 
 #include <gl/glutil.h>
 
-RenderSystem::RenderSystem(Entity& mainEntity)
+RenderSystem::RenderSystem() : mainCamera(), autoDraw(true)
 {
-	mainCamera = &EntityManager::GetInstance().GetComponent<CameraComponent>(mainEntity);
-
-	InitMainCameraMatrix();
-}
-
-RenderSystem::RenderSystem()
-{
-	mainCamera = nullptr;
 }
 
 RenderSystem::~RenderSystem()
@@ -31,55 +23,59 @@ void RenderSystem::SetMainCameraEntity(Entity& entity)
 {
 	RenderSystem::mainCamera = &EntityManager::GetInstance().GetComponent<CameraComponent>(entity);
 	RenderSystem::mainCameraEntity = entity;
-	InitMainCameraMatrix();
 }
 
-void RenderSystem::InitMainCameraMatrix()
+void RenderSystem::InitMainCameraMatrix(int width, int height)
 {
-	mainCamera->frustumScale = CalcFrustumScale(mainCamera->fov);
-	glm::mat4 matrix = CalcPerspectiveMatrix();
-
-	for (int i = 0; i < 16; i++)
-	{
-		mainCamera->matrix = matrix;
-	}
+	CalcFrustumScale(mainCamera);
+	CalcPerspectiveMatrix(mainCamera, width, height);
 }
 
-float RenderSystem::CalcFrustumScale(float fov)
+void RenderSystem::CalcFrustumScale(CameraComponent* camera)
 {
-	const float degToRad = 3.14159f * 2.0f / 360.0f;
-	float fovRad = fov * degToRad;
-	return 1.0f / tan(fovRad / 2.0f);
-}
-
-void RenderSystem::UpdateMatrixAspect(int width, int height)
-{
-	if (mainCamera == nullptr)
+	if (camera == nullptr)
 		return;
 
-	mainCamera->matrix[0][0] = mainCamera->frustumScale / (width / (float)height);
-	mainCamera->matrix[1][1] = mainCamera->frustumScale;
+	const float degToRad = 3.14159f * 2.0f / 360.0f;
+	float fovRad = camera->fov * degToRad;
+	float scale = 1.0f / tan(fovRad / 2.0f);
+
+	camera->frustumScale = scale;
 }
 
-glm::mat4 RenderSystem::CalcPerspectiveMatrix()
+void RenderSystem::UpdateMatrixAspect(CameraComponent* camera, int width, int height)
 {
+	if (camera == nullptr)
+		return;
+
+	camera->matrix[0][0] = camera->frustumScale / (width / (float)height);
+	camera->matrix[1][1] = camera->frustumScale;
+}
+
+void RenderSystem::CalcPerspectiveMatrix(CameraComponent* camera, int width, int height)
+{
+	if (camera == nullptr)
+		return;
+
 	glm::mat4 matrix = glm::mat4(0.0f);
 
-	int width, height;
-	glfwGetWindowSize(mainWindow, &width, &height);
-
-	matrix[0][0] = mainCamera->frustumScale / (width / (float)height);
-	matrix[1][1] = mainCamera->frustumScale;
-	matrix[2][2] = (mainCamera->farClip + mainCamera->nearClip) / (mainCamera->nearClip - mainCamera->farClip);
+	matrix[0][0] = camera->frustumScale / (width / (float)height);
+	matrix[1][1] = camera->frustumScale;
+	matrix[2][2] = (camera->farClip + camera->nearClip) / (camera->nearClip - camera->farClip);
 	matrix[2][3] = -1.0f;
-	matrix[3][2] = (2 * mainCamera->farClip * mainCamera->nearClip) / (mainCamera->nearClip - mainCamera->farClip);
+	matrix[3][2] = (2 * camera->farClip * camera->nearClip) / (camera->nearClip - camera->farClip);
 
-	return matrix;
+	camera->matrix = matrix;
 }
 
 void RenderSystem::Update()
 {
 	if (mainCamera == nullptr)
+	{
+		return;
+	}
+
+	if (!autoDraw)
 	{
 		return;
 	}

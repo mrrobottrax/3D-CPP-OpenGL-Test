@@ -3,4 +3,4 @@
 
 int main();
 
-extern SystemManager* sm;
+extern SystemManager* systemManager;

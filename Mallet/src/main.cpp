@@ -39,7 +39,7 @@ MeshObject* monkeyMesh = new MeshObject();
 MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
-SystemManager* sm;
+SystemManager* systemManager;
 
 void Init()
 {
@@ -51,11 +51,13 @@ void Init()
 	InitializeOpenGL();
 
 	// Init systems
-	sm = new SystemManager();
+	systemManager = new SystemManager();
 
-	sm->AddSystem<VelocitySystem>();
-	sm->AddSystem<FreecamSystem>();
-	sm->AddSystem<RenderSystem>();
+	systemManager->AddSystem<VelocitySystem>();
+	systemManager->AddSystem<FreecamSystem>();
+
+	RenderSystem& rs = systemManager->AddSystem<RenderSystem>();
+	rs.autoDraw = false;
 
 	EntityManager& em = EntityManager::GetInstance();
 
@@ -141,7 +143,7 @@ int main()
 
 		StartImGuiFrame();
 
-		sm->UpdateSystems();
+		systemManager->UpdateSystems();
 
 		MalletUi::DrawTree();
 
@@ -157,7 +159,8 @@ int main()
 	ImGuiTerminate();
 	MalletUi::Destroy();
 
-	delete sm;
+	delete systemManager;
+
 	glfwTerminate();
 
 	// Show memory leaks
