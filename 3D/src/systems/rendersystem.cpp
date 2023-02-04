@@ -1,6 +1,7 @@
 #include <pch.h>
-
 #include <systems/renderSystem.h>
+
+#include <managers.h>
 
 #include <common/matrixStack.h>
 #include <memory/entityManager.h>
@@ -21,7 +22,7 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::SetMainCameraEntity(Entity& entity)
 {
-	RenderSystem::mainCamera = &EntityManager::GetInstance().GetComponent<CameraComponent>(entity);
+	RenderSystem::mainCamera = &entityManager->GetComponent<CameraComponent>(entity);
 	RenderSystem::mainCameraEntity = entity;
 }
 
@@ -79,7 +80,7 @@ void RenderSystem::Update()
 
 void RenderSystem::DrawNormal()
 {
-	EntityManager& em = EntityManager::GetInstance();
+	EntityManager& em = *entityManager;
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<MeshComponent>());
 	if (archetypes == nullptr)

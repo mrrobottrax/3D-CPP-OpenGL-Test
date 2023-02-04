@@ -31,5 +31,4 @@ void SystemManager::DeleteAllSystems()
 	}
 
 	delete systems;
-	delete &EntityManager::GetInstance();
 }

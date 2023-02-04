@@ -6,7 +6,7 @@
 #include <input/gameinputlayer.h>
 
 #include <meshobject.h>
-#include <memory/entitymanager.h>
+#include <managers.h>
 #include <timemanager.h>
 #include <modelloader.h>
 
@@ -38,6 +38,7 @@ MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
 SystemManager* systemManager;
+EntityManager* entityManager;
 
 void Init()
 {
@@ -51,12 +52,14 @@ void Init()
 
 	// Init systems
 	systemManager = new SystemManager();
+	entityManager = new EntityManager();
 
-	systemManager->AddSystem<VelocitySystem>();
-	systemManager->AddSystem<FreecamSystem>();
-	systemManager->AddSystem<RenderSystem>();
+	SystemManager& sm = *systemManager;
+	sm.AddSystem<VelocitySystem>();
+	sm.AddSystem<FreecamSystem>();
+	sm.AddSystem<RenderSystem>();
 
-	EntityManager& em = EntityManager::GetInstance();
+	EntityManager& em = *entityManager;
 
 	// Create player
 	{
@@ -176,6 +179,7 @@ int main()
 	ImGuiTerminate();
 
 	delete systemManager;
+	delete entityManager;
 	glfwTerminate();
 
 	// Show memory leaks

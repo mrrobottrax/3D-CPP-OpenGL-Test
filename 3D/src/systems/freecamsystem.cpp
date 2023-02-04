@@ -4,6 +4,7 @@
 
 #include <inputmanager.h>
 #include <gl/gl.h>
+#include <managers.h>
 
 FreecamSystem::FreecamSystem()
 {
@@ -65,7 +66,7 @@ void FreecamSystem::Update()
 	pitchDelta += yDelta * 0.002f;
 	yawDelta += xDelta * 0.002f;
 
-	EntityManager& em = EntityManager::GetInstance();
+	EntityManager& em = *entityManager;
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<FreecamComponent>());
 

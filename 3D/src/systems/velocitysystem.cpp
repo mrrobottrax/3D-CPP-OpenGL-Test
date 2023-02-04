@@ -1,6 +1,7 @@
 #include <pch.h>
-
 #include <systems/velocitySystem.h>
+
+#include <managers.h>
 
 #include <systems/systemmanager.h>
 #include <memory/entitymanager.h>
@@ -20,7 +21,7 @@ VelocitySystem::~VelocitySystem()
 
 void VelocitySystem::Update()
 {
-	EntityManager& em = EntityManager::GetInstance();
+	EntityManager& em = *entityManager;
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<VelocityComponent>());
 

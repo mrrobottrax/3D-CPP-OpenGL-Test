@@ -14,16 +14,9 @@ private:
 	static EntityManager* instance;
 	static std::mutex mutex;
 
-protected:
-	EntityManager();
-
 public:
+	EntityManager();
 	~EntityManager();
-
-	// Singleton
-	EntityManager(EntityManager& other) = delete;
-	void operator=(const EntityManager&) = delete;
-	static EntityManager& GetInstance();
 
 	int nextEntityIndex;
 

@@ -7,20 +7,6 @@
 #include <components/velocitycomponent.h>
 #include <components/meshcomponent.h>
 
-EntityManager* EntityManager::instance{ nullptr };
-std::mutex EntityManager::mutex;
-
-EntityManager& EntityManager::GetInstance()
-{
-	std::lock_guard<std::mutex> lock(mutex);
-	if (instance == nullptr)
-	{
-		instance = new EntityManager();
-	}
-
-	return *instance;
-};
-
 EntityManager::EntityManager()
 {
 	nextEntityIndex = 0;

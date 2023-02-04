@@ -3,7 +3,7 @@
 
 #include <inputmanager.h>
 
-#include <systems/systemmanager.h>
+#include <managers.h>
 #include <systems/rendersystem.h>
 
 #include <components/idcomponent.h>
@@ -18,7 +18,7 @@
 
 Viewport3D::Viewport3D() : cameraEntity(), viewPosX(), viewPosY(), viewSizeX(), viewSizeY()
 {
-	EntityManager& em = EntityManager::GetInstance();
+	EntityManager& em = *entityManager;
 
 	Component components[] = {
 		Component().init<IdComponent>(),
@@ -80,7 +80,7 @@ void Viewport3D::OnSelect(DockingLeaf& leaf)
 {
 	glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	EntityManager& em = EntityManager::GetInstance();
+	EntityManager& em = *entityManager;
 	FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
 
 	freeCam.enabled = true;
@@ -90,7 +90,7 @@ void Viewport3D::OnDeselect(DockingLeaf& leaf)
 {
 	glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-	EntityManager& em = EntityManager::GetInstance();
+	EntityManager& em = *entityManager;
 	FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
 
 	freeCam.enabled = false;

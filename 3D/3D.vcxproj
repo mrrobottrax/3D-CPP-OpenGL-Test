@@ -154,6 +154,7 @@
     <ClInclude Include="src\imgui\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="src\imgui\imguiutil.h" />
     <ClInclude Include="src\inputmanager.h" />
+    <ClInclude Include="src\managers.h" />
     <ClInclude Include="src\memory\chunk.h" />
     <ClInclude Include="src\memory\chunkarchetypeelement.h" />
     <ClInclude Include="src\memory\component.h" />
