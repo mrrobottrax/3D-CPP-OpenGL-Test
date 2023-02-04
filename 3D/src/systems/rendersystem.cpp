@@ -65,29 +65,52 @@ void RenderSystem::CalcPerspectiveMatrix(CameraComponent& camera, int width, int
 
 void RenderSystem::Update()
 {
-	if (mainCamera == nullptr)
-	{
-		return;
-	}
-
 	if (!autoDraw)
 	{
 		return;
 	}
 
-	DrawNormal();
+	if (mainCamera == nullptr)
+	{
+		return;
+	}
+
+	DrawShaded();
 }
 
-void RenderSystem::DrawNormal()
+void RenderSystem::DrawShaded()
+{
+	glUseProgram(standardShaderProgram);
+	glBindVertexArray(vao);
+
+	DrawBase();
+
+	glBindVertexArray(0);
+	glUseProgram(0);
+}
+
+void RenderSystem::DrawWireframe()
+{
+	glUseProgram(wireframeShaderProgram);
+	glBindVertexArray(vao);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glDisable(GL_CULL_FACE);
+	DrawBase();
+	glEnable(GL_CULL_FACE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glBindVertexArray(0);
+	glUseProgram(0);
+}
+
+void RenderSystem::DrawBase()
 {
 	EntityManager& em = *entityManager;
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<MeshComponent>());
 	if (archetypes == nullptr)
 		return;
-
-	glUseProgram(shaderProgram);
-	glBindVertexArray(vao);
 
 	MatrixStack mStack;
 	glm::mat3 normalMat;
@@ -103,7 +126,7 @@ void RenderSystem::DrawNormal()
 	float sunIntensity = 1.3f;
 	float ambientIntensity = 0.1f;
 
-	glUniformMatrix4fv(perspectiveMatrix, 1, GL_FALSE, &mainCamera->matrix[0][0]);
+	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &mainCamera->matrix[0][0]);
 	glUniform1f(sunIntensityUnif, sunIntensity);
 	glUniform1f(ambientIntensityUnif, ambientIntensity);
 
@@ -136,7 +159,8 @@ void RenderSystem::DrawNormal()
 				glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, 0);
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.mesh->elementBufferObject);
 
-				glUniformMatrix4fv(positionMatrix, 1, GL_FALSE, &mStack.top()[0][0]);
+				// TODO: Faster to have the cpu do this? Or maybe just give the gpu rotation, position, etc matrices?
+				glUniformMatrix4fv(sharedPositionMatrixUnif, 1, GL_FALSE, &mStack.top()[0][0]);
 				glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, &newNormalMat[0][0]);
 				glUniform3f(sunDirUnif, sunDir.x, sunDir.y, sunDir.z);
 				glUniform4f(colorUnif, 1, 1, 1, 1);
@@ -149,9 +173,6 @@ void RenderSystem::DrawNormal()
 	}
 
 	mStack.pop();
-
-	glBindVertexArray(0);
-	glUseProgram(0);
 
 	delete archetypes;
 }

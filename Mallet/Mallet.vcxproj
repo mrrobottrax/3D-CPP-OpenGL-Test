@@ -145,6 +145,7 @@
     <ClInclude Include="src\ui\docking\dockingtree.h" />
     <ClInclude Include="src\ui\malletui.h" />
     <ClInclude Include="src\ui\malletwindow.h" />
+    <ClInclude Include="src\ui\windows\viewport2d.h" />
     <ClInclude Include="src\ui\windows\viewport3d.h" />
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +159,7 @@
     <ClCompile Include="src\ui\docking\dockingtree.cpp" />
     <ClCompile Include="src\ui\malletui.cpp" />
     <ClCompile Include="src\ui\malletwindow.cpp" />
+    <ClCompile Include="src\ui\windows\viewport2d.cpp" />
     <ClCompile Include="src\ui\windows\viewport3d.cpp" />
   </ItemGroup>
   <ItemGroup>

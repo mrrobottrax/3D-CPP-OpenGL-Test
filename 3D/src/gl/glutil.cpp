@@ -8,15 +8,19 @@
 
 GLFWwindow* mainWindow;
 
-GLuint shaderProgram;
 GLuint vao;
-GLuint perspectiveMatrix;
-GLuint positionMatrix;
+
+GLuint sharedPositionMatrixUnif;
+GLuint sharedPerspectiveMatrixUnif;
+
+GLuint standardShaderProgram;
 GLuint normalMatrix;
 GLuint sunDirUnif;
 GLuint sunIntensityUnif;
 GLuint ambientIntensityUnif;
 GLuint colorUnif;
+
+GLuint wireframeShaderProgram;
 
 void ErrorCallback(int error, const char* description)
 {
@@ -30,13 +34,6 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 void DefaultWindowSizeCallback(GLFWwindow* window, int width, int height)
 {
-	//RenderSystem* rs = SystemManager::GetSystem<RenderSystem>();
-
-	//if (rs == nullptr)
-	//	return;
-
-	//rs->UpdateMatrixAspect(width, height);
-
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 }
 
@@ -115,23 +112,40 @@ void InitializeOpenGL()
 	glDepthRange(0.0f, 1.0f);
 
 	std::vector<GLuint> shaderList;
-	const char* strVertShader = shaderLoader::loadShader("data/shaders/normal.vert");
-	const char* strFragShader = shaderLoader::loadShader("data/shaders/normal.frag");
-	shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
-	shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
-	delete[] strVertShader;
-	delete[] strFragShader;
 
-	shaderProgram = CreateProgram(shaderList);
-	std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
+	// Standard shader
+	{
+		const char* strVertShader = shaderLoader::loadShader("data/shaders/normal.vert");
+		const char* strFragShader = shaderLoader::loadShader("data/shaders/normal.frag");
+		shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
+		shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
+		delete[] strVertShader;
+		delete[] strFragShader;
 
-	perspectiveMatrix = glGetUniformLocation(shaderProgram, "perspectiveMatrix");
-	positionMatrix = glGetUniformLocation(shaderProgram, "positionMatrix");
-	normalMatrix = glGetUniformLocation(shaderProgram, "normalMatrix");
-	sunDirUnif = glGetUniformLocation(shaderProgram, "sunDir");
-	sunIntensityUnif = glGetUniformLocation(shaderProgram, "sunIntensity");
-	ambientIntensityUnif = glGetUniformLocation(shaderProgram, "ambientIntensity");
-	colorUnif = glGetUniformLocation(shaderProgram, "diffuseColor");
+		standardShaderProgram = CreateProgram(shaderList);
+		std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
+
+		sharedPerspectiveMatrixUnif = glGetUniformLocation(standardShaderProgram, "perspectiveMatrix");
+		sharedPositionMatrixUnif = glGetUniformLocation(standardShaderProgram, "positionMatrix");
+		normalMatrix = glGetUniformLocation(standardShaderProgram, "normalMatrix");
+		sunDirUnif = glGetUniformLocation(standardShaderProgram, "sunDir");
+		sunIntensityUnif = glGetUniformLocation(standardShaderProgram, "sunIntensity");
+		ambientIntensityUnif = glGetUniformLocation(standardShaderProgram, "ambientIntensity");
+		colorUnif = glGetUniformLocation(standardShaderProgram, "diffuseColor");
+	}
+
+	// Wireframe shader
+	{
+		const char* strVertShader = shaderLoader::loadShader("data/shaders/wireframe.vert");
+		const char* strFragShader = shaderLoader::loadShader("data/shaders/wireframe.frag");
+		shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
+		shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
+		delete[] strVertShader;
+		delete[] strFragShader;
+
+		wireframeShaderProgram = CreateProgram(shaderList);
+		std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
+	}
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);

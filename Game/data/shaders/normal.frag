@@ -1,6 +1,7 @@
-#version 330
+#version 460
 smooth in vec3 outNormal;
 out vec4 outputColor;
+
 void main()
 {
 	vec3 newNormal = normalize(outNormal);

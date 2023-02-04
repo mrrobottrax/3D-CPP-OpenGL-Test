@@ -3,15 +3,19 @@
 extern GLFWwindow* mainWindow;
 extern const char* glsl_version;
 
-extern GLuint shaderProgram;
 extern GLuint vao;
-extern GLuint perspectiveMatrix;
-extern GLuint positionMatrix;
+
+extern GLuint sharedPositionMatrixUnif;
+extern GLuint sharedPerspectiveMatrixUnif;
+
+extern GLuint standardShaderProgram;
 extern GLuint normalMatrix;
 extern GLuint sunDirUnif;
 extern GLuint sunIntensityUnif;
 extern GLuint ambientIntensityUnif;
 extern GLuint colorUnif;
+
+extern GLuint wireframeShaderProgram;
 
 void ErrorCallback(int, const char*);
 void KeyCallback(GLFWwindow*, int, int, int, int);

@@ -43,6 +43,7 @@
     </ClInclude>
     <ClInclude Include="src\debug\debugcolorcycle.h" />
     <ClInclude Include="src\ui\windows\viewport3d.h" />
+    <ClInclude Include="src\ui\windows\viewport2d.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl\malletglutil.cpp">
@@ -64,5 +65,6 @@
     </ClCompile>
     <ClCompile Include="src\ui\windows\viewport3d.cpp" />
     <ClCompile Include="src\ui\docking\dockingleaf.cpp" />
+    <ClCompile Include="src\ui\windows\viewport2d.cpp" />
   </ItemGroup>
 </Project>
