@@ -5,33 +5,31 @@
 
 #include <memory/entitymanager.h>
 
-namespace SystemManager {
-	std::map<size_t, System*>* systems = new std::map<size_t, System*>();
+SystemManager::SystemManager()
+{
+	systems = new std::map<size_t, System*>;
+}
 
-	void RegisterSystems()
+SystemManager::~SystemManager()
+{
+	DeleteAllSystems();
+}
+
+void SystemManager::UpdateSystems()
+{
+	for (std::map<size_t, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
 	{
-		AddSystem<VelocitySystem>();
-		AddSystem<FreecamSystem>();
+		(*it).second->Update();
+	}
+}
 
-		AddSystem<RenderSystem>();
+void SystemManager::DeleteAllSystems()
+{
+	for (std::map<size_t, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
+	{
+		delete (*it).second;
 	}
 
-	void UpdateSystems()
-	{
-		for (std::map<size_t, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
-		{
-			(*it).second->Update();
-		}
-	}
-
-	void DeleteAllSystems()
-	{
-		for (std::map<size_t, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
-		{
-			delete (*it).second;
-		}
-
-		delete systems;
-		delete &EntityManager::GetInstance();
-	}
+	delete systems;
+	delete &EntityManager::GetInstance();
 }

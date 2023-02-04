@@ -11,6 +11,8 @@
 
 #include <gl/glutil.h>
 
+#include <main.h>
+
 Viewport3D::Viewport3D() : cameraEntity()
 {
 	EntityManager& em = EntityManager::GetInstance();
@@ -31,7 +33,7 @@ Viewport3D::Viewport3D() : cameraEntity()
 	em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 	em.GetComponent<FreecamComponent>(entity) = { false, 6, 40, 20 };
 
-	SystemManager::GetSystem<RenderSystem>()->SetMainCameraEntity(entity);
+	sm->GetSystem<RenderSystem>()->SetMainCameraEntity(entity);
 
 	cameraEntity = entity;
 }
@@ -47,7 +49,7 @@ void Viewport3D::Draw(DockingLeaf& leaf, int leafIndex)
 
 void Viewport3D::OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight)
 {
-	RenderSystem* rs = SystemManager::GetSystem<RenderSystem>();
+	RenderSystem* rs = sm->GetSystem<RenderSystem>();
 
 	if (rs == nullptr)
 		return;

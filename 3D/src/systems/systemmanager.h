@@ -2,13 +2,19 @@
 
 #include <systems/system.h>
 
-namespace SystemManager {
-	extern std::map<size_t, System*>* systems;
+class SystemManager {
+public:
+	SystemManager();
+	~SystemManager();
 
-	void RegisterSystems();
+public:
+	std::map<size_t, System*>* systems;
+
+public:
 	void UpdateSystems();
 	void DeleteAllSystems();
 
+public:
 	template <class T>
 	inline T* GetSystem()
 	{
@@ -20,4 +26,4 @@ namespace SystemManager {
 	{
 		systems->emplace(typeid(T).hash_code(), new T());
 	}
-}
+};

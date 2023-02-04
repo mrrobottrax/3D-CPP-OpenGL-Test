@@ -1,6 +1,6 @@
 #include <pch.h>
-
 #include <gl/glutil.h>
+
 #include <gl/shaderLoader.h>
 #include <inputManager.h>
 #include <systems/systemManager.h>
@@ -30,12 +30,12 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
 void DefaultWindowSizeCallback(GLFWwindow* window, int width, int height)
 {
-	RenderSystem* rs = SystemManager::GetSystem<RenderSystem>();
+	//RenderSystem* rs = SystemManager::GetSystem<RenderSystem>();
 
-	if (rs == nullptr)
-		return;
+	//if (rs == nullptr)
+	//	return;
 
-	rs->UpdateMatrixAspect(width, height);
+	//rs->UpdateMatrixAspect(width, height);
 
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 }

@@ -12,8 +12,9 @@
 #include <timemanager.h>
 #include <modelloader.h>
 
-#include <systems/systemmanager.h>
 #include <systems/rendersystem.h>
+#include <systems/freecamsystem.h>
+#include <systems/velocitysystem.h>
 
 #include <components/cameracomponent.h>
 #include <components/freecamcomponent.h>
@@ -38,6 +39,8 @@ MeshObject* monkeyMesh = new MeshObject();
 MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
+SystemManager* sm;
+
 void Init()
 {
 	// Init OpenGL
@@ -48,7 +51,11 @@ void Init()
 	InitializeOpenGL();
 
 	// Init systems
-	SystemManager::RegisterSystems();
+	sm = new SystemManager();
+
+	sm->AddSystem<VelocitySystem>();
+	sm->AddSystem<FreecamSystem>();
+	sm->AddSystem<RenderSystem>();
 
 	EntityManager& em = EntityManager::GetInstance();
 
@@ -134,7 +141,7 @@ int main()
 
 		StartImGuiFrame();
 
-		SystemManager::UpdateSystems();
+		sm->UpdateSystems();
 
 		MalletUi::DrawTree();
 
@@ -150,7 +157,7 @@ int main()
 	ImGuiTerminate();
 	MalletUi::Destroy();
 
-	SystemManager::DeleteAllSystems();
+	delete sm;
 	glfwTerminate();
 
 	// Show memory leaks

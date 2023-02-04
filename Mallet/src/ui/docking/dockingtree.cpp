@@ -15,7 +15,7 @@
 
 DockingTree::DockingTree() : nodeArray(), leafArray()
 {
-	int leaf = AddLeaf(-1, new MalletWindow());
+	int leaf = AddLeaf(-1, nullptr);
 	rootNode = -(leaf + 1);
 
 	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.2f, new Viewport3D());

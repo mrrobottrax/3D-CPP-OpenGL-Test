@@ -10,8 +10,9 @@
 #include <timemanager.h>
 #include <modelloader.h>
 
-#include <systems/systemmanager.h>
 #include <systems/rendersystem.h>
+#include <systems/velocitysystem.h>
+#include <systems/freecamsystem.h>
 
 #include <components/cameracomponent.h>
 #include <components/freecamcomponent.h>
@@ -22,6 +23,7 @@
 #include <components/idcomponent.h>
 
 #include <imgui/imguiutil.h>
+#include <inputmanager.h>
 
 using namespace std;
 
@@ -35,6 +37,8 @@ MeshObject* monkeyMesh = new MeshObject();
 MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
+SystemManager* sm;
+
 void Init()
 {
 	// Init OpenGL
@@ -46,7 +50,13 @@ void Init()
 	SetupImGui(mainWindow);
 
 	// Init systems
-	SystemManager::RegisterSystems();
+	sm = new SystemManager();
+
+	sm->AddSystem<VelocitySystem>();
+	sm->AddSystem<FreecamSystem>();
+	sm->AddSystem<RenderSystem>();
+
+	//sm->RegisterSystems();
 
 	EntityManager& em = EntityManager::GetInstance();
 
@@ -66,9 +76,9 @@ void Init()
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 		em.GetComponent<CameraComponent>(entity) = { 80.0f, 0.03f, 1000.0f };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
-		em.GetComponent<FreecamComponent>(entity) = { false, 6, 40, 20 };
+		em.GetComponent<FreecamComponent>(entity) = { true, 6, 40, 20 };
 
-		SystemManager::GetSystem<RenderSystem>()->SetMainCameraEntity(entity);
+		sm->GetSystem<RenderSystem>()->SetMainCameraEntity(entity);
 	}
 	// Create monkey
 	{
@@ -138,13 +148,17 @@ int main()
 		TimeManager::Update();
 		glfwPollEvents();
 
+		double xPos, yPos;
+		glfwGetCursorPos(mainWindow, &xPos, &yPos);
+		InputManager::UpdateCursorDelta(xPos, yPos);
+
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		StartImGuiFrame();
 
-		SystemManager::UpdateSystems();
+		sm->UpdateSystems();
 
 		EndImGuiFrame();
 
@@ -157,7 +171,8 @@ int main()
 
 	ImGuiTerminate();
 
-	SystemManager::DeleteAllSystems();
+	delete sm;
+	//sm->DeleteAllSystems();
 	glfwTerminate();
 
 	// Show memory leaks
