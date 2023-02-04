@@ -18,9 +18,9 @@ public:
 	void SetMainCameraEntity(Entity&);
 	void InitMainCameraMatrix(int, int);
 
-	static void CalcFrustumScale(CameraComponent*);
-	static void CalcPerspectiveMatrix(CameraComponent*, int, int);
-	static void UpdateMatrixAspect(CameraComponent*, int width, int height);
+	static void CalcFrustumScale(CameraComponent&);
+	static void CalcPerspectiveMatrix(CameraComponent&, int, int);
+	static void UpdateMatrixAspect(CameraComponent&, int width, int height);
 
 	void Update() override;
 

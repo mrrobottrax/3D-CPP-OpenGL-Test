@@ -37,12 +37,13 @@ Viewport3D::Viewport3D() : cameraEntity(), viewPosX(), viewPosY(), viewSizeX(), 
 	em.GetComponent<FreecamComponent>(entity) = { false, 6, 40, 20 };
 
 	cameraEntity = entity;
+	camera = &cam;
 
 	int w, h;
 	glfwGetWindowSize(mainWindow, &w, &h);
 
-	RenderSystem::CalcFrustumScale(&cam);
-	RenderSystem::CalcPerspectiveMatrix(&cam, w, h);
+	RenderSystem::CalcFrustumScale(cam);
+	RenderSystem::CalcPerspectiveMatrix(cam, w, h);
 }
 
 Viewport3D::~Viewport3D()
@@ -75,8 +76,6 @@ void Viewport3D::Draw(DockingLeaf& leaf, int leafIndex)
 
 	float sunIntensity = 1.3f;
 	float ambientIntensity = 0.1f;
-
-	CameraComponent* camera = &em.GetComponent<CameraComponent>(cameraEntity);
 
 	glUniformMatrix4fv(perspectiveMatrix, 1, GL_FALSE, &camera->matrix[0][0]);
 	glUniform1f(sunIntensityUnif, sunIntensity);
@@ -143,8 +142,7 @@ void Viewport3D::OnResize(DockingLeaf& leaf, int fullWindowWidth, int fullWindow
 {
 	CalculateViewportVars(leaf, fullWindowWidth, fullWindowHeight);
 
-	EntityManager& em = EntityManager::GetInstance();
-	RenderSystem::UpdateMatrixAspect(&em.GetComponent<CameraComponent>(cameraEntity), leaf.absSize[0], leaf.absSize[1]);
+	RenderSystem::UpdateMatrixAspect(*camera, leaf.absSize[0], leaf.absSize[1]);
 }
 
 void Viewport3D::OnSelect(DockingLeaf& leaf)

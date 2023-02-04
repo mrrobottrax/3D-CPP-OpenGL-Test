@@ -3,6 +3,7 @@
 #include <ui/malletwindow.h>
 #include <ui/docking/dockingleaf.h>
 #include <memory/entity.h>
+#include <components/cameracomponent.h>
 
 class Viewport3D : public MalletWindow
 {
@@ -21,6 +22,7 @@ public:
 
 private:
 	Entity cameraEntity;
+	CameraComponent* camera;
 	GLint viewPosX;
 	GLint viewPosY;
 	GLsizei viewSizeX;
