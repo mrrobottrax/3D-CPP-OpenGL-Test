@@ -23,7 +23,5 @@ public:
 	static void UpdateMatrixAspect(CameraComponent&, int width, int height);
 
 	void Update() override;
-
-private:
-	
+	void DrawNormal();
 };

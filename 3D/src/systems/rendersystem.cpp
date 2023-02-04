@@ -74,6 +74,11 @@ void RenderSystem::Update()
 		return;
 	}
 
+	DrawNormal();
+}
+
+void RenderSystem::DrawNormal()
+{
 	EntityManager& em = EntityManager::GetInstance();
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<MeshComponent>());
@@ -113,7 +118,7 @@ void RenderSystem::Update()
 			for (unsigned short i = 0; i < chunk->numberOfEntities; i++)
 			{
 				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
-				MeshComponent&     mesh     = em.GetComponent<MeshComponent>(entity);
+				MeshComponent& mesh = em.GetComponent<MeshComponent>(entity);
 				PositionComponent& position = em.GetComponent<PositionComponent>(entity);
 				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
 
