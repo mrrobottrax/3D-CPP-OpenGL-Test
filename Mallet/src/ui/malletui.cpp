@@ -47,8 +47,11 @@ namespace MalletUi
 		if (tree->IsLeaf(selectedNodeIndex))
 		{
 			DockingLeaf& leaf = tree->leafArray[abs(selectedNodeIndex) - 1];
-			if (leaf.window)
+			if (leaf.window != nullptr)
+			{
+				leaf.window->selected = false;
 				leaf.window->OnDeselect(leaf);
+			}
 		}
 	}
 
@@ -68,8 +71,11 @@ namespace MalletUi
 		if (tree->IsLeaf(selectedNodeIndex))
 		{
 			DockingLeaf& leaf = tree->leafArray[abs(selectedNodeIndex) - 1];
-			if (leaf.window)
+			if (leaf.window != nullptr)
+			{
+				leaf.window->selected = true;
 				leaf.window->OnSelect(leaf);
+			}
 		}
 	}
 
@@ -79,6 +85,13 @@ namespace MalletUi
 		{
 			DeselectNode();
 			return;
+		}
+
+		if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+		{
+			int mode = glfwGetInputMode(mainWindow, GLFW_CURSOR);
+			if (mode != GLFW_CURSOR_DISABLED)
+				SelectNode();
 		}
 
 		if (selectedNodeIndex < 0 && selected)

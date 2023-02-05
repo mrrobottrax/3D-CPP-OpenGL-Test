@@ -2,7 +2,7 @@
 
 #include <ui/malletwindow.h>
 
-MalletWindow::MalletWindow()
+MalletWindow::MalletWindow() : selected(false)
 {
 }
 

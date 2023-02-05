@@ -7,8 +7,7 @@
 #include <debug/debugcolorcycle.h>
 
 // Windows - TEMP
-#include <ui/windows/viewport3d.h>
-#include <ui/windows/viewport2d.h>
+#include <ui/windows/viewport.h>
 
 //#define DRAW_DEBUG
 
@@ -16,12 +15,12 @@
 
 DockingTree::DockingTree() : nodeArray(), leafArray()
 {
-	int leaf = AddLeaf(-1, new Viewport3D());
+	int leaf = AddLeaf(-1, new Viewport3D(ViewportMode::shaded));
 	rootNode = -(leaf + 1);
 
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5, new Viewport2D());
-	leaf = SplitLeaf(0, DockingDirection::horizontal, 0.5, new Viewport2D());
-	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.5, new Viewport2D());
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5, new Viewport3D(ViewportMode::top));
+	leaf = SplitLeaf(0, DockingDirection::horizontal, 0.5, new Viewport3D(ViewportMode::shaded));
+	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.5, new Viewport3D(ViewportMode::shaded));
 
 	RecalculateSizes();
 }

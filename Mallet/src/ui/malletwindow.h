@@ -16,6 +16,9 @@ public:
 	~MalletWindow();
 
 public:
+	bool selected;
+
+public:
 	virtual void Draw(DockingLeaf& leaf, int leafIndex);
 	inline virtual void OnSelect(DockingLeaf& leaf) {};
 	inline virtual void OnDeselect(DockingLeaf& leaf) {};

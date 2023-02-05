@@ -42,8 +42,7 @@
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="src\debug\debugcolorcycle.h" />
-    <ClInclude Include="src\ui\windows\viewport3d.h" />
-    <ClInclude Include="src\ui\windows\viewport2d.h" />
+    <ClInclude Include="src\ui\windows\viewport.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl\malletglutil.cpp">
@@ -63,8 +62,7 @@
     <ClCompile Include="src\ui\malletwindow.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\windows\viewport3d.cpp" />
+    <ClCompile Include="src\ui\windows\viewport.cpp" />
     <ClCompile Include="src\ui\docking\dockingleaf.cpp" />
-    <ClCompile Include="src\ui\windows\viewport2d.cpp" />
   </ItemGroup>
 </Project>

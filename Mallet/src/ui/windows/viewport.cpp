@@ -1,5 +1,5 @@
 #include "malletpch.h"
-#include "viewport2d.h"
+#include "viewport.h"
 
 #include <inputmanager.h>
 
@@ -16,7 +16,7 @@
 #include <common/matrixstack.h>
 #include <components/meshcomponent.h>
 
-Viewport2D::Viewport2D() : cameraEntity(), viewPosX(), viewPosY(), viewSizeX(), viewSizeY()
+Viewport3D::Viewport3D(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), viewSizeX(), viewSizeY(), mode(mode)
 {
 	EntityManager& em = *entityManager;
 
@@ -48,45 +48,52 @@ Viewport2D::Viewport2D() : cameraEntity(), viewPosX(), viewPosY(), viewSizeX(), 
 	renderSystem = &systemManager->GetSystem<RenderSystem>();
 }
 
-Viewport2D::~Viewport2D()
+Viewport3D::~Viewport3D()
 {
 }
 
-void Viewport2D::Draw(DockingLeaf& leaf, int leafIndex)
+void Viewport3D::Draw(DockingLeaf& leaf, int leafIndex)
 {
 	glViewport(viewPosX, viewPosY, viewSizeX, viewSizeY);
 
 	renderSystem->mainCamera = camera;
 	renderSystem->mainCameraEntity = cameraEntity;
-	renderSystem->DrawWireframe();
+
+	switch (mode)
+	{
+	case shaded:
+		renderSystem->DrawShaded();
+		break;
+	case top:
+		renderSystem->DrawWireframe();
+		break;
+	default:
+		renderSystem->DrawShaded();
+		break;
+	};
 }
 
-void Viewport2D::CalculateViewportVars(DockingLeaf& leaf, int fullWindowWidth, int fullWindowHeight)
+void Viewport3D::CalculateViewportVars(DockingLeaf& leaf, int fullWindowWidth, int fullWindowHeight)
 {
-	viewPosX = (GLint)leaf.absPos[0];
-	viewPosY = (GLint)(fullWindowHeight - (leaf.absPos[1] + leaf.absSize[1]));
+	viewPosX  = (GLint)leaf.absPos[0];
+	viewPosY  = (GLint)(fullWindowHeight - (leaf.absPos[1] + leaf.absSize[1]));
 	viewSizeX = (GLsizei)leaf.absSize[0];
 	viewSizeY = (GLsizei)leaf.absSize[1];
 }
 
-void Viewport2D::OnResize(DockingLeaf& leaf, int fullWindowWidth, int fullWindowHeight)
+void Viewport3D::OnResize(DockingLeaf& leaf, int fullWindowWidth, int fullWindowHeight)
 {
 	CalculateViewportVars(leaf, fullWindowWidth, fullWindowHeight);
 
 	RenderSystem::UpdateMatrixAspect(*camera, leaf.absSize[0], leaf.absSize[1]);
 }
 
-void Viewport2D::OnSelect(DockingLeaf& leaf)
+void Viewport3D::OnSelect(DockingLeaf& leaf)
 {
-	glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	EntityManager& em = *entityManager;
-	FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
-
-	freeCam.enabled = true;
+	
 }
 
-void Viewport2D::OnDeselect(DockingLeaf& leaf)
+void Viewport3D::OnDeselect(DockingLeaf& leaf)
 {
 	glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
@@ -96,16 +103,24 @@ void Viewport2D::OnDeselect(DockingLeaf& leaf)
 	freeCam.enabled = false;
 }
 
-void Viewport2D::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Viewport3D::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+	{
+		EntityManager& em = *entityManager;
+		FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
 
+		freeCam.enabled = !freeCam.enabled;
+
+		glfwSetInputMode(mainWindow, GLFW_CURSOR, freeCam.enabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+	}
 }
 
-void Viewport2D::MouseCallback(GLFWwindow* window, int button, int action, int mods)
+void Viewport3D::MouseCallback(GLFWwindow* window, int button, int action, int mods)
 {
 }
 
-void Viewport2D::MousePosCallback(GLFWwindow* window, double xPos, double yPos)
+void Viewport3D::MousePosCallback(GLFWwindow* window, double xPos, double yPos)
 {
-
+	
 }

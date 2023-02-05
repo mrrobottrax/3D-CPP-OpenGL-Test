@@ -6,11 +6,19 @@
 #include <components/cameracomponent.h>
 #include <systems/rendersystem.h>
 
-class Viewport2D : public MalletWindow
+enum ViewportMode
+{
+	shaded,
+	top,
+	side,
+	front
+};
+
+class Viewport3D : public MalletWindow
 {
 public:
-	Viewport2D();
-	~Viewport2D();
+	Viewport3D(ViewportMode);
+	~Viewport3D();
 
 	void Draw(DockingLeaf& leaf, int leafIndex);
 	void OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight);
@@ -20,6 +28,9 @@ public:
 	void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	void MouseCallback(GLFWwindow* window, int button, int action, int mods);
 	void MousePosCallback(GLFWwindow* window, double xPos, double yPos);
+
+public:
+	ViewportMode mode;
 
 private:
 	Entity cameraEntity;
