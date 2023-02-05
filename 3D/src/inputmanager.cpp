@@ -31,6 +31,21 @@ namespace InputManager {
 		}
 	}
 
+	void MouseCallback(int button, int action)
+	{
+		if (action == GLFW_PRESS)
+		{
+			keybindings[button] = 1;
+			return;
+		}
+
+		if (action == GLFW_RELEASE)
+		{
+			keybindings[button] = 0;
+			return;
+		}
+	}
+
 	void UpdateCursorDelta(double xPos, double yPos)
 	{
 		if (lastCursorPosX == 0 && lastCursorPosY == 0)

@@ -37,11 +37,14 @@ void RenderSystem::InitMainCameraMatrix(int width, int height)
 
 void RenderSystem::CalcFrustumScale(CameraComponent& camera)
 {
-	const float degToRad = 3.14159f * 2.0f / 360.0f;
-	float fovRad = camera.fov * degToRad;
-	float scale = 1.0f / tan(fovRad / 2.0f);
+	if (!camera.ortho)
+	{
+		const float degToRad = 3.14159f * 2.0f / 360.0f;
+		float fovRad = camera.fov * degToRad;
+		float scale = 1.0f / tan(fovRad / 2.0f);
 
-	camera.frustumScale = scale;
+		camera.frustumScale = scale;
+	}
 }
 
 void RenderSystem::UpdateMatrixAspect(CameraComponent& camera, int width, int height)
@@ -54,11 +57,22 @@ void RenderSystem::CalcPerspectiveMatrix(CameraComponent& camera, int width, int
 {
 	glm::mat4 matrix = glm::mat4(0.0f);
 
-	matrix[0][0] = camera.frustumScale / (width / (float)height);
-	matrix[1][1] = camera.frustumScale;
-	matrix[2][2] = (camera.farClip + camera.nearClip) / (camera.nearClip - camera.farClip);
-	matrix[2][3] = -1.0f;
-	matrix[3][2] = (2 * camera.farClip * camera.nearClip) / (camera.nearClip - camera.farClip);
+	if (!camera.ortho)
+	{
+		matrix[0][0] = camera.frustumScale / (width / (float)height);
+		matrix[1][1] = camera.frustumScale;
+		matrix[2][2] = (camera.farClip + camera.nearClip) / (camera.nearClip - camera.farClip);
+		matrix[2][3] = -1.0f;
+		matrix[3][2] = (2 * camera.farClip * camera.nearClip) / (camera.nearClip - camera.farClip);
+	}
+	else
+	{
+		matrix[0][0] = camera.frustumScale / (width / (float)height);
+		matrix[1][1] = camera.frustumScale;
+		matrix[2][2] = -2 / (camera.farClip - camera.nearClip);
+		//matrix[2][2] = 0;
+		matrix[3][3] = 1;
+	}
 
 	camera.matrix = matrix;
 }

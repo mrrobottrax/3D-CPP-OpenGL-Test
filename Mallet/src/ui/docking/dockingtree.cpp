@@ -15,12 +15,12 @@
 
 DockingTree::DockingTree() : nodeArray(), leafArray()
 {
-	int leaf = AddLeaf(-1, new Viewport3D(ViewportMode::shaded));
+	int leaf = AddLeaf(-1, new Viewport(ViewportMode::perspective));
 	rootNode = -(leaf + 1);
 
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5, new Viewport3D(ViewportMode::top));
-	leaf = SplitLeaf(0, DockingDirection::horizontal, 0.5, new Viewport3D(ViewportMode::shaded));
-	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.5, new Viewport3D(ViewportMode::shaded));
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5, new Viewport(ViewportMode::top));
+	leaf = SplitLeaf(0, DockingDirection::horizontal, 0.5, new Viewport(ViewportMode::front));
+	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.5, new Viewport(ViewportMode::side));
 
 	RecalculateSizes();
 }

@@ -63,8 +63,8 @@ void FreecamSystem::Update()
 	// Look mouse
 	double xDelta, yDelta;
 	InputManager::GetCursorDelta(&xDelta, &yDelta);
-	pitchDelta += yDelta * 0.002f;
-	yawDelta += xDelta * 0.002f;
+	pitchDelta += yDelta * 0.0015f;
+	yawDelta += xDelta * 0.0015;
 
 	EntityManager& em = *entityManager;
 
@@ -94,13 +94,20 @@ void FreecamSystem::Update()
 				}
 
 				// Look
-				glm::fquat deltaRot(glm::vec3(pitchDelta, 0, 0));
-				rotation.value = deltaRot * rotation.value;
+				if (!freeCam.panOnly)
+				{
+					glm::fquat deltaRot(glm::vec3(pitchDelta, 0, 0));
+					rotation.value = deltaRot * rotation.value;
 
-				deltaRot = glm::fquat(glm::vec3(0, yawDelta, 0));
-				rotation.value = rotation.value * deltaRot;
+					deltaRot = glm::fquat(glm::vec3(0, yawDelta, 0));
+					rotation.value = rotation.value * deltaRot;
 
-				moveVector = moveVector * rotation.value;
+					moveVector = moveVector * rotation.value;
+				}
+				else
+				{
+					moveVector = moveVector * glm::fquat(-0.70710678118f, 0.70710678118f, 0, 0) * rotation.value;
+				}
 
 				float speed = glm::length(velocity.linear);
 

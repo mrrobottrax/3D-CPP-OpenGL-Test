@@ -3,6 +3,7 @@
 struct FreecamComponent
 {
 	bool enabled;
+	bool panOnly;
 
 	float speed;
 	float acceleration;

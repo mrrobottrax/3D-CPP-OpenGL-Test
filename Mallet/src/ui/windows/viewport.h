@@ -8,17 +8,17 @@
 
 enum ViewportMode
 {
-	shaded,
+	perspective,
 	top,
 	side,
 	front
 };
 
-class Viewport3D : public MalletWindow
+class Viewport : public MalletWindow
 {
 public:
-	Viewport3D(ViewportMode);
-	~Viewport3D();
+	Viewport(ViewportMode);
+	~Viewport();
 
 	void Draw(DockingLeaf& leaf, int leafIndex);
 	void OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight);
