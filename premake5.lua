@@ -1,6 +1,6 @@
 workspace "3D"
 	architecture "x64"
-	startproject "3D"
+	startproject "Game"
 
 	configurations
 	{

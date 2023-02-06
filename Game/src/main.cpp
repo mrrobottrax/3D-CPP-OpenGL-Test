@@ -77,7 +77,7 @@ void Init()
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = { 80.0f, 0.03f, 1000.0f };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
-		em.GetComponent<FreecamComponent>(entity) = { true, false, 6, 40, 20 };
+		em.GetComponent<FreecamComponent>(entity) = { 6, 40, 20 };
 
 		int w, h;
 		glfwGetWindowSize(mainWindow, &w, &h);

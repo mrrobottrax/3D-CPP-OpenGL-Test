@@ -1,10 +1,10 @@
 #include <pch.h>
-
 #include <systems/freecamsystem.h>
 
 #include <inputmanager.h>
 #include <gl/gl.h>
 #include <managers.h>
+#include <components/cameracomponent.h>
 
 FreecamSystem::FreecamSystem()
 {
@@ -17,6 +17,7 @@ FreecamSystem::~FreecamSystem()
 void FreecamSystem::Update()
 {
 	glm::vec3 moveVector(0);
+	glm::vec3 panVector(0);
 	double pitchDelta = 0;
 	double yawDelta = 0;
 
@@ -63,6 +64,8 @@ void FreecamSystem::Update()
 	// Look mouse
 	double xDelta, yDelta;
 	InputManager::GetCursorDelta(&xDelta, &yDelta);
+	panVector.y = -(float)xDelta;
+	panVector.x = -(float)yDelta;
 	pitchDelta += yDelta * 0.0015f;
 	yawDelta += xDelta * 0.0015;
 
@@ -83,7 +86,8 @@ void FreecamSystem::Update()
 			for (unsigned short i = 0; i < chunk->numberOfEntities; i++)
 			{
 				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
-				FreecamComponent& freeCam  = em.GetComponent<FreecamComponent>(entity);
+				FreecamComponent&  freeCam  = em.GetComponent<FreecamComponent>(entity);
+				CameraComponent&   cam      = em.GetComponent<CameraComponent>(entity);
 				VelocityComponent& velocity = em.GetComponent<VelocityComponent>(entity);
 				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
 
@@ -93,8 +97,21 @@ void FreecamSystem::Update()
 					continue;
 				}
 
+				// Panning
+				if (freeCam.panning || freeCam.panOnly)
+				{
+					velocity.linear = panVector * glm::fquat(0.70710678118f, 0, 0, 0.70710678118f) * rotation.value;
+
+					if (freeCam.panOnly)
+						velocity.linear /= cam.frustumScale * 0.3f;
+					else
+						velocity.linear /= cam.frustumScale * 0.1f;
+
+					continue;
+				}
+
 				// Look
-				if (!freeCam.panOnly)
+				if (!freeCam.panOnly && !freeCam.panning)
 				{
 					glm::fquat deltaRot(glm::vec3(pitchDelta, 0, 0));
 					rotation.value = deltaRot * rotation.value;
@@ -103,10 +120,6 @@ void FreecamSystem::Update()
 					rotation.value = rotation.value * deltaRot;
 
 					moveVector = moveVector * rotation.value;
-				}
-				else
-				{
-					moveVector = moveVector * glm::fquat(-0.70710678118f, 0.70710678118f, 0, 0) * rotation.value;
 				}
 
 				float speed = glm::length(velocity.linear);

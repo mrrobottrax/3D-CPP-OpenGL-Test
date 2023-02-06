@@ -34,7 +34,7 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 	
 	bool ortho = mode != ViewportMode::perspective;
 	
-	em.GetComponent<FreecamComponent>(entity) = { false, ortho, 6, 40, 20 };
+	em.GetComponent<FreecamComponent>(entity) = { 6, 40, 20, false, ortho };
 
 	if (!ortho)
 	{
@@ -156,8 +156,36 @@ void Viewport::KeyboardCallback(GLFWwindow* window, int key, int scancode, int a
 	}
 }
 
+bool cameraWasEnabledBeforePanning = false;
+
 void Viewport::MouseCallback(GLFWwindow* window, int button, int action, int mods)
 {
+	// Panning
+	if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+	{
+		EntityManager& em = *entityManager;
+		FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
+
+		if (action == GLFW_PRESS)
+		{
+			cameraWasEnabledBeforePanning = freeCam.enabled;
+
+			freeCam.panning = true;
+
+			freeCam.enabled = true;
+			glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+		else if (action == GLFW_RELEASE)
+		{
+			freeCam.panning = false;
+
+			if (!cameraWasEnabledBeforePanning)
+			{
+				freeCam.enabled = false;
+				glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			}
+		}
+	}
 }
 
 void Viewport::MousePosCallback(GLFWwindow* window, double xPos, double yPos)

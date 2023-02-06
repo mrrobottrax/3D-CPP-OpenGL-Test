@@ -87,7 +87,7 @@ namespace MalletUi
 			return;
 		}
 
-		if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+		if (action == GLFW_PRESS)
 		{
 			int mode = glfwGetInputMode(mainWindow, GLFW_CURSOR);
 			if (mode != GLFW_CURSOR_DISABLED)
@@ -102,12 +102,14 @@ namespace MalletUi
 				leaf.window->KeyboardCallback(window, key, scancode, action, mods);
 		}
 	}
+
 	void MouseCallback(GLFWwindow* window, int button, int action, int mods)
 	{
-		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
+		if (action == GLFW_PRESS)
 		{
-			SelectNode();
-			return;
+			int mode = glfwGetInputMode(mainWindow, GLFW_CURSOR);
+			if (mode != GLFW_CURSOR_DISABLED)
+				SelectNode();
 		}
 
 		if (selectedNodeIndex < 0 && selected)

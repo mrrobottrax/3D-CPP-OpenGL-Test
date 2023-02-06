@@ -4,10 +4,14 @@ struct FreecamComponent
 {
 	bool enabled;
 	bool panOnly;
+	bool panning;
 
 	float speed;
 	float acceleration;
 	float friction;
 
-	//FreecamComponent(float s) : speed(s) {}
+	FreecamComponent(float speed, float acceleration, float friction, bool enabled = true, bool panOnly = false) :
+		speed(speed), acceleration(acceleration), friction(friction), enabled(enabled), panOnly(panOnly), panning(false)
+	{
+	}
 };
