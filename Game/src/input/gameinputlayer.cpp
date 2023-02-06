@@ -1,7 +1,7 @@
 #include <gamepch.h>
 #include <input/gameinputlayer.h>
 
-#include <inputmanager.h>
+#include <input/inputmanager.h>
 #include <imgui/imguiutil.h>
 
 void GameKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)

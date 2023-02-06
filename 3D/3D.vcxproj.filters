@@ -69,7 +69,7 @@
     <ClInclude Include="src\imgui\imguiutil.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="src\inputmanager.h" />
+    <ClInclude Include="src\input\inputmanager.h" />
     <ClInclude Include="src\memory\chunk.h">
       <Filter>memory</Filter>
     </ClInclude>
@@ -111,6 +111,7 @@
     </ClInclude>
     <ClInclude Include="src\timemanager.h" />
     <ClInclude Include="src\managers.h" />
+    <ClInclude Include="src\input\inputdefines.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">
@@ -131,7 +132,7 @@
     <ClCompile Include="src\imgui\imguiutil.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="src\inputmanager.cpp" />
+    <ClCompile Include="src\input\inputmanager.cpp" />
     <ClCompile Include="src\memory\chunkarchetypeelement.cpp">
       <Filter>memory</Filter>
     </ClCompile>

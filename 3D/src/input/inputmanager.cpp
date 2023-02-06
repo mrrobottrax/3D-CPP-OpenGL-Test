@@ -1,6 +1,6 @@
 #include <pch.h>
 
-#include <inputManager.h>
+#include <input/inputmanager.h>
 
 namespace InputManager {
 	char keybindings[1024];

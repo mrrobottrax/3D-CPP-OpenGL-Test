@@ -1,7 +1,7 @@
 #include <malletpch.h>
 #include <input/malletinputlayer.h>
 
-#include <inputmanager.h>
+#include <input/inputmanager.h>
 #include <imgui/imguiutil.h>
 #include <ui/malletui.h>
 #include <gl/malletglutil.h>

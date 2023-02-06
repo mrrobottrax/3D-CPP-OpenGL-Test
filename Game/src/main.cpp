@@ -23,7 +23,7 @@
 #include <components/idcomponent.h>
 
 #include <imgui/imguiutil.h>
-#include <inputmanager.h>
+#include <input/inputmanager.h>
 
 using namespace std;
 

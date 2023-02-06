@@ -1,7 +1,7 @@
 #include "malletpch.h"
 #include "viewport.h"
 
-#include <inputmanager.h>
+#include <input/inputmanager.h>
 
 #include <managers.h>
 #include <systems/rendersystem.h>

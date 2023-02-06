@@ -2,7 +2,7 @@
 #include <gl/glutil.h>
 
 #include <gl/shaderLoader.h>
-#include <inputManager.h>
+#include <input/inputManager.h>
 #include <systems/systemManager.h>
 #include <systems/renderSystem.h>
 

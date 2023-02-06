@@ -5,7 +5,7 @@
 #include <gl/glutil.h>
 #include <gl/malletglutil.h>
 #include <input/malletinputlayer.h>
-#include <inputmanager.h>
+#include <input/inputmanager.h>
 
 #include <meshobject.h>
 #include <managers.h>

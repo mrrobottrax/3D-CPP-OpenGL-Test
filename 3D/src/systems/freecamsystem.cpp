@@ -1,7 +1,7 @@
 #include <pch.h>
 #include <systems/freecamsystem.h>
 
-#include <inputmanager.h>
+#include <input/inputmanager.h>
 #include <gl/gl.h>
 #include <managers.h>
 #include <components/cameracomponent.h>
