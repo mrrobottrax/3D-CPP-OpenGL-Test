@@ -18,6 +18,8 @@ namespace InputManager {
 
 	void KeyCallback(int key, int action)
 	{
+		std::cout << (char)key << "";
+
 		if (action == GLFW_PRESS)
 		{
 			keybindings[key] = 1;
