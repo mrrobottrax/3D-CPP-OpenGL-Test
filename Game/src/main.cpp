@@ -37,9 +37,6 @@ MeshObject* monkeyMesh = new MeshObject();
 MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
-SystemManager* systemManager;
-EntityManager* entityManager;
-
 void Init()
 {
 	// Init OpenGL
@@ -51,12 +48,11 @@ void Init()
 	SetupImGui(mainWindow);
 
 	// Init systems
-	systemManager = new SystemManager();
-	entityManager = new EntityManager();
+	InitManagers();
 
 	SystemManager& sm = *systemManager;
-	sm.AddSystem<VelocitySystem>();
 	sm.AddSystem<FreecamSystem>();
+	sm.AddSystem<VelocitySystem>();
 	sm.AddSystem<RenderSystem>();
 
 	EntityManager& em = *entityManager;
@@ -157,7 +153,7 @@ int main()
 
 		double xPos, yPos;
 		glfwGetCursorPos(mainWindow, &xPos, &yPos);
-		InputManager::UpdateCursorDelta(xPos, yPos);
+		inputManager->UpdateCursorDelta(xPos, yPos);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClearDepth(1.0f);
@@ -178,8 +174,7 @@ int main()
 
 	ImGuiTerminate();
 
-	delete systemManager;
-	delete entityManager;
+	DeleteManagers();
 	glfwTerminate();
 
 	// Show memory leaks

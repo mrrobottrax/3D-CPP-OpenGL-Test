@@ -13,6 +13,9 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{0098A80F-6CAC-D0C0-352E-7420A101CDF1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{B54AA90F-215F-D1C0-EAE0-742056B4CDF1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="memory">
       <UniqueIdentifier>{DEA8820D-CA4A-ADE3-B305-C1379F463434}</UniqueIdentifier>
     </Filter>
@@ -69,7 +72,13 @@
     <ClInclude Include="src\imgui\imguiutil.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="src\input\inputmanager.h" />
+    <ClInclude Include="src\input\keycodes.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\input\inputmanager.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\managers.h" />
     <ClInclude Include="src\memory\chunk.h">
       <Filter>memory</Filter>
     </ClInclude>
@@ -110,8 +119,7 @@
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\timemanager.h" />
-    <ClInclude Include="src\managers.h" />
-    <ClInclude Include="src\input\inputdefines.h" />
+    <ClInclude Include="src\input\console.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">
@@ -132,7 +140,9 @@
     <ClCompile Include="src\imgui\imguiutil.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="src\input\inputmanager.cpp" />
+    <ClCompile Include="src\input\inputmanager.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
     <ClCompile Include="src\memory\chunkarchetypeelement.cpp">
       <Filter>memory</Filter>
     </ClCompile>
@@ -167,5 +177,7 @@
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
+    <ClCompile Include="src\managers.cpp" />
+    <ClCompile Include="src\input\console.cpp" />
   </ItemGroup>
 </Project>

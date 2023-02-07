@@ -35,12 +35,9 @@ using namespace std;
 // TEMP
 // TODO: Remove
 // Cube mesh
-MeshObject* monkeyMesh = new MeshObject();
-MeshObject* testMap = new MeshObject();
-MeshObject* testMesh = new MeshObject();
-
-SystemManager* systemManager;
-EntityManager* entityManager;
+MeshObject* monkeyMesh	= new MeshObject();
+MeshObject* testMap		= new MeshObject();
+MeshObject* testMesh	= new MeshObject();
 
 void Init()
 {
@@ -52,11 +49,10 @@ void Init()
 	InitializeOpenGL();
 
 	// Init systems
-	systemManager = new SystemManager();
-	entityManager = new EntityManager();
+	InitManagers();
 
-	systemManager->AddSystem<VelocitySystem>();
 	systemManager->AddSystem<FreecamSystem>();
+	systemManager->AddSystem<VelocitySystem>();
 
 	RenderSystem& rs = systemManager->AddSystem<RenderSystem>();
 	rs.autoDraw = false;
@@ -126,9 +122,17 @@ void Init()
 	MalletUi::Setup();
 }
 
+void TestFunc(char* args)
+{
+	std::cout << "TESTFUNC: " << args << "\n";
+}
+
 int main()
 {
 	Init();
+
+	inputManager->console.AddCommand("Test", TestFunc);
+	inputManager->console.RunCommand("Test", "wasd");
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{
@@ -137,7 +141,7 @@ int main()
 
 		double xPos, yPos;
 		glfwGetCursorPos(mainWindow, &xPos, &yPos);
-		InputManager::UpdateCursorDelta(xPos, yPos);
+		inputManager->UpdateCursorDelta(xPos, yPos);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClearDepth(1.0f);
@@ -162,12 +166,11 @@ int main()
 	ImGuiTerminate();
 	MalletUi::Destroy();
 
-	delete systemManager;
-	delete entityManager;
+	DeleteManagers();
 	glfwTerminate();
 
 	// Show memory leaks
 	_CrtDumpMemoryLeaks();
 
-	exit(EXIT_SUCCESS);
+	::exit(EXIT_SUCCESS);
 }

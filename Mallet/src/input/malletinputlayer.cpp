@@ -1,7 +1,7 @@
 #include <malletpch.h>
 #include <input/malletinputlayer.h>
 
-#include <input/inputmanager.h>
+#include <managers.h>
 #include <imgui/imguiutil.h>
 #include <ui/malletui.h>
 #include <gl/malletglutil.h>
@@ -23,7 +23,7 @@ void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 		return;
 	}
 
-	InputManager::KeyCallback(key, action);
+	inputManager->KeyCallback(key, scancode, action, mods);
 
 	MalletUi::KeyCallback(window, key, scancode, action, mods);
 }

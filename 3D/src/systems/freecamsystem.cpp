@@ -1,7 +1,7 @@
 #include <pch.h>
 #include <systems/freecamsystem.h>
 
-#include <input/inputmanager.h>
+#include <managers.h>
 #include <gl/gl.h>
 #include <managers.h>
 #include <components/cameracomponent.h>
@@ -22,20 +22,20 @@ void FreecamSystem::Update()
 	double yawDelta = 0;
 
 	// Move keys
-	if (InputManager::keybindings[GLFW_KEY_W])
+	if (inputManager->GetActionDown(Action::moveForward))
 	{
 		moveVector.z -= 1;
 	}
-	if (InputManager::keybindings[GLFW_KEY_S])
+	if (inputManager->GetActionDown(Action::moveBack))
 	{
 		moveVector.z += 1;
 	}
 
-	if (InputManager::keybindings[GLFW_KEY_A])
+	if (inputManager->GetActionDown(Action::moveLeft))
 	{
 		moveVector.x -= 1;
 	}
-	if (InputManager::keybindings[GLFW_KEY_D])
+	if (inputManager->GetActionDown(Action::moveRight))
 	{
 		moveVector.x += 1;
 	}
@@ -43,27 +43,27 @@ void FreecamSystem::Update()
 	float rotSpeed = 2;
 
 	// Look keys
-	if (InputManager::keybindings[GLFW_KEY_UP])
+	if (inputManager->GetActionDown(Action::lookUp))
 	{
 		pitchDelta -= TimeManager::deltaTime * rotSpeed;
 	}
-	if (InputManager::keybindings[GLFW_KEY_DOWN])
+	if (inputManager->GetActionDown(Action::lookDown))
 	{
 		pitchDelta += TimeManager::deltaTime * rotSpeed;
 	}
 
-	if (InputManager::keybindings[GLFW_KEY_LEFT])
+	if (inputManager->GetActionDown(Action::lookLeft))
 	{
 		yawDelta -= TimeManager::deltaTime * rotSpeed;
 	}
-	if (InputManager::keybindings[GLFW_KEY_RIGHT])
+	if (inputManager->GetActionDown(Action::lookRight))
 	{
 		yawDelta += TimeManager::deltaTime * rotSpeed;
 	}
 
 	// Look mouse
 	double xDelta, yDelta;
-	InputManager::GetCursorDelta(&xDelta, &yDelta);
+	inputManager->GetCursorDelta(&xDelta, &yDelta);
 	panVector.y = -(float)xDelta;
 	panVector.x = -(float)yDelta;
 	pitchDelta += yDelta * 0.0015f;

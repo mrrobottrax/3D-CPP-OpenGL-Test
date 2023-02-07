@@ -1,72 +1,87 @@
 #include <pch.h>
-
 #include <input/inputmanager.h>
 
-namespace InputManager {
-	char keybindings[1024];
+#include <gl/glutil.h>
 
-	double cursorDeltaX = 0;
-	double cursorDeltaY = 0;
+InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), console()
+{
+	double cursorX, cursorY;
+	glfwGetCursorPos(mainWindow, &cursorX, &cursorY);
 
-	double lastCursorPosX = 0;
-	double lastCursorPosY = 0;
+	lastCursorPosX = cursorX;
+	lastCursorPosY = cursorY;
+}
 
-	void BindKey(int key, char action)
+InputManager::~InputManager()
+{
+}
+
+void InputManager::BindKey(int key, char action)
+{
+
+}
+
+void InputManager::KeyCallback(int key, int scancode, int action, int mods)
+{
+	std::cout << (char)key << ", " << key << "\n";
+
+	if (key == '`' && action == GLFW_PRESS)
 	{
-		
+		console.ToggleConsole();
+		return;
 	}
 
-	void KeyCallback(int key, int action)
+	if (action == GLFW_PRESS)
 	{
-		std::cout << (char)key << "";
 
-		if (action == GLFW_PRESS)
-		{
-			keybindings[key] = 1;
-			return;
-		}
-
-		if (action == GLFW_RELEASE)
-		{
-			keybindings[key] = 0;
-			return;
-		}
+		return;
 	}
 
-	void MouseCallback(int button, int action)
+	if (action == GLFW_RELEASE)
 	{
-		if (action == GLFW_PRESS)
-		{
-			keybindings[button] = 1;
-			return;
-		}
 
-		if (action == GLFW_RELEASE)
-		{
-			keybindings[button] = 0;
-			return;
-		}
+		return;
+	}
+}
+
+void InputManager::MouseCallback(int button, int action)
+{
+	if (action == GLFW_PRESS)
+	{
+
+		return;
 	}
 
-	void UpdateCursorDelta(double xPos, double yPos)
+	if (action == GLFW_RELEASE)
 	{
-		if (lastCursorPosX == 0 && lastCursorPosY == 0)
-		{
-			lastCursorPosX = xPos;
-			lastCursorPosY = yPos;
-			return;
-		}
 
-		cursorDeltaX = xPos - lastCursorPosX;
-		cursorDeltaY = yPos - lastCursorPosY;
+		return;
+	}
+}
 
+void InputManager::UpdateCursorDelta(double xPos, double yPos)
+{
+	if (lastCursorPosX == 0 && lastCursorPosY == 0)
+	{
 		lastCursorPosX = xPos;
 		lastCursorPosY = yPos;
+		return;
 	}
 
-	void GetCursorDelta(double* deltaX, double* deltaY)
-	{
-		*deltaX = cursorDeltaX;
-		*deltaY = cursorDeltaY;
-	}
+	cursorDeltaX = xPos - lastCursorPosX;
+	cursorDeltaY = yPos - lastCursorPosY;
+
+	lastCursorPosX = xPos;
+	lastCursorPosY = yPos;
+}
+
+void InputManager::GetCursorDelta(double* deltaX, double* deltaY)
+{
+	*deltaX = cursorDeltaX;
+	*deltaY = cursorDeltaY;
+}
+
+bool InputManager::GetActionDown(Action action)
+{
+	return false;
 }
