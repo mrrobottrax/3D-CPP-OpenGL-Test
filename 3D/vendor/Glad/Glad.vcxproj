@@ -55,19 +55,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>bin\Debug-windows-x86_64\Glad\</OutDir>
-    <IntDir>lib\Debug-windows-x86_64\Glad\</IntDir>
+    <IntDir>obj\Debug-windows-x86_64\Glad\</IntDir>
     <TargetName>Glad</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'">
     <OutDir>bin\Test-windows-x86_64\Glad\</OutDir>
-    <IntDir>lib\Test-windows-x86_64\Glad\</IntDir>
+    <IntDir>obj\Test-windows-x86_64\Glad\</IntDir>
     <TargetName>Glad</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <OutDir>bin\Dist-windows-x86_64\Glad\</OutDir>
-    <IntDir>lib\Dist-windows-x86_64\Glad\</IntDir>
+    <IntDir>obj\Dist-windows-x86_64\Glad\</IntDir>
     <TargetName>Glad</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
