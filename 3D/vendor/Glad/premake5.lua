@@ -3,7 +3,7 @@ project "Glad"
     language "C"
     
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-    objdir    ("lib/" .. outputdir .. "/%{prj.name}")
+    objdir    ("obj/" .. outputdir .. "/%{prj.name}")
 
     files
     {

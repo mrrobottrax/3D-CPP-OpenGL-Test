@@ -134,7 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\debug\debugcolorcycle.h" />
+    <ClInclude Include="src\debugtools\debugcolorcycle.h" />
     <ClInclude Include="src\gl\malletglutil.h" />
     <ClInclude Include="src\input\malletinputlayer.h" />
     <ClInclude Include="src\main.h" />
