@@ -4,7 +4,7 @@
 #include <imgui/imguiutil.h>
 #include <ui/docking/dockingtree.h>
 
-#include <debug/debugcolorcycle.h>
+#include <debugtools/debugcolorcycle.h>
 
 // Windows - TEMP
 #include <ui/windows/viewport.h>

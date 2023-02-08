@@ -21,7 +21,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\debug\debugcolorcycle.h">
+    <ClInclude Include="src\debugtools\debugcolorcycle.h">
       <Filter>debug</Filter>
     </ClInclude>
     <ClInclude Include="src\gl\malletglutil.h">
