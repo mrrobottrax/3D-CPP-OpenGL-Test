@@ -25,21 +25,19 @@ void InputManager::KeyCallback(int key, int scancode, int action, int mods)
 {
 	std::cout << (char)key << ", " << key << "\n";
 
-	if (key == '`' && action == GLFW_PRESS)
-	{
-		console.ToggleConsole();
-		return;
-	}
-
 	if (action == GLFW_PRESS)
 	{
+		keys[key].pressed = true;
 
+		console.ParseInput(keys[key].binding, key, true);
 		return;
 	}
 
 	if (action == GLFW_RELEASE)
 	{
+		keys[key].pressed = false;
 
+		console.ParseInput(keys[key].binding, key, false);
 		return;
 	}
 }

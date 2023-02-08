@@ -122,17 +122,9 @@ void Init()
 	MalletUi::Setup();
 }
 
-void TestFunc(char* args)
-{
-	std::cout << "TESTFUNC: " << args << "\n";
-}
-
 int main()
 {
 	Init();
-
-	inputManager->console.AddCommand("Test", TestFunc);
-	inputManager->console.RunCommand("Test", "wasd");
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{

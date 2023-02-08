@@ -11,10 +11,15 @@ public:
 private:
 	bool enabled;
 
-	map<char*, function<void(char*)>> commands;
+	map<const char*, function<void(const char*)>> commands;
 
 public:
 	void ToggleConsole();
-	void AddCommand(char* name, function<void(char*)> function);
-	void RunCommand(char* name, char* args);
+	void AddCommand(const char* name, function<void(const char*)> function);
+	void RunCommand(const char* name, const char* args);
+	void ParseInput(const char* input, int key, bool down);
 };
+
+void Echo(const char*);
+void TestCmd(const char*);
+void ToggleConsoleCommand(const char*);
