@@ -2,6 +2,9 @@
 
 using namespace std;
 
+#define MAX_COMMAND_NAME_LENGTH 32
+#define MAX_COMMAND_ARGS_LENGTH 256
+
 class Console
 {
 public:
@@ -17,7 +20,7 @@ public:
 	void ToggleConsole();
 	void AddCommand(const char* name, function<void(const char*)> function);
 	void RunCommand(const char* name, const char* args);
-	void ParseInput(const char* input, int key, bool down);
+	void ParseInput(const char* input, int key);
 };
 
 void Echo(const char*);

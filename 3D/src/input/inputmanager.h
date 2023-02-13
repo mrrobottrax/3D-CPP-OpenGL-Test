@@ -29,7 +29,7 @@ public:
 	Console console;
 
 public:
-	void BindKey(int, char);
+	void BindKey(int, const char*);
 	void KeyCallback(int key, int scancode, int action, int mods);
 	void MouseCallback(int, int);
 

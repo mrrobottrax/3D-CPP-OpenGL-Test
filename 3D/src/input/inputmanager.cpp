@@ -10,26 +10,37 @@ InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), console
 
 	lastCursorPosX = cursorX;
 	lastCursorPosY = cursorY;
+
+	//TEMP
+	BindKey('W', "+forward");
 }
 
 InputManager::~InputManager()
 {
+	for (int i = 0; i < MAX_KEYS; i++)
+	{
+		if (keys[i].binding != nullptr)
+			delete[] keys[i].binding;
+	}
 }
 
-void InputManager::BindKey(int key, char action)
+void InputManager::BindKey(int key, const char* action)
 {
+	char* binding = new char[strlen(action) + 1];
+	strcpy(binding, action);
 
+	keys[key].binding = binding;
+
+	std::cout << "Bound " << (char)key << " to " << action << "\n";
 }
 
 void InputManager::KeyCallback(int key, int scancode, int action, int mods)
 {
-	std::cout << (char)key << ", " << key << "\n";
-
 	if (action == GLFW_PRESS)
 	{
 		keys[key].pressed = true;
 
-		console.ParseInput(keys[key].binding, key, true);
+		console.ParseInput(keys[key].binding, key);
 		return;
 	}
 
@@ -37,7 +48,19 @@ void InputManager::KeyCallback(int key, int scancode, int action, int mods)
 	{
 		keys[key].pressed = false;
 
-		console.ParseInput(keys[key].binding, key, false);
+		if (keys[key].binding != nullptr && keys[key].binding[0] == '+')
+		{
+			char releaseCommand[MAX_COMMAND_NAME_LENGTH];
+			strncpy(releaseCommand, keys[key].binding, sizeof(releaseCommand));
+			releaseCommand[sizeof(releaseCommand) - 1];
+
+			releaseCommand[0] = '-';
+			console.ParseInput(releaseCommand, key);
+		}
+		else
+		{
+			console.ParseInput(keys[key].binding, key);
+		}
 		return;
 	}
 }
