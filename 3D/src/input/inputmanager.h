@@ -2,15 +2,6 @@
 #include <input/keycodes.h>
 #include <input/console.h>
 
-#define MAX_KEYS 256
-
-struct Key
-{
-	bool pressed;
-
-	char* binding;
-};
-
 class InputManager {
 public:
 	InputManager();
@@ -18,6 +9,7 @@ public:
 
 private:
 	Key keys[MAX_KEYS];
+	Button buttons[MAX_BUTTONS];
 
 	double cursorDeltaX = 0;
 	double cursorDeltaY = 0;
@@ -36,5 +28,7 @@ public:
 	void UpdateCursorDelta(double xPos, double yPos);
 	void GetCursorDelta(double* deltaX, double* deltaY);
 
-	bool GetActionDown(Action);
+	void ButtonDown(Button& button);
+	void ButtonUp(Button& button);
+	bool GetButtonDown(int);
 };

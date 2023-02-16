@@ -8,7 +8,7 @@ Console::Console() : enabled(false), commands()
 	memset(input, NULL, MAX_CONSOLE_INPUT_LENGTH);
 
 	AddCommand("cmd_test", TestCmd);
-	AddCommand("console_toggle", ToggleConsoleCommand);
+	AddCommand("cmd_toggle", ToggleConsoleCommand);
 	AddCommand("echo", Echo);
 }
 
@@ -40,9 +40,9 @@ void Console::RunCommand(const char* name, const char* args)
 
 	if (it == commands.end())
 	{
-		string commandName = string(name);
-		string message = "Could not find command " + commandName;
-		Echo(message.c_str());
+		Echo("Could not find command ");
+		Echo(name);
+		Echo("\n");
 		return;
 	}
 
@@ -54,10 +54,10 @@ void Console::AddString(const char* string)
 	if (string == nullptr)
 		return;
 
-	int len = strlen(string);
-	strncpy(input + endIndex, string, MAX_CONSOLE_INPUT_LENGTH - endIndex);
+	size_t len = strlen(string);
+	strcpy_s(input + endIndex, MAX_CONSOLE_INPUT_LENGTH - endIndex, string);
 
-	endIndex += len;
+	endIndex += (int)len;
 }
 
 void Console::ParseInput(int key)
@@ -117,7 +117,7 @@ void Console::ParseInput(int key)
 // COMMANDS
 void Echo(const char* args)
 {
-	std::cout << args << "\n";
+	std::cout << args;
 }
 
 void TestCmd(const char* args)

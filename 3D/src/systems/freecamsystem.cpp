@@ -22,20 +22,20 @@ void FreecamSystem::Update()
 	double yawDelta = 0;
 
 	// Move keys
-	if (inputManager->GetActionDown(Action::moveForward))
+	if (inputManager->GetButtonDown(ButtonCode::MoveForward))
 	{
 		moveVector.z -= 1;
 	}
-	if (inputManager->GetActionDown(Action::moveBack))
+	if (inputManager->GetButtonDown(ButtonCode::MoveBack))
 	{
 		moveVector.z += 1;
 	}
 
-	if (inputManager->GetActionDown(Action::moveLeft))
+	if (inputManager->GetButtonDown(ButtonCode::MoveLeft))
 	{
 		moveVector.x -= 1;
 	}
-	if (inputManager->GetActionDown(Action::moveRight))
+	if (inputManager->GetButtonDown(ButtonCode::MoveRight))
 	{
 		moveVector.x += 1;
 	}
@@ -43,20 +43,20 @@ void FreecamSystem::Update()
 	float rotSpeed = 2;
 
 	// Look keys
-	if (inputManager->GetActionDown(Action::lookUp))
+	if (inputManager->GetButtonDown(ButtonCode::LookUp))
 	{
 		pitchDelta -= TimeManager::deltaTime * rotSpeed;
 	}
-	if (inputManager->GetActionDown(Action::lookDown))
+	if (inputManager->GetButtonDown(ButtonCode::LookDown))
 	{
 		pitchDelta += TimeManager::deltaTime * rotSpeed;
 	}
 
-	if (inputManager->GetActionDown(Action::lookLeft))
+	if (inputManager->GetButtonDown(ButtonCode::LookLeft))
 	{
 		yawDelta -= TimeManager::deltaTime * rotSpeed;
 	}
-	if (inputManager->GetActionDown(Action::lookRight))
+	if (inputManager->GetButtonDown(ButtonCode::LookRight))
 	{
 		yawDelta += TimeManager::deltaTime * rotSpeed;
 	}
