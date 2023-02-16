@@ -40,7 +40,9 @@ void InputManager::KeyCallback(int key, int scancode, int action, int mods)
 	{
 		keys[key].pressed = true;
 
-		console.ParseInput(keys[key].binding, key);
+		console.AddString(keys[key].binding);
+		console.ParseInput(key);
+
 		return;
 	}
 
@@ -55,12 +57,10 @@ void InputManager::KeyCallback(int key, int scancode, int action, int mods)
 			releaseCommand[sizeof(releaseCommand) - 1];
 
 			releaseCommand[0] = '-';
-			console.ParseInput(releaseCommand, key);
+			console.AddString(releaseCommand);
+			console.ParseInput(key);
 		}
-		else
-		{
-			console.ParseInput(keys[key].binding, key);
-		}
+
 		return;
 	}
 }

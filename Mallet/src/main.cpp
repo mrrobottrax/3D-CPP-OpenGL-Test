@@ -32,6 +32,8 @@ using namespace std;
 // Show memory leaks
 #define _CRTDBG_MAP_ALLOC
 
+#define _CRT_SECURE_NO_WARNINGS
+
 // TEMP
 // TODO: Remove
 // Cube mesh

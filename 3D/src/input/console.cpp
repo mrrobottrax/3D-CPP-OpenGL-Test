@@ -5,6 +5,8 @@
 
 Console::Console() : enabled(false), commands()
 {
+	memset(input, NULL, MAX_CONSOLE_INPUT_LENGTH);
+
 	AddCommand("cmd_test", TestCmd);
 	AddCommand("console_toggle", ToggleConsoleCommand);
 	AddCommand("echo", Echo);
@@ -47,10 +49,19 @@ void Console::RunCommand(const char* name, const char* args)
 	commands[name](args);
 }
 
-void Console::ParseInput(const char* input, int key)
+void Console::AddString(const char* string)
 {
-	if (input == nullptr)
+	if (string == nullptr)
 		return;
+
+	int len = strlen(string);
+	strncpy(input + endIndex, string, MAX_CONSOLE_INPUT_LENGTH - endIndex);
+
+	endIndex += len;
+}
+
+void Console::ParseInput(int key)
+{
 	if (input[0] == NULL)
 		return;
 
@@ -61,7 +72,7 @@ void Console::ParseInput(const char* input, int key)
 
 	int offset = 0;
 
-	for (int i = 0; i < 1024; i++)
+	for (int i = 0; i < MAX_CONSOLE_INPUT_LENGTH; i++)
 	{
 		if (input[i] == NULL || input[i] == ';' || input[i] == '\n')
 		{
@@ -98,6 +109,9 @@ void Console::ParseInput(const char* input, int key)
 		else
 			args[i - offset] = input[i];
 	}
+
+	endIndex = 0;
+	input[0] = NULL;
 }
 
 // COMMANDS
