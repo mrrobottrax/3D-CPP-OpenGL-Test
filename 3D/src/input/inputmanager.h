@@ -31,4 +31,6 @@ public:
 	void ButtonDown(Button& button);
 	void ButtonUp(Button& button);
 	bool GetButtonDown(int);
+
+	void Test() {};
 };

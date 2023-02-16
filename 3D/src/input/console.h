@@ -18,11 +18,13 @@ private:
 	char input[MAX_CONSOLE_INPUT_LENGTH];
 	int endIndex = 0;
 
-	map<const char*, function<void(const char*)>> commands;
+	char arguments[MAX_COMMAND_ARGS_LENGTH];
+
+	map<const char*, function<void()>> commands;
 
 public:
 	void ToggleConsole();
-	void AddCommand(const char* name, function<void(const char*)> function);
+	void AddCommand(const char* name, function<void()> function);
 	void RunCommand(const char* name, const char* args);
 	void AddString(const char* string);
 	void ParseInput(int key);

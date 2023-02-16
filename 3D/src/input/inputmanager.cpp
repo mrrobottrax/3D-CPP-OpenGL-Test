@@ -3,9 +3,6 @@
 
 #include <gl/glutil.h>
 
-void MoveFowardDown(const char* args) {}
-//void MoveFowardUp(const char* args) { ButtonUp(buttons[ButtonCode::MoveForward]); }
-
 InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), console()
 {
 	double cursorX, cursorY;
@@ -17,8 +14,8 @@ InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), console
 	//TEMP
 	BindKey('W', "+forward");
 
-	console.AddCommand("+moveforward", MoveForwardDown);
-	console.AddCommand("-moveforward", MoveForwardUp);
+	console.AddCommand("+moveforward", std::bind(&InputManager::Test, this));
+	console.AddCommand("-moveforward", MoveFowardUp);
 	/*console.AddCommand("+moveback", MoveBackDown);
 	console.AddCommand("-moveback", MoveBackUp);
 	console.AddCommand("+moveleft", MoveLeftDown);

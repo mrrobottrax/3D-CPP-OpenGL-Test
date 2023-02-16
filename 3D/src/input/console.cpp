@@ -25,7 +25,7 @@ void Console::ToggleConsole()
 	enabled = !enabled;
 }
 
-void Console::AddCommand(const char* name, function<void(const char*)> function)
+void Console::AddCommand(const char* name, function<void()> function)
 {
 	size_t length = strlen(name);
 	char* heap_name = new char[length + 1];
@@ -36,7 +36,9 @@ void Console::AddCommand(const char* name, function<void(const char*)> function)
 
 void Console::RunCommand(const char* name, const char* args)
 {
-	map<const char*, function<void(const char*)>>::iterator it = commands.find(name);
+	strcpy(arguments, args);
+
+	map<const char*, function<void()>>::iterator it = commands.find(name);
 
 	if (it == commands.end())
 	{
@@ -46,7 +48,7 @@ void Console::RunCommand(const char* name, const char* args)
 		return;
 	}
 
-	commands[name](args);
+	commands[name]();
 }
 
 void Console::AddString(const char* string)
