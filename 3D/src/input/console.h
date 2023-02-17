@@ -6,6 +6,14 @@ using namespace std;
 #define MAX_COMMAND_ARGS_LENGTH 256
 #define MAX_CONSOLE_INPUT_LENGTH 1024
 
+struct cmp_str
+{
+	bool operator()(char const* a, char const* b) const
+	{
+		return std::strcmp(a, b) < 0;
+	}
+};
+
 class Console
 {
 public:
@@ -19,17 +27,26 @@ private:
 	int endIndex = 0;
 
 	char arguments[MAX_COMMAND_ARGS_LENGTH];
+	char keycode; // Key the called the most recent command, -1 for no key
 
-	map<const char*, function<void()>> commands;
+	map<const char*, function<void(Console&)>, cmp_str> commands;
+
+private:
+	void RunCommand(const char* name);
 
 public:
 	void ToggleConsole();
-	void AddCommand(const char* name, function<void()> function);
+	void AddCommand(const char* name, function<void(Console&)> function);
 	void RunCommand(const char* name, const char* args);
 	void AddString(const char* string);
-	void ParseInput(int key);
+	void ParseInput(char key);
+	inline char* GetArguments() { return arguments; };
+	inline void SetArguments(const char* args) { strcpy(arguments, args); }
+	inline char GetKey() { return keycode; };
+	inline void Print(const char* message) { std::cout << message; }
+	inline void Println(const char* message) { std::cout << message << "\n"; }
 };
 
-void Echo(const char*);
-void TestCmd(const char*);
-void ToggleConsoleCommand(const char*);
+void Echo(Console& console);
+void TestCmd(Console& console);
+void ToggleConsoleCommand(Console& console);

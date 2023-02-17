@@ -25,30 +25,44 @@ void Console::ToggleConsole()
 	enabled = !enabled;
 }
 
-void Console::AddCommand(const char* name, function<void()> function)
+void Console::AddCommand(const char* name, function<void(Console&)> function)
 {
 	size_t length = strlen(name);
 	char* heap_name = new char[length + 1];
 	strcpy(heap_name, name);
 
 	commands.emplace(heap_name, function);
+
+	Print("Added command: ");
+	Println(heap_name);
+}
+
+void Console::RunCommand(const char* name)
+{
+	if (commands.find(name) == commands.end())
+	{
+		Print("Could not find command ");
+		Print(name);
+		Print("\n");
+		return;
+	}
+
+	commands[name](*this);
 }
 
 void Console::RunCommand(const char* name, const char* args)
 {
 	strcpy(arguments, args);
 
-	map<const char*, function<void()>>::iterator it = commands.find(name);
-
-	if (it == commands.end())
+	if (commands.find(name) == commands.end())
 	{
-		Echo("Could not find command ");
-		Echo(name);
-		Echo("\n");
+		Print("Could not find command ");
+		Print(name);
+		Print("\n");
 		return;
 	}
 
-	commands[name]();
+	commands[name](*this);
 }
 
 void Console::AddString(const char* string)
@@ -62,14 +76,15 @@ void Console::AddString(const char* string)
 	endIndex += (int)len;
 }
 
-void Console::ParseInput(int key)
+void Console::ParseInput(char key)
 {
 	if (input[0] == NULL)
 		return;
 
+	keycode = key;
+
 	bool writingArgs = false;
 
-	char args[MAX_COMMAND_ARGS_LENGTH];
 	char command[MAX_COMMAND_NAME_LENGTH];
 
 	int offset = 0;
@@ -80,8 +95,8 @@ void Console::ParseInput(int key)
 		{
 			if (writingArgs)
 			{
-				args[i - offset] = NULL;
-				RunCommand(command, args);
+				arguments[i - offset] = NULL;
+				RunCommand(command);
 			}
 			else
 			{
@@ -109,7 +124,7 @@ void Console::ParseInput(int key)
 		if (!writingArgs)
 			command[i - offset] = input[i];
 		else
-			args[i - offset] = input[i];
+			arguments[i - offset] = input[i];
 	}
 
 	endIndex = 0;
@@ -117,20 +132,21 @@ void Console::ParseInput(int key)
 }
 
 // COMMANDS
-void Echo(const char* args)
+
+void Echo(Console& console)
 {
-	std::cout << args;
+	console.Print(console.GetArguments());
 }
 
-void TestCmd(const char* args)
+void TestCmd(Console& console)
 {
-	std::cout << "TEST: " << args << "\n";
+	const char* args = console.GetArguments();
 
-	Echo(args);
+	console.Println("TEST CMD!");
 }
 
-void ToggleConsoleCommand(const char* args)
+void ToggleConsoleCommand(Console& console)
 {
 	inputManager->console.ToggleConsole();
-	Echo("TOGGLE CONSOLE");
+	console.Print("TOGGLE CONSOLE");
 }

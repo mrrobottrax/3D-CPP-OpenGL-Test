@@ -13,7 +13,12 @@ struct Key
 
 enum KeyCode
 {
+	None = 0,
 
+	UpArrow,
+	DownArrow,
+	LeftArrow,
+	RightArrow,
 };
 
 struct Button

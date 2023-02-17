@@ -3,7 +3,7 @@
 
 #include <gl/glutil.h>
 
-InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), console()
+InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), console(), buttons()
 {
 	double cursorX, cursorY;
 	glfwGetCursorPos(mainWindow, &cursorX, &cursorY);
@@ -11,43 +11,60 @@ InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), console
 	lastCursorPosX = cursorX;
 	lastCursorPosY = cursorY;
 
-	//TEMP
-	BindKey('W', "+forward");
+	AddDefaultInputCommands();
 
-	console.AddCommand("+moveforward", std::bind(&InputManager::Test, this));
-	console.AddCommand("-moveforward", MoveFowardUp);
-	/*console.AddCommand("+moveback", MoveBackDown);
-	console.AddCommand("-moveback", MoveBackUp);
-	console.AddCommand("+moveleft", MoveLeftDown);
-	console.AddCommand("-moveleft", MoveLeftUp);
-	console.AddCommand("+moveright", MoveRightDown);
-	console.AddCommand("-moveright", MoveRightUp);*/
+	//TEMP
+	BindKey('W', "+moveforward");
+	BindKey('S', "+moveback");
+	BindKey('A', "+moveleft");
+	BindKey('D', "+moveright");
+
+	BindKey(UpArrow, "+lookup");
+	BindKey(DownArrow, "+lookdown");
+	BindKey(LeftArrow, "+lookleft");
+	BindKey(RightArrow, "+lookright");
 }
 
 InputManager::~InputManager()
 {
-	// Needed when bindings were pointers
-	/*for (int i = 0; i < MAX_KEYS; i++)
-	{
-		if (keys[i].binding != nullptr)
-			delete[] &keys[i].binding;
-	}*/
+	
 }
 
-void InputManager::BindKey(int key, const char* action)
+void InputManager::BindKey(char key, const char* action)
 {
-	//size_t length = strlen(action);
-
 	memset(keys[key].binding, NULL, MAX_CONSOLE_INPUT_LENGTH);
 	strcpy(keys[key].binding, action);
 
-	std::cout << "Bound " << (char)key << " to " << action << "\n";
+	char keyname[MAX_KEYCODE_NAME_LENGTH];
+	KeycodeToName(key, keyname);
+	std::cout << "Bound " << keyname << " to " << action << "\n";
+}
+
+char InputManager::InputToKeycode(int key, int mods)
+{
+	return 0;
+}
+
+void InputManager::KeycodeToName(char keycode, char* string)
+{
+	string[0] = NULL;
+
+	// ASCII Uppercase
+	if (keycode >= 41 && keycode <= 90)
+	{
+		string[0] = keycode;
+		string[1] = NULL;
+	}
+	
 }
 
 void InputManager::KeyCallback(int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS)
 	{
+		if (key >= MAX_KEYS)
+			return;
+
 		keys[key].pressed = true;
 
 		console.AddString(keys[key].binding);
@@ -114,10 +131,32 @@ void InputManager::GetCursorDelta(double* deltaX, double* deltaY)
 
 void InputManager::ButtonDown(Button& button)
 {
+	if (!button.down[0] || button.down[0] == console.GetKey())
+	{
+		button.down[0] = console.GetKey();
+		return;
+	}
+
+	if (!button.down[1] || button.down[1] == console.GetKey())
+	{
+		button.down[1] = console.GetKey();
+		return;
+	}
 }
 
 void InputManager::ButtonUp(Button& button)
 {
+	if (button.down[0] == console.GetKey())
+	{
+		button.down[0] = 0;
+		return;
+	}
+
+	if (button.down[1] == console.GetKey())
+	{
+		button.down[1] = 0;
+		return;
+	}
 }
 
 bool InputManager::GetButtonDown(int buttonIndex)
@@ -128,11 +167,23 @@ bool InputManager::GetButtonDown(int buttonIndex)
 		number[0] = int(buttonIndex / 10) % 10;
 		number[1] = buttonIndex % 10;
 
-		Echo("Requested value of invalid button ");
-		Echo(number);
-		Echo("\n");
+		console.Print("Requested value of invalid button ");
+		console.Print(number);
+		console.Print("\n");
 		return false;
 	}
 
-	return false;
+	return buttons[buttonIndex].down[0] || buttons[buttonIndex].down[1];
+}
+
+void InputManager::AddDefaultInputCommands()
+{
+	console.AddCommand("+moveforward", std::bind(&InputManager::MoveForwardDown, this));
+	console.AddCommand("-moveforward", std::bind(&InputManager::MoveForwardUp, this));
+	console.AddCommand("+moveback", std::bind(&InputManager::MoveBackDown, this));
+	console.AddCommand("-moveback", std::bind(&InputManager::MoveBackUp, this));
+	console.AddCommand("+moveleft", std::bind(&InputManager::MoveLeftDown, this));
+	console.AddCommand("-moveleft", std::bind(&InputManager::MoveLeftUp, this));
+	console.AddCommand("+moveright", std::bind(&InputManager::MoveRightDown, this));
+	console.AddCommand("-moveright", std::bind(&InputManager::MoveRightUp, this));
 }
