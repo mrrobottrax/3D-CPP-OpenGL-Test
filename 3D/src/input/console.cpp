@@ -1,7 +1,7 @@
 #include <pch.h>
 #include <input/console.h>
 
-#include <managers.h>
+//#include <managers.h>
 
 Console::Console() : enabled(false), commands()
 {
@@ -33,8 +33,8 @@ void Console::AddCommand(const char* name, function<void(Console&)> function)
 
 	commands.emplace(heap_name, function);
 
-	Print("Added command: ");
-	Println(heap_name);
+	/*Print("Added command: ");
+	Println(heap_name);*/
 }
 
 void Console::RunCommand(const char* name)
@@ -53,6 +53,7 @@ void Console::RunCommand(const char* name)
 void Console::RunCommand(const char* name, const char* args)
 {
 	strcpy(arguments, args);
+	argIndex = 0;
 
 	if (commands.find(name) == commands.end())
 	{
@@ -81,6 +82,7 @@ void Console::ParseInput(char key)
 	if (input[0] == NULL)
 		return;
 
+	argIndex = 0;
 	keycode = key;
 
 	bool writingArgs = false;
@@ -112,7 +114,7 @@ void Console::ParseInput(char key)
 			continue;
 		}
 
-		if (input[i] == ' ')
+		if (!writingArgs && input[i] == ' ')
 		{
 			command[i - offset] = NULL;
 
@@ -122,13 +124,45 @@ void Console::ParseInput(char key)
 		}
 
 		if (!writingArgs)
+		{
 			command[i - offset] = input[i];
+		}
 		else
-			arguments[i - offset] = input[i];
+		{
+			// Replace space with null
+			if (input[i] == ' ')
+			{
+				arguments[i - offset] = NULL;
+			}
+			else
+			{
+				arguments[i - offset] = input[i];
+			}
+		}
 	}
 
 	endIndex = 0;
 	input[0] = NULL;
+}
+
+char* Console::GetNextArgs()
+{
+	int start = argIndex;
+
+	for (int i = argIndex; i < MAX_COMMAND_ARGS_LENGTH; i++)
+	{
+		if (arguments[i] == NULL)
+		{
+			argIndex = i + 1;
+			if (argIndex >= MAX_COMMAND_ARGS_LENGTH)
+			{
+				argIndex = MAX_COMMAND_ARGS_LENGTH;
+			}
+			break;
+		}
+	}
+
+	return &arguments[start];
 }
 
 // COMMANDS

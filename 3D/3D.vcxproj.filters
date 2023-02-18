@@ -183,5 +183,6 @@
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
+    <ClCompile Include="src\input\keycodes.cpp" />
   </ItemGroup>
 </Project>

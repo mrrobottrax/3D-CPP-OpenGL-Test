@@ -32,91 +32,134 @@ InputManager::~InputManager()
 
 void InputManager::BindKey(char key, const char* action)
 {
-	memset(keys[key].binding, NULL, MAX_CONSOLE_INPUT_LENGTH);
+	memset(keys[key].binding, NULL, MAX_BIND_LENGTH);
 	strcpy(keys[key].binding, action);
 
-	char keyname[MAX_KEYCODE_NAME_LENGTH];
-	KeycodeToName(key, keyname);
+	char* keyname = KeycodeToName(key);
 	std::cout << "Bound " << keyname << " to " << action << "\n";
 }
 
-char InputManager::InputToKeycode(int key, int mods)
+int InputManager::KeyboardInputToKeycode(int key)
+{
+	if (IsPrintableASCII(key))
+	{
+		return key;
+	}
+
+	switch (key)
+	{
+	case GLFW_KEY_UP:
+		return UpArrow;
+	case GLFW_KEY_DOWN:
+		return DownArrow;
+	case GLFW_KEY_LEFT:
+		return LeftArrow;
+	case GLFW_KEY_RIGHT:
+		return RightArrow;
+	default:
+		return KeyCode::None;
+	}
+}
+
+int InputManager::MouseInputToKeycode(int button)
 {
 	return 0;
 }
 
-void InputManager::KeycodeToName(char keycode, char* string)
+char* InputManager::KeycodeToName(int keycode)
 {
-	string[0] = NULL;
-
-	// Numbers
-	if (keycode >= 48 && keycode <= 57)
+	if (keycode >= MAX_KEYS)
 	{
-		string[0] = keycode;
-		string[1] = NULL;
+		return "<KEYCODE OUT OF RANGE>";
 	}
 
-	// Uppercase letters
-	else if (keycode >= 65 && keycode <= 90)
+	static char name[MAX_KEYCODE_NAME_LENGTH];
+
+	// Check for ASCII
+	name[1] = NULL;
+	name[0] = keycode;
+
+	if (IsPrintableASCII(keycode))
 	{
-		string[0] = keycode;
-		string[1] = NULL;
+		return name;
+	}
+
+	// Check for name
+	Keyname* kn;
+	for (kn = keynames; kn->name; kn++)
+	{
+		if (keycode == kn->keycode)
+		{
+			strcpy(name, kn->name);
+			return name;
+		}
+	}
+
+	return "<UNKNOWN KEY>";
+}
+
+int InputManager::NameToKeycode(const char* name)
+{
+	if (IsPrintableASCII(name[0]))
+	{
+		return name[0];
 	}
 	
+	Keyname* kn;
+	for (kn = keynames; kn->name; kn++)
+	{
+		if (_strcmpi(name, kn->name))
+		{
+			return kn->keycode;
+		}
+	}
+	
+	return -1;
 }
 
-char InputManager::NameToKeycode(const char* name)
-{
-	return 0;
-}
-
-void InputManager::KeyCallback(int key, int scancode, int action, int mods)
+void InputManager::ButtonCallback(int keycode, int action)
 {
 	if (action == GLFW_PRESS)
 	{
-		if (key >= MAX_KEYS)
-			return;
+		keys[keycode].pressed = true;
 
-		keys[key].pressed = true;
-
-		console.AddString(keys[key].binding);
-		console.ParseInput(key);
+		console.AddString(keys[keycode].binding);
+		console.ParseInput(keycode);
 
 		return;
 	}
 
 	if (action == GLFW_RELEASE)
 	{
-		keys[key].pressed = false;
+		keys[keycode].pressed = false;
 
-		if (keys[key].binding != nullptr && keys[key].binding[0] == '+')
+		if (keys[keycode].binding != nullptr && keys[keycode].binding[0] == '+')
 		{
 			char releaseCommand[MAX_COMMAND_NAME_LENGTH];
-			strcpy_s(releaseCommand, sizeof(releaseCommand), keys[key].binding);
+			strcpy_s(releaseCommand, sizeof(releaseCommand), keys[keycode].binding);
 			releaseCommand[sizeof(releaseCommand) - 1];
 
 			releaseCommand[0] = '-';
 			console.AddString(releaseCommand);
-			console.ParseInput(key);
+			console.ParseInput(keycode);
 		}
 
 		return;
 	}
 }
 
+void InputManager::KeyCallback(int key, int scancode, int action, int mods)
+{
+	int keycode = KeyboardInputToKeycode(key);
+
+	ButtonCallback(keycode, action);
+}
+
 void InputManager::MouseCallback(int button, int action)
 {
-	if (action == GLFW_PRESS)
-	{
+	int keycode = MouseInputToKeycode(button);
 
-		return;
-	}
-
-	if (action == GLFW_RELEASE)
-	{
-
-		return;
-	}
+	ButtonCallback(keycode, action);
 }
 
 void InputManager::UpdateCursorDelta(double xPos, double yPos)
@@ -179,13 +222,23 @@ bool InputManager::GetButtonDown(int buttonIndex)
 		number[0] = int(buttonIndex / 10) % 10;
 		number[1] = buttonIndex % 10;
 
-		console.Print("Requested value of invalid button ");
+		console.Print("Requested value of out of range button ");
 		console.Print(number);
 		console.Print("\n");
 		return false;
 	}
 
 	return buttons[buttonIndex].down[0] || buttons[buttonIndex].down[1];
+}
+
+void InputManager::BindCommand()
+{
+	char* keyName = console.GetNextArgs();
+	char* command = console.GetNextArgs();
+
+	char key = NameToKeycode(keyName);
+
+	BindKey(key, command);
 }
 
 void InputManager::AddDefaultInputCommands()
@@ -200,15 +253,13 @@ void InputManager::AddDefaultInputCommands()
 	console.AddCommand("-moveleft", std::bind(&InputManager::MoveLeftUp, this));
 	console.AddCommand("+moveright", std::bind(&InputManager::MoveRightDown, this));
 	console.AddCommand("-moveright", std::bind(&InputManager::MoveRightUp, this));
-}
 
-void InputManager::BindCommand()
-{
-	char* args = console.GetArguments();
-	
-	char keyName[MAX_COMMAND_NAME_LENGTH];
-
-	char key = NameToKeycode();
-
-	BindKey(key, )
+	console.AddCommand("+lookup", std::bind(&InputManager::LookUpDown, this));
+	console.AddCommand("-lookup", std::bind(&InputManager::LookUpUp, this));
+	console.AddCommand("+lookdown", std::bind(&InputManager::LookDownDown, this));
+	console.AddCommand("-lookdown", std::bind(&InputManager::LookDownUp, this));
+	console.AddCommand("+lookleft", std::bind(&InputManager::LookLeftDown, this));
+	console.AddCommand("-lookleft", std::bind(&InputManager::LookLeftUp, this));
+	console.AddCommand("+lookright", std::bind(&InputManager::LookRightDown, this));
+	console.AddCommand("-lookright", std::bind(&InputManager::LookRightUp, this));
 }

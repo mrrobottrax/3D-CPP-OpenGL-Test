@@ -3,7 +3,6 @@
 
 #include <gl/shaderLoader.h>
 #include <managers.h>
-#include <systems/systemManager.h>
 #include <systems/renderSystem.h>
 
 GLFWwindow* mainWindow;

@@ -1,16 +1,14 @@
 #pragma once
 
-#include <input/console.h>
-
-#define MAX_KEYS 256
-
+#define MAX_BIND_LENGTH 512
 struct Key
 {
 	bool pressed;
 
-	char binding[MAX_CONSOLE_INPUT_LENGTH];
+	char binding[MAX_BIND_LENGTH];
 };
 
+#define MAX_KEYS 256
 enum KeyCode
 {
 	None = 0,
@@ -25,13 +23,23 @@ enum KeyCode
 	// 65 - 90 : Letters
 };
 
+bool IsPrintableASCII(int keycode);
+
+#define MAX_KEYCODE_NAME_LENGTH 32
+struct Keyname
+{
+	const char* name;
+	int keycode;
+};
+
+extern Keyname keynames[];
+
 struct Button
 {
-	char down[2];
+	int down[2];
 };
 
 #define MAX_BUTTONS 8
-
 enum ButtonCode
 {
 	MoveForward,

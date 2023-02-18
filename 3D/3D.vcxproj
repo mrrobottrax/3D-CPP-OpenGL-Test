@@ -183,6 +183,7 @@
     <ClCompile Include="src\imgui\imguiutil.cpp" />
     <ClCompile Include="src\input\console.cpp" />
     <ClCompile Include="src\input\inputmanager.cpp" />
+    <ClCompile Include="src\input\keycodes.cpp" />
     <ClCompile Include="src\managers.cpp" />
     <ClCompile Include="src\memory\chunkarchetypeelement.cpp" />
     <ClCompile Include="src\memory\component.cpp" />

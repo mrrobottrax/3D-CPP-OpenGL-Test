@@ -27,6 +27,7 @@ private:
 	int endIndex = 0;
 
 	char arguments[MAX_COMMAND_ARGS_LENGTH];
+	int argIndex = 0;
 	char keycode; // Key the called the most recent command, -1 for no key
 
 	map<const char*, function<void(Console&)>, cmp_str> commands;
@@ -41,6 +42,7 @@ public:
 	void AddString(const char* string);
 	void ParseInput(char key);
 	inline char* GetArguments() { return arguments; };
+	char* GetNextArgs();
 	inline void SetArguments(const char* args) { strcpy(arguments, args); }
 	inline char GetKey() { return keycode; };
 	inline void Print(const char* message) { std::cout << message; }
