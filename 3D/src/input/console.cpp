@@ -147,6 +147,6 @@ void TestCmd(Console& console)
 
 void ToggleConsoleCommand(Console& console)
 {
-	inputManager->console.ToggleConsole();
+	console.ToggleConsole();
 	console.Print("TOGGLE CONSOLE");
 }

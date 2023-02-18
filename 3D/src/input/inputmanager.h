@@ -40,6 +40,7 @@ public:
 	// Input Commands
 
 	void AddDefaultInputCommands();
+	void BindCommand();
 
 	void MoveForwardDown()	{ ButtonDown(buttons[MoveForward]); };
 	void MoveForwardUp()	{ ButtonUp  (buttons[MoveForward]); };

@@ -49,13 +49,25 @@ void InputManager::KeycodeToName(char keycode, char* string)
 {
 	string[0] = NULL;
 
-	// ASCII Uppercase
-	if (keycode >= 41 && keycode <= 90)
+	// Numbers
+	if (keycode >= 48 && keycode <= 57)
+	{
+		string[0] = keycode;
+		string[1] = NULL;
+	}
+
+	// Uppercase letters
+	else if (keycode >= 65 && keycode <= 90)
 	{
 		string[0] = keycode;
 		string[1] = NULL;
 	}
 	
+}
+
+char InputManager::NameToKeycode(const char* name)
+{
+	return 0;
 }
 
 void InputManager::KeyCallback(int key, int scancode, int action, int mods)
@@ -178,6 +190,8 @@ bool InputManager::GetButtonDown(int buttonIndex)
 
 void InputManager::AddDefaultInputCommands()
 {
+	console.AddCommand("bind", std::bind(&InputManager::BindCommand, this));
+
 	console.AddCommand("+moveforward", std::bind(&InputManager::MoveForwardDown, this));
 	console.AddCommand("-moveforward", std::bind(&InputManager::MoveForwardUp, this));
 	console.AddCommand("+moveback", std::bind(&InputManager::MoveBackDown, this));
@@ -186,4 +200,15 @@ void InputManager::AddDefaultInputCommands()
 	console.AddCommand("-moveleft", std::bind(&InputManager::MoveLeftUp, this));
 	console.AddCommand("+moveright", std::bind(&InputManager::MoveRightDown, this));
 	console.AddCommand("-moveright", std::bind(&InputManager::MoveRightUp, this));
+}
+
+void InputManager::BindCommand()
+{
+	char* args = console.GetArguments();
+	
+	char keyName[MAX_COMMAND_NAME_LENGTH];
+
+	char key = NameToKeycode();
+
+	BindKey(key, )
 }

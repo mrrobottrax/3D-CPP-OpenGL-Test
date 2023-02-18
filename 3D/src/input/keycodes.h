@@ -15,10 +15,14 @@ enum KeyCode
 {
 	None = 0,
 
-	UpArrow,
-	DownArrow,
-	LeftArrow,
-	RightArrow,
+	UpArrow = 1,
+	DownArrow = 2,
+	LeftArrow = 3,
+	RightArrow = 4,
+
+	// 48 - 57 : Numbers
+
+	// 65 - 90 : Letters
 };
 
 struct Button
