@@ -19,10 +19,10 @@ InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), console
 	BindKey('A', "+moveleft");
 	BindKey('D', "+moveright");
 
-	BindKey(UpArrow, "+lookup");
-	BindKey(DownArrow, "+lookdown");
-	BindKey(LeftArrow, "+lookleft");
-	BindKey(RightArrow, "+lookright");
+	BindKey(KEY_UpArrow, "+lookup");
+	BindKey(KEY_DownArrow, "+lookdown");
+	BindKey(KEY_LeftArrow, "+lookleft");
+	BindKey(KEY_RightArrow, "+lookright");
 }
 
 InputManager::~InputManager()
@@ -49,15 +49,15 @@ int InputManager::KeyboardInputToKeycode(int key)
 	switch (key)
 	{
 	case GLFW_KEY_UP:
-		return UpArrow;
+		return KEY_UpArrow;
 	case GLFW_KEY_DOWN:
-		return DownArrow;
+		return KEY_DownArrow;
 	case GLFW_KEY_LEFT:
-		return LeftArrow;
+		return KEY_LeftArrow;
 	case GLFW_KEY_RIGHT:
-		return RightArrow;
+		return KEY_RightArrow;
 	default:
-		return KeyCode::None;
+		return KEY_None;
 	}
 }
 

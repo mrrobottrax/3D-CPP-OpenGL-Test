@@ -44,21 +44,21 @@ public:
 	void BindCommand();
 	void AddDefaultInputCommands();
 
-	void MoveForwardDown() { ButtonDown(buttons[MoveForward]); };
-	void MoveForwardUp() { ButtonUp(buttons[MoveForward]); };
-	void MoveBackDown() { ButtonDown(buttons[MoveBack]); };
-	void MoveBackUp() { ButtonUp(buttons[MoveBack]); };
-	void MoveLeftDown() { ButtonDown(buttons[MoveLeft]); };
-	void MoveLeftUp() { ButtonUp(buttons[MoveLeft]); };
-	void MoveRightDown() { ButtonDown(buttons[MoveRight]); };
-	void MoveRightUp() { ButtonUp(buttons[MoveRight]); };
+	void MoveForwardDown() { ButtonDown(buttons[IN_MoveForward]); };
+	void MoveForwardUp() { ButtonUp(buttons[IN_MoveForward]); };
+	void MoveBackDown() { ButtonDown(buttons[IN_MoveBack]); };
+	void MoveBackUp() { ButtonUp(buttons[IN_MoveBack]); };
+	void MoveLeftDown() { ButtonDown(buttons[IN_MoveLeft]); };
+	void MoveLeftUp() { ButtonUp(buttons[IN_MoveLeft]); };
+	void MoveRightDown() { ButtonDown(buttons[IN_MoveRight]); };
+	void MoveRightUp() { ButtonUp(buttons[IN_MoveRight]); };
 
-	void LookUpDown() { ButtonDown(buttons[LookUp]); };
-	void LookUpUp() { ButtonUp(buttons[LookUp]); };
-	void LookDownDown() { ButtonDown(buttons[LookDown]); };
-	void LookDownUp() { ButtonUp(buttons[LookDown]); };
-	void LookLeftDown() { ButtonDown(buttons[LookLeft]); };
-	void LookLeftUp() { ButtonUp(buttons[LookLeft]); };
-	void LookRightDown() { ButtonDown(buttons[LookRight]); };
-	void LookRightUp() { ButtonUp(buttons[LookRight]); };
+	void LookUpDown() { ButtonDown(buttons[IN_LookUp]); };
+	void LookUpUp() { ButtonUp(buttons[IN_LookUp]); };
+	void LookDownDown() { ButtonDown(buttons[IN_LookDown]); };
+	void LookDownUp() { ButtonUp(buttons[IN_LookDown]); };
+	void LookLeftDown() { ButtonDown(buttons[IN_LookLeft]); };
+	void LookLeftUp() { ButtonUp(buttons[IN_LookLeft]); };
+	void LookRightDown() { ButtonDown(buttons[IN_LookRight]); };
+	void LookRightUp() { ButtonUp(buttons[IN_LookRight]); };
 };

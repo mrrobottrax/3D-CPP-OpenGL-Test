@@ -3,10 +3,10 @@
 
 Keyname keynames[] =
 {
-	{"up", UpArrow},
-	{"down", DownArrow},
-	{"left", LeftArrow},
-	{"right", RightArrow},
+	{"up", KEY_UpArrow},
+	{"down", KEY_DownArrow},
+	{"left", KEY_LeftArrow},
+	{"right", KEY_RightArrow},
 
 	{NULL, 0} // Terminate when looping
 };
