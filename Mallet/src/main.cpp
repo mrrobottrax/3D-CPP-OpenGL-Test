@@ -28,10 +28,8 @@
 
 using namespace std;
 
-// Show memory leaks
+// Show memory leaks TEMP
 #define _CRTDBG_MAP_ALLOC
-
-#define _CRT_SECURE_NO_WARNINGS
 
 // TEMP
 // TODO: Remove
@@ -139,7 +137,6 @@ int main()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//glClear(GL_DEPTH_BUFFER_BIT);
 
 		StartImGuiFrame();
 

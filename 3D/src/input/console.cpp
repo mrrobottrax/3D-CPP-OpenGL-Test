@@ -27,9 +27,9 @@ void Console::ToggleConsole()
 
 void Console::AddCommand(const char* name, function<void(Console&)> function)
 {
-	size_t length = strlen(name);
-	char* heap_name = new char[length + 1];
-	strcpy(heap_name, name);
+	size_t length = strlen(name) + 1;
+	char* heap_name = new char[length];
+	strcpy_s(heap_name, length, name);
 
 	commands.emplace(heap_name, function);
 
@@ -52,7 +52,7 @@ void Console::RunCommand(const char* name)
 
 void Console::RunCommand(const char* name, const char* args)
 {
-	strcpy(arguments, args);
+	strcpy_s(arguments, MAX_COMMAND_ARGS_LENGTH, args);
 	argIndex = 0;
 
 	if (commands.find(name) == commands.end())

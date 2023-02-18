@@ -43,7 +43,7 @@ public:
 	void ParseInput(char key);
 	inline char* GetArguments() { return arguments; };
 	char* GetNextArgs();
-	inline void SetArguments(const char* args) { strcpy(arguments, args); }
+	inline void SetArguments(const char* args) { strcpy_s(arguments, MAX_COMMAND_ARGS_LENGTH, args); }
 	inline char GetKey() { return keycode; };
 	inline void Print(const char* message) { std::cout << message; }
 	inline void Println(const char* message) { std::cout << message << "\n"; }

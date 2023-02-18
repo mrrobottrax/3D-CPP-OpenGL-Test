@@ -30,6 +30,8 @@ void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 
 void MalletMouseCallback(GLFWwindow* window, int button, int action, int mods)
 {
+	inputManager->MouseCallback(button, action);
+
 	MalletUi::MouseCallback(window, button, action, mods);
 }
 
