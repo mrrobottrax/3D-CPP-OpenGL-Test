@@ -11,12 +11,12 @@ struct Key
 #define MAX_KEYS 256
 enum KeyCode
 {
-	None = 0,
+	KEY_None = 0,
 
-	UpArrow = 1,
-	DownArrow = 2,
-	LeftArrow = 3,
-	RightArrow = 4,
+	KEY_UpArrow = 1,
+	KEY_DownArrow = 2,
+	KEY_LeftArrow = 3,
+	KEY_RightArrow = 4,
 
 	// 48 - 57 : Numbers
 
@@ -42,13 +42,13 @@ struct Button
 #define MAX_BUTTONS 8
 enum ButtonCode
 {
-	MoveForward,
-	MoveBack,
-	MoveLeft,
-	MoveRight,
+	IN_MoveForward,
+	IN_MoveBack,
+	IN_MoveLeft,
+	IN_MoveRight,
 
-	LookUp,
-	LookDown,
-	LookLeft,
-	LookRight,
+	IN_LookUp,
+	IN_LookDown,
+	IN_LookLeft,
+	IN_LookRight,
 };

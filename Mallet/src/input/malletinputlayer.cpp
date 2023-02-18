@@ -6,6 +6,11 @@
 #include <ui/malletui.h>
 #include <gl/malletglutil.h>
 
+//Button mallet_buttons[MAX_BUTTONS_MALLET];
+//
+//void PanDown(Console& console) { inputManager->ButtonUp(mallet_buttons[Pan]); };
+//void PanUp(Console& console) { inputManager->ButtonUp(mallet_buttons[Pan]); };
+
 void SetupInputCallbacks(GLFWwindow* window)
 {
 	glfwSetWindowSizeCallback(window, MalletWindowSizeCallback);
@@ -14,6 +19,14 @@ void SetupInputCallbacks(GLFWwindow* window)
 	glfwSetMouseButtonCallback(window, MalletMouseCallback);
 	glfwSetCursorPosCallback(window, MalletMousePosCallback);
 }
+
+//void AddInputCommands()
+//{
+//	inputManager->console.AddCommand("+pan", PanDown);
+//	inputManager->console.AddCommand("-pan", PanUp);
+//
+//	inputManager->BindKey('r', "+pan");
+//}
 
 void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
