@@ -1,20 +1,20 @@
 #include <pch.h>
 #include <managers.h>
 
-EntityManager* entityManager;
+//EntityManager* entityManager;
 SystemManager* systemManager;
 InputManager* inputManager;
 
 void InitManagers()
 {
 	systemManager	= new SystemManager();
-	entityManager	= new EntityManager();
+	//entityManager	= new EntityManager();
 	inputManager	= new InputManager();
 }
 
 void DeleteManagers()
 {
 	delete systemManager;
-	delete entityManager;
+	//delete entityManager;
 	delete inputManager;
 }

@@ -56,7 +56,7 @@ void Init()
 	RenderSystem& rs = systemManager->AddSystem<RenderSystem>();
 	rs.autoDraw = false;
 
-	EntityManager& em = *entityManager;
+	EntityManager& em = entityManager;
 
 	// Create monkey
 	{
@@ -157,6 +157,7 @@ int main()
 	MalletUi::Destroy();
 
 	DeleteManagers();
+	entityManager.~EntityManager();
 	glfwTerminate();
 
 	// Show memory leaks

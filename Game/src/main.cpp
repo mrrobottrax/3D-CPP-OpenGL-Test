@@ -55,7 +55,7 @@ void Init()
 	sm.AddSystem<VelocitySystem>();
 	sm.AddSystem<RenderSystem>();
 
-	EntityManager& em = *entityManager;
+	EntityManager& em = entityManager;
 
 	// Create player
 	{
@@ -175,6 +175,7 @@ int main()
 	ImGuiTerminate();
 
 	DeleteManagers();
+	entityManager.~EntityManager();
 	glfwTerminate();
 
 	// Show memory leaks

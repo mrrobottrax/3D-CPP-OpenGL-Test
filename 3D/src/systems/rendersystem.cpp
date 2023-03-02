@@ -22,7 +22,7 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::SetMainCameraEntity(Entity& entity)
 {
-	RenderSystem::mainCamera = &entityManager->GetComponent<CameraComponent>(entity);
+	RenderSystem::mainCamera = &entityManager.GetComponent<CameraComponent>(entity);
 	RenderSystem::mainCameraEntity = entity;
 }
 
@@ -120,7 +120,7 @@ void RenderSystem::DrawWireframe()
 
 void RenderSystem::DrawBase()
 {
-	EntityManager& em = *entityManager;
+	EntityManager& em = entityManager;
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<MeshComponent>());
 	if (archetypes == nullptr)

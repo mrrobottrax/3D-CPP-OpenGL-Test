@@ -69,7 +69,7 @@ void FreecamSystem::Update()
 	pitchDelta += yDelta * 0.0015f;
 	yawDelta += xDelta * 0.0015;
 
-	EntityManager& em = *entityManager;
+	EntityManager& em = entityManager;
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<FreecamComponent>());
 

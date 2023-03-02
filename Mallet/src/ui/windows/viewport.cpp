@@ -18,7 +18,7 @@
 
 Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), viewSizeX(), viewSizeY(), mode(mode)
 {
-	EntityManager& em = *entityManager;
+	EntityManager& em = entityManager;
 
 	Component components[] = {
 		Component().init<IdComponent>(),
@@ -137,7 +137,7 @@ void Viewport::OnDeselect(DockingLeaf& leaf)
 {
 	glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-	EntityManager& em = *entityManager;
+	EntityManager& em = entityManager;
 	FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
 
 	freeCam.enabled = false;
@@ -147,7 +147,7 @@ void Viewport::KeyboardCallback(GLFWwindow* window, int key, int scancode, int a
 {
 	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
 	{
-		EntityManager& em = *entityManager;
+		EntityManager& em = entityManager;
 		FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
 
 		freeCam.enabled = !freeCam.enabled;
@@ -163,7 +163,7 @@ void Viewport::MouseCallback(GLFWwindow* window, int button, int action, int mod
 	// Panning
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE)
 	{
-		EntityManager& em = *entityManager;
+		EntityManager& em = entityManager;
 		FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
 
 		if (action == GLFW_PRESS)

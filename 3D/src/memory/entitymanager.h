@@ -32,7 +32,7 @@ public:
 
 private:
 	ChunkArchetypeElement* chunkArchetypeList;
-};
+}; inline EntityManager entityManager;
 
 template <class T>
 inline T& EntityManager::GetComponent(Entity& entity)

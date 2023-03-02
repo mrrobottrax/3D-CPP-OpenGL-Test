@@ -21,7 +21,7 @@ VelocitySystem::~VelocitySystem()
 
 void VelocitySystem::Update()
 {
-	EntityManager& em = *entityManager;
+	EntityManager& em = entityManager;
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<VelocityComponent>());
 
