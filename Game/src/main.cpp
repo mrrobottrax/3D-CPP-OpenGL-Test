@@ -50,7 +50,7 @@ void Init()
 	// Init systems
 	InitManagers();
 
-	SystemManager& sm = *systemManager;
+	SystemManager& sm = systemManager;
 	sm.AddSystem<FreecamSystem>();
 	sm.AddSystem<VelocitySystem>();
 	sm.AddSystem<RenderSystem>();
@@ -78,7 +78,7 @@ void Init()
 		int w, h;
 		glfwGetWindowSize(mainWindow, &w, &h);
 
-		RenderSystem& rs = systemManager->GetSystem<RenderSystem>();
+		RenderSystem& rs = sm.GetSystem<RenderSystem>();
 		rs.SetMainCameraEntity(entity);
 		rs.CalcFrustumScale(cam);
 		rs.CalcPerspectiveMatrix(cam, w, h);
@@ -161,7 +161,7 @@ int main()
 
 		StartImGuiFrame();
 
-		systemManager->UpdateSystems();
+		systemManager.UpdateSystems();
 
 		EndImGuiFrame();
 
@@ -176,6 +176,7 @@ int main()
 
 	DeleteManagers();
 	entityManager.DeleteAllEntities();
+	systemManager.DeleteAllSystems();
 	glfwTerminate();
 
 	// Show memory leaks

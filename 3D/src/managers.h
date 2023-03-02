@@ -7,5 +7,5 @@ void InitManagers();
 void DeleteManagers();
 
 //extern EntityManager*	entityManager;
-extern SystemManager*	systemManager;
+//extern SystemManager*	systemManager;
 extern InputManager*	inputManager;

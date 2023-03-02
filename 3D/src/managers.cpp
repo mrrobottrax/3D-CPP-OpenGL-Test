@@ -2,19 +2,19 @@
 #include <managers.h>
 
 //EntityManager* entityManager;
-SystemManager* systemManager;
+//SystemManager* systemManager;
 InputManager* inputManager;
 
 void InitManagers()
 {
-	systemManager	= new SystemManager();
+	//systemManager	= new SystemManager();
 	//entityManager	= new EntityManager();
 	inputManager	= new InputManager();
 }
 
 void DeleteManagers()
 {
-	delete systemManager;
+	//delete systemManager;
 	//delete entityManager;
 	delete inputManager;
 }

@@ -48,12 +48,13 @@ void Init()
 	InitializeOpenGL();
 
 	// Init systems
+	SystemManager& sm = systemManager;
 	InitManagers();
 
-	systemManager->AddSystem<FreecamSystem>();
-	systemManager->AddSystem<VelocitySystem>();
+	sm.AddSystem<FreecamSystem>();
+	sm.AddSystem<VelocitySystem>();
 
-	RenderSystem& rs = systemManager->AddSystem<RenderSystem>();
+	RenderSystem& rs = sm.AddSystem<RenderSystem>();
 	rs.autoDraw = false;
 
 	EntityManager& em = entityManager;
@@ -140,7 +141,7 @@ int main()
 
 		StartImGuiFrame();
 
-		systemManager->UpdateSystems();
+		systemManager.UpdateSystems();
 
 		MalletUi::DrawTree();
 
@@ -158,6 +159,7 @@ int main()
 
 	DeleteManagers();
 	entityManager.DeleteAllEntities();
+	systemManager.DeleteAllSystems();
 	glfwTerminate();
 
 	// Show memory leaks

@@ -79,7 +79,7 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 		RenderSystem::CalcPerspectiveMatrix(cam, w, h);
 	}
 
-	renderSystem = &systemManager->GetSystem<RenderSystem>();
+	renderSystem = &systemManager.GetSystem<RenderSystem>();
 }
 
 Viewport::~Viewport()
