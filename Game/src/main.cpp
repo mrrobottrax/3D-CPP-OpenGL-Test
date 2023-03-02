@@ -175,7 +175,7 @@ int main()
 	ImGuiTerminate();
 
 	DeleteManagers();
-	entityManager.~EntityManager();
+	entityManager.DeleteAllEntities();
 	glfwTerminate();
 
 	// Show memory leaks

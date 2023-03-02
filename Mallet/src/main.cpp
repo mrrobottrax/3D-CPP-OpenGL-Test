@@ -157,7 +157,7 @@ int main()
 	MalletUi::Destroy();
 
 	DeleteManagers();
-	entityManager.~EntityManager();
+	entityManager.DeleteAllEntities();
 	glfwTerminate();
 
 	// Show memory leaks
