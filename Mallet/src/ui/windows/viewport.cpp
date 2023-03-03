@@ -2,8 +2,8 @@
 #include "viewport.h"
 
 #include <input/inputmanager.h>
+#include <systems/systemmanager.h>
 
-#include <managers.h>
 #include <systems/rendersystem.h>
 
 #include <components/idcomponent.h>

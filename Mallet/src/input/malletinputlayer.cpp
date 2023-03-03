@@ -1,10 +1,10 @@
 #include <malletpch.h>
 #include <input/malletinputlayer.h>
 
-#include <managers.h>
 #include <imgui/imguiutil.h>
 #include <ui/malletui.h>
 #include <gl/malletglutil.h>
+#include <input/inputmanager.h>
 
 //Button mallet_buttons[MAX_BUTTONS_MALLET];
 //
@@ -36,14 +36,14 @@ void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 		return;
 	}
 
-	inputManager->KeyCallback(key, scancode, action, mods);
+	inputManager.KeyCallback(key, scancode, action, mods);
 
 	MalletUi::KeyCallback(window, key, scancode, action, mods);
 }
 
 void MalletMouseCallback(GLFWwindow* window, int button, int action, int mods)
 {
-	inputManager->MouseCallback(button, action);
+	inputManager.MouseCallback(button, action);
 
 	MalletUi::MouseCallback(window, button, action, mods);
 }

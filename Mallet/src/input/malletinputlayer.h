@@ -1,7 +1,5 @@
 #pragma once
 
-#include <managers.h>
-
 void SetupInputCallbacks(GLFWwindow*);
 //void AddInputCommands();
 

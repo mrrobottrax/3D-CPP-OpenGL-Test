@@ -1,10 +1,9 @@
 #include <pch.h>
 #include <systems/freecamsystem.h>
 
-#include <managers.h>
 #include <gl/gl.h>
-#include <managers.h>
 #include <components/cameracomponent.h>
+#include <input/inputmanager.h>
 
 FreecamSystem::FreecamSystem()
 {
@@ -22,20 +21,20 @@ void FreecamSystem::Update()
 	double yawDelta = 0;
 
 	// Move keys
-	if (inputManager->GetButtonDown(IN_MoveForward))
+	if (inputManager.GetButtonDown(IN_MoveForward))
 	{
 		moveVector.z -= 1;
 	}
-	if (inputManager->GetButtonDown(IN_MoveBack))
+	if (inputManager.GetButtonDown(IN_MoveBack))
 	{
 		moveVector.z += 1;
 	}
 
-	if (inputManager->GetButtonDown(IN_MoveLeft))
+	if (inputManager.GetButtonDown(IN_MoveLeft))
 	{
 		moveVector.x -= 1;
 	}
-	if (inputManager->GetButtonDown(IN_MoveRight))
+	if (inputManager.GetButtonDown(IN_MoveRight))
 	{
 		moveVector.x += 1;
 	}
@@ -43,27 +42,27 @@ void FreecamSystem::Update()
 	float rotSpeed = 2;
 
 	// Look keys
-	if (inputManager->GetButtonDown(IN_LookUp))
+	if (inputManager.GetButtonDown(IN_LookUp))
 	{
 		pitchDelta -= TimeManager::deltaTime * rotSpeed;
 	}
-	if (inputManager->GetButtonDown(IN_LookDown))
+	if (inputManager.GetButtonDown(IN_LookDown))
 	{
 		pitchDelta += TimeManager::deltaTime * rotSpeed;
 	}
 
-	if (inputManager->GetButtonDown(IN_LookLeft))
+	if (inputManager.GetButtonDown(IN_LookLeft))
 	{
 		yawDelta -= TimeManager::deltaTime * rotSpeed;
 	}
-	if (inputManager->GetButtonDown(IN_LookRight))
+	if (inputManager.GetButtonDown(IN_LookRight))
 	{
 		yawDelta += TimeManager::deltaTime * rotSpeed;
 	}
 
 	// Look mouse
 	double xDelta, yDelta;
-	inputManager->GetCursorDelta(&xDelta, &yDelta);
+	inputManager.GetCursorDelta(&xDelta, &yDelta);
 	panVector.y = -(float)xDelta;
 	panVector.x = -(float)yDelta;
 	pitchDelta += yDelta * 0.0015f;

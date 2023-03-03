@@ -3,13 +3,10 @@
 
 #include <gl/glutil.h>
 
-InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), console(), buttons()
+InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), buttons()
 {
-	double cursorX, cursorY;
-	glfwGetCursorPos(mainWindow, &cursorX, &cursorY);
-
-	lastCursorPosX = cursorX;
-	lastCursorPosY = cursorY;
+	lastCursorPosX = 0;
+	lastCursorPosY = 0;
 
 	AddDefaultInputCommands();
 
@@ -239,6 +236,11 @@ void InputManager::BindCommand()
 	char key = NameToKeycode(keyName);
 
 	BindKey(key, command);
+}
+
+void InputManager::Cleanup()
+{
+	console.~Console();
 }
 
 void InputManager::AddDefaultInputCommands()

@@ -6,7 +6,6 @@
 #include <input/gameinputlayer.h>
 
 #include <meshobject.h>
-#include <managers.h>
 #include <timemanager.h>
 #include <modelloader.h>
 
@@ -48,8 +47,6 @@ void Init()
 	SetupImGui(mainWindow);
 
 	// Init systems
-	InitManagers();
-
 	SystemManager& sm = systemManager;
 	sm.AddSystem<FreecamSystem>();
 	sm.AddSystem<VelocitySystem>();
@@ -144,6 +141,9 @@ void Init()
 
 int main()
 {
+	// Memory leaks
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	Init();
 
 	while (!glfwWindowShouldClose(mainWindow))
@@ -153,7 +153,7 @@ int main()
 
 		double xPos, yPos;
 		glfwGetCursorPos(mainWindow, &xPos, &yPos);
-		inputManager->UpdateCursorDelta(xPos, yPos);
+		inputManager.UpdateCursorDelta(xPos, yPos);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClearDepth(1.0f);
@@ -174,13 +174,10 @@ int main()
 
 	ImGuiTerminate();
 
-	DeleteManagers();
 	entityManager.DeleteAllEntities();
 	systemManager.DeleteAllSystems();
+	console.DeleteCommands();
 	glfwTerminate();
 
-	// Show memory leaks
-	_CrtDumpMemoryLeaks();
-
-	exit(EXIT_SUCCESS);
+	::exit(EXIT_SUCCESS);
 }

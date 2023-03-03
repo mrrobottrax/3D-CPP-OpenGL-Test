@@ -7,7 +7,9 @@
 #include <input/malletinputlayer.h>
 
 #include <meshobject.h>
-#include <managers.h>
+#include <systems/systemmanager.h>
+#include <memory/entitymanager.h>
+#include <input/inputmanager.h>
 #include <timemanager.h>
 #include <modelloader.h>
 
@@ -49,7 +51,6 @@ void Init()
 
 	// Init systems
 	SystemManager& sm = systemManager;
-	InitManagers();
 
 	sm.AddSystem<FreecamSystem>();
 	sm.AddSystem<VelocitySystem>();
@@ -124,6 +125,9 @@ void Init()
 
 int main()
 {
+	// Memory leaks
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	Init();
 
 	while (!glfwWindowShouldClose(mainWindow))
@@ -133,7 +137,7 @@ int main()
 
 		double xPos, yPos;
 		glfwGetCursorPos(mainWindow, &xPos, &yPos);
-		inputManager->UpdateCursorDelta(xPos, yPos);
+		inputManager.UpdateCursorDelta(xPos, yPos);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClearDepth(1.0f);
@@ -157,13 +161,10 @@ int main()
 	ImGuiTerminate();
 	MalletUi::Destroy();
 
-	DeleteManagers();
 	entityManager.DeleteAllEntities();
 	systemManager.DeleteAllSystems();
+	console.DeleteCommands();
 	glfwTerminate();
-
-	// Show memory leaks
-	_CrtDumpMemoryLeaks();
 
 	::exit(EXIT_SUCCESS);
 }

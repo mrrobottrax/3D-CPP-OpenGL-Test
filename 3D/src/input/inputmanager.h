@@ -20,7 +20,7 @@ private:
 	void ButtonCallback(int, int);
 
 public:
-	Console console;
+	//Console console;
 
 public:
 	void BindKey(char key, const char*);
@@ -38,6 +38,8 @@ public:
 	void ButtonDown(Button& button);
 	void ButtonUp(Button& button);
 	bool GetButtonDown(int);
+
+	void Cleanup();
 
 	// ~~~~~~~~~~~Input Commands~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -61,4 +63,4 @@ public:
 	void LookLeftUp() { ButtonUp(buttons[IN_LookLeft]); };
 	void LookRightDown() { ButtonDown(buttons[IN_LookRight]); };
 	void LookRightUp() { ButtonUp(buttons[IN_LookRight]); };
-};
+}; inline InputManager inputManager;

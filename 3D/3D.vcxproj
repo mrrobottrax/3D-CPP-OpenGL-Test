@@ -156,7 +156,6 @@
     <ClInclude Include="src\input\console.h" />
     <ClInclude Include="src\input\inputmanager.h" />
     <ClInclude Include="src\input\keycodes.h" />
-    <ClInclude Include="src\managers.h" />
     <ClInclude Include="src\memory\chunk.h" />
     <ClInclude Include="src\memory\chunkarchetypeelement.h" />
     <ClInclude Include="src\memory\component.h" />
@@ -184,7 +183,6 @@
     <ClCompile Include="src\input\console.cpp" />
     <ClCompile Include="src\input\inputmanager.cpp" />
     <ClCompile Include="src\input\keycodes.cpp" />
-    <ClCompile Include="src\managers.cpp" />
     <ClCompile Include="src\memory\chunkarchetypeelement.cpp" />
     <ClCompile Include="src\memory\component.cpp" />
     <ClCompile Include="src\memory\entity.cpp" />

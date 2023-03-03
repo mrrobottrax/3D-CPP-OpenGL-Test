@@ -14,10 +14,7 @@ Console::Console() : enabled(false), commands()
 
 Console::~Console()
 {
-	for (auto const& command : commands)
-	{
-		delete command.first;
-	}
+	//DeleteCommands();
 }
 
 void Console::ToggleConsole()
@@ -143,6 +140,15 @@ void Console::ParseInput(char key)
 
 	endIndex = 0;
 	input[0] = NULL;
+}
+
+void Console::DeleteCommands()
+{
+	for (auto const& command : commands)
+	{
+		if (command.first)
+			delete command.first;
+	}
 }
 
 char* Console::GetNextArgs()

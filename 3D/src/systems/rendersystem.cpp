@@ -1,8 +1,6 @@
 #include <pch.h>
 #include <systems/renderSystem.h>
 
-#include <managers.h>
-
 #include <common/matrixStack.h>
 #include <memory/entityManager.h>
 #include <components/meshComponent.h>

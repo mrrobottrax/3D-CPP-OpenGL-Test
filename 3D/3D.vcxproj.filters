@@ -81,7 +81,6 @@
     <ClInclude Include="src\input\keycodes.h">
       <Filter>input</Filter>
     </ClInclude>
-    <ClInclude Include="src\managers.h" />
     <ClInclude Include="src\memory\chunk.h">
       <Filter>memory</Filter>
     </ClInclude>
@@ -148,7 +147,6 @@
     <ClCompile Include="src\input\inputmanager.cpp">
       <Filter>input</Filter>
     </ClCompile>
-    <ClCompile Include="src\managers.cpp" />
     <ClCompile Include="src\memory\chunkarchetypeelement.cpp">
       <Filter>memory</Filter>
     </ClCompile>

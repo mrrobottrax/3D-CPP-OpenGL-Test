@@ -1,8 +1,6 @@
 #include <pch.h>
 #include <systems/velocitySystem.h>
 
-#include <managers.h>
-
 #include <systems/systemmanager.h>
 #include <memory/entitymanager.h>
 #include <components/positioncomponent.h>
