@@ -148,7 +148,7 @@ int main()
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{
-		TimeManager::Update();
+		timeManager.Update();
 		glfwPollEvents();
 
 		double xPos, yPos;

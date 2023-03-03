@@ -44,20 +44,20 @@ void FreecamSystem::Update()
 	// Look keys
 	if (inputManager.GetButtonDown(IN_LookUp))
 	{
-		pitchDelta -= TimeManager::deltaTime * rotSpeed;
+		pitchDelta -= timeManager.GetDeltaTime() * rotSpeed;
 	}
 	if (inputManager.GetButtonDown(IN_LookDown))
 	{
-		pitchDelta += TimeManager::deltaTime * rotSpeed;
+		pitchDelta += timeManager.GetDeltaTime() * rotSpeed;
 	}
 
 	if (inputManager.GetButtonDown(IN_LookLeft))
 	{
-		yawDelta -= TimeManager::deltaTime * rotSpeed;
+		yawDelta -= timeManager.GetDeltaTime() * rotSpeed;
 	}
 	if (inputManager.GetButtonDown(IN_LookRight))
 	{
-		yawDelta += TimeManager::deltaTime * rotSpeed;
+		yawDelta += timeManager.GetDeltaTime() * rotSpeed;
 	}
 
 	// Look mouse
@@ -123,7 +123,7 @@ void FreecamSystem::Update()
 
 				float speed = glm::length(velocity.linear);
 
-				float drop = freeCam.friction * TimeManager::deltaTime;
+				float drop = freeCam.friction * timeManager.GetDeltaTime();
 
 				// Friction
 				if (speed > drop)
@@ -138,7 +138,7 @@ void FreecamSystem::Update()
 				}
 
 				// Acceleration
-				velocity.linear += moveVector * freeCam.acceleration * TimeManager::deltaTime;
+				velocity.linear += moveVector * freeCam.acceleration * timeManager.GetDeltaTime();
 
 				if (speed > freeCam.speed)
 				{
