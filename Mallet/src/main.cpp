@@ -123,6 +123,19 @@ void Init()
 	MalletUi::Setup();
 }
 
+void End()
+{
+	ImGuiTerminate();
+	MalletUi::Destroy();
+
+	entityManager.DeleteAllEntities();
+	systemManager.DeleteAllSystems();
+	console.DeleteCommands();
+	glfwTerminate();
+
+	::exit(EXIT_SUCCESS);
+}
+
 int main()
 {
 	// Memory leaks
@@ -158,13 +171,5 @@ int main()
 	delete testMesh;
 	delete testMap;
 
-	ImGuiTerminate();
-	MalletUi::Destroy();
-
-	entityManager.DeleteAllEntities();
-	systemManager.DeleteAllSystems();
-	console.DeleteCommands();
-	glfwTerminate();
-
-	::exit(EXIT_SUCCESS);
+	End();
 }
