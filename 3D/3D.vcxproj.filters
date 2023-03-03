@@ -147,6 +147,9 @@
     <ClCompile Include="src\input\inputmanager.cpp">
       <Filter>input</Filter>
     </ClCompile>
+    <ClCompile Include="src\input\keycodes.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
     <ClCompile Include="src\memory\chunkarchetypeelement.cpp">
       <Filter>memory</Filter>
     </ClCompile>
@@ -181,6 +184,5 @@
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
-    <ClCompile Include="src\input\keycodes.cpp" />
   </ItemGroup>
 </Project>
