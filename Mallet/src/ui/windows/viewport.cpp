@@ -10,6 +10,7 @@
 #include <components/positioncomponent.h>
 
 #include <gl/glutil.h>
+#include <gl/shaderloader.h>
 
 #include <main.h>
 
@@ -80,6 +81,38 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 	}
 
 	renderSystem = &systemManager.GetSystem<RenderSystem>();
+
+	// Init grid overlay
+	if (!glInit)
+	{
+		glInit = true;
+
+		glGenVertexArrays(1, &gridVao);
+		glBindVertexArray(gridVao);
+
+		glGenBuffers(1, &positionBufferObject);
+		glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(gridQuadPositionArray), gridQuadPositionArray, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glBindVertexArray(0);
+
+		std::vector<GLuint> shaderList;
+
+		// Grid shader
+		{
+			const char* strVertShader = shaderLoader::loadShader("data/shaders/grid.vert");
+			const char* strFragShader = shaderLoader::loadShader("data/shaders/grid.frag");
+			shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
+			shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
+			delete[] strVertShader;
+			delete[] strFragShader;
+
+			gridShaderProgram = CreateProgram(shaderList);
+			std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
+		}
+	}
 }
 
 Viewport::~Viewport()
@@ -96,21 +129,43 @@ void Viewport::Draw(DockingLeaf& leaf, int leafIndex)
 	switch (mode)
 	{
 	case perspective:
-		renderSystem->DrawShaded();
+		Draw3DShaded();
 		break;
 	case top:
-		renderSystem->DrawWireframe();
+		Draw2DWireframe();
 		break;
 	case side:
-		renderSystem->DrawWireframe();
+		Draw2DWireframe();
 		break;
 	case front:
-		renderSystem->DrawWireframe();
+		Draw2DWireframe();
 		break;
 	default:
-		renderSystem->DrawShaded();
+		Draw3DShaded();
 		break;
 	};
+}
+
+void Viewport::Draw2DWireframe()
+{
+	renderSystem->DrawWireframe();
+
+	// Grid
+	glUseProgram(gridShaderProgram);
+	glBindVertexArray(gridVao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glDrawArrays(GL_TRIANGLES, 0, quadVertCount);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
+	glUseProgram(0);
+}
+
+void Viewport::Draw3DShaded()
+{
+	renderSystem->DrawShaded();
 }
 
 void Viewport::CalculateViewportVars(DockingLeaf& leaf, int fullWindowWidth, int fullWindowHeight)

@@ -14,6 +14,22 @@ enum ViewportMode
 	front
 };
 
+const inline int quadVertCount = 6;
+const inline float gridQuadPositionArray[] = {
+	-1, -1, 0.5f,
+	 1, -1, 0.5f,
+	 1,  1, 0.5f,
+
+	-1, -1, 0.5f,
+	 1,  1, 0.5f,
+	-1,  1, 0.5f,
+};
+
+inline bool glInit = false;
+inline GLuint gridVao;
+inline GLuint positionBufferObject;
+inline GLuint gridShaderProgram;
+
 class Viewport : public MalletWindow
 {
 public:
@@ -21,6 +37,8 @@ public:
 	~Viewport();
 
 	void Draw(DockingLeaf& leaf, int leafIndex);
+	void Draw2DWireframe();
+	void Draw3DShaded();
 	void OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight);
 	void OnSelect(DockingLeaf& leaf);
 	void OnDeselect(DockingLeaf& leaf);
