@@ -10,8 +10,11 @@ struct FreecamComponent
 	float acceleration;
 	float friction;
 
+	GLsizei viewPortSize[2];
+
 	FreecamComponent(float speed, float acceleration, float friction, bool enabled = true, bool panOnly = false) :
-		speed(speed), acceleration(acceleration), friction(friction), enabled(enabled), panOnly(panOnly), panning(false)
+		speed(speed), acceleration(acceleration), friction(friction), enabled(enabled), panOnly(panOnly), panning(false),
+		viewPortSize()
 	{
 	}
 };

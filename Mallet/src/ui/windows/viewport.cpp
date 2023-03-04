@@ -35,7 +35,8 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 	
 	bool ortho = mode != ViewportMode::perspective;
 	
-	em.GetComponent<FreecamComponent>(entity) = { 6, 40, 20, false, ortho };
+	FreecamComponent& fc = em.GetComponent<FreecamComponent>(entity) = { 6, 40, 20, false, ortho };
+	freeCam = &fc;
 
 	if (!ortho)
 	{
@@ -131,6 +132,9 @@ void Viewport::Draw(DockingLeaf& leaf, int leafIndex)
 	renderSystem->mainCamera = camera;
 	renderSystem->mainCameraEntity = cameraEntity;
 
+	freeCam->viewPortSize[0] = viewSizeX;
+	freeCam->viewPortSize[1] = viewSizeY;
+
 	switch (mode)
 	{
 	case perspective:
@@ -220,9 +224,37 @@ void Viewport::OnDeselect(DockingLeaf& leaf)
 	freeCam.enabled = false;
 }
 
+bool cameraWasEnabledBeforePanning = false;
+void Viewport::PanButton(int action)
+{
+	EntityManager& em = entityManager;
+	FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
+
+	if (action == GLFW_PRESS)
+	{
+		cameraWasEnabledBeforePanning = freeCam.enabled;
+
+		freeCam.panning = true;
+
+		freeCam.enabled = true;
+		//glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+	else if (action == GLFW_RELEASE)
+	{
+		freeCam.panning = false;
+
+		if (!cameraWasEnabledBeforePanning)
+		{
+			freeCam.enabled = false;
+			//glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+	}
+}
+
 void Viewport::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+	// 3D look
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS && mode == ViewportMode::perspective)
 	{
 		EntityManager& em = entityManager;
 		FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
@@ -230,38 +262,24 @@ void Viewport::KeyboardCallback(GLFWwindow* window, int key, int scancode, int a
 		freeCam.enabled = !freeCam.enabled;
 
 		glfwSetInputMode(mainWindow, GLFW_CURSOR, freeCam.enabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+		return;
+	}
+
+	// Panning
+	if (key == GLFW_KEY_Z && mode != ViewportMode::perspective)
+	{
+		PanButton(action);
+		return;
 	}
 }
-
-bool cameraWasEnabledBeforePanning = false;
 
 void Viewport::MouseCallback(GLFWwindow* window, int button, int action, int mods)
 {
 	// Panning
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE)
 	{
-		EntityManager& em = entityManager;
-		FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
-
-		if (action == GLFW_PRESS)
-		{
-			cameraWasEnabledBeforePanning = freeCam.enabled;
-
-			freeCam.panning = true;
-
-			freeCam.enabled = true;
-			glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		}
-		else if (action == GLFW_RELEASE)
-		{
-			freeCam.panning = false;
-
-			if (!cameraWasEnabledBeforePanning)
-			{
-				freeCam.enabled = false;
-				glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			}
-		}
+		PanButton(action);
+		return;
 	}
 }
 

@@ -57,6 +57,7 @@ public:
 
 private:
 	Entity cameraEntity;
+	FreecamComponent* freeCam;
 	CameraComponent* camera;
 	RenderSystem* renderSystem;
 	GLint viewPosX;
@@ -66,4 +67,5 @@ private:
 
 private:
 	void CalculateViewportVars(DockingLeaf&, int, int);
+	void PanButton(int action);
 };

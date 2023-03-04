@@ -99,12 +99,9 @@ void FreecamSystem::Update()
 				// Panning
 				if (freeCam.panning || freeCam.panOnly)
 				{
-					velocity.linear = panVector * glm::fquat(0.70710678118f, 0, 0, 0.70710678118f) * rotation.value;
+					panVector *= freeCam.viewPortSize[1] * cam.frustumScale;
 
-					if (freeCam.panOnly)
-						velocity.linear /= cam.frustumScale * 0.3f;
-					else
-						velocity.linear /= cam.frustumScale * 0.1f;
+					velocity.linear = panVector * glm::fquat(0.70710678118f, 0, 0, 0.70710678118f) * rotation.value;
 
 					continue;
 				}
