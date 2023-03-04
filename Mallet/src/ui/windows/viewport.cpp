@@ -160,8 +160,11 @@ void Viewport::Draw2DWireframe()
 	EntityManager& em = entityManager;
 	MatrixStack mStack;
 	mStack.push();
+
+	glm::vec3 pos = em.GetComponent<PositionComponent>(cameraEntity).value;
+	glm::vec3 newPos = glm::mat4_cast(em.GetComponent<RotationComponent>(cameraEntity).value) * glm::vec4(pos.x, pos.y, pos.z, 1);
 	mStack.applyMatrix(camera->matrix);
-	mStack.translate(-em.GetComponent<PositionComponent>(cameraEntity).value);
+	mStack.translate(-newPos);
 
 	glUniformMatrix4fv(screenToWorldMatrixUnif, 1, GL_FALSE, &glm::inverse(mStack.top())[0][0]);
 	glDrawArrays(GL_TRIANGLES, 0, quadVertCount);
