@@ -29,6 +29,7 @@ inline bool glInit = false;
 inline GLuint gridVao;
 inline GLuint positionBufferObject;
 inline GLuint gridShaderProgram;
+inline GLuint screenToWorldMatrixUnif;
 
 class Viewport : public MalletWindow
 {
