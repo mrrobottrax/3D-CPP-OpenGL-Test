@@ -115,6 +115,8 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 		}
 
 		screenToWorldMatrixUnif = glGetUniformLocation(gridShaderProgram, "screenToWorldMatrix");
+		onePixelDistanceUnif = glGetUniformLocation(gridShaderProgram, "onePixelDistance");
+		baseGridSizeUnif = glGetUniformLocation(gridShaderProgram, "baseGridSize");
 	}
 }
 
@@ -161,12 +163,22 @@ void Viewport::Draw2DWireframe()
 	MatrixStack mStack;
 	mStack.push();
 
+	// Get inverse camera matrix
 	glm::vec3 pos = em.GetComponent<PositionComponent>(cameraEntity).value;
 	glm::vec3 newPos = glm::mat4_cast(em.GetComponent<RotationComponent>(cameraEntity).value) * glm::vec4(pos.x, pos.y, pos.z, 1);
 	mStack.applyMatrix(camera->matrix);
 	mStack.translate(-newPos);
+	mStack.invert();
 
-	glUniformMatrix4fv(screenToWorldMatrixUnif, 1, GL_FALSE, &glm::inverse(mStack.top())[0][0]);
+	glUniformMatrix4fv(screenToWorldMatrixUnif, 1, GL_FALSE, &mStack.top()[0][0]);
+
+	// Get world distance needed to move 1 pixel
+	glm::vec4 delta = glm::vec4(1 / (float)viewSizeX, 1 / (float)viewSizeY, 0, 1);
+	delta = glm::inverse(camera->matrix) * delta * 2.0f;
+	glUniform2f(onePixelDistanceUnif, delta.x, delta.y);
+
+	glUniform1f(baseGridSizeUnif, baseGridSize);
+
 	glDrawArrays(GL_TRIANGLES, 0, quadVertCount);
 
 	glBindVertexArray(0);

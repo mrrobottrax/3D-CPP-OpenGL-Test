@@ -1,6 +1,6 @@
 #version 460
 
-layout(location = 0) uniform mat4 screenToWorldMatrix;
+uniform mat4 screenToWorldMatrix;
 
 layout(location = 0) in vec3 position;
 

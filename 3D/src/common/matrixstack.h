@@ -11,6 +11,7 @@ public:
 
 	void translate(glm::vec3);
 	void applyMatrix(glm::mat4);
+	void invert();
 
 private:
 	std::stack<glm::mat4> mStack;

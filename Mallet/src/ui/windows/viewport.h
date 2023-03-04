@@ -30,6 +30,10 @@ inline GLuint gridVao;
 inline GLuint positionBufferObject;
 inline GLuint gridShaderProgram;
 inline GLuint screenToWorldMatrixUnif;
+inline GLuint onePixelDistanceUnif;
+inline GLuint baseGridSizeUnif;
+
+inline float baseGridSize = 1;
 
 class Viewport : public MalletWindow
 {

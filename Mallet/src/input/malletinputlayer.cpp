@@ -6,6 +6,8 @@
 #include <gl/malletglutil.h>
 #include <input/inputmanager.h>
 
+#include <ui/windows/viewport.h>
+
 //Button mallet_buttons[MAX_BUTTONS_MALLET];
 //
 //void PanDown(Console& console) { inputManager->ButtonUp(mallet_buttons[Pan]); };
@@ -30,9 +32,23 @@ void SetupInputCallbacks(GLFWwindow* window)
 
 void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	// CTRL + DELETE -> ImGui menu
 	if (key == GLFW_KEY_DELETE && mods & GLFW_MOD_CONTROL && action == GLFW_PRESS)
 	{
 		showDemoWindow = !showDemoWindow;
+		return;
+	}
+
+	// [ or ] -> increase / decrease grid size
+	if (key == GLFW_KEY_LEFT_BRACKET && action == GLFW_PRESS)
+	{
+		baseGridSize /= 2;
+		return;
+	}
+
+	if (key == GLFW_KEY_RIGHT_BRACKET && action == GLFW_PRESS)
+	{
+		baseGridSize *= 2;
 		return;
 	}
 
