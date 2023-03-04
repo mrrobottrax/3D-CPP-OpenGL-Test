@@ -171,7 +171,7 @@ void RenderSystem::DrawBase()
 				glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, 0);
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.mesh->elementBufferObject);
 
-				// TODO: Faster to have the cpu do this? Or maybe just give the gpu rotation, position, etc matrices?
+				// TODO: Faster to have the cpu do this? Or maybe just give the gpu rotation, position, etc matrices? Need to measure...
 				glUniformMatrix4fv(sharedPositionMatrixUnif, 1, GL_FALSE, &mStack.top()[0][0]);
 				glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, &newNormalMat[0][0]);
 				glUniform3f(sunDirUnif, sunDir.x, sunDir.y, sunDir.z);
