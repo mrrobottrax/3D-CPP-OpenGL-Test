@@ -129,7 +129,7 @@ void RenderSystem::DrawBase()
 
 	mStack.push();
 	normalMat = mStack.top();
-	mStack.applyMatrix(glm::mat4_cast(-em.GetComponent<RotationComponent>(mainCameraEntity).value));
+	mStack.applyMatrix(glm::mat4_cast(em.GetComponent<RotationComponent>(mainCameraEntity).value));
 	mStack.translate(-em.GetComponent<PositionComponent>(mainCameraEntity).value);
 
 	glm::vec3 sunDir(1, 2, .2f);
