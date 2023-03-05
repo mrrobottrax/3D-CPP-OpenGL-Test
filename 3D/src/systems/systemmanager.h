@@ -28,4 +28,4 @@ public:
 		systems->emplace(typeid(T).hash_code(), system);
 		return *system;
 	}
-};
+}; inline SystemManager systemManager;

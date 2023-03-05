@@ -145,6 +145,7 @@
     <ClInclude Include="src\ui\docking\dockingtree.h" />
     <ClInclude Include="src\ui\malletui.h" />
     <ClInclude Include="src\ui\malletwindow.h" />
+    <ClInclude Include="src\ui\windows\toolbar.h" />
     <ClInclude Include="src\ui\windows\viewport.h" />
   </ItemGroup>
   <ItemGroup>

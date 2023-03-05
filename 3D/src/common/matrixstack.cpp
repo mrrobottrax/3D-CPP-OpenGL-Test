@@ -47,3 +47,8 @@ void MatrixStack::applyMatrix(glm::mat4 matrix)
 {
 	mStack.top() *= matrix;
 }
+
+void MatrixStack::invert()
+{
+	mStack.top() = glm::inverse(mStack.top());
+}

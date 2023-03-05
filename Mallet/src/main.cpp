@@ -5,10 +5,11 @@
 #include <gl/glutil.h>
 #include <gl/malletglutil.h>
 #include <input/malletinputlayer.h>
-#include <input/inputmanager.h>
 
 #include <meshobject.h>
-#include <managers.h>
+#include <systems/systemmanager.h>
+#include <memory/entitymanager.h>
+#include <input/inputmanager.h>
 #include <timemanager.h>
 #include <modelloader.h>
 
@@ -29,18 +30,15 @@
 
 using namespace std;
 
-// Show memory leaks
+// Show memory leaks TEMP
 #define _CRTDBG_MAP_ALLOC
 
 // TEMP
 // TODO: Remove
 // Cube mesh
-MeshObject* monkeyMesh = new MeshObject();
-MeshObject* testMap = new MeshObject();
-MeshObject* testMesh = new MeshObject();
-
-SystemManager* systemManager;
-EntityManager* entityManager;
+MeshObject* monkeyMesh	= new MeshObject();
+MeshObject* testMap		= new MeshObject();
+MeshObject* testMesh	= new MeshObject();
 
 void Init()
 {
@@ -52,16 +50,15 @@ void Init()
 	InitializeOpenGL();
 
 	// Init systems
-	systemManager = new SystemManager();
-	entityManager = new EntityManager();
+	SystemManager& sm = systemManager;
 
-	systemManager->AddSystem<VelocitySystem>();
-	systemManager->AddSystem<FreecamSystem>();
+	sm.AddSystem<FreecamSystem>();
+	sm.AddSystem<VelocitySystem>();
 
-	RenderSystem& rs = systemManager->AddSystem<RenderSystem>();
+	RenderSystem& rs = sm.AddSystem<RenderSystem>();
 	rs.autoDraw = false;
 
-	EntityManager& em = *entityManager;
+	EntityManager& em = entityManager;
 
 	// Create monkey
 	{
@@ -126,27 +123,42 @@ void Init()
 	MalletUi::Setup();
 }
 
+void End()
+{
+	ImGuiTerminate();
+	MalletUi::Destroy();
+
+	entityManager.DeleteAllEntities();
+	systemManager.DeleteAllSystems();
+	console.DeleteCommands();
+	glfwTerminate();
+
+	::exit(EXIT_SUCCESS);
+}
+
 int main()
 {
+	// Memory leaks
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	Init();
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{
-		TimeManager::Update();
+		timeManager.Update();
 		glfwPollEvents();
 
 		double xPos, yPos;
 		glfwGetCursorPos(mainWindow, &xPos, &yPos);
-		InputManager::UpdateCursorDelta(xPos, yPos);
+		inputManager.UpdateCursorDelta(xPos, yPos);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClearDepth(1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//glClear(GL_DEPTH_BUFFER_BIT);
 
 		StartImGuiFrame();
 
-		systemManager->UpdateSystems();
+		systemManager.UpdateSystems();
 
 		MalletUi::DrawTree();
 
@@ -159,15 +171,5 @@ int main()
 	delete testMesh;
 	delete testMap;
 
-	ImGuiTerminate();
-	MalletUi::Destroy();
-
-	delete systemManager;
-	delete entityManager;
-	glfwTerminate();
-
-	// Show memory leaks
-	_CrtDumpMemoryLeaks();
-
-	exit(EXIT_SUCCESS);
+	End();
 }

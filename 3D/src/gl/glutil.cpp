@@ -2,9 +2,8 @@
 #include <gl/glutil.h>
 
 #include <gl/shaderLoader.h>
-#include <input/inputManager.h>
-#include <systems/systemManager.h>
 #include <systems/renderSystem.h>
+#include <input/inputmanager.h>
 
 GLFWwindow* mainWindow;
 
@@ -29,7 +28,7 @@ void ErrorCallback(int error, const char* description)
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	InputManager::KeyCallback(key, action);
+	inputManager.KeyCallback(key, scancode, action, mods);
 }
 
 void DefaultWindowSizeCallback(GLFWwindow* window, int width, int height)

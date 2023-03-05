@@ -6,7 +6,6 @@
 #include <input/gameinputlayer.h>
 
 #include <meshobject.h>
-#include <managers.h>
 #include <timemanager.h>
 #include <modelloader.h>
 
@@ -37,9 +36,6 @@ MeshObject* monkeyMesh = new MeshObject();
 MeshObject* testMap = new MeshObject();
 MeshObject* testMesh = new MeshObject();
 
-SystemManager* systemManager;
-EntityManager* entityManager;
-
 void Init()
 {
 	// Init OpenGL
@@ -51,15 +47,12 @@ void Init()
 	SetupImGui(mainWindow);
 
 	// Init systems
-	systemManager = new SystemManager();
-	entityManager = new EntityManager();
-
-	SystemManager& sm = *systemManager;
-	sm.AddSystem<VelocitySystem>();
+	SystemManager& sm = systemManager;
 	sm.AddSystem<FreecamSystem>();
+	sm.AddSystem<VelocitySystem>();
 	sm.AddSystem<RenderSystem>();
 
-	EntityManager& em = *entityManager;
+	EntityManager& em = entityManager;
 
 	// Create player
 	{
@@ -82,7 +75,7 @@ void Init()
 		int w, h;
 		glfwGetWindowSize(mainWindow, &w, &h);
 
-		RenderSystem& rs = systemManager->GetSystem<RenderSystem>();
+		RenderSystem& rs = sm.GetSystem<RenderSystem>();
 		rs.SetMainCameraEntity(entity);
 		rs.CalcFrustumScale(cam);
 		rs.CalcPerspectiveMatrix(cam, w, h);
@@ -146,18 +139,33 @@ void Init()
 	}
 }
 
+void End()
+{
+	ImGuiTerminate();
+
+	entityManager.DeleteAllEntities();
+	systemManager.DeleteAllSystems();
+	console.DeleteCommands();
+	glfwTerminate();
+
+	::exit(EXIT_SUCCESS);
+}
+
 int main()
 {
+	// Memory leaks
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	Init();
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{
-		TimeManager::Update();
+		timeManager.Update();
 		glfwPollEvents();
 
 		double xPos, yPos;
 		glfwGetCursorPos(mainWindow, &xPos, &yPos);
-		InputManager::UpdateCursorDelta(xPos, yPos);
+		inputManager.UpdateCursorDelta(xPos, yPos);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClearDepth(1.0f);
@@ -165,7 +173,7 @@ int main()
 
 		StartImGuiFrame();
 
-		systemManager->UpdateSystems();
+		systemManager.UpdateSystems();
 
 		EndImGuiFrame();
 
@@ -176,14 +184,5 @@ int main()
 	delete testMesh;
 	delete testMap;
 
-	ImGuiTerminate();
-
-	delete systemManager;
-	delete entityManager;
-	glfwTerminate();
-
-	// Show memory leaks
-	_CrtDumpMemoryLeaks();
-
-	exit(EXIT_SUCCESS);
+	End();
 }

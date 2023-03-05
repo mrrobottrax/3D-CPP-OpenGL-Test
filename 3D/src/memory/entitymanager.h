@@ -30,9 +30,11 @@ public:
 	ChunkArchetypeElement* FindChunkArchetype(EntityArchetype&);
 	std::forward_list<ChunkArchetypeElement*>* FindChunkArchetypesWithComponent(Component&);
 
+	void DeleteAllEntities();
+
 private:
 	ChunkArchetypeElement* chunkArchetypeList;
-};
+}; inline EntityManager entityManager;
 
 template <class T>
 inline T& EntityManager::GetComponent(Entity& entity)

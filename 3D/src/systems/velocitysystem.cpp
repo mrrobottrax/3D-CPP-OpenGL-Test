@@ -1,8 +1,6 @@
 #include <pch.h>
 #include <systems/velocitySystem.h>
 
-#include <managers.h>
-
 #include <systems/systemmanager.h>
 #include <memory/entitymanager.h>
 #include <components/positioncomponent.h>
@@ -21,7 +19,7 @@ VelocitySystem::~VelocitySystem()
 
 void VelocitySystem::Update()
 {
-	EntityManager& em = *entityManager;
+	EntityManager& em = entityManager;
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<VelocityComponent>());
 
@@ -42,9 +40,9 @@ void VelocitySystem::Update()
 				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
 				VelocityComponent& velocity = em.GetComponent<VelocityComponent>(entity);
 
-				position.value += velocity.linear * TimeManager::deltaTime;
+				position.value += velocity.linear * timeManager.GetDeltaTime();
 
-				glm::vec3 deltaVec = velocity.angular * TimeManager::deltaTime;
+				glm::vec3 deltaVec = velocity.angular * timeManager.GetDeltaTime();
 				float length = glm::length(deltaVec);
 
 				// Prevent divide by 0

@@ -15,26 +15,7 @@ EntityManager::EntityManager()
 
 EntityManager::~EntityManager()
 {
-	// Empty list
-	if (chunkArchetypeList == nullptr)
-		return;
-
-	// Delete each chunk archetype element
-	ChunkArchetypeElement* elementToDelete;
-	while (chunkArchetypeList != nullptr)
-	{
-		std::cout << "Deleting chunk archetype of: ";
-		for (int i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
-		{
-			std::cout << (i != 0 ? ", " : "") << chunkArchetypeList->archetype.components[i].name;
-		}
-		std::cout << "\n";
-
-		elementToDelete = chunkArchetypeList;
-		chunkArchetypeList = chunkArchetypeList->next;
-
-		delete elementToDelete;
-	}
+	
 }
 
 Entity EntityManager::AddEntity(EntityArchetype& archetype)
@@ -232,4 +213,28 @@ std::forward_list<ChunkArchetypeElement*>* EntityManager::FindChunkArchetypesWit
 
 	delete returnList;
 	return nullptr;
+}
+
+void EntityManager::DeleteAllEntities()
+{
+	// Empty list
+	if (chunkArchetypeList == nullptr)
+		return;
+
+	// Delete each chunk archetype element
+	ChunkArchetypeElement* elementToDelete;
+	while (chunkArchetypeList != nullptr)
+	{
+		std::cout << "Deleting chunk archetype of: ";
+		for (int i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
+		{
+			std::cout << (i != 0 ? ", " : "") << chunkArchetypeList->archetype.components[i].name;
+		}
+		std::cout << "\n";
+
+		elementToDelete = chunkArchetypeList;
+		chunkArchetypeList = chunkArchetypeList->next;
+
+		delete elementToDelete;
+	}
 }

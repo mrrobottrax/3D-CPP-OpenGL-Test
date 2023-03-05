@@ -1,10 +1,10 @@
 #include <pch.h>
 #include <systems/freecamsystem.h>
 
-#include <input/inputmanager.h>
 #include <gl/gl.h>
-#include <managers.h>
 #include <components/cameracomponent.h>
+#include <components/positioncomponent.h>
+#include <input/inputmanager.h>
 
 FreecamSystem::FreecamSystem()
 {
@@ -22,20 +22,20 @@ void FreecamSystem::Update()
 	double yawDelta = 0;
 
 	// Move keys
-	if (InputManager::keybindings[GLFW_KEY_W])
+	if (inputManager.GetButtonDown(IN_MoveForward))
 	{
 		moveVector.z -= 1;
 	}
-	if (InputManager::keybindings[GLFW_KEY_S])
+	if (inputManager.GetButtonDown(IN_MoveBack))
 	{
 		moveVector.z += 1;
 	}
 
-	if (InputManager::keybindings[GLFW_KEY_A])
+	if (inputManager.GetButtonDown(IN_MoveLeft))
 	{
 		moveVector.x -= 1;
 	}
-	if (InputManager::keybindings[GLFW_KEY_D])
+	if (inputManager.GetButtonDown(IN_MoveRight))
 	{
 		moveVector.x += 1;
 	}
@@ -43,33 +43,33 @@ void FreecamSystem::Update()
 	float rotSpeed = 2;
 
 	// Look keys
-	if (InputManager::keybindings[GLFW_KEY_UP])
+	if (inputManager.GetButtonDown(IN_LookUp))
 	{
-		pitchDelta -= TimeManager::deltaTime * rotSpeed;
+		pitchDelta -= timeManager.GetDeltaTime() * rotSpeed;
 	}
-	if (InputManager::keybindings[GLFW_KEY_DOWN])
+	if (inputManager.GetButtonDown(IN_LookDown))
 	{
-		pitchDelta += TimeManager::deltaTime * rotSpeed;
+		pitchDelta += timeManager.GetDeltaTime() * rotSpeed;
 	}
 
-	if (InputManager::keybindings[GLFW_KEY_LEFT])
+	if (inputManager.GetButtonDown(IN_LookLeft))
 	{
-		yawDelta -= TimeManager::deltaTime * rotSpeed;
+		yawDelta -= timeManager.GetDeltaTime() * rotSpeed;
 	}
-	if (InputManager::keybindings[GLFW_KEY_RIGHT])
+	if (inputManager.GetButtonDown(IN_LookRight))
 	{
-		yawDelta += TimeManager::deltaTime * rotSpeed;
+		yawDelta += timeManager.GetDeltaTime() * rotSpeed;
 	}
 
 	// Look mouse
 	double xDelta, yDelta;
-	InputManager::GetCursorDelta(&xDelta, &yDelta);
+	inputManager.GetCursorDelta(&xDelta, &yDelta);
 	panVector.y = -(float)xDelta;
 	panVector.x = -(float)yDelta;
 	pitchDelta += yDelta * 0.0015f;
 	yawDelta += xDelta * 0.0015;
 
-	EntityManager& em = *entityManager;
+	EntityManager& em = entityManager;
 
 	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<FreecamComponent>());
 
@@ -90,6 +90,7 @@ void FreecamSystem::Update()
 				CameraComponent&   cam      = em.GetComponent<CameraComponent>(entity);
 				VelocityComponent& velocity = em.GetComponent<VelocityComponent>(entity);
 				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
+				PositionComponent& position = em.GetComponent<PositionComponent>(entity);
 
 				if (!freeCam.enabled)
 				{
@@ -100,12 +101,10 @@ void FreecamSystem::Update()
 				// Panning
 				if (freeCam.panning || freeCam.panOnly)
 				{
-					velocity.linear = panVector * glm::fquat(0.70710678118f, 0, 0, 0.70710678118f) * rotation.value;
+					float pixelsPerUnit = cam.frustumScale * freeCam.viewPortSize[1] * 0.5;
+					panVector /= pixelsPerUnit;
 
-					if (freeCam.panOnly)
-						velocity.linear /= cam.frustumScale * 0.3f;
-					else
-						velocity.linear /= cam.frustumScale * 0.1f;
+					position.value += panVector * glm::fquat(0.70710678118f, 0, 0, 0.70710678118f) * rotation.value;
 
 					continue;
 				}
@@ -124,7 +123,7 @@ void FreecamSystem::Update()
 
 				float speed = glm::length(velocity.linear);
 
-				float drop = freeCam.friction * TimeManager::deltaTime;
+				float drop = freeCam.friction * timeManager.GetDeltaTime();
 
 				// Friction
 				if (speed > drop)
@@ -139,7 +138,7 @@ void FreecamSystem::Update()
 				}
 
 				// Acceleration
-				velocity.linear += moveVector * freeCam.acceleration * TimeManager::deltaTime;
+				velocity.linear += moveVector * freeCam.acceleration * timeManager.GetDeltaTime();
 
 				if (speed > freeCam.speed)
 				{

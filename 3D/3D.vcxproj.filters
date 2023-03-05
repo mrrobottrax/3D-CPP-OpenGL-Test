@@ -72,13 +72,15 @@
     <ClInclude Include="src\imgui\imguiutil.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="src\input\inputdefines.h">
+    <ClInclude Include="src\input\console.h">
       <Filter>input</Filter>
     </ClInclude>
     <ClInclude Include="src\input\inputmanager.h">
       <Filter>input</Filter>
     </ClInclude>
-    <ClInclude Include="src\managers.h" />
+    <ClInclude Include="src\input\keycodes.h">
+      <Filter>input</Filter>
+    </ClInclude>
     <ClInclude Include="src\memory\chunk.h">
       <Filter>memory</Filter>
     </ClInclude>
@@ -139,7 +141,13 @@
     <ClCompile Include="src\imgui\imguiutil.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
+    <ClCompile Include="src\input\console.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
     <ClCompile Include="src\input\inputmanager.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input\keycodes.cpp">
       <Filter>input</Filter>
     </ClCompile>
     <ClCompile Include="src\memory\chunkarchetypeelement.cpp">

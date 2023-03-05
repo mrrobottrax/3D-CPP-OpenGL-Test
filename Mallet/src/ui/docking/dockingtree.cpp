@@ -6,8 +6,9 @@
 
 #include <debugtools/debugcolorcycle.h>
 
-// Windows - TEMP
+// Windows - TEMP (should add to big windows.h file?)
 #include <ui/windows/viewport.h>
+#include <ui/windows/toolbar.h>
 
 //#define DRAW_DEBUG
 
@@ -15,12 +16,16 @@
 
 DockingTree::DockingTree() : nodeArray(), leafArray()
 {
-	int leaf = AddLeaf(-1, new Viewport(ViewportMode::perspective));
+	int leaf = AddLeaf(-1, new Toolbar);
 	rootNode = -(leaf + 1);
 
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5, new Viewport(ViewportMode::top));
-	leaf = SplitLeaf(0, DockingDirection::horizontal, 0.5, new Viewport(ViewportMode::front));
-	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.5, new Viewport(ViewportMode::side));
+	// Toolbar
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.05f, new Viewport(ViewportMode::perspective));
+
+	// Top right, bottom left, bottom right
+	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f, new Viewport(ViewportMode::top));
+	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.5f, new Viewport(ViewportMode::front));
+	leaf = SplitLeaf(2, DockingDirection::horizontal, 0.5f, new Viewport(ViewportMode::side));
 
 	RecalculateSizes();
 }

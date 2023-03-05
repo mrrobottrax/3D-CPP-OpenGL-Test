@@ -12,7 +12,6 @@ SystemManager::SystemManager()
 
 SystemManager::~SystemManager()
 {
-	DeleteAllSystems();
 }
 
 void SystemManager::UpdateSystems()

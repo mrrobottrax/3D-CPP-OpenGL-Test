@@ -3,7 +3,7 @@ project "IMGUI"
 	language "C++"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir    ("obj/" .. outputdir .. "/%{prj.name}")
+    objdir    ("obj/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{
