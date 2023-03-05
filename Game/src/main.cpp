@@ -68,7 +68,7 @@ void Init()
 		Entity entity = em.AddEntity(EntityArchetype(6, components));
 		em.GetComponent<PositionComponent>(entity) = { 0, 2, 0 };
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
-		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = { 80.0f, 0.03f, 1000.0f };
+		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = { 0.03f, 1000.0f };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 		em.GetComponent<FreecamComponent>(entity) = { 6, 40, 20 };
 
@@ -77,7 +77,7 @@ void Init()
 
 		RenderSystem& rs = sm.GetSystem<RenderSystem>();
 		rs.SetMainCameraEntity(entity);
-		rs.CalcFrustumScale(cam);
+		rs.CalcFrustumScale(cam, 80);
 		rs.CalcPerspectiveMatrix(cam, w, h);
 	}
 	// Create monkey

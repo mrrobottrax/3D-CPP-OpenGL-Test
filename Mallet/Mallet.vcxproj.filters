@@ -47,7 +47,7 @@
     <ClInclude Include="src\ui\malletui.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\malletwindow.h">
+    <ClInclude Include="src\ui\windows\malletwindow.h">
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\windows\toolbar.h">
@@ -56,6 +56,7 @@
     <ClInclude Include="src\ui\windows\viewport.h">
       <Filter>ui\windows</Filter>
     </ClInclude>
+    <ClInclude Include="src\tools\mallettool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl\malletglutil.cpp">
@@ -75,11 +76,12 @@
     <ClCompile Include="src\ui\malletui.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\malletwindow.cpp">
+    <ClCompile Include="src\ui\windows\malletwindow.cpp">
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\windows\viewport.cpp">
       <Filter>ui\windows</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\windows\toolbar.cpp" />
   </ItemGroup>
 </Project>

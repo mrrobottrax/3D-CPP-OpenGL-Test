@@ -1,6 +1,6 @@
 #include <malletpch.h>
 
-#include <ui/malletwindow.h>
+#include <ui/windows/malletwindow.h>
 
 MalletWindow::MalletWindow() : selected(false)
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ui/malletwindow.h>
+#include <ui/windows/malletwindow.h>
 
 enum DockingLeafFlags
 {

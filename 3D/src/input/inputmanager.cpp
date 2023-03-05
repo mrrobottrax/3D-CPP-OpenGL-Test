@@ -159,6 +159,8 @@ void InputManager::MouseCallback(int button, int action)
 	ButtonCallback(keycode, action);
 }
 
+const int loopMargin = 10;
+
 void InputManager::UpdateCursorDelta(double xPos, double yPos)
 {
 	if (lastCursorPosX == 0 && lastCursorPosY == 0)
@@ -188,15 +190,15 @@ void InputManager::UpdateCursorDelta(double xPos, double yPos)
 
 		for (int i = 0; i < 2; ++i)
 		{
-			while (cursorPos[i] < 0)
+			while (cursorPos[i] < loopMargin)
 			{
-				cursorPos[i] += windowSize[i];
+				cursorPos[i] += windowSize[i] - loopMargin * 2;
 				looped = true;
 			}
 
-			while (cursorPos[i] > windowSize[i])
+			while (cursorPos[i] > windowSize[i] - loopMargin)
 			{
-				cursorPos[i] -= windowSize[i];
+				cursorPos[i] -= windowSize[i] - loopMargin * 2;
 				looped = true;
 			}
 		}

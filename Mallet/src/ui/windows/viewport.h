@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ui/malletwindow.h>
+#include <ui/windows/malletwindow.h>
 #include <ui/docking/dockingleaf.h>
 #include <memory/entity.h>
 #include <components/cameracomponent.h>
@@ -41,7 +41,7 @@ public:
 	Viewport(ViewportMode);
 	~Viewport();
 
-	void Draw(DockingLeaf& leaf, int leafIndex);
+	void Draw(DockingLeaf& leaf, int leafIndex) override;
 	void Draw2DWireframe();
 	void Draw3DShaded();
 	void OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight);
