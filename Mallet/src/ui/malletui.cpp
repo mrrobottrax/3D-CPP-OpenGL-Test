@@ -60,12 +60,9 @@ namespace MalletUi
 		double mousePosX, mousePosY;
 		glfwGetCursorPos(mainWindow, &mousePosX, &mousePosY);
 
-		float fMousePosX = float(mousePosX);
-		float fMousePosY = float(mousePosY);
-
 		DeselectNode();
 
-		selectedNodeIndex = tree->SelectNode(fMousePosX, fMousePosY);
+		selectedNodeIndex = tree->SelectNode(float(mousePosX), float(mousePosY));
 		selected = true;
 
 		if (tree->IsLeaf(selectedNodeIndex))
@@ -79,6 +76,13 @@ namespace MalletUi
 		}
 	}
 
+	int GetNode()
+	{
+		double mousePosX, mousePosY;
+		glfwGetCursorPos(mainWindow, &mousePosX, &mousePosY);
+		return tree->SelectNode(float(mousePosX), float(mousePosY));
+	}
+
 	void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
 		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -89,8 +93,7 @@ namespace MalletUi
 
 		if (action == GLFW_PRESS)
 		{
-			int mode = glfwGetInputMode(mainWindow, GLFW_CURSOR);
-			if (mode != GLFW_CURSOR_DISABLED)
+			if (glfwGetInputMode(mainWindow, GLFW_CURSOR) != GLFW_CURSOR_DISABLED)
 				SelectNode();
 		}
 

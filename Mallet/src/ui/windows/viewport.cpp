@@ -218,34 +218,30 @@ void Viewport::OnDeselect(DockingLeaf& leaf)
 {
 	glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-	EntityManager& em = entityManager;
-	FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
-
-	freeCam.enabled = false;
+	freeCam->enabled = false;
 }
 
 bool cameraWasEnabledBeforePanning = false;
 void Viewport::PanButton(int action)
 {
 	EntityManager& em = entityManager;
-	FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
 
 	if (action == GLFW_PRESS)
 	{
-		cameraWasEnabledBeforePanning = freeCam.enabled;
+		cameraWasEnabledBeforePanning = freeCam->enabled;
 
-		freeCam.panning = true;
-		freeCam.enabled = true;
+		freeCam->panning = true;
+		freeCam->enabled = true;
 
 		inputManager.SetCursorLoop(true);
 	}
 	else if (action == GLFW_RELEASE)
 	{
-		freeCam.panning = false;
+		freeCam->panning = false;
 
 		if (!cameraWasEnabledBeforePanning)
 		{
-			freeCam.enabled = false;
+			freeCam->enabled = false;
 		}
 
 		inputManager.SetCursorLoop(false);
