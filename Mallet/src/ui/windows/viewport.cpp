@@ -43,13 +43,13 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 		em.GetComponent<PositionComponent>(entity) = { 0, 2, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
-		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = CameraComponent(60.0f, 0.03f, 1000.0f);
+		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = CameraComponent(0.03f, 1000.0f);
 		cameraEntity = entity;
 		camera = &cam;
 
 		int w, h;
 		glfwGetWindowSize(mainWindow, &w, &h);
-		RenderSystem::CalcFrustumScale(cam);
+		RenderSystem::CalcFrustumScale(cam, 60);
 		RenderSystem::CalcPerspectiveMatrix(cam, w, h);
 	}
 	else
@@ -72,7 +72,7 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 			break;
 		};
 
-		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = CameraComponent(60.0f, 0.03f, 1000.0f, true, 1 / 10.0f);
+		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = CameraComponent(0.03f, 1000.0f, true, 1 / 10.0f);
 		cameraEntity = entity;
 		camera = &cam;
 
@@ -252,6 +252,18 @@ void Viewport::PanButton(int action)
 	}
 }
 
+void Viewport::ZoomIn()
+{
+	camera->frustumScale *= 1.1f;
+	renderSystem->CalcPerspectiveMatrix(*camera, viewSizeX, viewSizeY);
+}
+
+void Viewport::ZoomOut()
+{
+	camera->frustumScale /= 1.1f;
+	renderSystem->CalcPerspectiveMatrix(*camera, viewSizeX, viewSizeY);
+}
+
 void Viewport::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	// 3D look
@@ -270,6 +282,19 @@ void Viewport::KeyboardCallback(GLFWwindow* window, int key, int scancode, int a
 	if (key == GLFW_KEY_P || (key == GLFW_KEY_Z && mode != ViewportMode::perspective))
 	{
 		PanButton(action);
+		return;
+	}
+
+	// + or - zoom in/out
+	if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS)
+	{
+		ZoomIn();
+		return;
+	}
+
+	if (key == GLFW_KEY_MINUS && action == GLFW_PRESS)
+	{
+		ZoomOut();
 		return;
 	}
 }

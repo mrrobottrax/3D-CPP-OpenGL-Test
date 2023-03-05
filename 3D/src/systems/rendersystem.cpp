@@ -24,21 +24,12 @@ void RenderSystem::SetMainCameraEntity(Entity& entity)
 	RenderSystem::mainCameraEntity = entity;
 }
 
-void RenderSystem::InitMainCameraMatrix(int width, int height)
-{
-	if (mainCamera == nullptr)
-		return;
-
-	CalcFrustumScale(*mainCamera);
-	CalcPerspectiveMatrix(*mainCamera, width, height);
-}
-
-void RenderSystem::CalcFrustumScale(CameraComponent& camera)
+void RenderSystem::CalcFrustumScale(CameraComponent& camera, float fov)
 {
 	if (!camera.ortho)
 	{
 		const float degToRad = 3.14159f * 2.0f / 360.0f;
-		float fovRad = camera.fov * degToRad;
+		float fovRad = fov * degToRad;
 		float scale = 1.0f / tan(fovRad / 2.0f);
 
 		camera.frustumScale = scale;
@@ -68,7 +59,6 @@ void RenderSystem::CalcPerspectiveMatrix(CameraComponent& camera, int width, int
 		matrix[0][0] = camera.frustumScale / (width / (float)height);
 		matrix[1][1] = camera.frustumScale;
 		matrix[2][2] = -2 / (camera.farClip - camera.nearClip);
-		//matrix[2][2] = 0;
 		matrix[3][3] = 1;
 	}
 

@@ -68,4 +68,6 @@ private:
 private:
 	void CalculateViewportVars(DockingLeaf&, int, int);
 	void PanButton(int action);
+	void ZoomIn();
+	void ZoomOut();
 };
