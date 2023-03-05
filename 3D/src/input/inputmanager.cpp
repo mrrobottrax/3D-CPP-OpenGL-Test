@@ -30,7 +30,7 @@ InputManager::~InputManager()
 void InputManager::BindKey(char key, const char* action)
 {
 	memset(keys[key].binding, NULL, MAX_BIND_LENGTH);
-	strcpy(keys[key].binding, action);
+	strcpy_s(keys[key].binding, action);
 
 	char* keyname = KeycodeToName(key);
 	std::cout << "Bound " << keyname << " to " << action << "\n";
@@ -87,7 +87,7 @@ char* InputManager::KeycodeToName(int keycode)
 	{
 		if (keycode == kn->keycode)
 		{
-			strcpy(name, kn->name);
+			strcpy_s(name, kn->name);
 			return name;
 		}
 	}

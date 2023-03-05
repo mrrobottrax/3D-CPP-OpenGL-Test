@@ -101,7 +101,7 @@ void FreecamSystem::Update()
 				// Panning
 				if (freeCam.panning || freeCam.panOnly)
 				{
-					float pixelsPerUnit = cam.frustumScale * freeCam.viewPortSize[1] * 0.5;
+					float pixelsPerUnit = cam.frustumScale * freeCam.viewPortSize[1] * 0.5f;
 					panVector /= pixelsPerUnit;
 
 					position.value += panVector * glm::fquat(0.70710678118f, 0, 0, 0.70710678118f) * rotation.value;
