@@ -17,10 +17,12 @@ private:
 	double lastCursorPosX = 0;
 	double lastCursorPosY = 0;
 
+	bool cursorLoop = false;
+
 	void ButtonCallback(int, int);
 
 public:
-	//Console console;
+	//Console console; TODO: better?
 
 public:
 	void BindKey(char key, const char*);
@@ -38,6 +40,8 @@ public:
 	void ButtonDown(Button& button);
 	void ButtonUp(Button& button);
 	bool GetButtonDown(int);
+
+	void SetCursorLoop(bool);
 
 	void Cleanup();
 

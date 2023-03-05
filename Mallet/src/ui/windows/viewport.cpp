@@ -235,9 +235,9 @@ void Viewport::PanButton(int action)
 		cameraWasEnabledBeforePanning = freeCam.enabled;
 
 		freeCam.panning = true;
-
 		freeCam.enabled = true;
-		//glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+		inputManager.SetCursorLoop(true);
 	}
 	else if (action == GLFW_RELEASE)
 	{
@@ -246,8 +246,9 @@ void Viewport::PanButton(int action)
 		if (!cameraWasEnabledBeforePanning)
 		{
 			freeCam.enabled = false;
-			//glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
+
+		inputManager.SetCursorLoop(false);
 	}
 }
 
@@ -266,7 +267,7 @@ void Viewport::KeyboardCallback(GLFWwindow* window, int key, int scancode, int a
 	}
 
 	// Panning
-	if (key == GLFW_KEY_Z && mode != ViewportMode::perspective)
+	if (key == GLFW_KEY_P || (key == GLFW_KEY_Z && mode != ViewportMode::perspective))
 	{
 		PanButton(action);
 		return;

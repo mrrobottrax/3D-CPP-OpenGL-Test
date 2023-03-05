@@ -3,6 +3,7 @@
 
 #include <gl/gl.h>
 #include <components/cameracomponent.h>
+#include <components/positioncomponent.h>
 #include <input/inputmanager.h>
 
 FreecamSystem::FreecamSystem()
@@ -89,6 +90,7 @@ void FreecamSystem::Update()
 				CameraComponent&   cam      = em.GetComponent<CameraComponent>(entity);
 				VelocityComponent& velocity = em.GetComponent<VelocityComponent>(entity);
 				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
+				PositionComponent& position = em.GetComponent<PositionComponent>(entity);
 
 				if (!freeCam.enabled)
 				{
@@ -99,9 +101,10 @@ void FreecamSystem::Update()
 				// Panning
 				if (freeCam.panning || freeCam.panOnly)
 				{
-					panVector *= freeCam.viewPortSize[1] * cam.frustumScale;
+					float pixelsPerUnit = cam.frustumScale * freeCam.viewPortSize[1] * 0.5;
+					panVector /= pixelsPerUnit;
 
-					velocity.linear = panVector * glm::fquat(0.70710678118f, 0, 0, 0.70710678118f) * rotation.value;
+					position.value += panVector * glm::fquat(0.70710678118f, 0, 0, 0.70710678118f) * rotation.value;
 
 					continue;
 				}

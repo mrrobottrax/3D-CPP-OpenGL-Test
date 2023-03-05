@@ -173,6 +173,42 @@ void InputManager::UpdateCursorDelta(double xPos, double yPos)
 
 	lastCursorPosX = xPos;
 	lastCursorPosY = yPos;
+
+	// Loop cursor
+	if (cursorLoop)
+	{
+		GLsizei windowSize[2];
+		glfwGetWindowSize(mainWindow, &windowSize[0], &windowSize[1]);
+
+		double cursorPos[2];
+		cursorPos[0] = xPos;
+		cursorPos[1] = yPos;
+
+		bool looped = false;
+
+		for (int i = 0; i < 2; ++i)
+		{
+			while (cursorPos[i] < 0)
+			{
+				cursorPos[i] += windowSize[i];
+				looped = true;
+			}
+
+			while (cursorPos[i] > windowSize[i])
+			{
+				cursorPos[i] -= windowSize[i];
+				looped = true;
+			}
+		}
+
+		glfwSetCursorPos(mainWindow, cursorPos[0], cursorPos[1]);
+
+		if (looped)
+		{
+			lastCursorPosX = cursorPos[0] - cursorDeltaX;
+			lastCursorPosY = cursorPos[1] - cursorDeltaY;
+		}
+	}
 }
 
 void InputManager::GetCursorDelta(double* deltaX, double* deltaY)
@@ -226,6 +262,11 @@ bool InputManager::GetButtonDown(int buttonIndex)
 	}
 
 	return buttons[buttonIndex].down[0] || buttons[buttonIndex].down[1];
+}
+
+void InputManager::SetCursorLoop(bool loop)
+{
+	cursorLoop = loop;
 }
 
 void InputManager::BindCommand()
