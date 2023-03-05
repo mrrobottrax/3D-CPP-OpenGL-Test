@@ -176,7 +176,7 @@ void InputManager::UpdateCursorDelta(double xPos, double yPos)
 	lastCursorPosX = xPos;
 	lastCursorPosY = yPos;
 
-	// Loop cursor
+	// Loop cursor TODO: This should probably be in mallet code
 	if (cursorLoop)
 	{
 		GLsizei windowSize[2];
