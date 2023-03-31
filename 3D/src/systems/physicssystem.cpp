@@ -2,6 +2,7 @@
 #include <systems/physicssystem.h>
 
 #include <components/positioncomponent.h>
+#include <components/idcomponent.h>
 
 PhysicsSystem::PhysicsSystem()
 {
@@ -40,26 +41,48 @@ void PhysicsSystem::Update()
 		for (Chunk* chunk = (*chunkArchetypeIt)->firstChunk; chunk != nullptr; chunk = chunk->next)
 		{
 			// For each entity
-			for (unsigned short i = 0; i < chunk->numberOfEntities; i++)
+			for (unsigned int i = 0; i < chunk->numberOfEntities; i++)
 			{
 				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
 				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(entity);
 
 				// Check broad phase collision with all entities after this one
-				// For each archetype
 				// Check if the next entity in the chunk exists
-				bool chunkComplete = i + 1 >= chunk->numberOfEntities;
-				bool archetypeComplete = chunkComplete ? chunk->next : false;
-				for (std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt2 = chunkArchetypeIt; chunkArchetypeIt2 != archetypes->end(); ++chunkArchetypeIt2)
+				bool chunkComplete = i + 1u >= chunk->numberOfEntities;
+				bool archetypeComplete = chunkComplete ? !chunk->next : false;
+
+				if (archetypeComplete)
+					chunkComplete = false;
+
+				std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt2 = chunkArchetypeIt;
+				Chunk* chunk2 = chunkComplete ? chunk->next : chunk;
+
+				if (archetypeComplete)
+				{
+					++chunkArchetypeIt2;
+
+					if (chunkArchetypeIt2 == archetypes->end())
+					{
+						break;
+					}
+
+					chunk2 = (*chunkArchetypeIt2)->firstChunk;
+				}
+
+				// For each archetype
+				while (chunkArchetypeIt2 != archetypes->end())
 				{
 					// For each chunk
-					for (Chunk* chunk2 = archetypeComplete ? chunk->next : chunk; chunk2 != nullptr; chunk2 = chunk2->next)
+					while (chunk2 != nullptr)
 					{
 						// For each entity
-						for (unsigned short i2 = chunkComplete ? 0 : i; i2 < chunk2->numberOfEntities; i2++)
+						for (unsigned short i2 = archetypeComplete || chunkComplete ? 0 : i + 1; i2 < chunk2->numberOfEntities; i2++)
 						{
 							Entity entity2((*chunkArchetypeIt2)->archetype, *chunk2, i2);
 							RigidBodyComponent& rb2 = em.GetComponent<RigidBodyComponent>(entity2);
+
+							IdComponent& id = em.GetComponent<IdComponent>(entity);
+							IdComponent& id2 = em.GetComponent<IdComponent>(entity2);
 
 							// No need to check for collisions when both are static
 							if (!rb.isStatic || !rb2.isStatic)
@@ -74,7 +97,11 @@ void PhysicsSystem::Update()
 								pairs.push_front(pair);
 							}
 						}
+
+						chunk2 = chunk2->next;
 					}
+
+					++chunkArchetypeIt2;
 				}
 			}
 		}
@@ -108,4 +135,6 @@ void PhysicsSystem::Update()
 
 		std::cout << sqrLength << "\n";
 	}
+
+	std::cout << "\n";
 }
