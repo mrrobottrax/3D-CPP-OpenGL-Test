@@ -140,6 +140,7 @@
     <ClInclude Include="src\common\matrixstack.h" />
     <ClInclude Include="src\components\cameracomponent.h" />
     <ClInclude Include="src\components\freecamcomponent.h" />
+    <ClInclude Include="src\components\hullcollider.h" />
     <ClInclude Include="src\components\idcomponent.h" />
     <ClInclude Include="src\components\meshcomponent.h" />
     <ClInclude Include="src\components\positioncomponent.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="src\meshobject.h" />
     <ClInclude Include="src\modelloader.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\physics\convexhull.h" />
     <ClInclude Include="src\systems\freecamsystem.h" />
     <ClInclude Include="src\systems\rendersystem.h" />
     <ClInclude Include="src\systems\system.h" />
@@ -193,6 +195,7 @@
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\physics\convexhull.cpp" />
     <ClCompile Include="src\systems\freecamsystem.cpp" />
     <ClCompile Include="src\systems\rendersystem.cpp" />
     <ClCompile Include="src\systems\system.cpp" />

@@ -121,6 +121,8 @@
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\timemanager.h" />
+    <ClInclude Include="src\physics\convexhull.h" />
+    <ClInclude Include="src\components\hullcollider.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">
@@ -184,5 +186,6 @@
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
+    <ClCompile Include="src\physics\convexhull.cpp" />
   </ItemGroup>
 </Project>

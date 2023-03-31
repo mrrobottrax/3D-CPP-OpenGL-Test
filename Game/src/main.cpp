@@ -20,6 +20,7 @@
 #include <components/velocitycomponent.h>
 #include <components/positioncomponent.h>
 #include <components/idcomponent.h>
+#include <components/hullcollider.h>
 
 #include <imgui/imguiutil.h>
 #include <input/inputmanager.h>
@@ -29,12 +30,21 @@ using namespace std;
 // Show memory leaks
 #define _CRTDBG_MAP_ALLOC
 
-// TEMP
-// TODO: Remove
-// Cube mesh
-MeshObject* monkeyMesh = new MeshObject();
-MeshObject* testMap = new MeshObject();
-MeshObject* testMesh = new MeshObject();
+// TEMP DEV MESHES
+MeshObject monkeyMesh = MeshObject();
+MeshObject testMap = MeshObject();
+MeshObject testMesh = MeshObject();
+MeshObject boxMesh = MeshObject();
+
+Face faces[] = {
+	{ 0,  1,  0, 0.5f},
+	{ 0, -1,  0, 0.5f},
+	{ 1,  0,  0, 0.5f},
+	{-1,  0,  0, 0.5f},
+	{ 0,  0,  1, 0.5f},
+	{ 0,  0, -1, 0.5f},
+};
+ConvexHull boxHull = ConvexHull(1, faces);
 
 void Init()
 {
@@ -91,32 +101,29 @@ void Init()
 		};
 
 		Entity entity = em.AddEntity(EntityArchetype(5, components));
-		em.GetComponent<PositionComponent>(entity) = { 0, 2, -4 };
+		em.GetComponent<PositionComponent>(entity) = { 0, 2, -8 };
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 3.14f / 4.0f, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
 		const char* path = "data/models/monkey.glb";
-		modelLoader::LoadModel(*monkeyMesh, path);
-		em.GetComponent<MeshComponent>(entity) = { monkeyMesh };
+		modelLoader::LoadModel(monkeyMesh, path);
+		em.GetComponent<MeshComponent>(entity) = { &monkeyMesh };
 	}
 	// Create map
 	{
 		Component components[] = {
 			Component().init<IdComponent>(),
 			Component().init<PositionComponent>(),
-			Component().init<VelocityComponent>(),
 			Component().init<MeshComponent>(),
 			Component().init<RotationComponent>(),
 		};
 
-		Entity entity = em.AddEntity(EntityArchetype(5, components));
+		Entity entity = em.AddEntity(EntityArchetype(4, components));
 		em.GetComponent<PositionComponent>(entity) = { 0, 0, -4 };
-		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
-		const char* path = "data/models/test_map.glb";
-		modelLoader::LoadModel(*testMap, path);
-		em.GetComponent<MeshComponent>(entity) = { testMap };
+		modelLoader::LoadModel(testMap, "data/models/test_map.glb");
+		em.GetComponent<MeshComponent>(entity) = { &testMap };
 	}
 	// Create teapot
 	{
@@ -133,10 +140,53 @@ void Init()
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, -0.1f, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
 
-		const char* path = "data/models/teapot.glb";
-		modelLoader::LoadModel(*testMesh, path);
-		em.GetComponent<MeshComponent>(entity) = { testMesh };
+		modelLoader::LoadModel(testMesh, "data/models/teapot.glb");
+		em.GetComponent<MeshComponent>(entity) = { &testMesh };
 	}
+	// Create box 1
+	{
+		Component components[] = {
+			Component().init<IdComponent>(),
+			Component().init<PositionComponent>(),
+			Component().init<VelocityComponent>(),
+			Component().init<MeshComponent>(),
+			Component().init<RotationComponent>(),
+			Component().init<HullCollider>(),
+		};
+
+		Entity entity = em.AddEntity(EntityArchetype(5, components));
+		em.GetComponent<PositionComponent>(entity) = { 0, 6, -5 };
+		em.GetComponent<VelocityComponent>(entity) = { 0, -0.2f, 0, 0.1f, 0.1f, 0 };
+		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
+
+		modelLoader::LoadModel(boxMesh, "data/models/box.glb");
+		em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+
+		em.GetComponent<HullCollider>(entity) = { &boxHull };
+	}
+	// Create box 2
+	{
+		Component components[] = {
+			Component().init<IdComponent>(),
+			Component().init<PositionComponent>(),
+			Component().init<VelocityComponent>(),
+			Component().init<MeshComponent>(),
+			Component().init<RotationComponent>(),
+			Component().init<HullCollider>(),
+		};
+
+		Entity entity = em.AddEntity(EntityArchetype(5, components));
+		em.GetComponent<PositionComponent>(entity) = { 0, 3, -5 };
+		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
+		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
+
+		em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+
+		em.GetComponent<HullCollider>(entity) = { &boxHull };
+	}
+
+	// Hide cursor
+	glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void End()
@@ -179,10 +229,6 @@ int main()
 
 		glfwSwapBuffers(mainWindow);
 	}
-
-	delete monkeyMesh;
-	delete testMesh;
-	delete testMap;
 
 	End();
 }

@@ -2,13 +2,6 @@
 
 #include <memory/entityArchetype.h>
 
-EntityArchetype::EntityArchetype()
-{
-	EntityArchetype::componentCount = 0;
-	EntityArchetype::entitySize = 0;
-	EntityArchetype::components = nullptr;
-}
-
 EntityArchetype::EntityArchetype(unsigned short componentCount, Component* components)
 {
 	EntityArchetype::componentCount = componentCount;

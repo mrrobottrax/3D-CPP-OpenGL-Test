@@ -5,8 +5,14 @@
 class EntityArchetype
 {
 public:
-	EntityArchetype();
-	EntityArchetype(unsigned short, Component*);
+	EntityArchetype()
+	{
+		componentCount = 0;
+		entitySize = 0;
+		components = nullptr;
+	};
+
+	EntityArchetype(unsigned short componentCount, Component* componentArray);
 
 	Component* components;
 	unsigned short componentCount;
