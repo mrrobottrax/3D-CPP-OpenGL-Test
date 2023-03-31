@@ -43,20 +43,21 @@ void PhysicsSystem::Update()
 			// For each entity
 			for (unsigned int i = 0; i < chunk->numberOfEntities; i++)
 			{
-				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
-				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(entity);
-
 				// Check broad phase collision with all entities after this one
-				// Check if the next entity in the chunk exists
+
+				// Check if the next entity exists in this chunk
 				bool chunkComplete = i + 1u >= chunk->numberOfEntities;
+
+				// Check if the next entity is in a different archetype
 				bool archetypeComplete = chunkComplete ? !chunk->next : false;
 
 				if (archetypeComplete)
 					chunkComplete = false;
 
 				std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt2 = chunkArchetypeIt;
-				Chunk* chunk2 = chunkComplete ? chunk->next : chunk;
+				Chunk* chunk2;
 
+				// Next entity is a different archetype
 				if (archetypeComplete)
 				{
 					++chunkArchetypeIt2;
@@ -68,6 +69,13 @@ void PhysicsSystem::Update()
 
 					chunk2 = (*chunkArchetypeIt2)->firstChunk;
 				}
+				else
+				{
+					chunk2 = chunkComplete ? chunk->next : chunk;
+				}
+
+				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
+				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(entity);
 
 				// For each archetype
 				while (chunkArchetypeIt2 != archetypes->end())
