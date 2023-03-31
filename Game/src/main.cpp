@@ -23,6 +23,7 @@
 #include <components/idcomponent.h>
 #include <components/hullcollider.h>
 #include <components/rigidbodycomponent.h>
+#include <components/masscomponent.h>
 
 #include <imgui/imguiutil.h>
 #include <input/inputmanager.h>
@@ -157,9 +158,10 @@ void Init()
 			Component().init<RotationComponent>(),
 			Component().init<HullCollider>(),
 			Component().init<RigidBodyComponent>(),
+			Component().init<MassComponent>(),
 		};
 
-		Entity entity = em.AddEntity(EntityArchetype(7, components));
+		Entity entity = em.AddEntity(EntityArchetype(8, components));
 		em.GetComponent<PositionComponent>(entity) = { 0, 6, -5 };
 		em.GetComponent<VelocityComponent>(entity) = { 0, -0.2f, 0, 0.1f, 0.1f, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
@@ -168,6 +170,8 @@ void Init()
 		em.GetComponent<MeshComponent>(entity) = { &boxMesh };
 
 		em.GetComponent<HullCollider>(entity) = { &boxHull };
+		em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull };
+		em.GetComponent<MassComponent>(entity).SetMass(1);
 	}
 	// Create box 2
 	{
@@ -178,9 +182,10 @@ void Init()
 			Component().init<MeshComponent>(),
 			Component().init<RotationComponent>(),
 			Component().init<HullCollider>(),
+			Component().init<RigidBodyComponent>(),
 		};
 
-		Entity entity = em.AddEntity(EntityArchetype(6, components));
+		Entity entity = em.AddEntity(EntityArchetype(7, components));
 		em.GetComponent<PositionComponent>(entity) = { 0, 3, -5 };
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
@@ -188,6 +193,7 @@ void Init()
 		em.GetComponent<MeshComponent>(entity) = { &boxMesh };
 
 		em.GetComponent<HullCollider>(entity) = { &boxHull };
+		em.GetComponent<RigidBodyComponent>(entity) = { true, ColliderType::Hull };
 	}
 
 	// Hide cursor

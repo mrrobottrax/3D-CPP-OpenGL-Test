@@ -7,5 +7,7 @@ enum ColliderType
 
 struct RigidBodyComponent
 {
+	bool isStatic;
+
 	ColliderType colliderType;
 };
