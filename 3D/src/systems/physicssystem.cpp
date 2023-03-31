@@ -51,9 +51,6 @@ void PhysicsSystem::Update()
 				// Check if the next entity is in a different archetype
 				bool archetypeComplete = chunkComplete ? !chunk->next : false;
 
-				if (archetypeComplete)
-					chunkComplete = false;
-
 				std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt2 = chunkArchetypeIt;
 				Chunk* chunk2;
 
