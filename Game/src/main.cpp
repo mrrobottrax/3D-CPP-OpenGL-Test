@@ -12,6 +12,7 @@
 #include <systems/rendersystem.h>
 #include <systems/velocitysystem.h>
 #include <systems/freecamsystem.h>
+#include <systems/physicssystem.h>
 
 #include <components/cameracomponent.h>
 #include <components/freecamcomponent.h>
@@ -21,6 +22,7 @@
 #include <components/positioncomponent.h>
 #include <components/idcomponent.h>
 #include <components/hullcollider.h>
+#include <components/rigidbodycomponent.h>
 
 #include <imgui/imguiutil.h>
 #include <input/inputmanager.h>
@@ -59,6 +61,8 @@ void Init()
 	// Init systems
 	SystemManager& sm = systemManager;
 	sm.AddSystem<FreecamSystem>();
+
+	sm.AddSystem<PhysicsSystem>();
 	sm.AddSystem<VelocitySystem>();
 	sm.AddSystem<RenderSystem>();
 
@@ -152,9 +156,10 @@ void Init()
 			Component().init<MeshComponent>(),
 			Component().init<RotationComponent>(),
 			Component().init<HullCollider>(),
+			Component().init<RigidBodyComponent>(),
 		};
 
-		Entity entity = em.AddEntity(EntityArchetype(5, components));
+		Entity entity = em.AddEntity(EntityArchetype(7, components));
 		em.GetComponent<PositionComponent>(entity) = { 0, 6, -5 };
 		em.GetComponent<VelocityComponent>(entity) = { 0, -0.2f, 0, 0.1f, 0.1f, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
@@ -175,7 +180,7 @@ void Init()
 			Component().init<HullCollider>(),
 		};
 
-		Entity entity = em.AddEntity(EntityArchetype(5, components));
+		Entity entity = em.AddEntity(EntityArchetype(6, components));
 		em.GetComponent<PositionComponent>(entity) = { 0, 3, -5 };
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };

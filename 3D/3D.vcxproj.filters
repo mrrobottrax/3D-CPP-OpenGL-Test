@@ -123,6 +123,9 @@
     <ClInclude Include="src\timemanager.h" />
     <ClInclude Include="src\physics\convexhull.h" />
     <ClInclude Include="src\components\hullcollider.h" />
+    <ClInclude Include="src\components\rigidbodycomponent.h" />
+    <ClInclude Include="src\systems\physicssystem.h" />
+    <ClInclude Include="src\components\masscomponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">
@@ -187,5 +190,6 @@
     </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
     <ClCompile Include="src\physics\convexhull.cpp" />
+    <ClCompile Include="src\systems\physicssystem.cpp" />
   </ItemGroup>
 </Project>
