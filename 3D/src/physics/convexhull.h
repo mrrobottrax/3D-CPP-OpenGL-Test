@@ -9,35 +9,19 @@ struct Plane
 class ConvexHull
 {
 public:
-	ConvexHull() : faceCount(), faces(), vertCount(), vertices()
+	ConvexHull() : planeCount(), planes(), vertCount(), vertices(), edgeCount(), edges()
 	{
 	};
 
-	ConvexHull(unsigned short faceCount, Plane* faces, unsigned short vertCount, float* vertices)
-	{
-		// Faces
-		this->faceCount = faceCount;
-		this->faces = new Plane[faceCount];
-		for (int i = 0; i < faceCount; ++i)
-		{
-			this->faces[i] = faces[i];
-		}
-
-		// Vertices
-		this->vertCount = vertCount;
-		this->vertices = new float[vertCount * 3u];
-		for (int i = 0; i < vertCount * 3; ++i)
-		{
-			this->vertices[i] = vertices[i];
-		}
-	};
-
+	ConvexHull(unsigned short planeCount, Plane* planes, unsigned short vertCount, float* vertices, unsigned short edgeCount, float* edges);
 	~ConvexHull();
 
 public:
-	unsigned short faceCount;
+	unsigned short planeCount;
 	unsigned short vertCount;
+	unsigned short edgeCount;
 
-	Plane* faces;
+	Plane* planes;
 	float* vertices;
+	float* edges; // Edges are stored as a head and a direction
 };

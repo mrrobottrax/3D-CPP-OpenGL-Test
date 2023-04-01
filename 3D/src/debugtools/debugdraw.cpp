@@ -25,8 +25,8 @@ void DebugDraw::DrawLine(const float start[3], const float end[3], glm::vec3 col
 		color
 	};
 
-	lineVertices.push_back(vstart);
 	lineVertices.push_back(vend);
+	lineVertices.push_back(vstart);
 }
 
 void DebugDraw::DrawLine(glm::vec3 start, glm::vec3 end, glm::vec3 color)
@@ -43,7 +43,7 @@ void DebugDraw::DrawPlane(glm::vec3 offset, glm::vec3 normal, glm::vec3 upHint, 
 {
 	glm::normalize(normal);
 
-	glm::vec3 rightVec = normal == upHint ? upHint : glm::cross(normal, glm::vec3(0, 1, 0));
+	glm::vec3 rightVec = normal == upHint ? glm::vec3(1, 0, 0) : glm::cross(normal, upHint);
 	rightVec = glm::normalize(rightVec);
 	glm::vec3 upVec = glm::cross(normal, rightVec);
 	upVec = glm::normalize(upVec);
@@ -57,7 +57,7 @@ void DebugDraw::DrawPlane(glm::vec3 offset, glm::vec3 normal, glm::vec3 upHint, 
 	glm::vec3 point1;
 	glm::vec3 point2;
 
-	DrawLine(corner1, corner2, color);
+	//DrawLine(corner1, corner2, color);
 
 	// Left side
 	point1 = corner1;

@@ -154,6 +154,135 @@ void PhysicsSystem::Update()
 	}
 }
 
+bool IsSeperatingPlane(Plane testPlane, ConvexHull* hull, glm::vec3 offset, glm::fquat rotation)
+{
+	for (int v = 0; v < hull->vertCount; ++v)
+	{
+		int i = v * 3;
+
+		glm::vec3 point;
+		point.x = hull->vertices[i];
+		point.y = hull->vertices[i + 1];
+		point.z = hull->vertices[i + 2];
+
+		point = rotation * point - offset;
+
+		float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
+
+		if (dot <= 0)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool SatFaceTest(HullCollider hullA, PositionComponent positionA, RotationComponent rotationA,
+	HullCollider hullB, PositionComponent positionB, RotationComponent rotationB)
+{
+	glm::vec3 offset = positionA.value - positionB.value;
+
+	Plane testPlane;
+
+	for (int f = 0; f < hullA.hull->planeCount; ++f)
+	{
+		testPlane = hullA.hull->planes[f];
+		testPlane.normal = rotationA.value * testPlane.normal;
+
+		if (IsSeperatingPlane(testPlane, hullB.hull, offset, rotationB.value))
+			return true;
+	}
+
+	return false;
+}
+
+bool SatEdgeTest(HullCollider hullA, PositionComponent positionA, RotationComponent rotationA,
+	HullCollider hullB, PositionComponent positionB, RotationComponent rotationB)
+{
+	// Check all edge combinations
+	//TODO: not all edge combinations are necessary to check
+	glm::vec3 offset = positionA.value - positionB.value;
+	for (int eA = 0; eA < hullA.hull->edgeCount; ++eA)
+	{
+		int eAi = eA * 6;
+
+		glm::vec3 edgeAHead;
+		edgeAHead.x = hullA.hull->edges[eAi];
+		edgeAHead.y = hullA.hull->edges[eAi + 1];
+		edgeAHead.z = hullA.hull->edges[eAi + 2];
+		edgeAHead = rotationA.value * edgeAHead;
+
+		glm::vec3 edgeADir;
+		edgeADir.x = hullA.hull->edges[eAi + 3];
+		edgeADir.y = hullA.hull->edges[eAi + 4];
+		edgeADir.z = hullA.hull->edges[eAi + 5];
+		edgeADir = rotationA.value * edgeADir;
+
+		for (int eB = 0; eB < hullB.hull->edgeCount; ++eB)
+		{
+			int eBi = eB * 6;
+
+			glm::vec3 edgeBHead;
+			edgeBHead.x = hullA.hull->edges[eBi];
+			edgeBHead.y = hullA.hull->edges[eBi + 1];
+			edgeBHead.z = hullA.hull->edges[eBi + 2];
+			edgeBHead = rotationB.value * edgeBHead;
+			edgeBHead -= offset;
+
+			glm::vec3 edgeBDir;
+			edgeBDir.x = hullA.hull->edges[eBi + 3];
+			edgeBDir.y = hullA.hull->edges[eBi + 4];
+			edgeBDir.z = hullA.hull->edges[eBi + 5];
+			edgeBDir = rotationB.value * edgeBDir;
+
+			Plane testPlane;
+			testPlane.normal = glm::normalize(glm::cross(edgeADir, edgeBDir));
+
+			// Check if the normal is facing the right direction
+			if (glm::dot(edgeAHead, testPlane.normal) < 0)
+			{
+				testPlane.normal = -testPlane.normal;
+			}
+
+			// Get point furthest in normal direction (support point)
+			//TODO: There is a way to do this without the support point
+			glm::vec3 support;
+			{
+				int bestI = 0;
+				float bestDot = -1;
+				for (int v = 0; v < hullA.hull->vertCount; ++v)
+				{
+					int i = v * 3;
+
+					glm::vec3 point;
+					point.x = hullA.hull->vertices[i];
+					point.y = hullA.hull->vertices[i + 1];
+					point.z = hullA.hull->vertices[i + 2];
+
+					float dot = glm::dot(point, testPlane.normal);
+					if (dot >= bestDot)
+					{
+						bestI = i;
+						bestDot = dot;
+					}
+				}
+				support.x = hullA.hull->vertices[bestI];
+				support.y = hullA.hull->vertices[bestI + 1];
+				support.z = hullA.hull->vertices[bestI + 2];
+			}
+
+			// Move plane to support point
+			testPlane.dist = glm::dot(support, testPlane.normal);
+
+			if (IsSeperatingPlane(testPlane, hullB.hull, offset, rotationB.value))
+				return true;
+		}
+	}
+
+	return false;
+}
+
 void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 {
 	// Seperating Axis Theorum
@@ -168,99 +297,36 @@ void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 	HullCollider& hullA = em.GetComponent<HullCollider>(entityA);
 	HullCollider& hullB = em.GetComponent<HullCollider>(entityB);
 
-	glm::vec3 offset = positionA.value - positionB.value;
-	Plane testPlane;
-
-	bool foundPlane = false;
-
 	// Check faces of A
-	for (int f = 0; f < hullA.hull->faceCount; ++f)
-	{
-		testPlane = hullA.hull->faces[f];
-		testPlane.normal = rotationA.value * testPlane.normal;
-
-		bool seperatingPlane = true;
-		for (int v = 0; v < hullB.hull->vertCount; v += 3)
-		{
-			glm::vec3 point;
-			point.x = hullB.hull->vertices[v];
-			point.y = hullB.hull->vertices[v + 1];
-			point.z = hullB.hull->vertices[v + 2];
-
-			point = rotationB.value * point - offset;
-
-			float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
-
-			if (dot <= 0)
-			{
-#ifdef DEBUG
-				debugDraw.DrawLine(point + positionA.value, glm::vec3(point.x, point.y + 0.1f, point.z) + positionA.value);
-#endif // DEBUG
-
-				seperatingPlane = false;
-				break;
-			}
-		}
-
-		foundPlane = seperatingPlane;
-		if (foundPlane)
-		{
-
-#ifdef DEBUG
-			debugDraw.DrawPlane(glm::vec3(0) + positionA.value, testPlane.normal, testPlane.dist, 1, 1);
-#endif // DEBUG
-
-			break;
-		}
-	}
-
-	if (foundPlane)
+	if (SatFaceTest(hullA, positionA, rotationA, hullB, positionB, rotationB))
 	{
 
 #ifdef DEBUG
-		std::cout << "Test1\n";
+		std::cout << "Face test A\n";
 #endif // DEBUG
 
 		return;
 	}
 
 	// Check faces of B
-	for (int f = 0; f < hullB.hull->faceCount; ++f)
+	if (SatFaceTest(hullB, positionB, rotationB, hullA, positionA, rotationA))
 	{
-		testPlane = hullB.hull->faces[f];
-		testPlane.normal = rotationB.value * testPlane.normal;
-
-		bool seperatingPlane = true;
-
-		for (int v = 0; v < hullA.hull->vertCount * 3; v += 3)
-		{
-			glm::vec3 point;
-			point.x = hullA.hull->vertices[v];
-			point.y = hullA.hull->vertices[v + 1];
-			point.z = hullA.hull->vertices[v + 2];
-
-			point = rotationA.value * point + offset;
-
-			float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
-
-			if (dot <= 0)
-			{
-				seperatingPlane = false;
-				break;
-			}
-		}
-
-		foundPlane = seperatingPlane;
-		if (foundPlane)
-			break;
-	}
 
 #ifdef DEBUG
-	if (foundPlane)
-	{
-		std::cout << "Test2\n";
-		return;
-	}
+		std::cout << "Face test B\n";
 #endif // DEBUG
 
+		return;
+	}
+
+	// Check edge combinations
+	if (SatEdgeTest(hullA, positionA, rotationA, hullB, positionB, rotationB))
+	{
+
+#ifdef DEBUG
+		std::cout << "Edge test\n";
+#endif // DEBUG
+
+		return;
+	}
 }
