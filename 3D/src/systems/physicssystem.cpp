@@ -1,6 +1,7 @@
 #include <pch.h>
 #include <systems/physicssystem.h>
 #include <systems/systemmanager.h>
+#include <systems/debugdraw.h>
 
 #include <components/positioncomponent.h>
 #include <components/rotationcomponent.h>
@@ -139,16 +140,21 @@ void PhysicsSystem::Update()
 		HullCollider& hullA = em.GetComponent<HullCollider>(entityA);
 		HullCollider& hullB = em.GetComponent<HullCollider>(entityB);
 
-		glm::vec3 offset = positionB.value - positionA.value;
+		glm::vec3 offset = positionA.value - positionB.value;
 		Plane testPlane;
 
 		bool foundPlane = false;
+
+#ifdef DEBUG
+		DebugDraw& debug = systemManager.GetSystem<DebugDraw>();
+#endif // DEBUG
 
 		// Check faces of A
 		for (int f = 0; f < hullA.hull->faceCount; ++f)
 		{
 			testPlane = hullA.hull->faces[f];
 			testPlane.normal = rotationA.value * testPlane.normal;
+			debug.DrawPlane(glm::vec3(0), testPlane.normal, testPlane.dist, 1, 1);
 
 			bool lastSign;
 			bool signSet = false;
@@ -161,7 +167,8 @@ void PhysicsSystem::Update()
 				point.y = hullB.hull->vertices[v + 1];
 				point.z = hullB.hull->vertices[v + 2];
 
-				point = rotationB.value * point + offset;
+				point = rotationB.value * point - offset;
+				debug.DrawLine(point, glm::vec3(point.x, point.y + 0.1f, point.z));
 
 				float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
 

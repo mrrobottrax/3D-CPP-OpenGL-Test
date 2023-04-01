@@ -13,9 +13,6 @@
 class System
 {
 public:
-	virtual ~System();
+	virtual ~System() {};
 	virtual void Update() = 0;
-
-private:
-
 };
