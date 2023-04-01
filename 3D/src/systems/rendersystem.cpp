@@ -9,15 +9,6 @@
 
 #include <gl/glutil.h>
 
-RenderSystem::RenderSystem() : mainCamera(), autoDraw(true)
-{
-}
-
-RenderSystem::~RenderSystem()
-{
-	
-}
-
 void RenderSystem::SetMainCameraEntity(Entity& entity)
 {
 	RenderSystem::mainCamera = &entityManager.GetComponent<CameraComponent>(entity);
@@ -156,9 +147,9 @@ void RenderSystem::DrawBase()
 
 				// Draw object
 				glBindBuffer(GL_ARRAY_BUFFER, mesh.mesh->positionBufferObject);
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); // in position
 				glBindBuffer(GL_ARRAY_BUFFER, mesh.mesh->normalBufferObject);
-				glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, 0);
+				glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, 0); // in normal
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.mesh->elementBufferObject);
 
 				// TODO: Faster to have the cpu do this? Or maybe just give the gpu rotation, position, etc matrices? Need to measure...
@@ -177,4 +168,6 @@ void RenderSystem::DrawBase()
 	mStack.pop();
 
 	delete archetypes;
+
+	debugDraw.Update();
 }

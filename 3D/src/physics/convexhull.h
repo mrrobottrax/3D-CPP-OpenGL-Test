@@ -25,7 +25,7 @@ public:
 
 		// Vertices
 		this->vertCount = vertCount;
-		this->vertices = new float[vertCount * 3];
+		this->vertices = new float[vertCount * 3u];
 		for (int i = 0; i < vertCount * 3; ++i)
 		{
 			this->vertices[i] = vertices[i];

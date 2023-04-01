@@ -3,12 +3,18 @@
 #include <systems/system.h>
 #include <components/cameraComponent.h>
 #include <memory/entity.h>
+#include <debugtools/debugdraw.h>
 
 class RenderSystem : public System
 {
 public:
-	RenderSystem();
-	~RenderSystem();
+	RenderSystem() : mainCamera(), autoDraw(true)
+	{
+#ifdef DEBUG
+		debugDraw.Init();
+#endif // DEBUG
+	};
+	~RenderSystem() {};
 
 	bool autoDraw;
 

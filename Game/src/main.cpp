@@ -13,7 +13,6 @@
 #include <systems/velocitysystem.h>
 #include <systems/freecamsystem.h>
 #include <systems/physicssystem.h>
-#include <systems/debugdraw.h>
 
 #include <components/cameracomponent.h>
 #include <components/freecamcomponent.h>
@@ -78,9 +77,6 @@ void Init()
 	sm.AddSystem<PhysicsSystem>();
 	sm.AddSystem<VelocitySystem>();
 	sm.AddSystem<RenderSystem>();
-#ifdef DEBUG
-	sm.AddSystem<DebugDraw>();
-#endif // DEBUG
 
 	EntityManager& em = entityManager;
 

@@ -11,4 +11,6 @@ public:
 	~PhysicsSystem();
 
 	void Update() override;
+
+	void HullVsHull(Entity entityA, Entity entityB);
 };

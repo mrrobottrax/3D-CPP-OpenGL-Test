@@ -1,7 +1,7 @@
 #include <pch.h>
 #include <systems/physicssystem.h>
 #include <systems/systemmanager.h>
-#include <systems/debugdraw.h>
+#include <debugtools/debugdraw.h>
 
 #include <components/positioncomponent.h>
 #include <components/rotationcomponent.h>
@@ -129,109 +129,138 @@ void PhysicsSystem::Update()
 		RigidBodyComponent& rbA = *(RigidBodyComponent*)(*pairsIt).rigidBodyA;
 		RigidBodyComponent& rbB = *(RigidBodyComponent*)(*pairsIt).rigidBodyB;
 
-		PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
-		PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
-		RotationComponent& rotationA = em.GetComponent<RotationComponent>(entityA);
-		RotationComponent& rotationB = em.GetComponent<RotationComponent>(entityB);
-
-		// HULL VS HULL
-		// Seperating Axis Theorum
-
-		HullCollider& hullA = em.GetComponent<HullCollider>(entityA);
-		HullCollider& hullB = em.GetComponent<HullCollider>(entityB);
-
-		glm::vec3 offset = positionA.value - positionB.value;
-		Plane testPlane;
-
-		bool foundPlane = false;
-
-#ifdef DEBUG
-		DebugDraw& debug = systemManager.GetSystem<DebugDraw>();
-#endif // DEBUG
-
-		// Check faces of A
-		for (int f = 0; f < hullA.hull->faceCount; ++f)
+		switch (rbA.colliderType)
 		{
-			testPlane = hullA.hull->faces[f];
-			testPlane.normal = rotationA.value * testPlane.normal;
-			debug.DrawPlane(glm::vec3(0), testPlane.normal, testPlane.dist, 1, 1);
-
-			bool lastSign;
-			bool signSet = false;
-			bool seperatingPlane = true;
-
-			for (int v = 0; v < hullB.hull->vertCount; v += 3)
+		case Hull:
+			switch (rbB.colliderType)
 			{
-				glm::vec3 point;
-				point.x = hullB.hull->vertices[v];
-				point.y = hullB.hull->vertices[v + 1];
-				point.z = hullB.hull->vertices[v + 2];
+			case Hull:
+				// HULL VS HULL
+				HullVsHull(entityA, entityB);
+				break;
 
-				point = rotationB.value * point - offset;
-				debug.DrawLine(point, glm::vec3(point.x, point.y + 0.1f, point.z));
-
-				float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
-
-				if (signSet && std::signbit(dot) != lastSign)
-				{
-					seperatingPlane = false;
-					break;
-				}
-
-				lastSign = std::signbit(dot);
-				signSet = true;
+			default:
+				break;
 			}
+			break;
 
-			foundPlane = seperatingPlane;
+		default:
+			break;
 		}
+
 #ifdef DEBUG
-		if (foundPlane)
-			std::cout << "Test1\n";
+		std::cout << "\n";
+#endif // DEBUG
+	}
+}
+
+void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
+{
+	// Seperating Axis Theorum
+
+	EntityManager& em = entityManager;
+
+	PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
+	PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
+	RotationComponent& rotationA = em.GetComponent<RotationComponent>(entityA);
+	RotationComponent& rotationB = em.GetComponent<RotationComponent>(entityB);
+
+	HullCollider& hullA = em.GetComponent<HullCollider>(entityA);
+	HullCollider& hullB = em.GetComponent<HullCollider>(entityB);
+
+	glm::vec3 offset = positionA.value - positionB.value;
+	Plane testPlane;
+
+	bool foundPlane = false;
+
+	// Check faces of A
+	for (int f = 0; f < hullA.hull->faceCount; ++f)
+	{
+		testPlane = hullA.hull->faces[f];
+		testPlane.normal = rotationA.value * testPlane.normal;
+
+		bool seperatingPlane = true;
+		for (int v = 0; v < hullB.hull->vertCount; v += 3)
+		{
+			glm::vec3 point;
+			point.x = hullB.hull->vertices[v];
+			point.y = hullB.hull->vertices[v + 1];
+			point.z = hullB.hull->vertices[v + 2];
+
+			point = rotationB.value * point - offset;
+
+			float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
+
+			if (dot <= 0)
+			{
+#ifdef DEBUG
+				debugDraw.DrawLine(point + positionA.value, glm::vec3(point.x, point.y + 0.1f, point.z) + positionA.value);
 #endif // DEBUG
 
-		if (!foundPlane)
-		{
-			// Check faces of B
-			for (int f = 0; f < hullB.hull->faceCount; ++f)
-			{
-				testPlane = hullB.hull->faces[f];
-				testPlane.normal = rotationB.value * testPlane.normal;
-
-				bool lastSign;
-				bool signSet = false;
-				bool seperatingPlane = true;
-
-				for (int v = 0; v < hullA.hull->vertCount; v += 3)
-				{
-					glm::vec3 point;
-					point.x = hullA.hull->vertices[v];
-					point.y = hullA.hull->vertices[v + 1];
-					point.z = hullA.hull->vertices[v + 2];
-
-					point = rotationA.value * point + offset;
-
-					float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
-
-					if (signSet && std::signbit(dot) != lastSign)
-					{
-						seperatingPlane = false;
-						break;
-					}
-
-					lastSign = std::signbit(dot);
-					signSet = true;
-				}
-
-				foundPlane = seperatingPlane;
+				seperatingPlane = false;
+				break;
 			}
 		}
-#ifdef DEBUG
+
+		foundPlane = seperatingPlane;
 		if (foundPlane)
-			std::cout << "Test2\n";
+		{
+
+#ifdef DEBUG
+			debugDraw.DrawPlane(glm::vec3(0) + positionA.value, testPlane.normal, testPlane.dist, 1, 1);
 #endif // DEBUG
+
+			break;
+		}
+	}
+
+	if (foundPlane)
+	{
+
+#ifdef DEBUG
+		std::cout << "Test1\n";
+#endif // DEBUG
+
+		return;
+	}
+
+	// Check faces of B
+	for (int f = 0; f < hullB.hull->faceCount; ++f)
+	{
+		testPlane = hullB.hull->faces[f];
+		testPlane.normal = rotationB.value * testPlane.normal;
+
+		bool seperatingPlane = true;
+
+		for (int v = 0; v < hullA.hull->vertCount * 3; v += 3)
+		{
+			glm::vec3 point;
+			point.x = hullA.hull->vertices[v];
+			point.y = hullA.hull->vertices[v + 1];
+			point.z = hullA.hull->vertices[v + 2];
+
+			point = rotationA.value * point + offset;
+
+			float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
+
+			if (dot <= 0)
+			{
+				seperatingPlane = false;
+				break;
+			}
+		}
+
+		foundPlane = seperatingPlane;
+		if (foundPlane)
+			break;
 	}
 
 #ifdef DEBUG
-	std::cout << "\n";
+	if (foundPlane)
+	{
+		std::cout << "Test2\n";
+		return;
+	}
 #endif // DEBUG
+
 }

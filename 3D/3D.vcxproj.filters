@@ -60,7 +60,7 @@
     <ClInclude Include="src\components\velocitycomponent.h">
       <Filter>components</Filter>
     </ClInclude>
-    <ClInclude Include="src\systems\debugdraw.h" />
+    <ClInclude Include="src\debugtools\debugdraw.h" />
     <ClInclude Include="src\gl\glload.h">
       <Filter>gl</Filter>
     </ClInclude>
@@ -145,7 +145,7 @@
     <ClCompile Include="src\common\matrixstack.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="src\systems\debugdraw.cpp" />
+    <ClCompile Include="src\debugtools\debugdraw.cpp" />
     <ClCompile Include="src\gl\glutil.cpp">
       <Filter>gl</Filter>
     </ClCompile>
