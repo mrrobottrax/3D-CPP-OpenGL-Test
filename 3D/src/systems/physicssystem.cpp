@@ -1,8 +1,11 @@
 #include <pch.h>
 #include <systems/physicssystem.h>
+#include <systems/systemmanager.h>
 
 #include <components/positioncomponent.h>
+#include <components/rotationcomponent.h>
 #include <components/idcomponent.h>
+#include <components/hullcollider.h>
 
 PhysicsSystem::PhysicsSystem()
 {
@@ -127,19 +130,101 @@ void PhysicsSystem::Update()
 
 		PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
 		PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
+		RotationComponent& rotationA = em.GetComponent<RotationComponent>(entityA);
+		RotationComponent& rotationB = em.GetComponent<RotationComponent>(entityB);
 
-		glm::vec3 posDiff;
+		// HULL VS HULL
+		// Seperating Axis Theorum
 
-		posDiff = positionA.value - positionB.value;
+		HullCollider& hullA = em.GetComponent<HullCollider>(entityA);
+		HullCollider& hullB = em.GetComponent<HullCollider>(entityB);
 
-		float sqrLength = 0;
-		for (int i = 0; i < 3; ++i)
+		glm::vec3 offset = positionB.value - positionA.value;
+		Plane testPlane;
+
+		bool foundPlane = false;
+
+		// Check faces of A
+		for (int f = 0; f < hullA.hull->faceCount; ++f)
 		{
-			sqrLength += posDiff[i];
-		}
+			testPlane = hullA.hull->faces[f];
+			testPlane.normal = rotationA.value * testPlane.normal;
 
-		std::cout << sqrLength << "\n";
+			bool lastSign;
+			bool signSet = false;
+			bool seperatingPlane = true;
+
+			for (int v = 0; v < hullB.hull->vertCount; v += 3)
+			{
+				glm::vec3 point;
+				point.x = hullB.hull->vertices[v];
+				point.y = hullB.hull->vertices[v + 1];
+				point.z = hullB.hull->vertices[v + 2];
+
+				point = rotationB.value * point + offset;
+
+				float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
+
+				if (signSet && std::signbit(dot) != lastSign)
+				{
+					seperatingPlane = false;
+					break;
+				}
+
+				lastSign = std::signbit(dot);
+				signSet = true;
+			}
+
+			foundPlane = seperatingPlane;
+		}
+#ifdef DEBUG
+		if (foundPlane)
+			std::cout << "Test1\n";
+#endif // DEBUG
+
+		if (!foundPlane)
+		{
+			// Check faces of B
+			for (int f = 0; f < hullB.hull->faceCount; ++f)
+			{
+				testPlane = hullB.hull->faces[f];
+				testPlane.normal = rotationB.value * testPlane.normal;
+
+				bool lastSign;
+				bool signSet = false;
+				bool seperatingPlane = true;
+
+				for (int v = 0; v < hullA.hull->vertCount; v += 3)
+				{
+					glm::vec3 point;
+					point.x = hullA.hull->vertices[v];
+					point.y = hullA.hull->vertices[v + 1];
+					point.z = hullA.hull->vertices[v + 2];
+
+					point = rotationA.value * point + offset;
+
+					float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
+
+					if (signSet && std::signbit(dot) != lastSign)
+					{
+						seperatingPlane = false;
+						break;
+					}
+
+					lastSign = std::signbit(dot);
+					signSet = true;
+				}
+
+				foundPlane = seperatingPlane;
+			}
+		}
+#ifdef DEBUG
+		if (foundPlane)
+			std::cout << "Test2\n";
+#endif // DEBUG
 	}
 
+#ifdef DEBUG
 	std::cout << "\n";
+#endif // DEBUG
 }

@@ -76,7 +76,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_GLFW_WIN32;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_GLFW_WIN32;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -97,7 +97,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_GLFW_WIN32;;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_GLFW_WIN32;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -148,6 +148,7 @@
     <ClInclude Include="src\components\rigidbodycomponent.h" />
     <ClInclude Include="src\components\rotationcomponent.h" />
     <ClInclude Include="src\components\velocitycomponent.h" />
+    <ClInclude Include="src\systems\debugdraw.h" />
     <ClInclude Include="src\gl\glload.h" />
     <ClInclude Include="src\gl\glutil.h" />
     <ClInclude Include="src\gl\shader.h" />
@@ -180,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp" />
+    <ClCompile Include="src\systems\debugdraw.cpp" />
     <ClCompile Include="src\gl\glutil.cpp" />
     <ClCompile Include="src\gl\shaderloader.cpp" />
     <ClCompile Include="src\imgui\imgui_impl_glfw.cpp" />

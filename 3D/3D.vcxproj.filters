@@ -19,6 +19,9 @@
     <Filter Include="memory">
       <UniqueIdentifier>{DEA8820D-CA4A-ADE3-B305-C1379F463434}</UniqueIdentifier>
     </Filter>
+    <Filter Include="physics">
+      <UniqueIdentifier>{A823A1AC-1403-2048-1D1B-AB1E897986A9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="systems">
       <UniqueIdentifier>{3D76CBBA-A955-4A56-B26D-D52C1ECCB0B7}</UniqueIdentifier>
     </Filter>
@@ -33,7 +36,13 @@
     <ClInclude Include="src\components\freecamcomponent.h">
       <Filter>components</Filter>
     </ClInclude>
+    <ClInclude Include="src\components\hullcollider.h">
+      <Filter>components</Filter>
+    </ClInclude>
     <ClInclude Include="src\components\idcomponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\masscomponent.h">
       <Filter>components</Filter>
     </ClInclude>
     <ClInclude Include="src\components\meshcomponent.h">
@@ -42,12 +51,16 @@
     <ClInclude Include="src\components\positioncomponent.h">
       <Filter>components</Filter>
     </ClInclude>
+    <ClInclude Include="src\components\rigidbodycomponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
     <ClInclude Include="src\components\rotationcomponent.h">
       <Filter>components</Filter>
     </ClInclude>
     <ClInclude Include="src\components\velocitycomponent.h">
       <Filter>components</Filter>
     </ClInclude>
+    <ClInclude Include="src\systems\debugdraw.h" />
     <ClInclude Include="src\gl\glload.h">
       <Filter>gl</Filter>
     </ClInclude>
@@ -102,7 +115,13 @@
     <ClInclude Include="src\meshobject.h" />
     <ClInclude Include="src\modelloader.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\physics\convexhull.h">
+      <Filter>physics</Filter>
+    </ClInclude>
     <ClInclude Include="src\systems\freecamsystem.h">
+      <Filter>systems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\systems\physicssystem.h">
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\rendersystem.h">
@@ -121,16 +140,12 @@
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\timemanager.h" />
-    <ClInclude Include="src\physics\convexhull.h" />
-    <ClInclude Include="src\components\hullcollider.h" />
-    <ClInclude Include="src\components\rigidbodycomponent.h" />
-    <ClInclude Include="src\systems\physicssystem.h" />
-    <ClInclude Include="src\components\masscomponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="src\systems\debugdraw.cpp" />
     <ClCompile Include="src\gl\glutil.cpp">
       <Filter>gl</Filter>
     </ClCompile>
@@ -173,7 +188,13 @@
     <ClCompile Include="src\meshobject.cpp" />
     <ClCompile Include="src\modelloader.cpp" />
     <ClCompile Include="src\pch.cpp" />
+    <ClCompile Include="src\physics\convexhull.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
     <ClCompile Include="src\systems\freecamsystem.cpp">
+      <Filter>systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\systems\physicssystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\systems\rendersystem.cpp">
@@ -189,7 +210,5 @@
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
-    <ClCompile Include="src\physics\convexhull.cpp" />
-    <ClCompile Include="src\systems\physicssystem.cpp" />
   </ItemGroup>
 </Project>

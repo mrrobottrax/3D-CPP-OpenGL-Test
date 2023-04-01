@@ -21,7 +21,10 @@ ChunkArchetypeElement::~ChunkArchetypeElement()
 	{
 		nextChunk = chunk->next;
 
+#ifdef DEBUG
 		std::cout << "	Deleting chunk.		Entities: " << chunk->numberOfEntities << "\n";
+#endif //DEBUG
+
 		free(chunk);
 
 		chunk = nextChunk;

@@ -50,11 +50,11 @@ project "Mallet"
 		}
 
 	filter "configurations:Debug"
-		defines ""
+		defines "DEBUG"
 		symbols "On"
 
 	filter "configurations:Test"
-		defines ""
+		defines "DEBUG"
 		optimize "On"
 
 	filter "configurations:Release"

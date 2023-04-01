@@ -5,8 +5,8 @@
 class FreecamSystem : public System
 {
 public:
-	FreecamSystem();
-	~FreecamSystem();
+	FreecamSystem() {};
+	~FreecamSystem() {};
 
 	void Update() override;
 };

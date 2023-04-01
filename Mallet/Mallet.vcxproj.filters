@@ -10,6 +10,9 @@
     <Filter Include="input">
       <UniqueIdentifier>{B54AA90F-215F-D1C0-EAE0-742056B4CDF1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="tools">
+      <UniqueIdentifier>{36DF7010-A2F3-98C1-6B75-3C21D74895F2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ui">
       <UniqueIdentifier>{C3795900-AF05-880B-18B4-880B045F880B}</UniqueIdentifier>
     </Filter>
@@ -32,6 +35,9 @@
     </ClInclude>
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\malletpch.h" />
+    <ClInclude Include="src\tools\mallettool.h">
+      <Filter>tools</Filter>
+    </ClInclude>
     <ClInclude Include="src\ui\docking\dockingdirection.h">
       <Filter>ui\docking</Filter>
     </ClInclude>
@@ -48,7 +54,7 @@
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\windows\malletwindow.h">
-      <Filter>ui</Filter>
+      <Filter>ui\windows</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\windows\toolbar.h">
       <Filter>ui\windows</Filter>
@@ -56,7 +62,6 @@
     <ClInclude Include="src\ui\windows\viewport.h">
       <Filter>ui\windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\tools\mallettool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl\malletglutil.cpp">
@@ -77,11 +82,13 @@
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\windows\malletwindow.cpp">
-      <Filter>ui</Filter>
+      <Filter>ui\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\windows\toolbar.cpp">
+      <Filter>ui\windows</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\windows\viewport.cpp">
       <Filter>ui\windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\windows\toolbar.cpp" />
   </ItemGroup>
 </Project>

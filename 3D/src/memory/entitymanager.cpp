@@ -225,12 +225,14 @@ void EntityManager::DeleteAllEntities()
 	ChunkArchetypeElement* elementToDelete;
 	while (chunkArchetypeList != nullptr)
 	{
+#ifdef DEBUG
 		std::cout << "Deleting chunk archetype of: ";
 		for (int i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
 		{
 			std::cout << (i != 0 ? ", " : "") << chunkArchetypeList->archetype.components[i].name;
 		}
 		std::cout << "\n";
+#endif // DEBUG
 
 		elementToDelete = chunkArchetypeList;
 		chunkArchetypeList = chunkArchetypeList->next;

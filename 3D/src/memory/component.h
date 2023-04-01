@@ -11,9 +11,11 @@ struct Component
 	unsigned short offset;
 	size_t hash;
 
+#ifdef DEBUG
 	// For debug only
 	// TODO: Remove
 	char name[32];
+#endif // DEBUG
 
 	bool operator==(const Component& other)
 	{
@@ -31,8 +33,8 @@ inline Component& Component::init()
 	Component::hash = typeid(T).hash_code();
 	Component::size = sizeof(T);
 
+#ifdef DEBUG
 	const char* name = typeid(T).name();
-
 	//TODO: remove
 	for (int i = 0; i < 32; i++)
 	{
@@ -42,6 +44,7 @@ inline Component& Component::init()
 			break;
 		}
 	}
+#endif // DEBUG
 
 	return *this;
 }

@@ -1,26 +1,43 @@
 #pragma once
 
-struct Face
+struct Plane
 {
-	float normal[3];
+	glm::vec3 normal;
 	float dist;
 };
 
 class ConvexHull
 {
 public:
-	ConvexHull() : faceCount(0), faces(nullptr)
+	ConvexHull() : faceCount(), faces(), vertCount(), vertices()
 	{
 	};
-	ConvexHull(unsigned short faceCount, Face* faces)
+
+	ConvexHull(unsigned short faceCount, Plane* faces, unsigned short vertCount, float* vertices)
 	{
+		// Faces
 		this->faceCount = faceCount;
-		this->faces = faces;
+		this->faces = new Plane[faceCount];
+		for (int i = 0; i < faceCount; ++i)
+		{
+			this->faces[i] = faces[i];
+		}
+
+		// Vertices
+		this->vertCount = vertCount;
+		this->vertices = new float[vertCount * 3];
+		for (int i = 0; i < vertCount * 3; ++i)
+		{
+			this->vertices[i] = vertices[i];
+		}
 	};
 
 	~ConvexHull();
 
 public:
 	unsigned short faceCount;
-	Face* faces;
+	unsigned short vertCount;
+
+	Plane* faces;
+	float* vertices;
 };

@@ -3,5 +3,6 @@
 
 ConvexHull::~ConvexHull()
 {
-	//delete[] faces;
+	delete[] faces;
+	delete[] vertices;
 }

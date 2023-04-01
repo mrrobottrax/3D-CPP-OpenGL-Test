@@ -13,6 +13,7 @@
 #include <systems/velocitysystem.h>
 #include <systems/freecamsystem.h>
 #include <systems/physicssystem.h>
+#include <systems/debugdraw.h>
 
 #include <components/cameracomponent.h>
 #include <components/freecamcomponent.h>
@@ -39,15 +40,26 @@ MeshObject testMap = MeshObject();
 MeshObject testMesh = MeshObject();
 MeshObject boxMesh = MeshObject();
 
-Face faces[] = {
-	{ 0,  1,  0, 0.5f},
-	{ 0, -1,  0, 0.5f},
-	{ 1,  0,  0, 0.5f},
-	{-1,  0,  0, 0.5f},
-	{ 0,  0,  1, 0.5f},
-	{ 0,  0, -1, 0.5f},
+Plane faces[] = {
+	{ { 0,  1,  0}, 0.5f},
+	{ { 0, -1,  0}, 0.5f},
+	{ { 1,  0,  0}, 0.5f},
+	{ {-1,  0,  0}, 0.5f},
+	{ { 0,  0,  1}, 0.5f},
+	{ { 0,  0, -1}, 0.5f},
 };
-ConvexHull boxHull = ConvexHull(1, faces);
+float vertices[] = {
+	-0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	-0.5f,  0.5f, -0.5f,
+	-0.5f, -0.5f,  0.5f,
+
+	 0.5f,  0.5f, -0.5f,
+	 0.5f, -0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+};
+ConvexHull boxHull = ConvexHull(6, faces, 8, vertices);
 
 void Init()
 {
@@ -66,6 +78,9 @@ void Init()
 	sm.AddSystem<PhysicsSystem>();
 	sm.AddSystem<VelocitySystem>();
 	sm.AddSystem<RenderSystem>();
+#ifdef DEBUG
+	sm.AddSystem<DebugDraw>();
+#endif // DEBUG
 
 	EntityManager& em = entityManager;
 

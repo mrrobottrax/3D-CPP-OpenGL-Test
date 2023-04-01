@@ -6,14 +6,6 @@
 #include <components/positioncomponent.h>
 #include <input/inputmanager.h>
 
-FreecamSystem::FreecamSystem()
-{
-}
-
-FreecamSystem::~FreecamSystem()
-{
-}
-
 void FreecamSystem::Update()
 {
 	glm::vec3 moveVector(0);
