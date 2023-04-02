@@ -1,5 +1,39 @@
 #pragma once
 
+struct Vertex;
+struct HalfEdge;
+struct Edge;
+struct Face;
+struct Plane;
+
+struct Vertex
+{
+	float position[3];
+};
+
+struct HalfEdge
+{
+	HalfEdge* twin;
+	HalfEdge* next;
+	Vertex* vertex;
+	Edge* edge;
+	Face* face;
+};
+
+struct Edge
+{
+	HalfEdge* halfEdge;
+};
+
+struct Face
+{
+	HalfEdge* halfEdge;
+
+	glm::vec3 normal;
+	float dist;
+};
+
+
 struct Plane
 {
 	glm::vec3 normal;
@@ -9,19 +43,17 @@ struct Plane
 class ConvexHull
 {
 public:
-	ConvexHull() : planeCount(), planes(), vertCount(), vertices(), edgeCount(), edges()
+	ConvexHull() : vertices(), halfEdges(), edges(), faces(), halfEdgeCount()
 	{
 	};
-
-	ConvexHull(unsigned short planeCount, Plane* planes, unsigned short vertCount, float* vertices, unsigned short edgeCount, float* edges);
+	ConvexHull(int planeCount, Plane* planes);
 	~ConvexHull();
 
 public:
-	unsigned short planeCount;
-	unsigned short vertCount;
-	unsigned short edgeCount;
+	int halfEdgeCount;
 
-	Plane* planes;
-	float* vertices;
-	float* edges; // Edges are stored as a head and a direction
+	Vertex* vertices;
+	HalfEdge* halfEdges;
+	Edge* edges;
+	Face* faces;
 };

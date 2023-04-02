@@ -39,7 +39,7 @@ MeshObject testMap = MeshObject();
 MeshObject testMesh = MeshObject();
 MeshObject boxMesh = MeshObject();
 
-Plane faces[] = {
+Plane planes[] = {
 	{ { 0,  1,  0}, 0.5f},
 	{ { 0, -1,  0}, 0.5f},
 	{ { 1,  0,  0}, 0.5f},
@@ -47,34 +47,7 @@ Plane faces[] = {
 	{ { 0,  0,  1}, 0.5f},
 	{ { 0,  0, -1}, 0.5f},
 };
-float vertices[] = {
-	-0.5f, -0.5f, -0.5f,
-	-0.5f,  0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f,  0.5f, -0.5f,
-
-	 0.5f,  0.5f,  0.5f,
-	-0.5f, -0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-	 0.5f, -0.5f,  0.5f,
-};
-float edges[] = {
-	-0.5f, -0.5f, -0.5f,  0,  1,  0,
-	-0.5f,  0.5f, -0.5f,  1,  0,  0,
-	 0.5f, -0.5f, -0.5f, -1,  0,  0,
-	 0.5f,  0.5f, -0.5f,  0, -1,  0,
-
-	 0.5f,  0.5f,  0.5f, -1,  0,  0,
-	-0.5f,  0.5f,  0.5f,  0, -1,  0,
-	-0.5f, -0.5f,  0.5f,  1,  0,  0,
-	 0.5f, -0.5f,  0.5f,  0,  1,  0,
-
-	 0.5f,  0.5f,  0.5f,  0,  0, -1,
-	-0.5f,  0.5f,  0.5f,  0,  0, -1,
-	-0.5f, -0.5f,  0.5f,  0,  0, -1,
-	 0.5f, -0.5f,  0.5f,  0,  0, -1,
-};
-ConvexHull boxHull = ConvexHull(6, faces, 8, vertices, 12, edges);
+ConvexHull boxHull = ConvexHull(6, planes);
 
 void Init()
 {
