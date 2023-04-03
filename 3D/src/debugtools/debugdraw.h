@@ -20,10 +20,18 @@ private:
 	struct Vertex
 	{
 		float position[3];
-		glm::vec3 color;
 	};
 
-	std::vector<Vertex> lineVertices;
+	struct Line
+	{
+		Vertex pointA;
+		Vertex pointB;
+
+		glm::vec3 color;
+		float timer;
+	};
+
+	std::list<Line> lines;
 
 	void Draw();
 	void DrawLines();
@@ -37,9 +45,9 @@ public:
 
 	void Update();
 	
-	void DrawLine(const float start[3], const float end[3], glm::vec3 color = { 0, 1, 1 });
-	void DrawLine(glm::vec3 start, glm::vec3 end, glm::vec3 color = { 0, 1, 1 });
+	void DrawLine(const float start[3], const float end[3], const glm::vec3 color = { 0, 1, 1 }, const float time = 0);
+	void DrawLine(const glm::vec3 start, const glm::vec3 end, const glm::vec3 color = { 0, 1, 1 }, const float time = 0);
 
-	void DrawPlane(glm::vec3 offset, glm::vec3 normal, glm::vec3 upHint, float dist, float width, float height, glm::vec3 color = { 0, 1, 1 });
-	void DrawPlane(glm::vec3 offset, glm::vec3 normal, float dist, float width, float height, glm::vec3 color = { 0, 1, 1 });
+	void DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const glm::vec3 upHint, const float dist, const float width, const float height, const glm::vec3 color = { 0, 1, 1 });
+	void DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const float dist, const float width, const float height, const glm::vec3 color = { 0, 1, 1 });
 }; inline DebugDraw debugDraw;

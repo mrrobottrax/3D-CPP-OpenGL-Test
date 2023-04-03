@@ -7,39 +7,42 @@
 #include <systems/systemmanager.h>
 #include <systems/rendersystem.h>
 
-void DebugDraw::DrawLine(const float start[3], const float end[3], glm::vec3 color)
+void DebugDraw::DrawLine(const float start[3], const float end[3], glm::vec3 color, float time)
 {
 	Vertex vstart = {
 		start[0],
 		start[1],
 		start[2],
-
-		color
 	};
 
 	Vertex vend = {
 		end[0],
 		end[1],
 		end[2],
-
-		color
 	};
 
-	lineVertices.push_back(vend);
-	lineVertices.push_back(vstart);
+	Line line = {
+		vstart,
+		vend,
+
+		color,
+		time
+	};
+
+	lines.push_back(line);
 }
 
-void DebugDraw::DrawLine(glm::vec3 start, glm::vec3 end, glm::vec3 color)
+void DebugDraw::DrawLine(const glm::vec3 start, const glm::vec3 end, const glm::vec3 color, const float time)
 {
-	DrawLine(&start[0], &end[0], color);
+	DrawLine(&start[0], &end[0], color, time);
 }
 
-void DebugDraw::DrawPlane(glm::vec3 offset, glm::vec3 normal, float dist, float width, float height, glm::vec3 color)
+void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const float dist, const float width, const float height, const glm::vec3 color)
 {
 	DrawPlane(offset, normal, glm::vec3(0, 1, 0), dist, width, height, color);
 }
 
-void DebugDraw::DrawPlane(glm::vec3 offset, glm::vec3 normal, glm::vec3 upHint, float dist, float width, float height, glm::vec3 color)
+void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const glm::vec3 upHint, const float dist, const float width, const float height, const glm::vec3 color)
 {
 	glm::normalize(normal);
 
@@ -123,17 +126,19 @@ void DebugDraw::Draw()
 
 void DebugDraw::DrawLines()
 {
-	if (lineVertices.size() <= 0)
+	if (lines.size() <= 0)
 	{
-		lineVertices.clear();
 		return;
 	}
 
-	GLsizei vertByteSize = (GLsizei)(lineVertices.size() * sizeof(float) * 3);
-	GLsizei colortByteSize = (GLsizei)(lineVertices.size() * sizeof(float) * 3);
+	size_t vertCount = lines.size() * 2;
+	size_t vertFloatCount = vertCount * 3;
+	size_t colorFloatCount = vertCount * 3;
 
-	float* vertArray = new float[lineVertices.size() * 3];
-	float* colorArray = new float[lineVertices.size() * 3];
+	float* vertArray = new float[vertFloatCount];
+	float* colorArray = new float[colorFloatCount];
+	GLsizei vertByteSize = (GLsizei)(sizeof(float) * vertFloatCount);
+	GLsizei colortByteSize = (GLsizei)(sizeof(float) * colorFloatCount);
 
 	// Set arrays
 	{
@@ -141,17 +146,37 @@ void DebugDraw::DrawLines()
 #pragma warning( push )
 #pragma warning( disable : 6386)
 		int i = 0;
-		for (auto it = lineVertices.begin(); it != lineVertices.end(); ++it)
+		auto it = lines.begin();
+		while (it != lines.end())
 		{
-			vertArray[i]     = (*it).position[0];
-			vertArray[i + 1] = (*it).position[1];
-			vertArray[i + 2] = (*it).position[2];
+			vertArray[i]     = (*it).pointA.position[0];
+			vertArray[i + 1] = (*it).pointA.position[1];
+			vertArray[i + 2] = (*it).pointA.position[2];
 
-			colorArray[i]     = (*it).color[2];
+			vertArray[i + 3] = (*it).pointB.position[0];
+			vertArray[i + 4] = (*it).pointB.position[1];
+			vertArray[i + 5] = (*it).pointB.position[2];
+
+			colorArray[i]     = (*it).color[0];
 			colorArray[i + 1] = (*it).color[1];
-			colorArray[i + 2] = (*it).color[0];
+			colorArray[i + 2] = (*it).color[2];
 
-			i += 3;
+			colorArray[i + 3] = (*it).color[0];
+			colorArray[i + 4] = (*it).color[1];
+			colorArray[i + 5] = (*it).color[2];
+
+			i += 6;
+
+			// Remove expired lines
+			if ((*it).timer <= 0)
+			{
+				lines.erase(it++);
+			}
+			else
+			{
+				(*it).timer -= timeManager.GetDeltaTime();
+				++it;
+			}
 		}
 #pragma warning( pop ) 
 	}
@@ -164,11 +189,10 @@ void DebugDraw::DrawLines()
 	glBufferData(GL_ARRAY_BUFFER, colortByteSize, colorArray, GL_DYNAMIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	glDrawArrays(GL_LINES, 0, (GLsizei)lineVertices.size());
+	glDrawArrays(GL_LINES, 0, (GLsizei)vertCount);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	delete[] vertArray;
 	delete[] colorArray;
-	lineVertices.clear();
 }
