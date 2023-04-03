@@ -35,6 +35,9 @@ public:
 	~ConvexHull();
 
 public:
+	void QuickHull(int vertCount, Vertex* vertices);
+
+public:
 	int halfEdgeCount;
 
 	Vertex* vertices;

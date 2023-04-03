@@ -182,10 +182,10 @@ ChunkArchetypeElement* EntityManager::FindChunkArchetype(EntityArchetype& archet
 	return nullptr;
 }
 
-std::forward_list<ChunkArchetypeElement*>* EntityManager::FindChunkArchetypesWithComponent(Component& component)
+std::vector<ChunkArchetypeElement*>* EntityManager::FindChunkArchetypesWithComponent(Component& component)
 {
 	// Create linked list of pointers
-	std::forward_list<ChunkArchetypeElement*>* returnList = new std::forward_list<ChunkArchetypeElement*>();
+	std::vector<ChunkArchetypeElement*>* returnList = new std::vector<ChunkArchetypeElement*>();
 
 	// Scan through entire linked list
 	bool foundArchetype = false;
@@ -198,7 +198,7 @@ std::forward_list<ChunkArchetypeElement*>* EntityManager::FindChunkArchetypesWit
 			if (chunkArchetype->archetype.components[i] == component)
 			{
 				foundArchetype = true;
-				returnList->emplace_front(chunkArchetype);
+				returnList->push_back(chunkArchetype);
 				break;
 			}
 		}

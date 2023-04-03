@@ -101,7 +101,7 @@ void RenderSystem::DrawBase()
 {
 	EntityManager& em = entityManager;
 
-	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<MeshComponent>());
+	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<MeshComponent>());
 	if (archetypes == nullptr)
 		return;
 
@@ -126,7 +126,7 @@ void RenderSystem::DrawBase()
 	glm::mat3 newNormalMat;
 
 	// For each archetype
-	for (std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
+	for (auto chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
 	{
 		// For each chunk
 		for (Chunk* chunk = (*chunkArchetypeIt)->firstChunk; chunk != nullptr; chunk = chunk->next)

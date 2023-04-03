@@ -28,7 +28,7 @@ public:
 	Chunk* CreateChunk(ChunkArchetypeElement&);
 	ChunkArchetypeElement* CreateChunkArchetype(EntityArchetype&);
 	ChunkArchetypeElement* FindChunkArchetype(EntityArchetype&);
-	std::forward_list<ChunkArchetypeElement*>* FindChunkArchetypesWithComponent(Component&);
+	std::vector<ChunkArchetypeElement*>* FindChunkArchetypesWithComponent(Component&);
 
 	void DeleteAllEntities();
 

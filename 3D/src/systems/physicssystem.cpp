@@ -33,15 +33,15 @@ void PhysicsSystem::Update()
 
 	// Broad phase ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	std::forward_list<CollisionPair> pairs;
+	std::vector<CollisionPair> pairs;
 
-	std::forward_list<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<RigidBodyComponent>());
+	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<RigidBodyComponent>());
 
 	if (archetypes == nullptr)
 		return;
 
 	// For each archetype
-	for (std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
+	for (std::vector<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
 	{
 		// For each chunk
 		for (Chunk* chunk = (*chunkArchetypeIt)->firstChunk; chunk != nullptr; chunk = chunk->next)
@@ -57,7 +57,7 @@ void PhysicsSystem::Update()
 				// Check if the next entity is in a different archetype
 				bool archetypeComplete = chunkComplete ? !chunk->next : false;
 
-				std::forward_list<ChunkArchetypeElement*>::iterator chunkArchetypeIt2 = chunkArchetypeIt;
+				std::vector<ChunkArchetypeElement*>::iterator chunkArchetypeIt2 = chunkArchetypeIt;
 				Chunk* chunk2;
 
 				// Next entity is a different archetype
@@ -105,7 +105,7 @@ void PhysicsSystem::Update()
 									entity,
 									entity2
 								};
-								pairs.push_front(pair);
+								pairs.push_back(pair);
 							}
 						}
 
@@ -123,7 +123,7 @@ void PhysicsSystem::Update()
 	// Narrow phase  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// For each collision pair
-	for (std::forward_list<CollisionPair>::iterator pairsIt = pairs.begin(); pairsIt != pairs.end(); ++pairsIt)
+	for (auto pairsIt = pairs.begin(); pairsIt != pairs.end(); ++pairsIt)
 	{
 		Entity entityA = (*pairsIt).entityA;
 		Entity entityB = (*pairsIt).entityB;
