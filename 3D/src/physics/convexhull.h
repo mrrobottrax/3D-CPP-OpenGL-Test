@@ -2,9 +2,7 @@
 
 struct Vertex;
 struct HalfEdge;
-struct Edge;
 struct Face;
-struct Plane;
 
 struct Vertex
 {
@@ -16,13 +14,7 @@ struct HalfEdge
 	HalfEdge* twin;
 	HalfEdge* next;
 	Vertex* vertex;
-	Edge* edge;
 	Face* face;
-};
-
-struct Edge
-{
-	HalfEdge* halfEdge;
 };
 
 struct Face
@@ -33,20 +25,13 @@ struct Face
 	float dist;
 };
 
-
-struct Plane
-{
-	glm::vec3 normal;
-	float dist;
-};
-
 class ConvexHull
 {
 public:
-	ConvexHull() : vertices(), halfEdges(), edges(), faces(), halfEdgeCount()
+	ConvexHull() : vertices(), halfEdges(), faces(), halfEdgeCount()
 	{
 	};
-	ConvexHull(int planeCount, Plane* planes);
+	ConvexHull(int vertCount, Vertex* vertices);
 	~ConvexHull();
 
 public:
@@ -54,6 +39,5 @@ public:
 
 	Vertex* vertices;
 	HalfEdge* halfEdges;
-	Edge* edges;
 	Face* faces;
 };

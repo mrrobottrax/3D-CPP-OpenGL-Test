@@ -8,6 +8,8 @@
 #include <components/idcomponent.h>
 #include <components/hullcollider.h>
 
+#include <common/physstructs.h>
+
 PhysicsSystem::PhysicsSystem()
 {
 }

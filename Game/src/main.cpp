@@ -39,15 +39,18 @@ MeshObject testMap = MeshObject();
 MeshObject testMesh = MeshObject();
 MeshObject boxMesh = MeshObject();
 
-Plane planes[] = {
-	{ { 0,  1,  0}, 0.5f},
-	{ { 0, -1,  0}, 0.5f},
-	{ { 1,  0,  0}, 0.5f},
-	{ {-1,  0,  0}, 0.5f},
-	{ { 0,  0,  1}, 0.5f},
-	{ { 0,  0, -1}, 0.5f},
+Vertex vertices[] = {
+	{ -0.5f, -0.5f, -0.5f },
+	{  0.5f, -0.5f, -0.5f },
+	{ -0.5f,  0.5f, -0.5f },
+	{  0.5f,  0.5f, -0.5f },
+
+	{ -0.5f, -0.5f,  0.5f },
+	{  0.5f, -0.5f,  0.5f },
+	{ -0.5f,  0.5f,  0.5f },
+	{  0.5f,  0.5f,  0.5f },
 };
-ConvexHull boxHull = ConvexHull(6, planes);
+ConvexHull boxHull = ConvexHull(8, vertices);
 
 void Init()
 {
