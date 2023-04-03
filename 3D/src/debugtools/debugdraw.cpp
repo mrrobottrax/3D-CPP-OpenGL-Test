@@ -37,12 +37,19 @@ void DebugDraw::DrawLine(const glm::vec3 start, const glm::vec3 end, const glm::
 	DrawLine(&start[0], &end[0], color, time);
 }
 
-void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const float dist, const float width, const float height, const glm::vec3 color)
+void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const float dist,
+	const float width, const float height, const glm::vec3 color, const float time)
 {
-	DrawPlane(offset, normal, glm::vec3(0, 1, 0), dist, width, height, color);
+	DrawPlane(offset, normal, glm::vec3(0, 1, 0), dist, width, height, color, time);
 }
 
-void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const glm::vec3 upHint, const float dist, const float width, const float height, const glm::vec3 color)
+void DebugDraw::DrawPlane(const glm::vec3 offset, const Plane plane, const float width, const float height, const glm::vec3 color, float time)
+{
+	DrawPlane(offset, plane.normal, plane.dist, width, height, color, time);
+}
+
+void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const glm::vec3 upHint, const float dist,
+	const float width, const float height, const glm::vec3 color, const float time)
 {
 	glm::normalize(normal);
 
@@ -66,25 +73,25 @@ void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const 
 	point1 = corner1;
 	point2 = corner1 + upVec * height;
 
-	DrawLine(point1, point2, color);
+	DrawLine(point1, point2, color, time);
 
 	// Right side
 	point1 = corner2;
 	point2 = corner2 - upVec * height;
 
-	DrawLine(point1, point2, color);
+	DrawLine(point1, point2, color, time);
 
 	// Top
 	point1 = corner2;
 	point2 = corner2 - rightVec * width;
 
-	DrawLine(point1, point2, color);
+	DrawLine(point1, point2, color, time);
 
 	// Bottom
 	point1 = corner1;
 	point2 = corner1 + rightVec * width;
 
-	DrawLine(point1, point2, color);
+	DrawLine(point1, point2, color, time);
 }
 
 void DebugDraw::Update()

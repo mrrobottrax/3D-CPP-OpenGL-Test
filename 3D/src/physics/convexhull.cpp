@@ -1,6 +1,19 @@
 #include <pch.h>
 #include <physics/convexhull.h>
 
+#include <debugtools/debugdraw.h>
+
+#ifdef DEBUG
+void DrawPolygonEdges(qhHalfEdge& startEdge)
+{
+	qhHalfEdge* edge = &startEdge;
+	do {
+		debugDraw.DrawLine((*edge).tail->position, (*edge).next->tail->position, {1, 0, 1}, 10);
+		edge = edge->next;
+	} while (edge != &startEdge);
+}
+#endif // DEBUG
+
 float CalcEpsilon(const std::list<glm::vec3>& verticesList)
 {
 	// Calculate epsilon based on bounds
@@ -84,7 +97,7 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 	}
 
 	// Find two furthest vertices
-	glm::vec3 hullVerts[4] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+	glm::vec3 hullVerts[4] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 	{
 		float bestSqrDist = 0;
 		for (int i = 0; i < 6; ++i)
@@ -119,12 +132,111 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 		}
 	}
 
-	for (int i = 0; i < 3; ++i)
+	// Get furthest vert from plane
+	Plane basePlane = PlaneFromTri(hullVerts[0], hullVerts[1], hullVerts[2]);
 	{
-		std::cout << hullVerts[i][0] << ", " << hullVerts[i][1] << ", " << hullVerts[i][2] << "\n";
+		float bestDist = 0;
+		for (auto it = vertices.begin(); it != vertices.end(); ++it)
+		{
+			float dist = DistFromPlane(basePlane, *it);
+			if (dist >= bestDist)
+			{
+				hullVerts[3] = *it;
+				bestDist = dist;
+			}
+		}
 	}
 
-	// Construct hull
+	// Add vertices to hull
+	for (int i = 0; i < 4; ++i)
+	{
+		qhVertex vertex = {
+			nullptr,
+			nullptr,
+
+			nullptr,
+
+			{ hullVerts[i][0], hullVerts[i][1], hullVerts[i][2] }
+		};
+		this->workingVertices.push_back(vertex);
+	}
+
+	// Construct initial hull
+	// Create base
+	// Vertices
+	this->workingVertices[0].next = &this->workingVertices[1];
+	this->workingVertices[1].prev = &this->workingVertices[0];
+
+	this->workingVertices[1].next = &this->workingVertices[2];
+	this->workingVertices[2].prev = &this->workingVertices[1];
+
+	this->workingVertices[2].next = &this->workingVertices[0];
+	this->workingVertices[0].next = &this->workingVertices[2];
+
+	// Edges
+	qhHalfEdge* firstEdge;
+	qhHalfEdge* secondEdge;
+	qhHalfEdge* thirdEdge;
+
+	this->workingEdges.push_back({
+		&workingVertices[0],
+
+		nullptr,
+		nullptr,
+		nullptr,
+
+		nullptr
+		});
+	firstEdge = &workingEdges.back();
+
+	this->workingEdges.push_back({
+		&workingVertices[1],
+
+		firstEdge,
+		nullptr,
+		nullptr,
+
+		nullptr
+		});
+	secondEdge = &workingEdges.back();
+
+	this->workingEdges.push_back({
+		&workingVertices[2],
+
+		secondEdge,
+		firstEdge,
+		nullptr,
+
+		nullptr
+		});
+	thirdEdge = &workingEdges.back();
+
+	firstEdge->prev = thirdEdge;
+	firstEdge->next = secondEdge;
+	secondEdge->next = thirdEdge;
+
+	this->workingFaces.push_back({
+		nullptr,
+		nullptr,
+
+		firstEdge,
+
+		basePlane.normal,
+		basePlane.dist,
+		});
+
+	debugDraw.DrawPlane(glm::vec3(0), basePlane, 1, 1, { 1, 1, 1 }, 10);
+	std::cout << basePlane.dist << "\n";
+
+#ifdef DEBUG
+	DrawPolygonEdges(*firstEdge);
+#endif // DEBUG
+
+	// Connect base to vertex
+	for (int i = 0; i < 3; ++i)
+	{
+		//this->workingVertices[0] = 
+	}
 }
 
 void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
@@ -148,7 +260,5 @@ ConvexHull::ConvexHull(const int vertCount, const glm::vec3* vertices)
 
 ConvexHull::~ConvexHull()
 {
-	delete[] vertices;
-	delete[] halfEdges;
-	delete[] faces;
+
 }
