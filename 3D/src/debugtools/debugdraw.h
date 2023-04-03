@@ -23,7 +23,7 @@ private:
 		glm::vec3 color;
 	};
 
-	std::list<Vertex> lineVertices;
+	std::vector<Vertex> lineVertices;
 
 	void Draw();
 	void DrawLines();

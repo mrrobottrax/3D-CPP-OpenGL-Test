@@ -184,7 +184,7 @@ ChunkArchetypeElement* EntityManager::FindChunkArchetype(EntityArchetype& archet
 
 std::vector<ChunkArchetypeElement*>* EntityManager::FindChunkArchetypesWithComponent(Component& component)
 {
-	// Create linked list of pointers
+	// Create vector of pointers
 	std::vector<ChunkArchetypeElement*>* returnList = new std::vector<ChunkArchetypeElement*>();
 
 	// Scan through entire linked list

@@ -141,7 +141,7 @@ void DebugDraw::DrawLines()
 #pragma warning( push )
 #pragma warning( disable : 6386)
 		int i = 0;
-		for (std::list<Vertex>::iterator it = lineVertices.begin(); it != lineVertices.end(); ++it)
+		for (auto it = lineVertices.begin(); it != lineVertices.end(); ++it)
 		{
 			vertArray[i]     = (*it).position[0];
 			vertArray[i + 1] = (*it).position[1];
