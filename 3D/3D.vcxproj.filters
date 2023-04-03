@@ -140,7 +140,7 @@
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\timemanager.h" />
-    <ClInclude Include="src\common\physstructs.h" />
+    <ClInclude Include="src\common\math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">
@@ -211,5 +211,6 @@
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
+    <ClCompile Include="src\common\math.cpp" />
   </ItemGroup>
 </Project>

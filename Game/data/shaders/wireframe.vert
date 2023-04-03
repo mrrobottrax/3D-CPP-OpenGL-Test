@@ -3,7 +3,7 @@ layout(location = 0) uniform mat4 positionMatrix;
 layout(location = 1) uniform mat4 perspectiveMatrix;
 
 in vec3 position;
-in vec3 vertColor
+in vec3 vertColor;
 
 smooth out vec4 color;
 

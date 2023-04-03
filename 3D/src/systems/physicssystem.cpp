@@ -8,7 +8,7 @@
 #include <components/idcomponent.h>
 #include <components/hullcollider.h>
 
-#include <common/physstructs.h>
+#include <common/math.h>
 
 PhysicsSystem::PhysicsSystem()
 {
@@ -151,7 +151,7 @@ void PhysicsSystem::Update()
 		}
 
 #ifdef DEBUG
-		std::cout << "\n";
+		//std::cout << "\n";
 #endif // DEBUG
 	}
 }

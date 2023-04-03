@@ -39,7 +39,7 @@ MeshObject testMap = MeshObject();
 MeshObject testMesh = MeshObject();
 MeshObject boxMesh = MeshObject();
 
-Vertex vertices[] = {
+glm::vec3 vertices[] = {
 	{ -0.5f, -0.5f, -0.5f },
 	{  0.5f, -0.5f, -0.5f },
 	{ -0.5f,  0.5f, -0.5f },
@@ -50,7 +50,7 @@ Vertex vertices[] = {
 	{ -0.5f,  0.5f,  0.5f },
 	{  0.5f,  0.5f,  0.5f },
 };
-ConvexHull boxHull = ConvexHull(8, vertices);
+ConvexHull boxHull = ConvexHull(9, vertices);
 
 void Init()
 {

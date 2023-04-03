@@ -1,46 +1,67 @@
 #pragma once
 
-struct Vertex;
-struct HalfEdge;
-struct Face;
+#include <common/math.h>
 
-struct Vertex
+struct qhVertex;
+struct qhHalfEdge;
+struct qhFace;
+
+struct qhVertex
 {
+	qhVertex* prev;
+	qhVertex* next;
+
+	qhHalfEdge* edge;
+
 	float position[3];
 };
 
-struct HalfEdge
+struct qhHalfEdge
 {
-	HalfEdge* twin;
-	HalfEdge* next;
-	Vertex* vertex;
-	Face* face;
+	qhVertex* tail;
+
+	qhHalfEdge* prev;
+	qhHalfEdge* next;
+	qhHalfEdge* twin;
+
+	qhFace* face;
 };
 
-struct Face
+struct qhFace
 {
-	HalfEdge* halfEdge;
+	qhFace* prev;
+	qhFace* next;
+
+	qhHalfEdge* edge;
 
 	glm::vec3 normal;
 	float dist;
+
+	std::vector<qhVertex> conflictList;
 };
 
 class ConvexHull
 {
 public:
-	ConvexHull() : vertices(), halfEdges(), faces(), halfEdgeCount()
+	ConvexHull() : vertices(), halfEdges(), faces(), halfEdgeCount(),
+		epsilon(), sqrEpsilon()
 	{
 	};
-	ConvexHull(int vertCount, Vertex* vertices);
+	ConvexHull(const int vertCount, const glm::vec3* vertices);
 	~ConvexHull();
 
 public:
-	void QuickHull(int vertCount, Vertex* vertices);
+	float epsilon, sqrEpsilon;
+
+private:
+	void QuickHull(const int vertCount, const glm::vec3* vertices);
+	void RemoveDuplicateVertices(std::list<glm::vec3>& vertices);
+	void InitialHull(const std::list<glm::vec3>& vertices);
 
 public:
 	int halfEdgeCount;
 
-	Vertex* vertices;
-	HalfEdge* halfEdges;
-	Face* faces;
+	qhVertex* vertices;
+	qhHalfEdge* halfEdges;
+	qhFace* faces;
 };
