@@ -18,3 +18,10 @@ float SqrDist(glm::vec3 vertexA, glm::vec3 vertexB)
 {
 	return SqrMagnitude(vertexA - vertexB);
 }
+
+float DistFromLine(glm::vec3 linePointA, glm::vec3 linePointB, glm::vec3 point)
+{
+	float dist = glm::length(glm::cross(point - linePointA, point - linePointB));
+	dist /= glm::length(linePointB - linePointA);
+	return dist;
+}

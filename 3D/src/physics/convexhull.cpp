@@ -52,42 +52,79 @@ void ConvexHull::RemoveDuplicateVertices(std::list<glm::vec3>& vertices)
 void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 {
 	//Create initial hull with min and max verts in each axis
-	glm::vec3 mins[3] = { glm::vec3(FLT_MAX), glm::vec3(FLT_MAX), glm::vec3(FLT_MAX) };
-	glm::vec3 maxs[3] = { glm::vec3(FLT_MIN), glm::vec3(FLT_MIN), glm::vec3(FLT_MIN) };
-
-	for (auto it = vertices.begin(); it != vertices.end(); ++it)
+	glm::vec3 bounds[6] = { glm::vec3(FLT_MAX), glm::vec3(FLT_MAX), glm::vec3(FLT_MAX), glm::vec3(FLT_MIN), glm::vec3(FLT_MIN), glm::vec3(FLT_MIN) };
 	{
-		// Mins
-		for (int i = 0; i < 3; ++i)
-		{
-			const glm::vec3& vert = *it;
+		glm::vec3* mins = &bounds[0];
+		glm::vec3* maxs = &bounds[3];
 
-			if (vert[i] <= mins[i][i])
+		for (auto it = vertices.begin(); it != vertices.end(); ++it)
+		{
+			// Mins
+			for (int i = 0; i < 3; ++i)
 			{
-				mins[i] = vert;
+				const glm::vec3& vert = *it;
+
+				if (vert[i] <= mins[i][i])
+				{
+					mins[i] = vert;
+				}
 			}
-		}
 
-		// Maxs
-		for (int i = 0; i < 3; ++i)
-		{
-			const glm::vec3& vert = *it;
-
-			if (vert[i] >= maxs[i][i])
+			// Maxs
+			for (int i = 0; i < 3; ++i)
 			{
-				maxs[i] = vert;
+				const glm::vec3& vert = *it;
+
+				if (vert[i] >= maxs[i][i])
+				{
+					maxs[i] = vert;
+				}
 			}
 		}
 	}
 
 	// Find two furthest vertices
-	for (int i = 0; i < 3; ++i)
+	glm::vec3 hullVerts[4] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 	{
-		for (int j = 0; j < 3; ++j)
+		float bestSqrDist = 0;
+		for (int i = 0; i < 6; ++i)
 		{
+			glm::vec3& vertA = bounds[i];
+			for (int j = 0; j < 6; ++j)
+			{
+				glm::vec3& vertB = bounds[j];
 
+				float dist = SqrDist(vertA, vertB);
+				if (dist >= bestSqrDist)
+				{
+					bestSqrDist = dist;
+					hullVerts[0] = vertA;
+					hullVerts[1] = vertB;
+				}
+			}
 		}
 	}
+
+	// Get furthest vert from line
+	{
+		float bestDist = 0;
+		for (auto it = vertices.begin(); it != vertices.end(); ++it)
+		{
+			float dist = DistFromLine(hullVerts[0], hullVerts[1], *it);
+			if (dist >= bestDist)
+			{
+				hullVerts[2] = *it;
+				bestDist = dist;
+			}
+		}
+	}
+
+	for (int i = 0; i < 3; ++i)
+	{
+		std::cout << hullVerts[i][0] << ", " << hullVerts[i][1] << ", " << hullVerts[i][2] << "\n";
+	}
+
+	// Construct hull
 }
 
 void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
