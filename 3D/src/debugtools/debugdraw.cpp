@@ -67,7 +67,7 @@ void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const 
 	glm::vec3 point1;
 	glm::vec3 point2;
 
-	//DrawLine(corner1, corner2, color);
+	DrawLine(offset + normal * dist, offset + normal * (dist + 0.1f), color, time);
 
 	// Left side
 	point1 = corner1;

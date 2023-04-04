@@ -4,6 +4,12 @@ struct Plane
 {
 	glm::vec3 normal;
 	float dist;
+
+	void Invert()
+	{
+		normal = -normal;
+		dist = -dist;
+	}
 };
 
 float SqrMagnitude(glm::vec3 vector);

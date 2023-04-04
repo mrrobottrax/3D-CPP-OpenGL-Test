@@ -8,9 +8,6 @@ struct qhFace;
 
 struct qhVertex
 {
-	qhVertex* prev;
-	qhVertex* next;
-
 	qhHalfEdge* edge;
 
 	float position[3];
@@ -29,9 +26,6 @@ struct qhHalfEdge
 
 struct qhFace
 {
-	qhFace* prev;
-	qhFace* next;
-
 	qhHalfEdge* edge;
 
 	glm::vec3 normal;
@@ -43,17 +37,16 @@ struct qhFace
 class ConvexHull
 {
 public:
-	ConvexHull() : workingVertices(), epsilon(), sqrEpsilon()
-	{
-	};
+	ConvexHull() : workingVertices(), epsilon(), sqrEpsilon() {};
+	~ConvexHull() {};
+
 	ConvexHull(const int vertCount, const glm::vec3* vertices);
-	~ConvexHull();
 
 public:
 	float epsilon, sqrEpsilon;
 
 private:
-	void QuickHull(const int vertCount, const glm::vec3* vertices);
+	void QuickHull(const int vertCount, const glm::vec3* verticesArray);
 	void RemoveDuplicateVertices(std::list<glm::vec3>& vertices);
 	void InitialHull(const std::list<glm::vec3>& vertices);
 	//void AddPoint(const std::vector<qhHalfEdge>& horizon);

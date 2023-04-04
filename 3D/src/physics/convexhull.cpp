@@ -8,6 +8,8 @@ void DrawPolygonEdges(qhHalfEdge& startEdge)
 {
 	qhHalfEdge* edge = &startEdge;
 	do {
+		std::cout << (*edge).tail->position[0] << ", " << (*edge).tail->position[1] << ", " << (*edge).tail->position[2] << "\n";
+
 		debugDraw.DrawLine((*edge).tail->position, (*edge).next->tail->position, {1, 0, 1}, 10);
 		edge = edge->next;
 	} while (edge != &startEdge);
@@ -134,6 +136,7 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 
 	// Get furthest vert from plane
 	Plane basePlane = PlaneFromTri(hullVerts[0], hullVerts[1], hullVerts[2]);
+	bool planeFlipped = false;
 	{
 		float bestDist = 0;
 		for (auto it = vertices.begin(); it != vertices.end(); ++it)
@@ -145,15 +148,19 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 				bestDist = dist;
 			}
 		}
+
+		// Flip plane if necessary
+		if (glm::dot(basePlane.normal, hullVerts[3]) - std::abs(basePlane.dist) <= 0)
+		{
+			basePlane.Invert();
+			planeFlipped = true;
+		}
 	}
 
 	// Add vertices to hull
 	for (int i = 0; i < 4; ++i)
 	{
 		qhVertex vertex = {
-			nullptr,
-			nullptr,
-
 			nullptr,
 
 			{ hullVerts[i][0], hullVerts[i][1], hullVerts[i][2] }
@@ -163,79 +170,91 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 
 	// Construct initial hull
 	// Create base
-	// Vertices
-	this->workingVertices[0].next = &this->workingVertices[1];
-	this->workingVertices[1].prev = &this->workingVertices[0];
+	qhHalfEdge* baseEdges[3];
 
-	this->workingVertices[1].next = &this->workingVertices[2];
-	this->workingVertices[2].prev = &this->workingVertices[1];
+	if (!planeFlipped)
+	{
+		workingEdges.push_back({
+			&workingVertices[0]
+			});
+		baseEdges[0] = &workingEdges.back();
 
-	this->workingVertices[2].next = &this->workingVertices[0];
-	this->workingVertices[0].next = &this->workingVertices[2];
+		workingEdges.push_back({
+			&workingVertices[1]
+			});
+		baseEdges[1] = &workingEdges.back();
 
-	// Edges
-	qhHalfEdge* firstEdge;
-	qhHalfEdge* secondEdge;
-	qhHalfEdge* thirdEdge;
+		workingEdges.push_back({
+			&workingVertices[2]
+			});
+		baseEdges[2] = &workingEdges.back();
+	}
+	else // Swap order of vertices to make face counter clockwise
+	{
+		workingEdges.push_back({
+			&workingVertices[2]
+			});
+		baseEdges[0] = &workingEdges.back();
 
-	this->workingEdges.push_back({
-		&workingVertices[0],
+		workingEdges.push_back({
+			&workingVertices[1]
+			});
+		baseEdges[1] = &workingEdges.back();
 
-		nullptr,
-		nullptr,
-		nullptr,
+		workingEdges.push_back({
+			&workingVertices[0]
+			});
+		baseEdges[2] = &workingEdges.back();
+	}
 
-		nullptr
-		});
-	firstEdge = &workingEdges.back();
+	baseEdges[0]->prev = baseEdges[2];
+	baseEdges[0]->next = baseEdges[1];
+	
+	baseEdges[1]->prev = baseEdges[0];
+	baseEdges[1]->next = baseEdges[2];
 
-	this->workingEdges.push_back({
-		&workingVertices[1],
+	baseEdges[2]->prev = baseEdges[1];
+	baseEdges[2]->next = baseEdges[0];
 
-		firstEdge,
-		nullptr,
-		nullptr,
-
-		nullptr
-		});
-	secondEdge = &workingEdges.back();
-
-	this->workingEdges.push_back({
-		&workingVertices[2],
-
-		secondEdge,
-		firstEdge,
-		nullptr,
-
-		nullptr
-		});
-	thirdEdge = &workingEdges.back();
-
-	firstEdge->prev = thirdEdge;
-	firstEdge->next = secondEdge;
-	secondEdge->next = thirdEdge;
-
-	this->workingFaces.push_back({
-		nullptr,
-		nullptr,
-
-		firstEdge,
+	workingFaces.push_back({
+		baseEdges[0],
 
 		basePlane.normal,
 		basePlane.dist,
-		});
-
-	debugDraw.DrawPlane(glm::vec3(0), basePlane, 1, 1, { 1, 1, 1 }, 10);
-	std::cout << basePlane.dist << "\n";
+	});
 
 #ifdef DEBUG
-	DrawPolygonEdges(*firstEdge);
+	DrawPolygonEdges(*baseEdges[0]);
+	debugDraw.DrawPlane(glm::vec3(0), basePlane, 1, 1, { 1, 1, 1 }, 10);
 #endif // DEBUG
 
 	// Connect base to vertex
-	for (int i = 0; i < 3; ++i)
 	{
-		//this->workingVertices[0] = 
+		//qhHalfEdge* lastEdge;
+		//for (int i = 0; i < 3; ++i)
+		//{
+		//	qhHalfEdge* edges[3];
+
+		//	// Create edges
+		//	for (int j = 0; j < 3; ++j)
+		//	{
+		//		this->workingEdges.push_back({
+		//			&workingVertices[3]
+		//			});
+		//		edges[j] = &workingEdges.back();
+		//	}
+
+		//	// Set next and prev edges
+		//	for (int j = 0; j < 3; ++j)
+		//	{
+		//		if (j == 0)
+		//			edges[j]->prev = edges[2];
+		//		else
+		//			edges[j]->prev = edges[(j - 1) % 3];
+
+		//		edges[j]->next = edges[(j + 1) % 3];
+		//	}
+		//}
 	}
 }
 
@@ -256,9 +275,4 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 ConvexHull::ConvexHull(const int vertCount, const glm::vec3* vertices)
 {
 	QuickHull(vertCount, vertices);
-}
-
-ConvexHull::~ConvexHull()
-{
-
 }

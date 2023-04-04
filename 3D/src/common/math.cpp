@@ -43,7 +43,7 @@ Plane PlaneFromTri(const glm::vec3 triPointA, const glm::vec3 triPointB, const g
 {
 	Plane plane;
 
-	plane.normal = glm::cross(triPointA - triPointB, triPointB - triPointC);
+	plane.normal = glm::normalize(glm::cross(triPointA - triPointB, triPointB - triPointC));
 	plane.dist = 0;
 
 	plane.dist += glm::dot(plane.normal, triPointA);
