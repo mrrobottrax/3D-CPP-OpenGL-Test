@@ -57,5 +57,9 @@ Plane PlaneFromTri(const glm::vec3 triPointA, const glm::vec3 triPointB, const g
 
 Plane PlaneFromTri(const float triPointA[3], const float triPointB[3], const float triPointC[3])
 {
-	return PlaneFromTri((glm::vec3)triPointA[0], (glm::vec3)triPointB[0], (glm::vec3)triPointC[0]);
+	glm::vec3 a(triPointA[0], triPointA[1], triPointA[2]);
+	glm::vec3 b(triPointB[0], triPointB[1], triPointB[2]);
+	glm::vec3 c(triPointC[0], triPointC[1], triPointC[2]);
+
+	return PlaneFromTri(a, b, c);
 }

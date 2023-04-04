@@ -2,18 +2,65 @@
 #include <physics/convexhull.h>
 
 #include <debugtools/debugdraw.h>
+#include <unordered_set>
 
 #ifdef DEBUG
-void DrawPolygonEdges(qhHalfEdge& startEdge)
-{
-	qhHalfEdge* edge = &startEdge;
-	do {
-		std::cout << (*edge).tail->position[0] << ", " << (*edge).tail->position[1] << ", " << (*edge).tail->position[2] << "\n";
+	void DrawPolygonEdges(qhHalfEdge& startEdge)
+	{
+		int i = 0;
+		qhHalfEdge* edge = &startEdge;
+		glm::vec3 add(0);
+		// Explode faces a little
+		if (startEdge.face)
+		{
+			add = startEdge.face->normal * 0.02f;
+		}
+		do {
+			glm::vec3 start = { (*edge).tail->position[0], (*edge).tail->position[1], (*edge).tail->position[2] };
+			glm::vec3 end = { (*edge).next->tail->position[0], (*edge).next->tail->position[1], (*edge).next->tail->position[2] };
+			debugDraw.DrawLine(start + add, end + add, {std::fmodf(i / 2.1f, 1), 0, 0}, FLT_MAX);
 
-		debugDraw.DrawLine((*edge).tail->position, (*edge).next->tail->position, {1, 0, 1}, 10);
-		edge = edge->next;
-	} while (edge != &startEdge);
-}
+			edge = edge->next;
+			++i;
+		} while (edge != &startEdge);
+	}
+
+	void DrawHullRecursive(qhHalfEdge& startEdge, std::unordered_set<qhHalfEdge*>& visited)
+	{
+		qhHalfEdge* edge = &startEdge;
+		do {
+			// Only recurse when the edge is not already in the list
+			if (visited.find(edge) == visited.end())
+			{
+				visited.insert(edge);
+				DrawHullRecursive(*(edge->twin), visited);
+			}
+
+			edge = edge->next;
+		} while (edge != &startEdge);
+	}
+
+	void DrawHull(qhHalfEdge& startEdge)
+	{
+		std::unordered_set<qhHalfEdge*> visited;
+
+		DrawHullRecursive(startEdge, visited);
+
+		for (auto it = visited.begin(); it != visited.end(); ++it)
+		{
+			qhHalfEdge* edge = *it;
+
+			glm::vec3 add(0);
+			if (edge->face)
+			{
+				add = edge->face->normal * 0.02f;
+			}
+
+			glm::vec3 start = { (*edge).tail->position[0], (*edge).tail->position[1], (*edge).tail->position[2] };
+			glm::vec3 end = { (*edge).next->tail->position[0], (*edge).next->tail->position[1], (*edge).next->tail->position[2] };
+			debugDraw.DrawLine(start + add, end + add, { 1, 0, 1 }, FLT_MAX);
+		}
+	}
 #endif // DEBUG
 
 float CalcEpsilon(const std::list<glm::vec3>& verticesList)
@@ -61,6 +108,20 @@ void ConvexHull::RemoveDuplicateVertices(std::list<glm::vec3>& vertices)
 				++it2;
 			}
 		}
+	}
+}
+
+void ConnectEdgeLoop(qhHalfEdge** edges, int edgeCount)
+{
+	// Set next and prev edges
+	for (int j = 0; j < edgeCount; ++j)
+	{
+		if (j == 0)
+			edges[j]->prev = edges[edgeCount - 1];
+		else
+			edges[j]->prev = edges[(j - 1) % edgeCount];
+
+		edges[j]->next = edges[(j + 1) % edgeCount];
 	}
 }
 
@@ -149,8 +210,8 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 			}
 		}
 
-		// Flip plane if necessary
-		if (glm::dot(basePlane.normal, hullVerts[3]) - std::abs(basePlane.dist) <= 0)
+		// Flip plane if needed
+		if (glm::dot(basePlane.normal, hullVerts[3]) - std::abs(basePlane.dist) >= 0)
 		{
 			basePlane.Invert();
 			planeFlipped = true;
@@ -158,6 +219,7 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 	}
 
 	// Add vertices to hull
+	qhVertex* baseHullVerts[4];
 	for (int i = 0; i < 4; ++i)
 	{
 		qhVertex vertex = {
@@ -166,12 +228,12 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 			{ hullVerts[i][0], hullVerts[i][1], hullVerts[i][2] }
 		};
 		this->workingVertices.push_back(vertex);
+		baseHullVerts[i] = &workingVertices.back();
 	}
 
 	// Construct initial hull
 	// Create base
 	qhHalfEdge* baseEdges[3];
-
 	if (!planeFlipped)
 	{
 		workingEdges.push_back({
@@ -207,55 +269,109 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 		baseEdges[2] = &workingEdges.back();
 	}
 
-	baseEdges[0]->prev = baseEdges[2];
-	baseEdges[0]->next = baseEdges[1];
-	
-	baseEdges[1]->prev = baseEdges[0];
-	baseEdges[1]->next = baseEdges[2];
+	ConnectEdgeLoop(baseEdges, 3);
 
-	baseEdges[2]->prev = baseEdges[1];
-	baseEdges[2]->next = baseEdges[0];
-
+	// Connect edges to face
 	workingFaces.push_back({
 		baseEdges[0],
 
 		basePlane.normal,
 		basePlane.dist,
 	});
-
-#ifdef DEBUG
-	DrawPolygonEdges(*baseEdges[0]);
-	debugDraw.DrawPlane(glm::vec3(0), basePlane, 1, 1, { 1, 1, 1 }, 10);
-#endif // DEBUG
+	for (int i = 0; i < 3; ++i)
+	{
+		baseEdges[i]->face = &workingFaces.back();
+	}
 
 	// Connect base to vertex
+	// baseEdges flows clockwise from the perspective of the eye which is unacceptable
+	// Reverse baseEdges
 	{
-		//qhHalfEdge* lastEdge;
-		//for (int i = 0; i < 3; ++i)
-		//{
-		//	qhHalfEdge* edges[3];
+		qhHalfEdge* temp = baseEdges[0];
 
-		//	// Create edges
-		//	for (int j = 0; j < 3; ++j)
-		//	{
-		//		this->workingEdges.push_back({
-		//			&workingVertices[3]
-		//			});
-		//		edges[j] = &workingEdges.back();
-		//	}
-
-		//	// Set next and prev edges
-		//	for (int j = 0; j < 3; ++j)
-		//	{
-		//		if (j == 0)
-		//			edges[j]->prev = edges[2];
-		//		else
-		//			edges[j]->prev = edges[(j - 1) % 3];
-
-		//		edges[j]->next = edges[(j + 1) % 3];
-		//	}
-		//}
+		baseEdges[0] = baseEdges[2];
+		baseEdges[2] = temp;
 	}
+	AddPoint(baseEdges, 3, *baseHullVerts[3]);
+
+	DrawHull(*baseEdges[0]);
+}
+
+void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, qhVertex& eye)
+{
+	qhHalfEdge* loopEdge = nullptr; // The edge that the loop eventually has to connect back to
+	qhHalfEdge* connectingEdge = nullptr;
+	qhHalfEdge* twinEdge = horizon[0];
+	for (int i = 0; i < horizonSize; ++i)
+	{
+		// If we exhaust the horizon, loop back to the start
+		qhHalfEdge* nextEdge;
+		if (i + 1 >= horizonSize)
+		{
+			nextEdge = horizon[0];
+		}
+		else
+		{
+			nextEdge = horizon[i + 1];
+		}
+		
+		qhHalfEdge* edges[3];
+
+		// Create edges
+		this->workingEdges.push_back({
+			twinEdge->tail
+			});
+		edges[0] = &workingEdges.back();
+		this->workingEdges.push_back({
+			nextEdge->tail
+			});
+		edges[1] = &workingEdges.back();
+		this->workingEdges.push_back({
+			&eye
+			});
+		edges[2] = &workingEdges.back();
+
+		if (connectingEdge != nullptr)
+		{
+			edges[2]->twin = connectingEdge;
+			connectingEdge->twin = edges[2];
+		}
+		else // We are on the first face
+		{
+			loopEdge = edges[2];
+		}
+
+		ConnectEdgeLoop(edges, 3);
+
+		edges[0]->twin = twinEdge;
+		twinEdge->twin = edges[0];
+
+		// Create face
+		Plane plane = PlaneFromTri(edges[0]->tail->position, edges[1]->tail->position, edges[2]->tail->position);
+		this->workingFaces.push_back({
+			edges[0],
+
+			plane.normal,
+			plane.dist,
+		});
+
+		// Add face reference to edges
+		for (int i = 0; i < 3; ++i)
+		{
+			edges[i]->face = &this->workingFaces.back();
+		}
+
+		connectingEdge = edges[1];
+		twinEdge = nextEdge;
+	}
+
+	// Merge back into the loop
+	// C6011 false positive
+#pragma warning( push )
+#pragma warning( disable : 6011)
+	connectingEdge->twin = loopEdge;
+	loopEdge->twin = connectingEdge;
+#pragma warning( pop )
 }
 
 void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
@@ -270,6 +386,9 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 	RemoveDuplicateVertices(vertices);
 
 	InitialHull(vertices);
+
+	// Parition vertices
+
 }
 
 ConvexHull::ConvexHull(const int vertCount, const glm::vec3* vertices)

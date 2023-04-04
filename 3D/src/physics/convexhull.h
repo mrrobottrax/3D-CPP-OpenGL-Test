@@ -49,7 +49,7 @@ private:
 	void QuickHull(const int vertCount, const glm::vec3* verticesArray);
 	void RemoveDuplicateVertices(std::list<glm::vec3>& vertices);
 	void InitialHull(const std::list<glm::vec3>& vertices);
-	//void AddPoint(const std::vector<qhHalfEdge>& horizon);
+	void AddPoint(qhHalfEdge** horizon, int horizonSize, qhVertex& eye);
 
 public:
 	std::vector<qhVertex> workingVertices;
