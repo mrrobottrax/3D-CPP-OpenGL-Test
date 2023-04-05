@@ -264,6 +264,11 @@ void ConvexHull::MergeCoplanar(const std::vector<qhHalfEdge*>& horizon)
 		seperatingEdgeBPrev.next = &seperatingEdgeANext;
 		seperatingEdgeBNext.prev = &seperatingEdgeAPrev;
 
+		// Remove old stuff
+		RemoveFace(face2);
+		RemoveEdge(*edge->twin);
+		RemoveEdge(*edge);
+
 		// TODO: RECALCULATE FACE W/ NEWELL PLANE
 	}
 }
@@ -559,7 +564,6 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		epsilon = CalcEpsilon(verticesList);
 		sqrEpsilon = epsilon * epsilon;
 
-		// TODO: Might not even help at all
 		RemoveDuplicateVertices(verticesList);
 
 		AllocateMemory((int)verticesList.size());
@@ -662,6 +666,22 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		std::unordered_set<qhFace*> oldFaces;
 		AddPoint(&horizon[0], (int)horizon.size(), *eye, newFaces, oldFaces);
 
+		// Remove obscured faces
+		for (auto it = oldFaces.begin(); it != oldFaces.end(); ++it)
+		{
+			qhHalfEdge& startEdge = *(*it)->edge;
+			qhHalfEdge* edge = &startEdge;
+			do {
+				qhHalfEdge* edge2 = edge;
+
+				edge = edge->next;
+
+				RemoveEdge(*edge2);
+			} while (edge != &startEdge);
+
+			RemoveFace(**it);
+		}
+
 		// Repartition all old face conflict vertices
 		RePartitionVertices(visible, newFaces, *eye);
 
@@ -680,67 +700,255 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 	// Recurse starting from each of the four initial faces
 	qhFace* lastFace;
 	for (int i = 0; i < 4; ++i)
-		lastFace = &QHullRecursive(workingFaces[i]);
+		lastFace = &QHullRecursive(faces[i]);
 
-	CondenseArrays();
+	//CondenseArrays(*lastFace);
 
 	DrawHull(*lastFace);
 }
 
 qhHalfEdge* ConvexHull::AddEdge()
 {
-	return &workingEdges[nextEdgeIndex++];
+	for (int i = 0; i < edgeCount; ++i)
+	{
+		if (edges[i] == qhHalfEdge())
+		{
+			return &edges[i];
+		}
+	}
+
+	return nullptr;
 }
 
 qhVertex* ConvexHull::AddVertex()
 {
-	return &workingVerts[nextVertIndex++];
+	for (int i = 0; i < vertCount; ++i)
+	{
+		if (verts[i] == qhVertex())
+		{
+			return &verts[i];
+		}
+	}
+
+	return nullptr;
 }
 
 qhFace* ConvexHull::AddFace()
 {
-	return &workingFaces[nextFaceIndex++];
+	for (int i = 0; i < faceCount; ++i)
+	{
+		if (faces[i] == qhFace())
+		{
+			return &faces[i];
+		}
+	}
+
+	return nullptr;
 }
 
 void ConvexHull::RemoveEdge(qhHalfEdge& edge)
 {
-	//delete &edge;
+	RemoveVertex(*edge.tail);
+
+	//memset(&edge, 0, sizeof(qhHalfEdge));
+	edge = qhHalfEdge();
 }
 
 void ConvexHull::RemoveVertex(qhVertex& vertex)
 {
-	//delete& vertex;
+	// Multiple edges reference vertices
+	// Also I'm pretty sure there's no need for QHull to remove a vertex
+	
+	//memset(&vertex, 0, sizeof(qhVertex));
 }
 
 void ConvexHull::RemoveFace(qhFace& face)
 {
-	//delete& face;
+	//memset(&face, 0, sizeof(qhFace));
+	face = qhFace();
 }
 
-void ConvexHull::AllocateMemory(const int vertCount)
+void ConvexHull::AllocateMemory(const int pointCount)
 {
-	//TODO: Investigate
-	nextEdgeIndex = 0;
-	nextVertIndex = 0;
-	nextFaceIndex = 0;
-
-	maxVerts = vertCount;
-	maxFaces = maxVerts / 3;
-	maxEdges = maxVerts + maxFaces - 2;
+	this->vertCount = pointCount;
+	this->edgeCount = 3 * pointCount - 6;
+	this->faceCount = 2 * pointCount - 4;
 
 	// Extra room for extra stuff creating during QHull
-	maxVerts *= 10;
-	maxEdges *= 10;
-	maxFaces *= 10;
+	this->vertCount *= 2;
+	this->edgeCount *= 2;
+	this->faceCount *= 2;
 
-	workingEdges = new qhHalfEdge[maxEdges];
-	workingVerts = new qhVertex[maxVerts];
-	workingFaces = new qhFace[maxFaces];
+	this->edges = new qhHalfEdge[this->edgeCount];
+	for (int i = 0; i < edgeCount; ++i)
+	{
+		this->edges[i] = qhHalfEdge();
+	}
+
+	this->verts = new qhVertex[this->vertCount];
+	for (int i = 0; i < vertCount; ++i)
+	{
+		this->verts[i] = qhVertex();
+	}
+
+	this->faces = new qhFace[this->faceCount];
+	for (int i = 0; i < faceCount; ++i)
+	{
+		this->faces[i] = qhFace();
+	}
 }
 
-void ConvexHull::CondenseArrays()
+// TODO: Fix this
+// It doesn't work because it copies pointers over as well
+// Also the code has been updated and the arrays are pretty dense already
+void ConvexHull::CondenseArrays(qhFace& startFace)
 {
+	std::unordered_set<qhFace*> visitedFaces;
+	std::unordered_set<qhHalfEdge*> visitedEdges;
+	std::unordered_set<qhVertex*> visitedVertices;
 
+	std::function<void(qhFace&)> GetDataRecursive = [&](qhFace& startFace)
+	{
+		qhHalfEdge& startEdge = *startFace.edge;
+		qhHalfEdge* edge = &startEdge;
+		do {
+			visitedEdges.insert(edge);
+			visitedVertices.insert(edge->tail);
+
+			// Only recurse when the face is not already in the list
+			if (visitedFaces.find(edge->twin->face) == visitedFaces.end())
+			{
+				visitedFaces.insert(edge->twin->face);
+				GetDataRecursive(*(edge->twin->face));
+			}
+
+			edge = edge->next;
+		} while (edge != &startEdge);
+	};
+
+	GetDataRecursive(startFace);
+
+	vertCount = visitedVertices.size();
+	edgeCount = visitedEdges.size();
+	faceCount = visitedFaces.size();
+
+	qhVertex* vertArray = new qhVertex[vertCount];
+	memset(vertArray, 0, sizeof(qhVertex) * vertCount);
+
+	qhHalfEdge* edgeArray = new qhHalfEdge[edgeCount];
+	memset(edgeArray, 0, sizeof(qhHalfEdge) * edgeCount);
+
+	qhFace* faceArray = new qhFace[faceCount];
+	memset(faceArray, 0, sizeof(qhFace) * faceCount);
+
+	auto FindInEdges = [&](qhHalfEdge* edge) -> qhHalfEdge*
+	{
+		if (edge == nullptr)
+			return nullptr;
+
+		int placeIndex = -1;
+		for (int i = 0; i < edgeCount; ++i)
+		{
+			char testblock[sizeof(qhHalfEdge)];
+			memset(testblock, 0, sizeof testblock);
+
+			if (memcmp(&edgeArray[i], testblock, sizeof(qhHalfEdge)))
+			{
+				placeIndex = i;
+			}
+
+			if (memcmp(&edgeArray[i], edge, sizeof(qhHalfEdge)))
+			{
+				return &edgeArray[i];
+			}
+		}
+
+		edgeArray[placeIndex] = *edge;
+		return &edgeArray[placeIndex];
+	};
+	auto FindInVerts = [&](qhVertex* vert) -> qhVertex*
+	{
+		if (vert == nullptr)
+			return nullptr;
+
+		int placeIndex = 0;
+		for (int i = 0; i < vertCount; ++i)
+		{
+			char testblock[sizeof(qhVertex)];
+			memset(testblock, 0, sizeof testblock);
+
+			if (memcmp(&vertArray[i], testblock, sizeof(qhVertex)))
+			{
+				placeIndex = i;
+			}
+
+			if (memcmp(&vertArray[i], vert, sizeof(qhVertex)))
+			{
+				return &vertArray[i];
+			}
+		}
+
+		vertArray[placeIndex] = *vert;
+		return &vertArray[placeIndex];
+	};
+	auto FindInFaces = [&](qhFace* face) -> qhFace*
+	{
+		if (face == nullptr)
+			return nullptr;
+
+		int placeIndex = 0;
+		for (int i = 0; i < faceCount; ++i)
+		{
+			char testblock[sizeof(qhFace)];
+			memset(testblock, 0, sizeof testblock);
+
+			if (memcmp(&faceArray[i], testblock, sizeof(qhFace)))
+			{
+				placeIndex = i;
+			}
+
+			if (memcmp(&faceArray[i], face, sizeof(qhFace)))
+			{
+				return &faceArray[i];
+			}
+		}
+
+		faceArray[placeIndex] = *face;
+		return &faceArray[placeIndex];
+	};
+
+	for (auto it = visitedVertices.begin(); it != visitedVertices.end(); ++it)
+	{
+		qhVertex& vert = **it;
+
+		vert.edge = FindInEdges(vert.edge);
+	}
+	for (auto it = visitedEdges.begin(); it != visitedEdges.end(); ++it)
+	{
+		qhHalfEdge& edge = **it;
+
+		edge.face = FindInFaces(edge.face);
+
+		edge.next = FindInEdges(edge.next);
+		edge.prev = FindInEdges(edge.prev);
+		edge.twin = FindInEdges(edge.twin);
+
+		edge.tail = FindInVerts(edge.tail);
+	}
+	for (auto it = visitedFaces.begin(); it != visitedFaces.end(); ++it)
+	{
+		qhFace& face = **it;
+
+		face.edge = FindInEdges(face.edge);
+	}
+
+	delete[] this->edges;
+	delete[] this->verts;
+	delete[] this->faces;
+
+	this->edges = edgeArray;
+	this->faces = faceArray;
+	this->verts = vertArray;
 }
 
 ConvexHull::ConvexHull(const int vertCount, const glm::vec3* vertices)
@@ -750,7 +958,7 @@ ConvexHull::ConvexHull(const int vertCount, const glm::vec3* vertices)
 
 ConvexHull::~ConvexHull()
 {
-	delete[] workingEdges;
-	delete[] workingVerts;
-	delete[] workingFaces;
+	delete[] this->edges;
+	delete[] this->verts;
+	delete[] this->faces;
 }

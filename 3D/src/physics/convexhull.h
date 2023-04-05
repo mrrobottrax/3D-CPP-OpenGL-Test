@@ -14,7 +14,12 @@ struct qhVertex
 
 	glm::vec3 position;
 
-	qhVertex() : edge(), position() {};
+	qhVertex() : edge(), position(0, 0, 0) {};
+
+	bool operator ==(qhVertex& other)
+	{
+		return this->edge == other.edge && this->position == other.position;
+	}
 };
 
 struct qhHalfEdge
@@ -28,6 +33,11 @@ struct qhHalfEdge
 	qhFace* face;
 
 	qhHalfEdge() : tail(), prev(), next(), twin(), face() {};
+
+	bool operator ==(qhHalfEdge& other)
+	{
+		return !memcmp(this, &other, sizeof(qhHalfEdge));
+	}
 };
 
 struct qhFace
@@ -39,13 +49,18 @@ struct qhFace
 	std::vector<glm::vec3> conflictList;
 
 	qhFace() : edge(), plane(), conflictList() {};
+
+	bool operator ==(qhFace& other)
+	{
+		return edge == other.edge && plane == other.plane;
+	}
 };
 
 class ConvexHull
 {
 public:
-	ConvexHull() : workingVerts(), workingEdges(), workingFaces(), epsilon(), sqrEpsilon(),
-	maxEdges(), maxVerts(), maxFaces(), nextEdgeIndex(), nextVertIndex(), nextFaceIndex() {};
+	ConvexHull() : verts(), edges(), faces(), epsilon(), sqrEpsilon(),
+		edgeCount(), vertCount(), faceCount() {};
 	~ConvexHull();
 
 	ConvexHull(const int vertCount, const glm::vec3* vertices);
@@ -68,22 +83,18 @@ private:
 	void RemoveVertex(qhVertex& vertex);
 	void RemoveFace(qhFace& face);
 
-	void CondenseArrays();
+	void CondenseArrays(qhFace& startFace);
 
 	//TODO: make sure these functions are using correct precision
 	void MergeCoplanar(const std::vector<qhHalfEdge*>& horizon);
 	bool IsCoplanar(qhFace& a, qhFace& b);
 
 public:
-	int maxEdges;
-	int maxVerts;
-	int maxFaces;
+	size_t edgeCount;
+	size_t vertCount;
+	size_t faceCount;
 
-	int nextEdgeIndex;
-	int nextVertIndex;
-	int nextFaceIndex;
-
-	qhHalfEdge* workingEdges;
-	qhVertex* workingVerts;
-	qhFace* workingFaces;
+	qhHalfEdge* edges;
+	qhVertex* verts;
+	qhFace* faces;
 };

@@ -12,6 +12,14 @@ namespace gMath
 			normal = -normal;
 			dist = -dist;
 		}
+
+		Plane(glm::vec3 normal, float dist) : normal(normal), dist(dist) {};
+		Plane() : normal(0, 0, 0), dist(0) {};
+
+		bool operator ==(Plane& other)
+		{
+			return normal == other.normal && dist == other.dist;
+		}
 	};
 
 	float SqrMagnitude(glm::vec3 vector);

@@ -49,8 +49,10 @@ glm::vec3 vertices[] = {
 	{  0.5f, -0.5f,  0.5f },
 	{ -0.5f,  0.5f,  0.5f },
 	{  0.5f,  0.5f,  0.5f },
+
+	//{  0.5f,  2.0f,  0.5f },
 };
-ConvexHull boxHull = ConvexHull(9, vertices);
+ConvexHull boxHull = ConvexHull(8, vertices);
 
 void Init()
 {
