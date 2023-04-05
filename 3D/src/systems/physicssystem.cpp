@@ -156,7 +156,7 @@ void PhysicsSystem::Update()
 	}
 }
 
-bool IsSeperatingPlane(Plane testPlane, ConvexHull* hull, glm::vec3 offset, glm::fquat rotation)
+bool IsSeperatingPlane(gMath::Plane testPlane, ConvexHull* hull, glm::vec3 offset, glm::fquat rotation)
 {
 	/*for (int v = 0; v < hull->vertCount; ++v)
 	{

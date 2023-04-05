@@ -4,6 +4,8 @@
 #include <debugtools/debugdraw.h>
 #include <unordered_set>
 
+using namespace gMath;
+
 #ifdef DEBUG
 	void DrawPolygonEdges(qhHalfEdge& startEdge)
 	{
@@ -13,7 +15,7 @@
 		// Explode faces a little
 		if (startEdge.face)
 		{
-			add = startEdge.face->normal * 0.02f;
+			add = startEdge.face->plane.normal * 0.02f;
 		}
 		do {
 			glm::vec3 start = { (*edge).tail->position[0], (*edge).tail->position[1], (*edge).tail->position[2] };
@@ -25,41 +27,63 @@
 		} while (edge != &startEdge);
 	}
 
-	void DrawHullRecursive(qhHalfEdge& startEdge, std::unordered_set<qhHalfEdge*>& visited)
+	void DrawHull(const qhFace& startFace)
 	{
-		qhHalfEdge* edge = &startEdge;
-		do {
-			// Only recurse when the edge is not already in the list
-			if (visited.find(edge) == visited.end())
-			{
-				visited.insert(edge);
-				DrawHullRecursive(*(edge->twin), visited);
-			}
+		std::unordered_set<qhFace*> visited;
 
-			edge = edge->next;
-		} while (edge != &startEdge);
-	}
+		// Depth first search
+		std::function<void(const qhFace&)> DrawHullRecursive = [&](const qhFace& face)
+		{
+			qhHalfEdge& startEdge = *face.edge;
+			qhHalfEdge* edge = &startEdge;
+			do {
+				// Only recurse when the edge is not already in the list
+				if (visited.find(edge->twin->face) == visited.end())
+				{
+					visited.insert(edge->twin->face);
+					DrawHullRecursive(*edge->twin->face);
+				}
 
-	void DrawHull(qhHalfEdge& startEdge)
-	{
-		std::unordered_set<qhHalfEdge*> visited;
+				edge = edge->next;
+			} while (edge != &startEdge);
+		};
 
-		DrawHullRecursive(startEdge, visited);
+		DrawHullRecursive(startFace);
 
+		// Draw each face
 		for (auto it = visited.begin(); it != visited.end(); ++it)
 		{
-			qhHalfEdge* edge = *it;
+			glm::vec3 center(0);
+			int divide = 0;
 
-			glm::vec3 add(0);
-			if (edge->face)
-			{
-				add = edge->face->normal * 0.02f;
-			}
+			glm::vec3 add = (*it)->plane.normal * 0.02f;
 
-			glm::vec3 start = { (*edge).tail->position[0], (*edge).tail->position[1], (*edge).tail->position[2] };
-			glm::vec3 end = { (*edge).next->tail->position[0], (*edge).next->tail->position[1], (*edge).next->tail->position[2] };
-			debugDraw.DrawLine(start + add, end + add, { 1, 0, 1 }, FLT_MAX);
+			qhHalfEdge& startEdge = *(*it)->edge;
+			qhHalfEdge* edge = &startEdge;
+			do {
+				// Only recurse when the edge is not already in the list
+				if (visited.find(edge->twin->face) == visited.end())
+				{
+					visited.insert(edge->twin->face);
+					DrawHullRecursive(*edge->twin->face);
+				}
+
+				debugDraw.DrawLine(edge->tail->position + add, edge->next->tail->position + add, { 1, 0, 1 }, FLT_MAX);
+
+				center += edge->tail->position;
+				++divide;
+
+				edge = edge->next;
+			} while (edge != &startEdge);
+
+			center /= divide;
+			debugDraw.DrawLine(center, center + (*it)->plane.normal * 0.1f, { 1, 0, 1 }, FLT_MAX);
 		}
+	}
+
+	void DrawPoint(glm::vec3 point, glm::vec3 color = { 1, 1, 1 })
+	{
+		debugDraw.DrawLine(point, point + glm::vec3(0, 0.1f, 0), color, FLT_MAX);
 	}
 #endif // DEBUG
 
@@ -97,7 +121,7 @@ void ConvexHull::RemoveDuplicateVertices(std::list<glm::vec3>& vertices)
 			// Check if distance is less than epsilon
 			if (SqrDist(vertex, vertex2) <= sqrEpsilon)
 			{
-				std::cout << "DUPLICATE VERTICES DETECTED AND REMOVED: "
+				std::cout << "QHULL WARNING: DUPLICATE VERTICES DETECTED AND REMOVED: "
 					<< vertex[0] << ", " << vertex[1] << ", " << vertex[2] << " : "
 					<< vertex2[0] << ", " << vertex2[1] << ", " << vertex2[2] << "\n";
 
@@ -125,15 +149,134 @@ void ConnectEdgeLoop(qhHalfEdge** edges, int edgeCount)
 	}
 }
 
-void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
+void RePartitionVertices(std::unordered_set<qhFace*> visibleFaces, std::vector<qhFace*> newFaces, const glm::vec3 eye)
 {
-	//Create initial hull with min and max verts in each axis
+	for (auto it = visibleFaces.begin(); it != visibleFaces.end(); ++it)
+	{
+		const qhFace& face = **it;
+
+		// Parition vertices
+		for (int p = 0; p < face.conflictList.size(); ++p)
+		{
+			const glm::vec3& point = face.conflictList[p];
+
+			// The eye is no longer a conflict point
+			if (point == eye)
+			{
+				continue;
+			}
+
+			// Find closest plane
+			float bestDist = 0;
+			qhFace* bestFace = nullptr;
+			for (int i = 0; i < newFaces.size(); ++i)
+			{
+				qhFace& conflictFace = *newFaces[i];
+				float dist = SignedDistFromPlane(conflictFace.plane, point);
+
+				if (dist >= bestDist)
+				{
+					bestFace = &conflictFace;
+				}
+			}
+
+			// Point is outside
+			if (bestFace)
+			{
+				bestFace->conflictList.push_back(point);
+			}
+		}
+	}
+}
+
+bool ConvexHull::IsCoplanar(qhFace& a, qhFace& b)
+{
+	// Get center of face by averaging vertices
+	glm::vec3 bCenter = glm::vec3(0);
+	{
+		int divide = 0;
+
+		qhHalfEdge& startEdge = *b.edge;
+		qhHalfEdge* edge = &startEdge;
+		do {
+			bCenter += edge->tail->position;
+
+			edge = edge->next;
+			++divide;
+		} while (edge != &startEdge);
+
+		bCenter /= divide;
+	}
+
+	// Check if center is above A (using fat planes)
+	float dist = std::abs(glm::dot(bCenter, a.plane.normal) - a.plane.dist);
+	if (dist <= epsilon)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+//TODO: Try std::list<qhFace*>&
+void ConvexHull::MergeCoplanar(const std::vector<qhHalfEdge*>& horizon)
+{
+	for (int i = 0; i < horizon.size(); ++i)
+	{
+		qhHalfEdge* edge = horizon[i];
+		qhFace& face1 = *edge->twin->face;
+		qhFace& face2 = *edge->face;
+
+		if (!IsCoplanar(face1, face2))
+			continue;
+
+		// ~~~~~~~~~~~~~~~~~Merge faces ~~~~~~~~~~~~~~~~~
+
+		// Absorb conflict points
+		// face 1 absorbs face 2 so that continuous face merging works
+		for (int i = 0; i < face2.conflictList.size(); ++i)
+			face1.conflictList.push_back(face2.conflictList[i]);
+
+		// Set face references in edges
+		{
+			qhHalfEdge& startEdge2 = *face2.edge;
+			qhHalfEdge* edge2 = &startEdge2;
+			do {
+				edge2->face = &face1;
+
+				edge2 = edge2->next;
+			} while (edge2 != &startEdge2);
+		}
+
+		qhHalfEdge& seperatingEdgeANext = *edge->twin->next;
+		qhHalfEdge& seperatingEdgeAPrev = *edge->twin->prev;
+
+		qhHalfEdge& seperatingEdgeBNext = *edge->next;
+		qhHalfEdge& seperatingEdgeBPrev = *edge->prev;
+
+		// Set edge reference in face
+		face1.edge = &seperatingEdgeANext;
+
+		// Connect edges
+		seperatingEdgeAPrev.next = &seperatingEdgeBNext;
+		seperatingEdgeANext.prev = &seperatingEdgeBPrev;
+
+		seperatingEdgeBPrev.next = &seperatingEdgeANext;
+		seperatingEdgeBNext.prev = &seperatingEdgeAPrev;
+
+		// TODO: RECALCULATE FACE W/ NEWELL PLANE
+	}
+}
+
+void ConvexHull::InitialHull(std::list<glm::vec3>& points)
+{
+	// Create initial hull with min and max verts in each axis
 	glm::vec3 bounds[6] = { glm::vec3(FLT_MAX), glm::vec3(FLT_MAX), glm::vec3(FLT_MAX), glm::vec3(FLT_MIN), glm::vec3(FLT_MIN), glm::vec3(FLT_MIN) };
 	{
 		glm::vec3* mins = &bounds[0];
 		glm::vec3* maxs = &bounds[3];
 
-		for (auto it = vertices.begin(); it != vertices.end(); ++it)
+		for (auto it = points.begin(); it != points.end(); ++it)
 		{
 			// Mins
 			for (int i = 0; i < 3; ++i)
@@ -160,7 +303,7 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 	}
 
 	// Find two furthest vertices
-	glm::vec3 hullVerts[4] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+	glm::vec3 initialHullPoints[4] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 	{
 		float bestSqrDist = 0;
 		for (int i = 0; i < 6; ++i)
@@ -174,61 +317,61 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 				if (dist >= bestSqrDist)
 				{
 					bestSqrDist = dist;
-					hullVerts[0] = vertA;
-					hullVerts[1] = vertB;
+					initialHullPoints[0] = vertA;
+					initialHullPoints[1] = vertB;
 				}
 			}
 		}
+		points.remove(initialHullPoints[0]);
+		points.remove(initialHullPoints[1]);
 	}
 
-	// Get furthest vert from line
+	// Get furthest point from line
 	{
 		float bestDist = 0;
-		for (auto it = vertices.begin(); it != vertices.end(); ++it)
+		for (auto it = points.begin(); it != points.end(); ++it)
 		{
-			float dist = DistFromLine(hullVerts[0], hullVerts[1], *it);
+			float dist = DistFromLine(initialHullPoints[0], initialHullPoints[1], *it);
 			if (dist >= bestDist)
 			{
-				hullVerts[2] = *it;
+				initialHullPoints[2] = *it;
 				bestDist = dist;
 			}
 		}
+		points.remove(initialHullPoints[2]);
 	}
 
-	// Get furthest vert from plane
-	Plane basePlane = PlaneFromTri(hullVerts[0], hullVerts[1], hullVerts[2]);
+	// Get furthest point from plane
+	Plane basePlane = PlaneFromTri(initialHullPoints[0], initialHullPoints[1], initialHullPoints[2]);
 	bool planeFlipped = false;
 	{
 		float bestDist = 0;
-		for (auto it = vertices.begin(); it != vertices.end(); ++it)
+		for (auto it = points.begin(); it != points.end(); ++it)
 		{
-			float dist = DistFromPlane(basePlane, *it);
+			float dist = std::abs(SignedDistFromPlane(basePlane, *it));
 			if (dist >= bestDist)
 			{
-				hullVerts[3] = *it;
+				initialHullPoints[3] = *it;
 				bestDist = dist;
 			}
 		}
+		points.remove(initialHullPoints[3]);
 
 		// Flip plane if needed
-		if (glm::dot(basePlane.normal, hullVerts[3]) - std::abs(basePlane.dist) >= 0)
+		if (glm::dot(basePlane.normal, initialHullPoints[3]) - std::abs(basePlane.dist) >= 0)
 		{
 			basePlane.Invert();
 			planeFlipped = true;
 		}
 	}
 
-	// Add vertices to hull
-	qhVertex* baseHullVerts[4];
-	for (int i = 0; i < 4; ++i)
+	// Add base vertices to hull
+	qhVertex* baseVerts[3];
+	for (int i = 0; i < 3; ++i)
 	{
-		qhVertex vertex = {
-			nullptr,
-
-			{ hullVerts[i][0], hullVerts[i][1], hullVerts[i][2] }
-		};
-		this->workingVertices.push_back(vertex);
-		baseHullVerts[i] = &workingVertices.back();
+		qhVertex& vertex = *AddVertex();
+		vertex.position = { initialHullPoints[i][0], initialHullPoints[i][1], initialHullPoints[i][2] };
+		baseVerts[i] = &vertex;
 	}
 
 	// Construct initial hull
@@ -236,51 +379,44 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 	qhHalfEdge* baseEdges[3];
 	if (!planeFlipped)
 	{
-		workingEdges.push_back({
-			&workingVertices[0]
-			});
-		baseEdges[0] = &workingEdges.back();
+		baseVerts[0]->edge = baseEdges[0] = AddEdge();
+		baseEdges[0]->tail = baseVerts[0];
+		
+		baseVerts[1]->edge = baseEdges[1] = AddEdge();
+		baseEdges[1]->tail = baseVerts[1];
 
-		workingEdges.push_back({
-			&workingVertices[1]
-			});
-		baseEdges[1] = &workingEdges.back();
-
-		workingEdges.push_back({
-			&workingVertices[2]
-			});
-		baseEdges[2] = &workingEdges.back();
+		baseVerts[2]->edge = baseEdges[2] = AddEdge();
+		baseEdges[2]->tail = baseVerts[2];
 	}
 	else // Swap order of vertices to make face counter clockwise
 	{
-		workingEdges.push_back({
-			&workingVertices[2]
-			});
-		baseEdges[0] = &workingEdges.back();
+		baseVerts[2]->edge = baseEdges[0] = AddEdge();
+		baseEdges[0]->tail = baseVerts[2];
 
-		workingEdges.push_back({
-			&workingVertices[1]
-			});
-		baseEdges[1] = &workingEdges.back();
+		baseVerts[1]->edge = baseEdges[1] = AddEdge();
+		baseEdges[1]->tail = baseVerts[1];
 
-		workingEdges.push_back({
-			&workingVertices[0]
-			});
-		baseEdges[2] = &workingEdges.back();
+		baseVerts[0]->edge = baseEdges[2] = AddEdge();
+		baseEdges[2]->tail = baseVerts[0];
 	}
 
 	ConnectEdgeLoop(baseEdges, 3);
 
-	// Connect edges to face
-	workingFaces.push_back({
-		baseEdges[0],
+	qhFace* tetrahedronFaces[4];
 
-		basePlane.normal,
-		basePlane.dist,
-	});
-	for (int i = 0; i < 3; ++i)
+	// Connect edges to face
 	{
-		baseEdges[i]->face = &workingFaces.back();
+		tetrahedronFaces[0] = AddFace();
+		tetrahedronFaces[0]->edge = baseEdges[0];
+		tetrahedronFaces[0]->plane = {
+				basePlane.normal,
+				basePlane.dist
+		};
+
+		for (int i = 0; i < 3; ++i)
+		{
+			baseEdges[i]->face = tetrahedronFaces[0];
+		}
 	}
 
 	// Connect base to vertex
@@ -292,44 +428,74 @@ void ConvexHull::InitialHull(const std::list<glm::vec3>& vertices)
 		baseEdges[0] = baseEdges[2];
 		baseEdges[2] = temp;
 	}
-	AddPoint(baseEdges, 3, *baseHullVerts[3]);
 
-	DrawHull(*baseEdges[0]);
+	// Add fourth vertex
+	{
+		std::vector<qhFace*> newFaces;
+		std::unordered_set<qhFace*> oldFaces;
+		AddPoint(baseEdges, 3, initialHullPoints[3], newFaces, oldFaces);
+
+		// Add new faces to array
+		for (int i = 0; i < 3; ++i)
+		{
+			tetrahedronFaces[i + 1] = newFaces[i];
+		}
+	}
+
+	// Partition points
+	for (auto it = points.begin(); it != points.end(); ++it)
+	{
+		const glm::vec3& vertex = (*it);
+
+		// Find closest plane
+		float bestDist = 0;
+		qhFace* bestFace = nullptr;
+		for (int f = 0; f < 4; ++ f)
+		{
+			qhFace& face2 = *tetrahedronFaces[f];
+			float dist = SignedDistFromPlane(face2.plane, vertex);
+
+			if (dist >= bestDist)
+			{
+				bestFace = &face2;
+			}
+		}
+
+		// Vertex is outside
+		if (bestFace)
+		{
+			bestFace->conflictList.push_back(vertex);
+		}
+	}
 }
 
-void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, qhVertex& eye)
+void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3& eye, std::vector<qhFace*>& newFaces, std::unordered_set<qhFace*>& oldFaces)
 {
+	// Create vertex
+	qhVertex& eyeVert = *AddVertex();
+	eyeVert.position = eye;
+
 	qhHalfEdge* loopEdge = nullptr; // The edge that the loop eventually has to connect back to
 	qhHalfEdge* connectingEdge = nullptr;
-	qhHalfEdge* twinEdge = horizon[0];
 	for (int i = 0; i < horizonSize; ++i)
 	{
-		// If we exhaust the horizon, loop back to the start
-		qhHalfEdge* nextEdge;
-		if (i + 1 >= horizonSize)
-		{
-			nextEdge = horizon[0];
-		}
-		else
-		{
-			nextEdge = horizon[i + 1];
-		}
+		if (horizon[i]->twin)
+			oldFaces.insert(horizon[i]->twin->face);
 		
+		qhHalfEdge& edge = *horizon[i];
+		qhHalfEdge& nextEdge = *edge.next;
+
 		qhHalfEdge* edges[3];
 
 		// Create edges
-		this->workingEdges.push_back({
-			twinEdge->tail
-			});
-		edges[0] = &workingEdges.back();
-		this->workingEdges.push_back({
-			nextEdge->tail
-			});
-		edges[1] = &workingEdges.back();
-		this->workingEdges.push_back({
-			&eye
-			});
-		edges[2] = &workingEdges.back();
+		edges[0] = AddEdge();
+		edges[0]->tail = nextEdge.tail;
+
+		edges[1] = AddEdge();
+		edges[1]->tail = edge.tail;
+
+		edges[2] = AddEdge();
+		edges[2]->tail = &eyeVert;
 
 		if (connectingEdge != nullptr)
 		{
@@ -343,26 +509,30 @@ void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, qhVertex&
 
 		ConnectEdgeLoop(edges, 3);
 
-		edges[0]->twin = twinEdge;
-		twinEdge->twin = edges[0];
+		edges[0]->twin = &edge;
+		edge.twin = edges[0];
 
 		// Create face
+		// 28182 false positive
+#pragma warning( push )
+#pragma warning( disable : 28182)
 		Plane plane = PlaneFromTri(edges[0]->tail->position, edges[1]->tail->position, edges[2]->tail->position);
-		this->workingFaces.push_back({
-			edges[0],
+#pragma warning( pop )
 
+		newFaces.push_back(AddFace());
+		newFaces.back()->edge = edges[0];
+		newFaces.back()->plane = {
 			plane.normal,
-			plane.dist,
-		});
+			plane.dist
+		};
 
 		// Add face reference to edges
 		for (int i = 0; i < 3; ++i)
 		{
-			edges[i]->face = &this->workingFaces.back();
+			edges[i]->face = newFaces.back();
 		}
 
 		connectingEdge = edges[1];
-		twinEdge = nextEdge;
 	}
 
 	// Merge back into the loop
@@ -374,24 +544,213 @@ void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, qhVertex&
 #pragma warning( pop )
 }
 
+bool FaceIsVisible(const qhFace& face, const glm::vec3 eye)
+{
+	return gMath::SignedDistFromPlane(face.plane, eye) > 0;
+}
+
 void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 {
-	std::list<glm::vec3> vertices;
-	std::copy(verticesArray, &verticesArray[vertCount], std::back_inserter(vertices));
+	//Setup
+	{
+		std::list<glm::vec3> verticesList;
+		std::copy(verticesArray, &verticesArray[vertCount], std::back_inserter(verticesList));
 
-	epsilon = CalcEpsilon(vertices);
-	sqrEpsilon = epsilon * epsilon;
+		epsilon = CalcEpsilon(verticesList);
+		sqrEpsilon = epsilon * epsilon;
 
-	// TODO: Might not even help at all
-	RemoveDuplicateVertices(vertices);
+		// TODO: Might not even help at all
+		RemoveDuplicateVertices(verticesList);
 
-	InitialHull(vertices);
+		AllocateMemory((int)verticesList.size());
 
-	// Parition vertices
+		InitialHull(verticesList);
+	}
+
+	// For each face
+	std::function<qhFace&(qhFace&)> QHullRecursive = [this, &QHullRecursive](qhFace& face) -> qhFace&
+	{
+		if (face.conflictList.size() <= 0)
+		{
+			return face;
+		}
+
+		// Find furthest conflict point
+		glm::vec3* eye = nullptr;
+		{
+			float bestDist = 0;
+			for (int p = 0; p < face.conflictList.size(); ++p)
+			{
+				glm::vec3& point = face.conflictList[p];
+
+				float dist = gMath::SignedDistFromPlane(face.plane, point);
+				if (dist >= bestDist)
+				{
+					bestDist = dist;
+					eye = &point;
+				}
+			}
+
+			if (eye == nullptr)
+			{
+				std::cout << "QHULL ERROR: COULDN'T FIND EYE POINT\n";
+				return face;
+			}
+		}
+
+		// Calculate horizon
+		std::vector<qhHalfEdge*> horizon;
+		std::unordered_set<qhFace*> visible;
+		{
+			std::unordered_set<qhFace*> visited;
+
+			// Find horizon recursive
+			std::function<void(qhFace&, const glm::vec3)> FindHorizonRecursive = [&FindHorizonRecursive, &visited, &visible, &horizon](qhFace& face, const glm::vec3 eye)
+			{
+				visited.insert(&face);
+
+				// Check if the face is visible
+				if (FaceIsVisible(face, eye))
+				{
+					visible.insert(&face);
+				}
+
+				// Recurse on face edges
+				{
+					qhHalfEdge& startEdge = *face.edge;
+					qhHalfEdge* edge = &startEdge;
+					do
+					{
+						qhFace& twinFace = *edge->twin->face;
+						if (visited.find(&twinFace) == visited.end())
+						{
+							// Face has not been visited
+							FindHorizonRecursive(twinFace, eye);
+						}
+
+						edge = edge->next;
+					} while (edge != &startEdge);
+				}
+			};
+
+			FindHorizonRecursive(face, *eye);
+
+			// Find any horizon edges
+			for (auto it = visible.begin(); it != visible.end(); ++it)
+			{
+				// Find edges with obscured twin
+				{
+					qhHalfEdge& startEdge = *face.edge;
+					qhHalfEdge* edge = &startEdge;
+					do
+					{
+						qhFace& twinFace = *edge->twin->face;
+						//TODO: Is it faster to find in visible set or recalculate visibility?
+						if (!FaceIsVisible(twinFace, *eye))
+						{
+							horizon.push_back(edge->twin);
+						}
+
+						edge = edge->next;
+					} while (edge != &startEdge);
+				}
+			}
+		}
+
+		// Connect eye to horizon
+		std::vector<qhFace*> newFaces;
+		std::unordered_set<qhFace*> oldFaces;
+		AddPoint(&horizon[0], (int)horizon.size(), *eye, newFaces, oldFaces);
+
+		// Repartition all old face conflict vertices
+		RePartitionVertices(visible, newFaces, *eye);
+
+		// Merge coplanar faces
+		MergeCoplanar(horizon);
+
+		// Recurse on newly created faces
+		for (int i = 0; i < newFaces.size(); ++i)
+		{
+			return QHullRecursive(*newFaces[i]);
+		}
+
+		return face;
+	};
+
+	// Recurse starting from each of the four initial faces
+	qhFace* lastFace;
+	for (int i = 0; i < 4; ++i)
+		lastFace = &QHullRecursive(workingFaces[i]);
+
+	CondenseArrays();
+
+	DrawHull(*lastFace);
+}
+
+qhHalfEdge* ConvexHull::AddEdge()
+{
+	return &workingEdges[nextEdgeIndex++];
+}
+
+qhVertex* ConvexHull::AddVertex()
+{
+	return &workingVerts[nextVertIndex++];
+}
+
+qhFace* ConvexHull::AddFace()
+{
+	return &workingFaces[nextFaceIndex++];
+}
+
+void ConvexHull::RemoveEdge(qhHalfEdge& edge)
+{
+	//delete &edge;
+}
+
+void ConvexHull::RemoveVertex(qhVertex& vertex)
+{
+	//delete& vertex;
+}
+
+void ConvexHull::RemoveFace(qhFace& face)
+{
+	//delete& face;
+}
+
+void ConvexHull::AllocateMemory(const int vertCount)
+{
+	//TODO: Investigate
+	nextEdgeIndex = 0;
+	nextVertIndex = 0;
+	nextFaceIndex = 0;
+
+	maxVerts = vertCount;
+	maxFaces = maxVerts / 3;
+	maxEdges = maxVerts + maxFaces - 2;
+
+	// Extra room for extra stuff creating during QHull
+	maxVerts *= 10;
+	maxEdges *= 10;
+	maxFaces *= 10;
+
+	workingEdges = new qhHalfEdge[maxEdges];
+	workingVerts = new qhVertex[maxVerts];
+	workingFaces = new qhFace[maxFaces];
+}
+
+void ConvexHull::CondenseArrays()
+{
 
 }
 
 ConvexHull::ConvexHull(const int vertCount, const glm::vec3* vertices)
 {
 	QuickHull(vertCount, vertices);
+}
+
+ConvexHull::~ConvexHull()
+{
+	delete[] workingEdges;
+	delete[] workingVerts;
+	delete[] workingFaces;
 }

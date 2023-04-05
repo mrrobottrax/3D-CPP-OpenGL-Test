@@ -3,63 +3,66 @@
 
 #include <glm.hpp>
 
-float SqrMagnitude(const glm::vec3 vec)
+namespace gMath
 {
-	float sqrMagnitude = 0;
-	for (int i = 0; i < 3; ++i)
+	float SqrMagnitude(const glm::vec3 vec)
 	{
-		sqrMagnitude += vec[i] * vec[i];
+		float sqrMagnitude = 0;
+		for (int i = 0; i < 3; ++i)
+		{
+			sqrMagnitude += vec[i] * vec[i];
+		}
+
+		return sqrMagnitude;
+	};
+
+	float SqrDist(const glm::vec3 vertexA, const glm::vec3 vertexB)
+	{
+		return SqrMagnitude(vertexA - vertexB);
 	}
 
-	return sqrMagnitude;
-};
+	float DistFromLine(const glm::vec3 linePointA, const glm::vec3 linePointB, const glm::vec3 point)
+	{
+		float dist = glm::length(glm::cross(point - linePointA, point - linePointB));
+		dist /= glm::length(linePointB - linePointA);
 
-float SqrDist(const glm::vec3 vertexA, const glm::vec3 vertexB)
-{
-	return SqrMagnitude(vertexA - vertexB);
-}
+		return dist;
+	}
 
-float DistFromLine(const glm::vec3 linePointA, const glm::vec3 linePointB, const glm::vec3 point)
-{
-	float dist = glm::length(glm::cross(point - linePointA, point - linePointB));
-	dist /= glm::length(linePointB - linePointA);
+	float SignedDistFromPlane(const Plane plane, const glm::vec3 point)
+	{
+		return glm::dot(plane.normal, point) - plane.dist;
+	}
 
-	return dist;
-}
+	float SignedDistFromTriPlane(const glm::vec3 triPointA, const glm::vec3 triPointB, const glm::vec3 triPointC, const glm::vec3 point)
+	{
+		Plane plane = PlaneFromTri(triPointA, triPointB, triPointC);
 
-float DistFromPlane(const Plane plane, const glm::vec3 point)
-{
-	return glm::dot(plane.normal, point) - plane.dist;
-}
+		return SignedDistFromPlane(plane, point);
+	}
 
-float DistFromTriPlane(const glm::vec3 triPointA, const glm::vec3 triPointB, const glm::vec3 triPointC, const glm::vec3 point)
-{
-	Plane plane = PlaneFromTri(triPointA, triPointB, triPointC);
+	Plane PlaneFromTri(const glm::vec3 triPointA, const glm::vec3 triPointB, const glm::vec3 triPointC)
+	{
+		Plane plane;
 
-	return DistFromPlane(plane, point);
-}
+		plane.normal = glm::normalize(glm::cross(triPointA - triPointB, triPointB - triPointC));
+		plane.dist = 0;
 
-Plane PlaneFromTri(const glm::vec3 triPointA, const glm::vec3 triPointB, const glm::vec3 triPointC)
-{
-	Plane plane;
+		plane.dist += glm::dot(plane.normal, triPointA);
+		plane.dist += glm::dot(plane.normal, triPointB);
+		plane.dist += glm::dot(plane.normal, triPointC);
 
-	plane.normal = glm::normalize(glm::cross(triPointA - triPointB, triPointB - triPointC));
-	plane.dist = 0;
+		plane.dist /= 3;
 
-	plane.dist += glm::dot(plane.normal, triPointA);
-	plane.dist += glm::dot(plane.normal, triPointB);
-	plane.dist += glm::dot(plane.normal, triPointC);
+		return plane;
+	}
 
-	plane.dist /= 3;
+	Plane PlaneFromTri(const float triPointA[3], const float triPointB[3], const float triPointC[3])
+	{
+		glm::vec3 a(triPointA[0], triPointA[1], triPointA[2]);
+		glm::vec3 b(triPointB[0], triPointB[1], triPointB[2]);
+		glm::vec3 c(triPointC[0], triPointC[1], triPointC[2]);
 
-	return plane;
-}
-
-Plane PlaneFromTri(const float triPointA[3], const float triPointB[3], const float triPointC[3])
-{
-	glm::vec3 a(triPointA[0], triPointA[1], triPointA[2]);
-	glm::vec3 b(triPointB[0], triPointB[1], triPointB[2]);
-	glm::vec3 c(triPointC[0], triPointC[1], triPointC[2]);
-
-	return PlaneFromTri(a, b, c);
+		return PlaneFromTri(a, b, c);
+	}
 }

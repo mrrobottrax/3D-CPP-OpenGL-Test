@@ -43,7 +43,7 @@ void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const 
 	DrawPlane(offset, normal, glm::vec3(0, 1, 0), dist, width, height, color, time);
 }
 
-void DebugDraw::DrawPlane(const glm::vec3 offset, const Plane plane, const float width, const float height, const glm::vec3 color, float time)
+void DebugDraw::DrawPlane(const glm::vec3 offset, const gMath::Plane plane, const float width, const float height, const glm::vec3 color, float time)
 {
 	DrawPlane(offset, plane.normal, plane.dist, width, height, color, time);
 }
