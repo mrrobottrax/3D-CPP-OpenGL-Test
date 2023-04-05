@@ -59,17 +59,18 @@ struct qhFace
 class ConvexHull
 {
 public:
+	ConvexHull(const int vertCount, const glm::vec3* vertices);
 	ConvexHull() : verts(), edges(), faces(), epsilon(), sqrEpsilon(),
 		edgeCount(), vertCount(), faceCount() {};
 	~ConvexHull();
 
-	ConvexHull(const int vertCount, const glm::vec3* vertices);
-
 public:
 	float epsilon, sqrEpsilon;
 
-private:
+public:
 	void QuickHull(const int vertCount, const glm::vec3* verticesArray);
+
+private:
 	void AllocateMemory(const int vertCount);
 	void RemoveDuplicateVertices(std::list<glm::vec3>& vertices);
 	void InitialHull(std::list<glm::vec3>& vertices);

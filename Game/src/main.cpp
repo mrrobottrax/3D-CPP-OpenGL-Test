@@ -28,6 +28,8 @@
 #include <imgui/imguiutil.h>
 #include <input/inputmanager.h>
 
+#include <thread>
+
 using namespace std;
 
 // Show memory leaks
@@ -50,9 +52,9 @@ glm::vec3 vertices[] = {
 	{ -0.5f,  0.5f,  0.5f },
 	{  0.5f,  0.5f,  0.5f },
 
-	//{  0.5f,  2.0f,  0.5f },
+	{  0.5f,  2.0f,  0.5f },
 };
-ConvexHull boxHull = ConvexHull(8, vertices);
+ConvexHull boxHull = ConvexHull();
 
 void Init()
 {
@@ -224,6 +226,8 @@ int main()
 
 	Init();
 
+	std::thread qh(&ConvexHull::QuickHull, &boxHull, 9, vertices);
+
 	while (!glfwWindowShouldClose(mainWindow))
 	{
 		timeManager.Update();
@@ -245,6 +249,8 @@ int main()
 
 		glfwSwapBuffers(mainWindow);
 	}
+
+	qh.join();
 
 	End();
 }

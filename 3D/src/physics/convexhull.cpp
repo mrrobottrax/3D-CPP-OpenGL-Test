@@ -4,6 +4,9 @@
 #include <debugtools/debugdraw.h>
 #include <unordered_set>
 
+#include <chrono>
+#include <thread>
+
 using namespace gMath;
 
 #ifdef DEBUG
@@ -20,14 +23,15 @@ using namespace gMath;
 		do {
 			glm::vec3 start = { (*edge).tail->position[0], (*edge).tail->position[1], (*edge).tail->position[2] };
 			glm::vec3 end = { (*edge).next->tail->position[0], (*edge).next->tail->position[1], (*edge).next->tail->position[2] };
-			debugDraw.DrawLine(start + add, end + add, {std::fmodf(i / 2.1f, 1), 0, 0}, FLT_MAX);
+
+			debugDraw.DrawLine(start + add, end + add, { std::fmodf(i / 2.1f, 1), 0, 0 }, FLT_MAX);
 
 			edge = edge->next;
 			++i;
 		} while (edge != &startEdge);
 	}
 
-	void DrawHull(const qhFace& startFace)
+	void DrawHull(const qhFace& startFace, const float time = FLT_MAX)
 	{
 		std::unordered_set<qhFace*> visited;
 
@@ -68,7 +72,7 @@ using namespace gMath;
 					DrawHullRecursive(*edge->twin->face);
 				}
 
-				debugDraw.DrawLine(edge->tail->position + add, edge->next->tail->position + add, { 1, 0, 1 }, FLT_MAX);
+				debugDraw.DrawLine(edge->tail->position + add, edge->next->tail->position + add, { 1, 0, 1 }, time);
 
 				center += edge->tail->position;
 				++divide;
@@ -77,13 +81,13 @@ using namespace gMath;
 			} while (edge != &startEdge);
 
 			center /= divide;
-			debugDraw.DrawLine(center, center + (*it)->plane.normal * 0.1f, { 1, 0, 1 }, FLT_MAX);
+			debugDraw.DrawLine(center, center + (*it)->plane.normal * 0.1f, { 1, 0, 1 }, time);
 		}
 	}
 
-	void DrawPoint(glm::vec3 point, glm::vec3 color = { 1, 1, 1 })
+	void DrawPoint(glm::vec3 point, glm::vec3 color = { 1, 1, 1 }, float time = FLT_MAX)
 	{
-		debugDraw.DrawLine(point, point + glm::vec3(0, 0.1f, 0), color, FLT_MAX);
+		debugDraw.DrawLine(point, point + glm::vec3(0, 0.1f, 0), color, time);
 	}
 #endif // DEBUG
 
@@ -226,6 +230,11 @@ void ConvexHull::MergeCoplanar(const std::vector<qhHalfEdge*>& horizon)
 		qhHalfEdge* edge = horizon[i];
 		qhFace& face1 = *edge->twin->face;
 		qhFace& face2 = *edge->face;
+
+#ifdef DEBUG
+		//debugDraw.DrawLine(horizon[i]->tail->position, horizon[i + 1 >= horizon.size() ? 0 : i + 1]->tail->position, {0, 1, 1}, 1);
+		//std::this_thread::sleep_for(std::chrono::seconds(1));
+#endif // DEBUG
 
 		if (!IsCoplanar(face1, face2))
 			continue;
@@ -556,6 +565,10 @@ bool FaceIsVisible(const qhFace& face, const glm::vec3 eye)
 
 void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 {
+#ifdef DEBUG
+	const float delayTest = 5;
+#endif // DEBUG
+
 	//Setup
 	{
 		std::list<glm::vec3> verticesList;
@@ -571,9 +584,17 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		InitialHull(verticesList);
 	}
 
+#ifdef DEBUG
+	DrawHull(faces[0], delayTest);
+	std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+#endif // DEBUG
+
 	// For each face
-	std::function<qhFace&(qhFace&)> QHullRecursive = [this, &QHullRecursive](qhFace& face) -> qhFace&
+	std::function<qhFace & (qhFace&)> QHullRecursive = [this, & QHullRecursive, &delayTest](qhFace& face) -> qhFace&
 	{
+		if (&face == nullptr)
+			std::cout << "Face is null\n";
+
 		if (face.conflictList.size() <= 0)
 		{
 			return face;
@@ -601,6 +622,12 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 				return face;
 			}
 		}
+
+#ifdef DEBUG
+		DrawPoint(*eye, {1, 1, 1}, delayTest);
+		DrawHull(face, delayTest);
+		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+#endif // DEBUG
 
 		// Calculate horizon
 		std::vector<qhHalfEdge*> horizon;
@@ -661,10 +688,30 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 			}
 		}
 
+#ifdef DEBUG
+		DrawPoint(*eye, { 1, 1, 1 }, delayTest);
+
+		const float t = delayTest / (float)horizon.size();
+
+		for (int i = 0; i < horizon.size(); ++i)
+		{
+			int nextIndex = i + 1 >= horizon.size() ? 0 : i + 1;
+
+			debugDraw.DrawLine(horizon[i]->tail->position, horizon[nextIndex]->tail->position, { 1, 1, 0 }, t * float(horizon.size() - i));
+			std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * t)));
+		}
+#endif // DEBUG
+
 		// Connect eye to horizon
 		std::vector<qhFace*> newFaces;
 		std::unordered_set<qhFace*> oldFaces;
 		AddPoint(&horizon[0], (int)horizon.size(), *eye, newFaces, oldFaces);
+
+#ifdef DEBUG
+		DrawPoint(*eye, { 1, 1, 1 }, delayTest);
+		DrawHull(*newFaces[0], delayTest);
+		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+#endif // DEBUG
 
 		// Remove obscured faces
 		for (auto it = oldFaces.begin(); it != oldFaces.end(); ++it)
@@ -688,10 +735,18 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		// Merge coplanar faces
 		MergeCoplanar(horizon);
 
+#ifdef DEBUG
+		DrawPoint(*eye, { 1, 1, 1 }, delayTest);
+		DrawHull(*newFaces[0], delayTest);
+		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+#endif // DEBUG
+
 		// Recurse on newly created faces
 		for (int i = 0; i < newFaces.size(); ++i)
 		{
-			return QHullRecursive(*newFaces[i]);
+			// Make sure this face still exists (sometimes it doesn't due to face merging)
+			if (newFaces[i]->edge->face == newFaces[i])
+				return QHullRecursive(*newFaces[i]);
 		}
 
 		return face;
@@ -704,7 +759,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 	//CondenseArrays(*lastFace);
 
-	DrawHull(*lastFace);
+	DrawHull(*lastFace, 100);
 }
 
 qhHalfEdge* ConvexHull::AddEdge()
@@ -951,9 +1006,15 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 	this->verts = vertArray;
 }
 
-ConvexHull::ConvexHull(const int vertCount, const glm::vec3* vertices)
+ConvexHull::ConvexHull(const int pointCount, const glm::vec3* vertices)
 {
-	QuickHull(vertCount, vertices);
+	edgeCount = faceCount = vertCount = 0;
+	epsilon = sqrEpsilon = 0;
+	edges = nullptr;
+	faces = nullptr;
+	verts = nullptr;
+
+	QuickHull(pointCount, vertices);
 }
 
 ConvexHull::~ConvexHull()

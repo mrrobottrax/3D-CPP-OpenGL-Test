@@ -29,6 +29,7 @@ void DebugDraw::DrawLine(const float start[3], const float end[3], glm::vec3 col
 		time
 	};
 
+	std::lock_guard<std::mutex> guard(linesMutex);
 	lines.push_back(line);
 }
 
@@ -133,6 +134,8 @@ void DebugDraw::Draw()
 
 void DebugDraw::DrawLines()
 {
+	std::lock_guard<std::mutex> guard(linesMutex);
+
 	if (lines.size() <= 0)
 	{
 		return;
