@@ -59,7 +59,6 @@ using namespace gMath;
 
 		DrawHullRecursive(startFace);
 
-
 		// Draw each face
 		for (auto it = visited.begin(); it != visited.end(); ++it)
 		{
@@ -181,8 +180,9 @@ void ConvexHull::RePartitionVertices(std::unordered_set<qhFace*> visibleFaces, s
 				continue;
 			}
 
+			// TODO: Maybe should be furthest?
 			// Find closest plane
-			float bestDist = 0;
+			float bestDist = FLT_MAX;
 			qhFace* bestFace = nullptr;
 			for (int i = 0; i < newFaces.size(); ++i)
 			{
@@ -191,7 +191,7 @@ void ConvexHull::RePartitionVertices(std::unordered_set<qhFace*> visibleFaces, s
 				if (dist >= 0)
 					dist -= epsilon;
 
-				if (dist >= bestDist)
+				if (dist <= bestDist && dist > 0)
 				{
 					bestFace = &conflictFace;
 				}
@@ -286,6 +286,8 @@ void ConvexHull::MergeCoplanar(const std::vector<qhHalfEdge*>& horizon, std::uno
 		RemoveFace(face2);
 		RemoveEdge(*edge->twin);
 		RemoveEdge(*edge);
+
+		std::cout << "MERGE\n";
 
 		// TODO: RECALCULATE FACE W/ NEWELL PLANE
 	}
@@ -486,7 +488,7 @@ void ConvexHull::InitialHull(std::list<glm::vec3>& points)
 		const glm::vec3& vertex = (*it);
 
 		// Find closest plane
-		float bestDist = 0;
+		float bestDist = FLT_MAX;
 		qhFace* bestFace = nullptr;
 		for (auto f : tetrahedronFaces)
 		{
@@ -494,7 +496,7 @@ void ConvexHull::InitialHull(std::list<glm::vec3>& points)
 			if (dist >= 0)
 				dist -= epsilon;
 
-			if (dist >= bestDist)
+			if (dist <= bestDist && dist > 0)
 			{
 				bestFace = f;
 			}
@@ -640,18 +642,21 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 		unvisitedFaces.erase(&face);
 
+		if (&face == nullptr)
+		{
+			std::cout << "QHULL ERROR: Face is null\n";
+			continue;
+		}
+
 #ifdef DEBUG
-		DrawHull(face, delayTest, false);
 		DrawPolygonEdges(*face.edge, { 0.5f, 1, 0 }, delayTest, 0.5f);
+		DrawHull(face, delayTest, false);
 		for (auto p : face.conflictList)
 		{
 			DrawPoint(p, { 0.5, 1, 0 }, delayTest);
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
-
-		if (&face == nullptr)
-			std::cout << "QHULL ERROR: Face is null\n";
 
 		if (face.conflictList.size() <= 0)
 		{
@@ -693,14 +698,14 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		{
 			// Find visible faces
 			std::function<void(qhHalfEdge&, const glm::vec3)> FindVisibleRecursive =
-				[&FindVisibleRecursive, &visible, &horizon](qhHalfEdge& edge, const glm::vec3 eye) -> void
+				[&FindVisibleRecursive, &visible, &horizon](qhHalfEdge& startEdge, const glm::vec3 eye) -> void
 			{
-				qhFace& face = *edge.face;
+				qhFace& face = *startEdge.face;
+
 				visible.insert(&face);
 
 				// Recurse on face edges
 				{
-					qhHalfEdge& startEdge = edge;
 					qhHalfEdge* edge = &startEdge;
 					do
 					{
@@ -838,9 +843,6 @@ qhFace* ConvexHull::AddFace()
 
 void ConvexHull::RemoveEdge(qhHalfEdge& edge)
 {
-	RemoveVertex(*edge.tail);
-
-	//memset(&edge, 0, sizeof(qhHalfEdge));
 	edge = qhHalfEdge();
 }
 
@@ -848,13 +850,10 @@ void ConvexHull::RemoveVertex(qhVertex& vertex)
 {
 	// Multiple edges reference vertices
 	// Also I'm pretty sure there's no need for QHull to remove a vertex
-	
-	//memset(&vertex, 0, sizeof(qhVertex));
 }
 
 void ConvexHull::RemoveFace(qhFace& face)
 {
-	//memset(&face, 0, sizeof(qhFace));
 	face = qhFace();
 }
 
