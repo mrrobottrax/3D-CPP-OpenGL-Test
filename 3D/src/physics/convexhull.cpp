@@ -582,20 +582,6 @@ void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3
 			edges[i]->face = newFaces.back();
 		}
 
-#ifdef DEBUG
-		for (int i = 0; i < 3; ++i)
-		{
-			debugDraw.DrawLine(edges[i]->tail->position, edges[i]->next->tail->position, { 1, 1, 1 }, delayTest);
-		}
-		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
-
-		for (int i = 0; i < 3; ++i)
-		{
-			debugDraw.DrawLine(edges[i]->tail->position, edges[i]->next->tail->position, { 1, 1, 1 }, delayTest / 3.0f);
-			std::this_thread::sleep_for(std::chrono::milliseconds((long)(delayTest / 3.0f * 1000)));
-		}
-#endif // DEBUG
-
 		connectingEdge = edges[1];
 	}
 
@@ -610,22 +596,22 @@ void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3
 #ifdef DEBUG
 	for (auto f : oldFaces)
 	{
-		DrawPolygonEdges(*f->edge, { 0.5f, 0.5f, 0.5f }, delayTest);
+		DrawPolygonEdges(*f->edge, { 0.5f, 0.5f, 0.5f }, delayTest * 5);
 	}
 
 	for (auto f : newFaces)
 	{
-		DrawPolygonEdges(*f->edge, { 1, 1, 1 }, delayTest);
+		DrawPolygonEdges(*f->edge, { 1, 1, 1 }, delayTest * 5);
 	}
 
 	for (int i = 0; i < horizonSize; ++i)
 	{
-		debugDraw.DrawLine(horizon[i]->tail->position, horizon[i]->next->tail->position, { 0, i / (float)horizonSize, i / (float)horizonSize }, delayTest);
+		debugDraw.DrawLine(horizon[i]->tail->position, horizon[i]->next->tail->position, { 0, i / (float)horizonSize, i / (float)horizonSize }, delayTest * 5);
 	}
 
-	debugDraw.DrawLine(connectingEdge->tail->position, connectingEdge->next->tail->position, { 1, 0, 0 }, delayTest);
-	debugDraw.DrawLine(loopEdge->tail->position, loopEdge->next->tail->position, { 0, 0, 1 }, delayTest);
-	std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+	debugDraw.DrawLine(connectingEdge->tail->position, connectingEdge->next->tail->position, { 1, 0, 0 }, delayTest * 5);
+	debugDraw.DrawLine(loopEdge->tail->position, loopEdge->next->tail->position, { 0, 0, 1 }, delayTest * 5);
+	std::this_thread::sleep_for(std::chrono::seconds((long)delayTest * 5));
 #endif // DEBUG
 }
 
@@ -764,6 +750,8 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 			std::this_thread::sleep_for(std::chrono::seconds((long)(delayTest)));
 #endif // DEBUG
+
+			//TODO: Problem identified: Sometimes the horizon is not counter-clockwise
 
 			// Find any horizon edges
 			int i = 0;

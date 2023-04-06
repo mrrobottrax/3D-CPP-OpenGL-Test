@@ -57,7 +57,7 @@ struct qhFace
 };
 
 #ifdef DEBUG
-const float delayTest = 2;
+const float delayTest = 1;
 #endif // DEBUG
 
 class ConvexHull
