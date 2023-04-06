@@ -88,7 +88,7 @@ using namespace gMath;
 			} while (edge != &startEdge);
 
 			center /= divide;
-			debugDraw.DrawLine(center, center + (*it)->plane.normal * 1.0f, color, time);
+			debugDraw.DrawLine(center, center + (*it)->plane.normal * 0.1f, color, time);
 
 			if (colorful)
 			{
@@ -244,11 +244,6 @@ void ConvexHull::MergeCoplanar(const std::vector<qhHalfEdge*>& horizon, std::uno
 		qhFace& face1 = *edge->twin->face;
 		qhFace& face2 = *edge->face;
 
-#ifdef DEBUG
-		//debugDraw.DrawLine(horizon[i]->tail->position, horizon[i + 1 >= horizon.size() ? 0 : i + 1]->tail->position, {0, 1, 1}, 1);
-		//std::this_thread::sleep_for(std::chrono::seconds(1));
-#endif // DEBUG
-
 		if (!IsCoplanar(face1, face2))
 			continue;
 
@@ -388,7 +383,6 @@ void ConvexHull::InitialHull(std::list<glm::vec3>& points)
 		// Flip plane if needed
 		if (glm::dot(basePlane.normal, initialHullPoints[3]) - std::abs(basePlane.dist) >= 0)
 		{
-			std::cout << "Plane flipped\n";
 			basePlane.Invert();
 			planeFlipped = true;
 		}
@@ -412,19 +406,19 @@ void ConvexHull::InitialHull(std::list<glm::vec3>& points)
 		baseEdges[0]->tail = baseVerts[0];
 		
 		DrawPoint(baseEdges[0]->tail->position, { 1, 1, 1 }, delayTest);
-		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 
 		baseVerts[1]->edge = baseEdges[1] = AddEdge();
 		baseEdges[1]->tail = baseVerts[1];
 
 		DrawPoint(baseEdges[1]->tail->position, { 1, 1, 1 }, delayTest);
-		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 
 		baseVerts[2]->edge = baseEdges[2] = AddEdge();
 		baseEdges[2]->tail = baseVerts[2];
 
 		DrawPoint(baseEdges[2]->tail->position, { 1, 1, 1 }, delayTest);
-		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 	}
 	else // Swap order of vertices to make face counter clockwise
 	{
@@ -432,19 +426,19 @@ void ConvexHull::InitialHull(std::list<glm::vec3>& points)
 		baseEdges[0]->tail = baseVerts[2];
 
 		DrawPoint(baseEdges[0]->tail->position, { 1, 1, 1 }, delayTest);
-		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 
 		baseVerts[1]->edge = baseEdges[1] = AddEdge();
 		baseEdges[1]->tail = baseVerts[1];
 
 		DrawPoint(baseEdges[1]->tail->position, { 1, 1, 1 }, delayTest);
-		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 
 		baseVerts[0]->edge = baseEdges[2] = AddEdge();
 		baseEdges[2]->tail = baseVerts[0];
 
 		DrawPoint(baseEdges[2]->tail->position, { 1, 1, 1 }, delayTest);
-		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 	}
 
 	ConnectEdgeLoop(baseEdges, 3);
@@ -603,7 +597,7 @@ void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3
 
 	debugDraw.DrawLine(connectingEdge->tail->position, connectingEdge->next->tail->position, { 1, 0, 0 }, delayTest);
 	debugDraw.DrawLine(loopEdge->tail->position, loopEdge->next->tail->position, { 0, 0, 1 }, delayTest);
-	std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+	std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 }
 
@@ -631,7 +625,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 #ifdef DEBUG
 	DrawHull(faces[0], delayTest);
-	std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+	std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
 	// For each face
@@ -643,7 +637,6 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 	while (unvisitedFaces.size() > 0)
 	{
 		qhFace& face = **unvisitedFaces.begin();
-		lastFace = &face;
 
 		unvisitedFaces.erase(&face);
 
@@ -654,7 +647,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		{
 			DrawPoint(p, { 0.5, 1, 0 }, delayTest);
 		}
-		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
 		if (&face == nullptr)
@@ -665,7 +658,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 #ifdef DEBUG
 			DrawPolygonEdges(*face.edge, { 1, 0.5f, 0 }, delayTest);
-			std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+			std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
 			continue;
@@ -741,7 +734,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 				DrawPolygonEdges(*f->edge, { 1, 0, 1 }, delayTest);
 			}
 
-			std::this_thread::sleep_for(std::chrono::seconds((long)(delayTest)));
+			std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
 			//TODO: Problem identified: Sometimes the horizon is not counter-clockwise
@@ -764,7 +757,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 #ifdef DEBUG
 		DrawHull(**newFaces.begin(), delayTest, true);
-		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
 		// Repartition all old face conflict vertices
@@ -775,7 +768,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 #ifdef DEBUG
 		DrawHull(**newFaces.begin(), delayTest);
-		std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
+		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
 		// Remove obscured faces
@@ -794,6 +787,8 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 			unvisitedFaces.erase(*it);
 			RemoveFace(**it);
 		}
+
+		lastFace = newFaces[0];
 	}
 
 	//CondenseArrays(*lastFace);
