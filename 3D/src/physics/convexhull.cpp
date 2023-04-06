@@ -543,14 +543,6 @@ void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3
 		edges[2] = AddEdge();
 		edges[2]->tail = &eyeVert;
 
-//#ifdef DEBUG
-//		for (int i = 0; i < 3; ++i)
-//		{
-//			debugDraw.DrawLine(edges[i]->tail->position, edges[i + 1 >= 3 ? 0 : i + 1]->tail->position, { 1, 1, 1 }, delayTest);
-//			std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
-//		}
-//#endif // DEBUG
-
 		Plane plane = PlaneFromTri(edges[0]->tail->position, edges[1]->tail->position, edges[2]->tail->position);
 
 		if (connectingEdge != nullptr)
@@ -596,22 +588,22 @@ void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3
 #ifdef DEBUG
 	for (auto f : oldFaces)
 	{
-		DrawPolygonEdges(*f->edge, { 0.5f, 0.5f, 0.5f }, delayTest * 5);
+		DrawPolygonEdges(*f->edge, { 0.5f, 0.5f, 0.5f }, delayTest);
 	}
 
 	for (auto f : newFaces)
 	{
-		DrawPolygonEdges(*f->edge, { 1, 1, 1 }, delayTest * 5);
+		DrawPolygonEdges(*f->edge, { 1, 1, 1 }, delayTest);
 	}
 
 	for (int i = 0; i < horizonSize; ++i)
 	{
-		debugDraw.DrawLine(horizon[i]->tail->position, horizon[i]->next->tail->position, { 0, i / (float)horizonSize, i / (float)horizonSize }, delayTest * 5);
+		debugDraw.DrawLine(horizon[i]->tail->position, horizon[i]->next->tail->position, { 0, i / (float)horizonSize, i / (float)horizonSize }, delayTest);
 	}
 
-	debugDraw.DrawLine(connectingEdge->tail->position, connectingEdge->next->tail->position, { 1, 0, 0 }, delayTest * 5);
-	debugDraw.DrawLine(loopEdge->tail->position, loopEdge->next->tail->position, { 0, 0, 1 }, delayTest * 5);
-	std::this_thread::sleep_for(std::chrono::seconds((long)delayTest * 5));
+	debugDraw.DrawLine(connectingEdge->tail->position, connectingEdge->next->tail->position, { 1, 0, 0 }, delayTest);
+	debugDraw.DrawLine(loopEdge->tail->position, loopEdge->next->tail->position, { 0, 0, 1 }, delayTest);
+	std::this_thread::sleep_for(std::chrono::seconds((long)delayTest));
 #endif // DEBUG
 }
 
@@ -706,31 +698,32 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		std::vector<qhHalfEdge*> horizon;
 		std::unordered_set<qhFace*> visible;
 		{
-			std::unordered_set<qhFace*> visited;
-
 			// Find visible faces
-			std::function<void(qhFace&, const glm::vec3)> FindVisibleRecursive = [&FindVisibleRecursive, &visited, &visible](qhFace& face, const glm::vec3 eye)
+			std::function<void(qhHalfEdge&, const glm::vec3)> FindVisibleRecursive =
+				[&FindVisibleRecursive, &visible, &horizon](qhHalfEdge& edge, const glm::vec3 eye) -> void
 			{
-				visited.insert(&face);
-
-				// Check if the face is visible
-				if (FaceIsVisible(face, eye))
-				{
-					visible.insert(&face);
-				}
+				qhFace& face = *edge.face;
+				visible.insert(&face);
 
 				// Recurse on face edges
 				{
-					qhHalfEdge& startEdge = *face.edge;
+					qhHalfEdge& startEdge = edge;
 					qhHalfEdge* edge = &startEdge;
 					do
 					{
 						qhFace& twinFace = *edge->twin->face;
 
-						if (visited.find(&twinFace) == visited.end())
+						bool twinVisible = FaceIsVisible(twinFace, eye);
+
+						if (visible.find(&twinFace) == visible.end() && twinVisible)
 						{
 							// Face has not been visited
-							FindVisibleRecursive(twinFace, eye);
+							FindVisibleRecursive(*edge->twin, eye);
+						}
+
+						if (!twinVisible)
+						{
+							horizon.push_back(edge->twin);
 						}
 
 						edge = edge->next;
@@ -738,7 +731,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 				}
 			};
 
-			FindVisibleRecursive(face, *eye);
+			FindVisibleRecursive(*face.edge, *eye);
 
 #ifdef DEBUG
 			DrawPoint(*eye, { 1, 1, 1 }, delayTest);
@@ -752,38 +745,6 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 #endif // DEBUG
 
 			//TODO: Problem identified: Sometimes the horizon is not counter-clockwise
-
-			// Find any horizon edges
-			int i = 0;
-			for (auto f : visible)
-			{
-				// Find edges with obscured twin
-				{
-					qhHalfEdge& startEdge = *f->edge;
-					qhHalfEdge* edge = &startEdge;
-					do
-					{
-						qhFace& twinFace = *edge->twin->face;
-
-						//TODO: Is it faster to find in visible set or recalculate visibility?
-						//if (!FaceIsVisible(twinFace, *eye))
-						if (visible.find(&twinFace) == visible.end())
-						{
-							horizon.push_back(edge->twin);
-							debugDraw.DrawLine(edge->tail->position, edge->next->tail->position, { 0, 0, 1 }, delayTest * (visible.size() - i));
-							debugDraw.DrawLine(edge->twin->tail->position, edge->twin->next->tail->position, { 0, 1, 0 }, delayTest * (visible.size() - i));
-						}
-						else
-						{
-							debugDraw.DrawLine(edge->tail->position, edge->next->tail->position, { 1, 0.5f, 0 }, delayTest * (visible.size() - i));
-						}
-
-						edge = edge->next;
-					} while (edge != &startEdge);
-				}
-				std::this_thread::sleep_for(std::chrono::seconds((long)(delayTest)));
-				++i;
-			}
 		}
 
 		if (horizon.size() <= 0)
