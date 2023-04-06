@@ -41,19 +41,17 @@ MeshObject testMap = MeshObject();
 MeshObject testMesh = MeshObject();
 MeshObject boxMesh = MeshObject();
 
-glm::vec3 vertices[] = {
-	{ -0.5f, -0.5f, -0.5f },
-	{  0.5f, -0.5f, -0.5f },
-	{ -0.5f,  0.5f, -0.5f },
-	{  0.5f,  0.5f, -0.5f },
-
-	{ -0.5f, -0.5f,  0.5f },
-	{  0.5f, -0.5f,  0.5f },
-	{ -0.5f,  0.5f,  0.5f },
-	{  0.5f,  0.5f,  0.5f },
-
-	{  0.5f,  2.0f,  0.5f },
-};
+//glm::vec3 vertices[] = {
+//	{ -0.5f, -0.5f, -0.5f },
+//	{  0.5f, -0.5f, -0.5f },
+//	{ -0.5f,  0.5f, -0.5f },
+//	{  0.5f,  0.5f, -0.5f },
+//
+//	{ -0.5f, -0.5f,  0.5f },
+//	{  0.5f, -0.5f,  0.5f },
+//	{ -0.5f,  0.5f,  0.5f },
+//	{  0.5f,  0.5f,  0.5f },
+//};
 ConvexHull boxHull = ConvexHull();
 
 void Init()
@@ -122,7 +120,7 @@ void Init()
 		em.GetComponent<MeshComponent>(entity) = { &monkeyMesh };
 	}
 	// Create map
-	{
+	/*{
 		Component components[] = {
 			Component().init<IdComponent>(),
 			Component().init<PositionComponent>(),
@@ -136,7 +134,7 @@ void Init()
 
 		modelLoader::LoadModel(testMap, "data/models/test_map.glb");
 		em.GetComponent<MeshComponent>(entity) = { &testMap };
-	}
+	}*/
 	// Create teapot
 	{
 		Component components[] = {
@@ -226,7 +224,20 @@ int main()
 
 	Init();
 
-	std::thread qh(&ConvexHull::QuickHull, &boxHull, 9, vertices);
+	const static int vertCount = 100;
+	const static float hullSize = 10;
+	glm::vec3* vertices = new glm::vec3[vertCount];
+
+	for (int i = 0; i < vertCount; ++i)
+	{
+		vertices[i] = {
+			rand() / (float)RAND_MAX * hullSize,
+			rand() / (float)RAND_MAX * hullSize,
+			rand() / (float)RAND_MAX * hullSize,
+		};
+	}
+
+	std::thread qh(&ConvexHull::QuickHull, &boxHull, vertCount, vertices);
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{
@@ -251,6 +262,7 @@ int main()
 	}
 
 	qh.join();
+	delete[] vertices;
 
 	End();
 }

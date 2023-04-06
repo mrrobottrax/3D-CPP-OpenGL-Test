@@ -45,7 +45,7 @@ namespace gMath
 	{
 		Plane plane;
 
-		plane.normal = glm::normalize(glm::cross(triPointA - triPointB, triPointB - triPointC));
+		plane.normal = glm::normalize(glm::cross(triPointB - triPointA, triPointC - triPointB));
 		plane.dist = 0;
 
 		plane.dist += glm::dot(plane.normal, triPointA);

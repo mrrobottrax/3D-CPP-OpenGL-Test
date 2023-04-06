@@ -56,6 +56,10 @@ struct qhFace
 	}
 };
 
+#ifdef DEBUG
+const float delayTest = 2;
+#endif // DEBUG
+
 class ConvexHull
 {
 public:
@@ -74,7 +78,8 @@ private:
 	void AllocateMemory(const int vertCount);
 	void RemoveDuplicateVertices(std::list<glm::vec3>& vertices);
 	void InitialHull(std::list<glm::vec3>& vertices);
-	void AddPoint(qhHalfEdge** horizon, int horizonSize, glm::vec3& eye, std::vector<qhFace*>& newFaces, std::unordered_set<qhFace*>& oldFaces);
+	void AddPoint(qhHalfEdge** horizon, int horizonSize, glm::vec3& eye, std::vector<qhFace*>& newFaces,
+		std::unordered_set<qhFace*>& oldFaces);
 
 	qhHalfEdge* AddEdge();
 	qhVertex* AddVertex();
@@ -86,9 +91,10 @@ private:
 
 	void CondenseArrays(qhFace& startFace);
 
-	//TODO: make sure these functions are using correct precision
-	void MergeCoplanar(const std::vector<qhHalfEdge*>& horizon);
+	//TODO: make sure these functions are using correct precision with fat planes etc
+	void MergeCoplanar(const std::vector<qhHalfEdge*>& horizon, std::unordered_set<qhFace*>& unvisitedFaces);
 	bool IsCoplanar(qhFace& a, qhFace& b);
+	void RePartitionVertices(std::unordered_set<qhFace*> visibleFaces, std::vector<qhFace*> newFaces, const glm::vec3 eye);
 
 public:
 	size_t edgeCount;
