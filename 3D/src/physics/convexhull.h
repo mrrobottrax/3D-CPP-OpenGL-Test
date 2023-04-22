@@ -78,8 +78,7 @@ private:
 	void AllocateMemory(const int vertCount);
 	void RemoveDuplicateVertices(std::list<glm::vec3>& vertices);
 	void InitialHull(std::list<glm::vec3>& vertices);
-	void AddPoint(qhHalfEdge** horizon, int horizonSize, glm::vec3& eye, std::vector<qhFace*>& newFaces,
-		std::unordered_set<qhFace*>& oldFaces);
+	void AddPoint(qhHalfEdge** horizon, int horizonSize, glm::vec3& eye, std::vector<qhFace*>& newFaces);
 
 	qhHalfEdge* AddEdge();
 	qhVertex* AddVertex();

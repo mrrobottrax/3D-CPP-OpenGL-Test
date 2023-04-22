@@ -36,7 +36,7 @@ using namespace gMath;
 		debugDraw.DrawLine(point, point + glm::vec3(0, 0.1f, 0), color, time);
 	}
 
-	void DrawHull(const qhFace& startFace, const float time = FLT_MAX, const bool colorful = false)
+	void DrawHull(const qhFace& startFace, const float time = FLT_MAX, const bool points = false)
 	{
 		std::unordered_set<qhFace*> visited;
 
@@ -76,12 +76,6 @@ using namespace gMath;
 		for (auto it = visited.begin(); it != visited.end(); ++it)
 		{
 			glm::vec3 color{0, 1, 1};
-			if (colorful)
-			{
-				color.r = rand() / (float)RAND_MAX;
-				color.g = rand() / (float)RAND_MAX;
-				color.b = rand() / (float)RAND_MAX;
-			}
 			
 			glm::vec3 center(0);
 			int divide = 0;
@@ -102,12 +96,9 @@ using namespace gMath;
 			center /= divide;
 			debugDraw.DrawLine(center, center + (*it)->plane.normal * 0.1f, color, time);
 
-			if (colorful)
+			for (auto p : (*it)->conflictList)
 			{
-				for (auto p : (*it)->conflictList)
-				{
-					DrawPoint(p, color, time);
-				}
+				DrawPoint(p, color, time);
 			}
 		}
 	}
@@ -485,8 +476,7 @@ void ConvexHull::InitialHull(std::list<glm::vec3>& points)
 	// Add fourth vertex
 	{
 		std::vector<qhFace*> newFaces;
-		std::unordered_set<qhFace*> oldFaces;
-		AddPoint(baseEdges, 3, initialHullPoints[3], newFaces, oldFaces);
+		AddPoint(baseEdges, 3, initialHullPoints[3], newFaces);
 
 		// Add new faces to array
 		for (int i = 0; i < 3; ++i)
@@ -523,8 +513,7 @@ void ConvexHull::InitialHull(std::list<glm::vec3>& points)
 	}
 }
 
-void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3& eye, std::vector<qhFace*>& newFaces,
-	std::unordered_set<qhFace*>& oldFaces)
+void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3& eye, std::vector<qhFace*>& newFaces)
 {
 	// Create vertex
 	qhVertex& eyeVert = *AddVertex();
@@ -534,13 +523,10 @@ void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3
 	qhHalfEdge* connectingEdge = nullptr;
 	for (int i = 0; i < horizonSize; ++i)
 	{
-		if (horizon[i]->twin)
-			oldFaces.insert(horizon[i]->twin->face);
-		
 		qhHalfEdge& edge = *horizon[i];
 		qhHalfEdge& nextEdge = *edge.next;
 
-		qhHalfEdge* edges[3];
+		qhHalfEdge* edges[3]{};
 
 		// Create edges
 		edges[0] = AddEdge();
@@ -586,34 +572,13 @@ void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3
 		connectingEdge = edges[1];
 	}
 
-	// Merge back into the loop
-	// C6011 false positive
+// False positive
+// C6011: Dereferencing NULL pointer
 #pragma warning( push )
-#pragma warning( disable : 6011)
+#pragma warning( disable : 6011 )
 	connectingEdge->twin = loopEdge;
 	loopEdge->twin = connectingEdge;
 #pragma warning( pop )
-
-#ifdef DEBUG
-	for (auto f : oldFaces)
-	{
-		DrawPolygonEdges(*f->edge, { 0.5f, 0.5f, 0.5f }, delayTest);
-	}
-
-	for (auto f : newFaces)
-	{
-		DrawPolygonEdges(*f->edge, { 1, 1, 1 }, delayTest);
-	}
-
-	for (int i = 0; i < horizonSize; ++i)
-	{
-		debugDraw.DrawLine(horizon[i]->tail->position, horizon[i]->next->tail->position, { 0, i / (float)horizonSize, i / (float)horizonSize }, delayTest);
-	}
-
-	debugDraw.DrawLine(connectingEdge->tail->position, connectingEdge->next->tail->position, { 1, 0, 0 }, delayTest);
-	debugDraw.DrawLine(loopEdge->tail->position, loopEdge->next->tail->position, { 0, 0, 1 }, delayTest);
-	std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
-#endif // DEBUG
 }
 
 bool FaceIsVisible(const qhFace& face, const glm::vec3 eye)
@@ -639,7 +604,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 	}
 
 #ifdef DEBUG
-	DrawHull(faces[0], delayTest);
+	DrawHull(faces[0], delayTest, true);
 	std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
@@ -662,8 +627,8 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		}
 
 #ifdef DEBUG
-		DrawPolygonEdges(*face.edge, { 0.5f, 1, 0 }, delayTest, 0.5f);
-		DrawHull(face, delayTest, false);
+		DrawPolygonEdges(*face.edge, { 0.5f, 1, 0 }, delayTest, 0.25f);
+		DrawHull(face, delayTest, true);
 		for (auto p : face.conflictList)
 		{
 			DrawPoint(p, { 0.5, 1, 0 }, delayTest);
@@ -673,12 +638,6 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 		if (face.conflictList.size() <= 0)
 		{
-
-#ifdef DEBUG
-			DrawPolygonEdges(*face.edge, { 1, 0.5f, 0 }, delayTest);
-			std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
-#endif // DEBUG
-
 			continue;
 		}
 
@@ -745,18 +704,18 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 			FindVisibleRecursive(*face.edge, *eye);
 
 #ifdef DEBUG
-			DrawPoint(*eye, { 1, 1, 1 }, delayTest);
-
 			for (auto f : visible)
 			{
-				DrawPolygonEdges(*f->edge, { 1, 0, 1 }, delayTest);
+				DrawPolygonEdges(*f->edge, { 1, 0, 1 }, delayTest, 0.25f);
 			}
+
+			DrawHull(face, delayTest, true);
+
+			DrawPoint(*eye, { 1, 1, 1 }, delayTest);
 
 			std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
-			// TODO: Problem identified: Sometimes the horizon is not counter-clockwise
-			// TODO: Still an issue?
 		}
 
 		if (horizon.size() <= 0)
@@ -766,8 +725,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 		// Connect eye to horizon
 		std::vector<qhFace*> newFaces;
-		std::unordered_set<qhFace*> oldFaces;
-		AddPoint(&horizon[0], (int)horizon.size(), *eye, newFaces, oldFaces);
+		AddPoint(&horizon[0], (int)horizon.size(), *eye, newFaces);
 
 		for (auto f : newFaces)
 		{
@@ -786,12 +744,12 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		MergeCoplanar(horizon, unvisitedFaces);
 
 #ifdef DEBUG
-		DrawHull(**newFaces.begin(), delayTest);
+		DrawHull(**newFaces.begin(), delayTest, true);
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
 		// Remove obscured faces
-		for (auto it = oldFaces.begin(); it != oldFaces.end(); ++it)
+		for (auto it = visible.begin(); it != visible.end(); ++it)
 		{
 			qhHalfEdge& startEdge = *(*it)->edge;
 			qhHalfEdge* edge = &startEdge;
@@ -813,7 +771,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 	//CondenseArrays(*lastFace);
 
 	if (lastFace != nullptr)
-		DrawHull(*lastFace, 100);
+		DrawHull(*lastFace, 120, false);
 }
 
 qhHalfEdge* ConvexHull::AddEdge()
