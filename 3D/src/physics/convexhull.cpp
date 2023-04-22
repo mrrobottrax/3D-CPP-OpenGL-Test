@@ -50,7 +50,20 @@ using namespace gMath;
 				if (visited.find(edge->twin->face) == visited.end())
 				{
 					visited.insert(edge->twin->face);
-					DrawHullRecursive(*edge->twin->face);
+
+					if (edge->twin != nullptr && edge->twin->face != nullptr)
+					{
+						DrawHullRecursive(*edge->twin->face);
+					}
+					else
+					{
+						// TODO: Remove
+						printf("QHull Error: Drawing bad face");
+						DrawPolygonEdges(*edge, { 1, 1, 0 }, 60, 0.05f);
+						debugDraw.DrawLine(edge->tail->position, edge->next->tail->position, { 0, 0, 1 }, 60);
+						std::this_thread::sleep_for(std::chrono::seconds(120));
+					}
+
 				}
 
 				edge = edge->next;
@@ -631,7 +644,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 #endif // DEBUG
 
 	// For each face
-	qhFace* lastFace{};
+	qhFace* lastFace = nullptr;
 	std::unordered_set<qhFace*> unvisitedFaces;
 	for (int i = 0; i < 4; ++i)
 		unvisitedFaces.insert(&faces[i]);
@@ -742,7 +755,8 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 			std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
-			//TODO: Problem identified: Sometimes the horizon is not counter-clockwise
+			// TODO: Problem identified: Sometimes the horizon is not counter-clockwise
+			// TODO: Still an issue?
 		}
 
 		if (horizon.size() <= 0)
