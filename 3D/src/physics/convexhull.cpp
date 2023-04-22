@@ -9,7 +9,7 @@
 
 using namespace gMath;
 
-#ifdef DEBUG
+#ifdef QHULL_DEBUG
 	void DrawPolygonEdges(qhHalfEdge& startEdge, const glm::vec3& color = {1, 1, 1}, const float time = FLT_MAX, const float explode = 0)
 	{
 		int i = 0;
@@ -57,7 +57,6 @@ using namespace gMath;
 					}
 					else
 					{
-						// TODO: Remove
 						printf("QHull Error: Drawing bad face");
 						DrawPolygonEdges(*edge, { 1, 1, 0 }, 60, 0.05f);
 						debugDraw.DrawLine(edge->tail->position, edge->next->tail->position, { 0, 0, 1 }, 60);
@@ -106,7 +105,7 @@ using namespace gMath;
 		}
 	}
 
-#endif // DEBUG
+#endif // QHULL_DEBUG
 
 float CalcEpsilon(const std::list<glm::vec3>& verticesList)
 {
@@ -187,7 +186,6 @@ void ConvexHull::RePartitionVertices(std::unordered_set<qhFace*> visibleFaces, s
 				continue;
 			}
 
-			// TODO: Maybe should be furthest?
 			// Find closest plane
 			float bestDist = FLT_MAX;
 			qhFace* bestFace = nullptr;
@@ -292,8 +290,6 @@ void ConvexHull::MergeCoplanar(const std::vector<qhHalfEdge*>& horizon, std::uno
 		RemoveFace(face2);
 		RemoveEdge(*edge->twin);
 		RemoveEdge(*edge);
-
-		std::cout << "MERGE\n";
 
 		// TODO: RECALCULATE FACE W/ NEWELL PLANE
 	}
@@ -413,40 +409,54 @@ void ConvexHull::InitialHull(std::list<glm::vec3>& points)
 		baseVerts[0]->edge = baseEdges[0] = AddEdge();
 		baseEdges[0]->tail = baseVerts[0];
 		
+#ifdef QHULL_DEBUG
 		DrawPoint(baseEdges[0]->tail->position, { 1, 1, 1 }, delayTest);
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
+#endif // QHULL_DEBUG
 
 		baseVerts[1]->edge = baseEdges[1] = AddEdge();
 		baseEdges[1]->tail = baseVerts[1];
 
+#ifdef QHULL_DEBUG
 		DrawPoint(baseEdges[1]->tail->position, { 1, 1, 1 }, delayTest);
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
+#endif // QHULL_DEBUG
 
 		baseVerts[2]->edge = baseEdges[2] = AddEdge();
 		baseEdges[2]->tail = baseVerts[2];
 
+#ifdef QHULL_DEBUG
 		DrawPoint(baseEdges[2]->tail->position, { 1, 1, 1 }, delayTest);
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
+#endif // QHULL_DEBUG
+
 	}
 	else // Swap order of vertices to make face counter clockwise
 	{
 		baseVerts[2]->edge = baseEdges[0] = AddEdge();
 		baseEdges[0]->tail = baseVerts[2];
 
+#ifdef QHULL_DEBUG
 		DrawPoint(baseEdges[0]->tail->position, { 1, 1, 1 }, delayTest);
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
+#endif // QHULL_DEBUG
 
 		baseVerts[1]->edge = baseEdges[1] = AddEdge();
 		baseEdges[1]->tail = baseVerts[1];
 
+#ifdef QHULL_DEBUG
 		DrawPoint(baseEdges[1]->tail->position, { 1, 1, 1 }, delayTest);
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
+#endif // QHULL_DEBUG
 
 		baseVerts[0]->edge = baseEdges[2] = AddEdge();
 		baseEdges[2]->tail = baseVerts[0];
 
+#ifdef QHULL_DEBUG
 		DrawPoint(baseEdges[2]->tail->position, { 1, 1, 1 }, delayTest);
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
+#endif // QHULL_DEBUG
+
 	}
 
 	ConnectEdgeLoop(baseEdges, 3);
@@ -605,10 +615,10 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		InitialHull(verticesList);
 	}
 
-#ifdef DEBUG
+#ifdef QHULL_DEBUG
 	DrawHull(faces[0], 5, true, 0);
 	std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * 5)));
-#endif // DEBUG
+#endif // QHULL_DEBUG
 
 	// For each face
 	qhFace* lastFace = nullptr;
@@ -628,7 +638,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 			continue;
 		}
 
-#ifdef DEBUG
+#ifdef QHULL_DEBUG
 		DrawPolygonEdges(*face.edge, { 0.5f, 1, 0 }, delayTest, 0.25f);
 		DrawHull(face, delayTest, true, 0);
 		for (auto p : face.conflictList)
@@ -636,7 +646,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 			DrawPoint(p, { 0.5, 1, 0 }, delayTest);
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
-#endif // DEBUG
+#endif // QHULL_DEBUG
 
 		if (face.conflictList.size() <= 0)
 		{
@@ -705,7 +715,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 			FindVisibleRecursive(*face.edge, *eye);
 
-#ifdef DEBUG
+#ifdef QHULL_DEBUG
 			for (auto f : visible)
 			{
 				DrawPolygonEdges(*f->edge, { 1, 0, 1 }, delayTest, 0.25f);
@@ -716,7 +726,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 			DrawPoint(*eye, { 1, 1, 1 }, delayTest);
 
 			std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
-#endif // DEBUG
+#endif // QHULL_DEBUG
 
 		}
 
@@ -734,10 +744,10 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 			unvisitedFaces.insert(f);
 		}
 
-#ifdef DEBUG
+#ifdef QHULL_DEBUG
 		DrawHull(**newFaces.begin(), delayTest, true, 0);
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
-#endif // DEBUG
+#endif // QHULL_DEBUG
 
 		// Repartition all old face conflict vertices
 		RePartitionVertices(visible, newFaces, *eye);
@@ -745,10 +755,10 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		// Merge coplanar faces
 		MergeCoplanar(horizon, unvisitedFaces);
 
-#ifdef DEBUG
+#ifdef QHULL_DEBUG
 		DrawHull(**newFaces.begin(), delayTest, true, 0);
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
-#endif // DEBUG
+#endif // QHULL_DEBUG
 
 		// Remove obscured faces
 		for (auto it = visible.begin(); it != visible.end(); ++it)
@@ -772,8 +782,11 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 	//CondenseArrays(*lastFace);
 
+#ifdef QHULL_DEBUG
 	if (lastFace != nullptr)
 		DrawHull(*lastFace, 120, false, 0.5f);
+#endif // QHULL_DEBUG
+
 }
 
 qhHalfEdge* ConvexHull::AddEdge()

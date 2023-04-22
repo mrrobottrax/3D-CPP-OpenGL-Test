@@ -41,17 +41,17 @@ MeshObject testMap = MeshObject();
 MeshObject testMesh = MeshObject();
 MeshObject boxMesh = MeshObject();
 
-//glm::vec3 vertices[] = {
-//	{ -0.5f, -0.5f, -0.5f },
-//	{  0.5f, -0.5f, -0.5f },
-//	{ -0.5f,  0.5f, -0.5f },
-//	{  0.5f,  0.5f, -0.5f },
-//
-//	{ -0.5f, -0.5f,  0.5f },
-//	{  0.5f, -0.5f,  0.5f },
-//	{ -0.5f,  0.5f,  0.5f },
-//	{  0.5f,  0.5f,  0.5f },
-//};
+glm::vec3 vertices[] = {
+	{ -0.5f, -0.5f, -0.5f },
+	{  0.5f, -0.5f, -0.5f },
+	{ -0.5f,  0.5f, -0.5f },
+	{  0.5f,  0.5f, -0.5f },
+
+	{ -0.5f, -0.5f,  0.5f },
+	{  0.5f, -0.5f,  0.5f },
+	{ -0.5f,  0.5f,  0.5f },
+	{  0.5f,  0.5f,  0.5f },
+};
 ConvexHull boxHull = ConvexHull();
 
 void Init()
@@ -224,20 +224,7 @@ int main()
 
 	Init();
 
-	const static int vertCount = 1000;
-	const static float hullSize = 10;
-	glm::vec3* vertices = new glm::vec3[vertCount];
-
-	for (int i = 0; i < vertCount; ++i)
-	{
-		vertices[i] = {
-			rand() / (float)RAND_MAX * hullSize,
-			rand() / (float)RAND_MAX * hullSize,
-			rand() / (float)RAND_MAX * hullSize,
-		};
-	}
-
-	std::thread qh(&ConvexHull::QuickHull, &boxHull, vertCount, vertices);
+	std::thread qh(&ConvexHull::QuickHull, &boxHull, 8, vertices);
 
 	while (!glfwWindowShouldClose(mainWindow))
 	{
@@ -262,7 +249,6 @@ int main()
 	}
 
 	qh.join();
-	delete[] vertices;
 
 	End();
 }
