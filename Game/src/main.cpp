@@ -224,7 +224,7 @@ int main()
 
 	Init();
 
-	const static int vertCount = 100;
+	const static int vertCount = 1000;
 	const static float hullSize = 10;
 	glm::vec3* vertices = new glm::vec3[vertCount];
 

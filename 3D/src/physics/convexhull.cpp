@@ -36,7 +36,7 @@ using namespace gMath;
 		debugDraw.DrawLine(point, point + glm::vec3(0, 0.1f, 0), color, time);
 	}
 
-	void DrawHull(const qhFace& startFace, const float time = FLT_MAX, const bool points = false)
+	void DrawHull(const qhFace& startFace, const float time = FLT_MAX, const bool points = false, const float normalDist = 0)
 	{
 		std::unordered_set<qhFace*> visited;
 
@@ -94,12 +94,15 @@ using namespace gMath;
 			} while (edge != &startEdge);
 
 			center /= divide;
-			debugDraw.DrawLine(center, center + (*it)->plane.normal * 0.1f, color, time);
 
-			for (auto p : (*it)->conflictList)
-			{
-				DrawPoint(p, color, time);
-			}
+			if (normalDist != 0)
+				debugDraw.DrawLine(center, center + (*it)->plane.normal * normalDist, color, time);
+
+			if (points)
+				for (auto p : (*it)->conflictList)
+				{
+					DrawPoint(p, color, time);
+				}
 		}
 	}
 
@@ -239,7 +242,6 @@ bool ConvexHull::IsCoplanar(qhFace& a, qhFace& b)
 	return false;
 }
 
-//TODO: Try std::list<qhFace*>&
 void ConvexHull::MergeCoplanar(const std::vector<qhHalfEdge*>& horizon, std::unordered_set<qhFace*>& unvisitedFaces)
 {
 	for (int i = 0; i < horizon.size(); ++i)
@@ -387,7 +389,7 @@ void ConvexHull::InitialHull(std::list<glm::vec3>& points)
 		points.remove(initialHullPoints[3]);
 
 		// Flip plane if needed
-		if (glm::dot(basePlane.normal, initialHullPoints[3]) - std::abs(basePlane.dist) >= 0)
+		if (glm::dot(basePlane.normal, initialHullPoints[3]) - basePlane.dist >= 0)
 		{
 			basePlane.Invert();
 			planeFlipped = true;
@@ -604,8 +606,8 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 	}
 
 #ifdef DEBUG
-	DrawHull(faces[0], delayTest, true);
-	std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
+	DrawHull(faces[0], 5, true, 0);
+	std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * 5)));
 #endif // DEBUG
 
 	// For each face
@@ -628,7 +630,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 #ifdef DEBUG
 		DrawPolygonEdges(*face.edge, { 0.5f, 1, 0 }, delayTest, 0.25f);
-		DrawHull(face, delayTest, true);
+		DrawHull(face, delayTest, true, 0);
 		for (auto p : face.conflictList)
 		{
 			DrawPoint(p, { 0.5, 1, 0 }, delayTest);
@@ -709,7 +711,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 				DrawPolygonEdges(*f->edge, { 1, 0, 1 }, delayTest, 0.25f);
 			}
 
-			DrawHull(face, delayTest, true);
+			DrawHull(face, delayTest, true, 0);
 
 			DrawPoint(*eye, { 1, 1, 1 }, delayTest);
 
@@ -733,7 +735,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		}
 
 #ifdef DEBUG
-		DrawHull(**newFaces.begin(), delayTest, true);
+		DrawHull(**newFaces.begin(), delayTest, true, 0);
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
@@ -744,7 +746,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		MergeCoplanar(horizon, unvisitedFaces);
 
 #ifdef DEBUG
-		DrawHull(**newFaces.begin(), delayTest, true);
+		DrawHull(**newFaces.begin(), delayTest, true, 0);
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // DEBUG
 
@@ -771,7 +773,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 	//CondenseArrays(*lastFace);
 
 	if (lastFace != nullptr)
-		DrawHull(*lastFace, 120, false);
+		DrawHull(*lastFace, 120, false, 0.5f);
 }
 
 qhHalfEdge* ConvexHull::AddEdge()
