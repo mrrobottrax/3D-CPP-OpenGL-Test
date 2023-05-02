@@ -52,7 +52,7 @@ glm::vec3 vertices[] = {
 	{ -0.5f,  0.5f,  0.5f },
 	{  0.5f,  0.5f,  0.5f },
 };
-ConvexHull boxHull = ConvexHull();
+ConvexHull boxHull = ConvexHull(8, vertices);
 
 void Init()
 {
@@ -224,8 +224,6 @@ int main()
 
 	Init();
 
-	std::thread qh(&ConvexHull::QuickHull, &boxHull, 8, vertices);
-
 	while (!glfwWindowShouldClose(mainWindow))
 	{
 		timeManager.Update();
@@ -247,8 +245,6 @@ int main()
 
 		glfwSwapBuffers(mainWindow);
 	}
-
-	qh.join();
 
 	End();
 }

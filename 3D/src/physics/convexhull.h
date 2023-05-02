@@ -58,7 +58,7 @@ struct qhFace
 
 #ifdef DEBUG
 
-#define QHULL_DEBUG
+//#define QHULL_DEBUG
 
 #endif // DEBUG
 

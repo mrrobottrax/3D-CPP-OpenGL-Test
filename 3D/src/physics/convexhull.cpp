@@ -9,103 +9,103 @@
 
 using namespace gMath;
 
-#ifdef QHULL_DEBUG
-	void DrawPolygonEdges(qhHalfEdge& startEdge, const glm::vec3& color = {1, 1, 1}, const float time = FLT_MAX, const float explode = 0)
-	{
-		int i = 0;
-		qhHalfEdge* edge = &startEdge;
-		glm::vec3 add(0);
-		// Explode faces a little
-		if (startEdge.face)
-		{
-			add = startEdge.face->plane.normal * explode;
-		}
-		do {
-			glm::vec3 start = { (*edge).tail->position[0], (*edge).tail->position[1], (*edge).tail->position[2] };
-			glm::vec3 end = { (*edge).next->tail->position[0], (*edge).next->tail->position[1], (*edge).next->tail->position[2] };
+// Debug functions
+void DrawPoint(glm::vec3 point, glm::vec3 color = { 1, 1, 1 }, float time = FLT_MAX)
+{
+	debugDraw.DrawLine(point, point + glm::vec3(0, 0.1f, 0), color, time);
+}
 
-			debugDraw.DrawLine(start + add, end + add, color, time);
+void DrawPolygonEdges(qhHalfEdge& startEdge, const glm::vec3& color = { 1, 1, 1 }, const float time = FLT_MAX, const float explode = 0)
+{
+	int i = 0;
+	qhHalfEdge* edge = &startEdge;
+	glm::vec3 add(0);
+	// Explode faces a little
+	if (startEdge.face)
+	{
+		add = startEdge.face->plane.normal * explode;
+	}
+	do {
+		glm::vec3 start = { (*edge).tail->position[0], (*edge).tail->position[1], (*edge).tail->position[2] };
+		glm::vec3 end = { (*edge).next->tail->position[0], (*edge).next->tail->position[1], (*edge).next->tail->position[2] };
+
+		debugDraw.DrawLine(start + add, end + add, color, time);
+
+		edge = edge->next;
+		++i;
+	} while (edge != &startEdge);
+}
+
+void DrawHull(const qhFace& startFace, const float time = FLT_MAX, const bool points = false, const float normalDist = 0)
+{
+	std::unordered_set<qhFace*> visited;
+
+	// Depth first search
+	std::function<void(const qhFace&)> DrawHullRecursive = [&](const qhFace& face)
+	{
+		qhHalfEdge& startEdge = *face.edge;
+		qhHalfEdge* edge = &startEdge;
+		do {
+			// Only recurse when the edge is not already in the list
+			if (visited.find(edge->twin->face) == visited.end())
+			{
+				visited.insert(edge->twin->face);
+
+				if (edge->twin != nullptr && edge->twin->face != nullptr)
+				{
+					DrawHullRecursive(*edge->twin->face);
+				}
+				else
+				{
+					printf("QHull Error: Drawing bad face");
+					DrawPolygonEdges(*edge, { 1, 1, 0 }, 60, 0.05f);
+					debugDraw.DrawLine(edge->tail->position, edge->next->tail->position, { 0, 0, 1 }, 60);
+					std::this_thread::sleep_for(std::chrono::seconds(120));
+				}
+
+			}
 
 			edge = edge->next;
-			++i;
 		} while (edge != &startEdge);
-	}
+	};
 
-	void DrawPoint(glm::vec3 point, glm::vec3 color = { 1, 1, 1 }, float time = FLT_MAX)
+	DrawHullRecursive(startFace);
+
+	// Draw each face
+	for (auto it = visited.begin(); it != visited.end(); ++it)
 	{
-		debugDraw.DrawLine(point, point + glm::vec3(0, 0.1f, 0), color, time);
-	}
-
-	void DrawHull(const qhFace& startFace, const float time = FLT_MAX, const bool points = false, const float normalDist = 0)
-	{
-		std::unordered_set<qhFace*> visited;
-
-		// Depth first search
-		std::function<void(const qhFace&)> DrawHullRecursive = [&](const qhFace& face)
-		{
-			qhHalfEdge& startEdge = *face.edge;
-			qhHalfEdge* edge = &startEdge;
-			do {
-				// Only recurse when the edge is not already in the list
-				if (visited.find(edge->twin->face) == visited.end())
-				{
-					visited.insert(edge->twin->face);
-
-					if (edge->twin != nullptr && edge->twin->face != nullptr)
-					{
-						DrawHullRecursive(*edge->twin->face);
-					}
-					else
-					{
-						printf("QHull Error: Drawing bad face");
-						DrawPolygonEdges(*edge, { 1, 1, 0 }, 60, 0.05f);
-						debugDraw.DrawLine(edge->tail->position, edge->next->tail->position, { 0, 0, 1 }, 60);
-						std::this_thread::sleep_for(std::chrono::seconds(120));
-					}
-
-				}
-
-				edge = edge->next;
-			} while (edge != &startEdge);
-		};
-
-		DrawHullRecursive(startFace);
-
-		// Draw each face
-		for (auto it = visited.begin(); it != visited.end(); ++it)
-		{
-			glm::vec3 color{0, 1, 1};
+		glm::vec3 color{0, 1, 1};
 			
-			glm::vec3 center(0);
-			int divide = 0;
+		glm::vec3 center(0);
+		int divide = 0;
 
-			glm::vec3 add = (*it)->plane.normal * 0.02f;
+		glm::vec3 add = (*it)->plane.normal * 0.02f;
 
-			qhHalfEdge& startEdge = *(*it)->edge;
-			qhHalfEdge* edge = &startEdge;
-			do {
-				debugDraw.DrawLine(edge->tail->position + add, edge->next->tail->position + add, color, time);
+		qhHalfEdge& startEdge = *(*it)->edge;
+		qhHalfEdge* edge = &startEdge;
+		do {
+			debugDraw.DrawLine(edge->tail->position + add, edge->next->tail->position + add, color, time);
 
-				center += edge->tail->position;
-				++divide;
+			center += edge->tail->position;
+			++divide;
 
-				edge = edge->next;
-			} while (edge != &startEdge);
+			edge = edge->next;
+		} while (edge != &startEdge);
 
-			center /= divide;
+		center /= divide;
 
-			if (normalDist != 0)
-				debugDraw.DrawLine(center, center + (*it)->plane.normal * normalDist, color, time);
+		if (normalDist != 0)
+			debugDraw.DrawLine(center, center + (*it)->plane.normal * normalDist, color, time);
 
-			if (points)
-				for (auto p : (*it)->conflictList)
-				{
-					DrawPoint(p, color, time);
-				}
+		if (points)
+		{
+			for (auto p : (*it)->conflictList)
+			{
+				DrawPoint(p, color, time);
+			}
 		}
 	}
-
-#endif // QHULL_DEBUG
+}
 
 float CalcEpsilon(const std::list<glm::vec3>& verticesList)
 {
