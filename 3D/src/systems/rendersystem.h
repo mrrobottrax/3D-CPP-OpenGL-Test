@@ -8,7 +8,7 @@
 class RenderSystem : public System
 {
 public:
-	RenderSystem() : mainCamera(), autoDraw(true)
+	RenderSystem() : pMainCamera(), autoDraw(true)
 	{
 #ifdef DEBUG
 		debugDraw.Init();
@@ -18,7 +18,7 @@ public:
 
 	bool autoDraw;
 
-	CameraComponent* mainCamera;
+	CameraComponent* pMainCamera;
 	Entity mainCameraEntity;
 
 	void SetMainCameraEntity(Entity&);

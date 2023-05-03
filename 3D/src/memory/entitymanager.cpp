@@ -23,43 +23,43 @@ Entity EntityManager::AddEntity(EntityArchetype& archetype)
 	unsigned short index = 0;
 
 	// Check if the chunk archetype exists
-	ChunkArchetypeElement* chunkArchetype = FindChunkArchetype(archetype);
-	if (chunkArchetype == nullptr)
+	ChunkArchetypeElement* pChunkArchetype = FindChunkArchetype(archetype);
+	if (pChunkArchetype == nullptr)
 	{
-		chunkArchetype = CreateChunkArchetype(archetype);
+		pChunkArchetype = CreateChunkArchetype(archetype);
 	}
 
 	// Check if there are already any chunks
-	Chunk* chunk = chunkArchetype->firstChunk;
-	if (chunk == nullptr)
+	Chunk* pChunk = pChunkArchetype->pFirstChunk;
+	if (pChunk == nullptr)
 	{
-		chunk = CreateChunk(*chunkArchetype);
+		pChunk = CreateChunk(*pChunkArchetype);
 	}
 	else
 	{
 		// Get the next free chunk
 		bool foundFreeChunk = false;
-		while (chunk != nullptr)
+		while (pChunk != nullptr)
 		{
-			if (chunk->numberOfEntities < chunk->maxEntities)
+			if (pChunk->numberOfEntities < pChunk->maxEntities)
 			{
 				foundFreeChunk = true;
-				index = chunk->numberOfEntities;
+				index = pChunk->numberOfEntities;
 				break;
 			}
 
-			chunk = chunk->next;
+			pChunk = pChunk->pNext;
 		}
 
 		if (!foundFreeChunk)
 		{
-			chunk = CreateChunk(*chunkArchetype);
+			pChunk = CreateChunk(*pChunkArchetype);
 		}
 	}
 
-	chunk->numberOfEntities++;
+	pChunk->numberOfEntities++;
 
-	Entity entity(chunkArchetype->archetype, *chunk, index);
+	Entity entity(pChunkArchetype->archetype, *pChunk, index);
 
 	GetComponent<IdComponent>(entity).index = nextEntityIndex;
 	nextEntityIndex++;
@@ -81,76 +81,76 @@ ChunkArchetypeElement* EntityManager::CreateChunkArchetype(EntityArchetype& arch
 	}
 
 	unsigned short size = sizeOfChunkArchetype + arraySize;
-	ChunkArchetypeElement* element = (ChunkArchetypeElement*)(malloc(size));
+	ChunkArchetypeElement* pElement = (ChunkArchetypeElement*)(malloc(size));
 
-	if (element == nullptr)
+	if (pElement == nullptr)
 		return nullptr;
 
-	element->next = nullptr;
-	element->firstChunk = nullptr;
-	element->archetype = archetype;
+	pElement->pNext = nullptr;
+	pElement->pFirstChunk = nullptr;
+	pElement->archetype = archetype;
 
 	// Get memory location of the archetype components array
-	Component* componentsArray = (Component*)(element + 1);
+	Component* componentsArray = (Component*)(pElement + 1);
 	memcpy(componentsArray, archetype.components, arraySize);
 
-	element->archetype.components = componentsArray;
+	pElement->archetype.components = componentsArray;
 
 	// First element in list
 	if (chunkArchetypeList == nullptr)
 	{
-		chunkArchetypeList = element;
-		return element;
+		chunkArchetypeList = pElement;
+		return pElement;
 	}
 
 	// Get last element
-	element->next = chunkArchetypeList;
-	chunkArchetypeList = element;
+	pElement->pNext = chunkArchetypeList;
+	chunkArchetypeList = pElement;
 
-	return element;
+	return pElement;
 }
 
 Chunk* EntityManager::CreateChunk(EntityArchetype& archetype)
 {
-	ChunkArchetypeElement* chunkArchetype = FindChunkArchetype(archetype);
+	ChunkArchetypeElement* pChunkArchetype = FindChunkArchetype(archetype);
 
 	// Check if this archetype exists
-	if (chunkArchetype == nullptr)
+	if (pChunkArchetype == nullptr)
 	{
 		// Add archetype to list
-		chunkArchetype = CreateChunkArchetype(archetype);
+		pChunkArchetype = CreateChunkArchetype(archetype);
 	}
 
-	return CreateChunk(*chunkArchetype);
+	return CreateChunk(*pChunkArchetype);
 }
 
 Chunk* EntityManager::CreateChunk(ChunkArchetypeElement& chunkArchetype)
 {
-	Chunk* chunk = (Chunk*)(malloc(chunkSize));
+	Chunk* pChunk = (Chunk*)(malloc(chunkSize));
 
-	if (chunk == nullptr)
+	if (pChunk == nullptr)
 	{
 		std::cout << "Failed to allocate chunk.";
 		return nullptr;
 	}
 
-	chunk->numberOfEntities = 0;
-	chunk->next = nullptr;
+	pChunk->numberOfEntities = 0;
+	pChunk->pNext = nullptr;
 
-	const unsigned short freeSpace = chunkSize - sizeof(*chunk);
-	chunk->maxEntities = freeSpace / chunkArchetype.archetype.entitySize;
+	const unsigned short freeSpace = chunkSize - sizeof(*pChunk);
+	pChunk->maxEntities = freeSpace / chunkArchetype.archetype.entitySize;
 
 	// First chunk in archetype
-	if (chunkArchetype.firstChunk == nullptr)
+	if (chunkArchetype.pFirstChunk == nullptr)
 	{
-		chunkArchetype.firstChunk = chunk;
-		return chunk;
+		chunkArchetype.pFirstChunk = pChunk;
+		return pChunk;
 	}
 
-	chunk->next = chunkArchetype.firstChunk;
-	chunkArchetype.firstChunk = chunk;
+	pChunk->pNext = chunkArchetype.pFirstChunk;
+	chunkArchetype.pFirstChunk = pChunk;
 
-	return chunk;
+	return pChunk;
 }
 
 ChunkArchetypeElement* EntityManager::FindChunkArchetype(EntityArchetype& archetype)
@@ -163,20 +163,20 @@ ChunkArchetypeElement* EntityManager::FindChunkArchetype(EntityArchetype& archet
 
 	// Scan through entire linked list
 	bool foundArchetype = false;
-	ChunkArchetypeElement* chunkArchetype = chunkArchetypeList;
-	while (chunkArchetype != nullptr)
+	ChunkArchetypeElement* pChunkArchetype = chunkArchetypeList;
+	while (pChunkArchetype != nullptr)
 	{
-		if (chunkArchetype->archetype == archetype)
+		if (pChunkArchetype->archetype == archetype)
 		{
 			foundArchetype = true;
 			break;
 		}
-		chunkArchetype = chunkArchetype->next;
+		pChunkArchetype = pChunkArchetype->pNext;
 	}
 
 	if (foundArchetype)
 	{
-		return chunkArchetype;
+		return pChunkArchetype;
 	}
 
 	return nullptr;
@@ -189,21 +189,21 @@ std::vector<ChunkArchetypeElement*>* EntityManager::FindChunkArchetypesWithCompo
 
 	// Scan through entire linked list
 	bool foundArchetype = false;
-	ChunkArchetypeElement* chunkArchetype = chunkArchetypeList;
-	while (chunkArchetype != nullptr)
+	ChunkArchetypeElement* pChunkArchetype = chunkArchetypeList;
+	while (pChunkArchetype != nullptr)
 	{
 		// Check if this archetype contains this component
-		for (int i = 0; i < chunkArchetype->archetype.componentCount; i++)
+		for (int i = 0; i < pChunkArchetype->archetype.componentCount; i++)
 		{
-			if (chunkArchetype->archetype.components[i] == component)
+			if (pChunkArchetype->archetype.components[i] == component)
 			{
 				foundArchetype = true;
-				returnList->push_back(chunkArchetype);
+				returnList->push_back(pChunkArchetype);
 				break;
 			}
 		}
 
-		chunkArchetype = chunkArchetype->next;
+		pChunkArchetype = pChunkArchetype->pNext;
 	}
 
 	if (foundArchetype)
@@ -222,7 +222,7 @@ void EntityManager::DeleteAllEntities()
 		return;
 
 	// Delete each chunk archetype element
-	ChunkArchetypeElement* elementToDelete;
+	ChunkArchetypeElement* pElementToDelete;
 	while (chunkArchetypeList != nullptr)
 	{
 #ifdef DEBUG
@@ -234,9 +234,9 @@ void EntityManager::DeleteAllEntities()
 		std::cout << "\n";
 #endif // DEBUG
 
-		elementToDelete = chunkArchetypeList;
-		chunkArchetypeList = chunkArchetypeList->next;
+		pElementToDelete = chunkArchetypeList;
+		chunkArchetypeList = chunkArchetypeList->pNext;
 
-		delete elementToDelete;
+		delete pElementToDelete;
 	}
 }

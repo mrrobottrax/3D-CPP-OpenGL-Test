@@ -10,29 +10,29 @@ struct qhFace;
 
 struct qhVertex
 {
-	qhHalfEdge* edge;
+	qhHalfEdge* pEdge;
 
 	glm::vec3 position;
 
-	qhVertex() : edge(), position(0, 0, 0) {};
+	qhVertex() : pEdge(), position(0, 0, 0) {};
 
 	bool operator ==(qhVertex& other)
 	{
-		return this->edge == other.edge && this->position == other.position;
+		return this->pEdge == other.pEdge && this->position == other.position;
 	}
 };
 
 struct qhHalfEdge
 {
-	qhVertex* tail;
+	qhVertex* pTail;
 
-	qhHalfEdge* prev;
-	qhHalfEdge* next;
-	qhHalfEdge* twin;
+	qhHalfEdge* pPrev;
+	qhHalfEdge* pNext;
+	qhHalfEdge* pTwin;
 
-	qhFace* face;
+	qhFace* pFace;
 
-	qhHalfEdge() : tail(), prev(), next(), twin(), face() {};
+	qhHalfEdge() : pTail(), pPrev(), pNext(), pTwin(), pFace() {};
 
 	bool operator ==(qhHalfEdge& other)
 	{
@@ -42,17 +42,17 @@ struct qhHalfEdge
 
 struct qhFace
 {
-	qhHalfEdge* edge;
+	qhHalfEdge* pEdge;
 
 	gMath::Plane plane;
 
 	std::vector<glm::vec3> conflictList;
 
-	qhFace() : edge(), plane(), conflictList() {};
+	qhFace() : pEdge(), plane(), conflictList() {};
 
 	bool operator ==(qhFace& other)
 	{
-		return edge == other.edge && plane == other.plane;
+		return pEdge == other.pEdge && plane == other.plane;
 	}
 };
 

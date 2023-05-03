@@ -10,8 +10,8 @@ public:
 	ChunkArchetypeElement();
 	~ChunkArchetypeElement();
 
-	ChunkArchetypeElement* next;
-	Chunk* firstChunk;
+	ChunkArchetypeElement* pNext;
+	Chunk* pFirstChunk;
 
 	EntityArchetype archetype;
 };

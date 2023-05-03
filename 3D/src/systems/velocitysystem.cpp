@@ -30,12 +30,12 @@ void VelocitySystem::Update()
 	for (auto chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
 	{
 		// For each chunk
-		for (Chunk* chunk = (*chunkArchetypeIt)->firstChunk; chunk != nullptr; chunk = chunk->next)
+		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
 		{
 			// For each entity
-			for (unsigned short i = 0; i < chunk->numberOfEntities; i++)
+			for (unsigned short i = 0; i < pChunk->numberOfEntities; i++)
 			{
-				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
+				Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
 				PositionComponent& position = em.GetComponent<PositionComponent>(entity);
 				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
 				VelocityComponent& velocity = em.GetComponent<VelocityComponent>(entity);

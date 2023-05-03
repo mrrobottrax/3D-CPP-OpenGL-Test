@@ -11,7 +11,7 @@ const unsigned short chunkSize = 16384;
 class EntityManager
 {
 private:
-	static EntityManager* instance;
+	static EntityManager* pInstance;
 	static std::mutex mutex;
 
 public:
@@ -40,8 +40,8 @@ template <class T>
 inline T& EntityManager::GetComponent(Entity& entity)
 {
 	// Get pointer to component stream
-	char* componentStream = (char*)(entity.chunk + 1);
-	T* tComponentStream = (T*)(componentStream + static_cast<uint64_t>(entity.chunk->maxEntities) * entity.archetype->getComponentOffset(Component().init<T>()));
-	T& ref = *(tComponentStream + entity.index);
+	char* pComponentStream = (char*)(entity.pChunk + 1);
+	T* pTComponentStream = (T*)(pComponentStream + static_cast<uint64_t>(entity.pChunk->maxEntities) * entity.pArchetype->getComponentOffset(Component().init<T>()));
+	T& ref = *(pTComponentStream + entity.index);
 	return ref;
 }

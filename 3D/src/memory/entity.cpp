@@ -4,14 +4,14 @@
 
 Entity::Entity(EntityArchetype& archetype, Chunk& chunk, unsigned short index)
 {
-	Entity::archetype = &archetype;
-	Entity::chunk = &chunk;
+	Entity::pArchetype = &archetype;
+	Entity::pChunk = &chunk;
 	Entity::index = index;
 }
 
 Entity::Entity()
 {
-	Entity::archetype = nullptr;
-	Entity::chunk = nullptr;
+	Entity::pArchetype = nullptr;
+	Entity::pChunk = nullptr;
 	Entity::index = 0;
 }

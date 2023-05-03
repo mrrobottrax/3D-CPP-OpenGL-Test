@@ -22,9 +22,6 @@ private:
 	void ButtonCallback(int, int);
 
 public:
-	//Console console; TODO: better?
-
-public:
 	void BindKey(char key, const char*);
 	int KeyboardInputToKeycode(int key);
 	int MouseInputToKeycode(int button);

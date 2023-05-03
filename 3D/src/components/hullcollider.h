@@ -4,5 +4,5 @@
 
 struct HullCollider
 {
-	ConvexHull* hull;
+	ConvexHull* pHull;
 };

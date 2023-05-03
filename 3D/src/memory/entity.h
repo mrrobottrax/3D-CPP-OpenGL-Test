@@ -5,8 +5,8 @@
 
 struct Entity
 {
-	EntityArchetype* archetype;
-	Chunk* chunk;
+	EntityArchetype* pArchetype;
+	Chunk* pChunk;
 	unsigned short index;
 
 	Entity(EntityArchetype& archetype, Chunk& chunk, unsigned short index);

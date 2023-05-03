@@ -4,7 +4,7 @@
 #include <input/inputmanager.h>
 #include <imgui/imguiutil.h>
 
-void GameKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void GameKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
 {
 	inputManager.KeyCallback(key, scancode, action, mods);
 
@@ -15,6 +15,6 @@ void GameKeyCallback(GLFWwindow* window, int key, int scancode, int action, int 
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
+		glfwSetWindowShouldClose(pWindow, GLFW_TRUE);
 	}
 }

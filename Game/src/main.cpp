@@ -58,11 +58,11 @@ void Init()
 {
 	// Init OpenGL
 	InitializeWindow();
-	glfwSetKeyCallback(mainWindow, GameKeyCallback);
+	glfwSetKeyCallback(pMainWindow, GameKeyCallback);
 
 	InitializeOpenGL();
 
-	SetupImGui(mainWindow);
+	SetupImGui(pMainWindow);
 
 	// Init systems
 	SystemManager& sm = systemManager;
@@ -93,7 +93,7 @@ void Init()
 		em.GetComponent<FreecamComponent>(entity) = { 6, 40, 20 };
 
 		int w, h;
-		glfwGetWindowSize(mainWindow, &w, &h);
+		glfwGetWindowSize(pMainWindow, &w, &h);
 
 		RenderSystem& rs = sm.GetSystem<RenderSystem>();
 		rs.SetMainCameraEntity(entity);
@@ -202,7 +202,7 @@ void Init()
 	}
 
 	// Hide cursor
-	glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(pMainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void End()
@@ -224,13 +224,13 @@ int main()
 
 	Init();
 
-	while (!glfwWindowShouldClose(mainWindow))
+	while (!glfwWindowShouldClose(pMainWindow))
 	{
 		timeManager.Update();
 		glfwPollEvents();
 
 		double xPos, yPos;
-		glfwGetCursorPos(mainWindow, &xPos, &yPos);
+		glfwGetCursorPos(pMainWindow, &xPos, &yPos);
 		inputManager.UpdateCursorDelta(xPos, yPos);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -243,7 +243,7 @@ int main()
 
 		EndImGuiFrame();
 
-		glfwSwapBuffers(mainWindow);
+		glfwSwapBuffers(pMainWindow);
 	}
 
 	End();

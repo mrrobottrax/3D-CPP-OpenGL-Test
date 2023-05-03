@@ -24,8 +24,8 @@ public:
 	template <class T>
 	inline T& AddSystem()
 	{
-		T* system = new T();
-		systems->emplace(typeid(T).hash_code(), system);
-		return *system;
+		T* pSystem = new T();
+		systems->emplace(typeid(T).hash_code(), pSystem);
+		return *pSystem;
 	}
 }; inline SystemManager systemManager;

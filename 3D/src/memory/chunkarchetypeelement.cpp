@@ -4,29 +4,29 @@
 
 ChunkArchetypeElement::ChunkArchetypeElement()
 {
-	next = nullptr;
-	firstChunk = nullptr;
+	pNext = nullptr;
+	pFirstChunk = nullptr;
 }
 
 ChunkArchetypeElement::~ChunkArchetypeElement()
 {
-	if (firstChunk == nullptr)
+	if (pFirstChunk == nullptr)
 		return;
 
-	Chunk* chunk = firstChunk;
+	Chunk* pChunk = pFirstChunk;
 
 	// Delete all chunks
-	Chunk* nextChunk = chunk->next;
-	while (chunk != nullptr)
+	Chunk* pNextChunk = pChunk->pNext;
+	while (pChunk != nullptr)
 	{
-		nextChunk = chunk->next;
+		pNextChunk = pChunk->pNext;
 
 #ifdef DEBUG
-		std::cout << "	Deleting chunk.		Entities: " << chunk->numberOfEntities << "\n";
+		std::cout << "	Deleting chunk.		Entities: " << pChunk->numberOfEntities << "\n";
 #endif //DEBUG
 
-		free(chunk);
+		free(pChunk);
 
-		chunk = nextChunk;
+		pChunk = pNextChunk;
 	}
 }

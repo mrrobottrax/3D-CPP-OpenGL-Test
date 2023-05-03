@@ -45,7 +45,7 @@ void Init()
 	// Init OpenGL
 	InitializeWindow();
 
-	SetupInputCallbacks(mainWindow);
+	SetupInputCallbacks(pMainWindow);
 
 	InitializeOpenGL();
 

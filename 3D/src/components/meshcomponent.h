@@ -4,7 +4,7 @@
 
 struct MeshComponent
 {
-	MeshObject* mesh;
+	MeshObject* pMesh;
 
-	MeshComponent(MeshObject* p) : mesh(p) {}
+	MeshComponent(MeshObject* p) : pMesh(p) {}
 };

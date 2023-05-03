@@ -82,12 +82,12 @@ char* InputManager::KeycodeToName(int keycode)
 	}
 
 	// Check for name
-	Keyname* kn;
-	for (kn = keynames; kn->name; kn++)
+	Keyname* pKn;
+	for (pKn = keynames; pKn->name; pKn++)
 	{
-		if (keycode == kn->keycode)
+		if (keycode == pKn->keycode)
 		{
-			strcpy_s(name, kn->name);
+			strcpy_s(name, pKn->name);
 			return name;
 		}
 	}
@@ -102,12 +102,12 @@ int InputManager::NameToKeycode(const char* name)
 		return name[0];
 	}
 	
-	Keyname* kn;
-	for (kn = keynames; kn->name; kn++)
+	Keyname* pKn;
+	for (pKn = keynames; pKn->name; pKn++)
 	{
-		if (_strcmpi(name, kn->name))
+		if (_strcmpi(name, pKn->name))
 		{
-			return kn->keycode;
+			return pKn->keycode;
 		}
 	}
 	
@@ -180,7 +180,7 @@ void InputManager::UpdateCursorDelta(double xPos, double yPos)
 	if (cursorLoop)
 	{
 		GLsizei windowSize[2];
-		glfwGetWindowSize(mainWindow, &windowSize[0], &windowSize[1]);
+		glfwGetWindowSize(pMainWindow, &windowSize[0], &windowSize[1]);
 
 		double cursorPos[2];
 		cursorPos[0] = xPos;
@@ -203,7 +203,7 @@ void InputManager::UpdateCursorDelta(double xPos, double yPos)
 			}
 		}
 
-		glfwSetCursorPos(mainWindow, cursorPos[0], cursorPos[1]);
+		glfwSetCursorPos(pMainWindow, cursorPos[0], cursorPos[1]);
 
 		if (looped)
 		{

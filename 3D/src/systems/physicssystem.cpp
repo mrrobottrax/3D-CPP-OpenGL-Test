@@ -20,8 +20,8 @@ PhysicsSystem::~PhysicsSystem()
 
 struct CollisionPair
 {
-	void* rigidBodyA;
-	void* rigidBodyB;
+	void* pRigidBodyA;
+	void* pRigidBodyB;
 
 	Entity entityA;
 	Entity entityB;
@@ -44,21 +44,21 @@ void PhysicsSystem::Update()
 	for (std::vector<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
 	{
 		// For each chunk
-		for (Chunk* chunk = (*chunkArchetypeIt)->firstChunk; chunk != nullptr; chunk = chunk->next)
+		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
 		{
 			// For each entity
-			for (unsigned int i = 0; i < chunk->numberOfEntities; i++)
+			for (unsigned int i = 0; i < pChunk->numberOfEntities; i++)
 			{
 				// Check broad phase collision with all entities after this one
 
 				// Check if the next entity exists in this chunk
-				bool chunkComplete = i + 1u >= chunk->numberOfEntities;
+				bool chunkComplete = i + 1u >= pChunk->numberOfEntities;
 
 				// Check if the next entity is in a different archetype
-				bool archetypeComplete = chunkComplete ? !chunk->next : false;
+				bool archetypeComplete = chunkComplete ? !pChunk->pNext : false;
 
 				std::vector<ChunkArchetypeElement*>::iterator chunkArchetypeIt2 = chunkArchetypeIt;
-				Chunk* chunk2;
+				Chunk* pChunk2;
 
 				// Next entity is a different archetype
 				if (archetypeComplete)
@@ -70,26 +70,26 @@ void PhysicsSystem::Update()
 						break;
 					}
 
-					chunk2 = (*chunkArchetypeIt2)->firstChunk;
+					pChunk2 = (*chunkArchetypeIt2)->pFirstChunk;
 				}
 				else
 				{
-					chunk2 = chunkComplete ? chunk->next : chunk;
+					pChunk2 = chunkComplete ? pChunk->pNext : pChunk;
 				}
 
-				Entity entity((*chunkArchetypeIt)->archetype, *chunk, i);
+				Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
 				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(entity);
 
 				// For each archetype
 				while (chunkArchetypeIt2 != archetypes->end())
 				{
 					// For each chunk
-					while (chunk2 != nullptr)
+					while (pChunk2 != nullptr)
 					{
 						// For each entity
-						for (unsigned short i2 = archetypeComplete || chunkComplete ? 0 : i + 1; i2 < chunk2->numberOfEntities; i2++)
+						for (unsigned short i2 = archetypeComplete || chunkComplete ? 0 : i + 1; i2 < pChunk2->numberOfEntities; i2++)
 						{
-							Entity entity2((*chunkArchetypeIt2)->archetype, *chunk2, i2);
+							Entity entity2((*chunkArchetypeIt2)->archetype, *pChunk2, i2);
 							RigidBodyComponent& rb2 = em.GetComponent<RigidBodyComponent>(entity2);
 
 							IdComponent& id = em.GetComponent<IdComponent>(entity);
@@ -109,7 +109,7 @@ void PhysicsSystem::Update()
 							}
 						}
 
-						chunk2 = chunk2->next;
+						pChunk2 = pChunk2->pNext;
 					}
 
 					++chunkArchetypeIt2;
@@ -128,8 +128,8 @@ void PhysicsSystem::Update()
 		Entity entityA = (*pairsIt).entityA;
 		Entity entityB = (*pairsIt).entityB;
 
-		RigidBodyComponent& rbA = *(RigidBodyComponent*)(*pairsIt).rigidBodyA;
-		RigidBodyComponent& rbB = *(RigidBodyComponent*)(*pairsIt).rigidBodyB;
+		RigidBodyComponent& rbA = *(RigidBodyComponent*)(*pairsIt).pRigidBodyA;
+		RigidBodyComponent& rbB = *(RigidBodyComponent*)(*pairsIt).pRigidBodyB;
 
 		switch (rbA.colliderType)
 		{
@@ -156,7 +156,7 @@ void PhysicsSystem::Update()
 	}
 }
 
-bool IsSeperatingPlane(gMath::Plane testPlane, ConvexHull* hull, glm::vec3 offset, glm::fquat rotation)
+bool IsSeperatingPlane(gMath::Plane testPlane, ConvexHull* pHull, glm::vec3 offset, glm::fquat rotation)
 {
 	/*for (int v = 0; v < hull->vertCount; ++v)
 	{

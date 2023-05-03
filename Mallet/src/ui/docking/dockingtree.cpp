@@ -117,7 +117,7 @@ int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio, Mal
 void DockingTree::RecalculateSizes()
 {
 	int windowWidth, windowHeight;
-	glfwGetWindowSize(mainWindow, &windowWidth, &windowHeight);
+	glfwGetWindowSize(pMainWindow, &windowWidth, &windowHeight);
 
 	if (IsLeaf(rootNode))
 	{
@@ -257,7 +257,7 @@ void DockingTree::DrawTree()
 	int windowSizeX, windowSizeY;
 	float workingSizeX, workingSizeY;
 	float workingPosX, workingPosY;
-	glfwGetWindowSize(mainWindow, &windowSizeX, &windowSizeY);
+	glfwGetWindowSize(pMainWindow, &windowSizeX, &windowSizeY);
 
 	workingSizeX = float(windowSizeX);
 	workingSizeY = float(windowSizeY);

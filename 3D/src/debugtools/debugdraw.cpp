@@ -126,7 +126,7 @@ void DebugDraw::Draw()
 	mStack.applyMatrix(glm::mat4_cast(em.GetComponent<RotationComponent>(mainCameraEntity).value));
 	mStack.translate(-em.GetComponent<PositionComponent>(mainCameraEntity).value);
 
-	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &renderSystem.mainCamera->matrix[0][0]);
+	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &renderSystem.pMainCamera->matrix[0][0]);
 	glUniformMatrix4fv(sharedPositionMatrixUnif, 1, GL_FALSE, &mStack.top()[0][0]);
 
 	DrawLines();

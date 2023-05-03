@@ -48,7 +48,7 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 		camera = &cam;
 
 		int w, h;
-		glfwGetWindowSize(mainWindow, &w, &h);
+		glfwGetWindowSize(pMainWindow, &w, &h);
 		RenderSystem::CalcFrustumScale(cam, 60);
 		RenderSystem::CalcPerspectiveMatrix(cam, w, h);
 	}
@@ -77,7 +77,7 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 		camera = &cam;
 
 		int w, h;
-		glfwGetWindowSize(mainWindow, &w, &h);
+		glfwGetWindowSize(pMainWindow, &w, &h);
 		RenderSystem::CalcPerspectiveMatrix(cam, w, h);
 	}
 
@@ -216,7 +216,7 @@ void Viewport::OnSelect(DockingLeaf& leaf)
 
 void Viewport::OnDeselect(DockingLeaf& leaf)
 {
-	glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(pMainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	freeCam->enabled = false;
 }
@@ -270,7 +270,7 @@ void Viewport::KeyboardCallback(GLFWwindow* window, int key, int scancode, int a
 
 		freeCam.enabled = !freeCam.enabled;
 
-		glfwSetInputMode(mainWindow, GLFW_CURSOR, freeCam.enabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+		glfwSetInputMode(pMainWindow, GLFW_CURSOR, freeCam.enabled ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 		return;
 	}
 

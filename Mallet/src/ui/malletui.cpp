@@ -58,7 +58,7 @@ namespace MalletUi
 	void SelectNode()
 	{
 		double mousePosX, mousePosY;
-		glfwGetCursorPos(mainWindow, &mousePosX, &mousePosY);
+		glfwGetCursorPos(pMainWindow, &mousePosX, &mousePosY);
 
 		DeselectNode();
 

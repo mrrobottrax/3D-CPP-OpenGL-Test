@@ -5,7 +5,7 @@
 #include <systems/renderSystem.h>
 #include <input/inputmanager.h>
 
-GLFWwindow* mainWindow;
+GLFWwindow* pMainWindow;
 
 GLuint vao;
 
@@ -26,12 +26,12 @@ void ErrorCallback(int error, const char* description)
 	fprintf(stderr, "Error: %s\n", description);
 }
 
-void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void KeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
 {
 	inputManager.KeyCallback(key, scancode, action, mods);
 }
 
-void DefaultWindowSizeCallback(GLFWwindow* window, int width, int height)
+void DefaultWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
 {
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 }
@@ -56,21 +56,21 @@ void InitializeWindow()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-	mainWindow = glfwCreateWindow(1200, 600, "3D Test", NULL, NULL);
-	if (!mainWindow)
+	pMainWindow = glfwCreateWindow(1200, 600, "3D Test", NULL, NULL);
+	if (!pMainWindow)
 	{
 		// Window or OpenGL context creation failed
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
-	glfwSetKeyCallback(mainWindow, KeyCallback);
-	glfwSetWindowSizeCallback(mainWindow, DefaultWindowSizeCallback);
+	glfwSetKeyCallback(pMainWindow, KeyCallback);
+	glfwSetWindowSizeCallback(pMainWindow, DefaultWindowSizeCallback);
 
 	if (glfwRawMouseMotionSupported())
-		glfwSetInputMode(mainWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+		glfwSetInputMode(pMainWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
-	glfwMakeContextCurrent(mainWindow);
+	glfwMakeContextCurrent(pMainWindow);
 	glfwSwapInterval(0);    // Vsync
 
 	#ifdef USE_GLEW
@@ -95,7 +95,7 @@ void InitializeWindow()
 	#endif // USE_GLAD
 
 	int width, height;
-	glfwGetFramebufferSize(mainWindow, &width, &height);
+	glfwGetFramebufferSize(pMainWindow, &width, &height);
 	glViewport(0, 0, width, height);
 }
 

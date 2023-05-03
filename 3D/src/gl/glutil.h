@@ -1,6 +1,6 @@
 #pragma once
 
-extern GLFWwindow* mainWindow;
+extern GLFWwindow* pMainWindow;
 extern const char* glsl_version;
 
 extern GLuint vao;
