@@ -40,15 +40,9 @@ void DrawHull(const qhFace& startFace, const float time = FLT_MAX, const bool po
 {
 	std::unordered_set<qhFace*> visited;
 
-	// TODO: REMOVE
-	int testInt = 0;
-
 	// Depth first search
 	std::function<void(const qhFace&)> DrawHullRecursive = [&](const qhFace& face)
 	{
-		std::cout << testInt << "\n";
-		++testInt;
-
 		qhHalfEdge& startEdge = *face.edge;
 		qhHalfEdge* edge = &startEdge;
 		do {
@@ -789,8 +783,6 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 	if (lastFace != nullptr)
 		CondenseArrays(*lastFace);
 
-	std::cout << "Test\n";
-
 #ifdef QHULL_DEBUG
 	if (faceCount > 0)
 		DrawHull(faces[0], 120, false, 0.5f);
@@ -883,9 +875,6 @@ void ConvexHull::AllocateMemory(const int pointCount)
 	}
 }
 
-// TODO: Fix this
-// It doesn't work because it copies pointers over as well
-// Also the code has been updated and the arrays are pretty dense already
 void ConvexHull::CondenseArrays(qhFace& startFace)
 {
 	std::unordered_set<qhFace*> visitedFaces;
@@ -993,6 +982,15 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 				UpdatePointer(edge.twin, pEdge, pNew);
 			}
 
+			for (int edgeIndex = 0; edgeIndex < edgeCount; ++edgeIndex)
+			{
+				qhHalfEdge& edge = edgeArray[edgeIndex];
+
+				UpdatePointer(edge.prev, pEdge, pNew);
+				UpdatePointer(edge.next, pEdge, pNew);
+				UpdatePointer(edge.twin, pEdge, pNew);
+			}
+
 			for (auto faceIt = visitedFaces.begin(); faceIt != visitedFaces.end(); ++faceIt)
 			{
 				qhFace& face = **faceIt;
@@ -1044,11 +1042,6 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 	this->edges = edgeArray;
 	this->faces = faceArray;
 	this->verts = vertArray;
-
-	for (int i = 0; i < faceCount; ++i)
-	{
-		std::cout << faceArray[i].edge->twin->face->edge << "\n";
-	}
 }
 
 ConvexHull::ConvexHull(const int pointCount, const glm::vec3* vertices)
