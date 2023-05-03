@@ -792,11 +792,11 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 
 qhHalfEdge* ConvexHull::AddEdge()
 {
-	for (int i = 0; i < edgeCount; ++i)
+	for (int i = 0; i < halfEdgeCount; ++i)
 	{
-		if (edges[i] == qhHalfEdge())
+		if (halfEdges[i] == qhHalfEdge())
 		{
-			return &edges[i];
+			return &halfEdges[i];
 		}
 	}
 
@@ -848,18 +848,18 @@ void ConvexHull::RemoveFace(qhFace& face)
 void ConvexHull::AllocateMemory(const int pointCount)
 {
 	this->vertCount = pointCount;
-	this->edgeCount = 3 * pointCount - 6;
+	this->halfEdgeCount = 3 * pointCount - 6;
 	this->faceCount = 2 * pointCount - 4;
 
 	// Extra room for extra stuff creating during QHull
 	this->vertCount *= 2;
-	this->edgeCount *= 2;
+	this->halfEdgeCount *= 2;
 	this->faceCount *= 2;
 
-	this->edges = new qhHalfEdge[this->edgeCount];
-	for (int i = 0; i < edgeCount; ++i)
+	this->halfEdges = new qhHalfEdge[this->halfEdgeCount];
+	for (int i = 0; i < halfEdgeCount; ++i)
 	{
-		this->edges[i] = qhHalfEdge();
+		this->halfEdges[i] = qhHalfEdge();
 	}
 
 	this->verts = new qhVertex[this->vertCount];
@@ -904,11 +904,11 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 	GetDataRecursive(startFace);
 
 	vertCount = visitedVertices.size();
-	edgeCount = visitedEdges.size();
+	halfEdgeCount = visitedEdges.size();
 	faceCount = visitedFaces.size();
 
 	qhVertex* vertArray = new qhVertex[vertCount];
-	qhHalfEdge* edgeArray = new qhHalfEdge[edgeCount];
+	qhHalfEdge* edgeArray = new qhHalfEdge[halfEdgeCount];
 	qhFace* faceArray = new qhFace[faceCount];
 
 	// Move all verts
@@ -960,7 +960,7 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 		{
 			qhHalfEdge* pEdge = *it;
 
-			assert(i < edgeCount);
+			assert(i < halfEdgeCount);
 			edgeArray[i] = *pEdge;
 
 			qhHalfEdge* pNew = &edgeArray[i];
@@ -982,7 +982,7 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 				UpdatePointer(edge.pTwin, pEdge, pNew);
 			}
 
-			for (int edgeIndex = 0; edgeIndex < edgeCount; ++edgeIndex)
+			for (int edgeIndex = 0; edgeIndex < halfEdgeCount; ++edgeIndex)
 			{
 				qhHalfEdge& edge = edgeArray[edgeIndex];
 
@@ -1024,7 +1024,7 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 			qhFace* pNew = &faceArray[i];
 
 			// Update pointers to this edge
-			for (int edgeIndex = 0; edgeIndex < edgeCount; ++edgeIndex)
+			for (int edgeIndex = 0; edgeIndex < halfEdgeCount; ++edgeIndex)
 			{
 				qhHalfEdge& edge = edgeArray[edgeIndex];
 
@@ -1035,20 +1035,20 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 		}
 	}
 
-	delete[] this->edges;
+	delete[] this->halfEdges;
 	delete[] this->verts;
 	delete[] this->faces;
 
-	this->edges = edgeArray;
+	this->halfEdges = edgeArray;
 	this->faces = faceArray;
 	this->verts = vertArray;
 }
 
 ConvexHull::ConvexHull(const int pointCount, const glm::vec3* vertices)
 {
-	edgeCount = faceCount = vertCount = 0;
+	halfEdgeCount = faceCount = vertCount = 0;
 	epsilon = sqrEpsilon = 0;
-	edges = nullptr;
+	halfEdges = nullptr;
 	faces = nullptr;
 	verts = nullptr;
 
@@ -1057,7 +1057,7 @@ ConvexHull::ConvexHull(const int pointCount, const glm::vec3* vertices)
 
 ConvexHull::~ConvexHull()
 {
-	delete[] this->edges;
+	delete[] this->halfEdges;
 	delete[] this->verts;
 	delete[] this->faces;
 }

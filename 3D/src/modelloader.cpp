@@ -4,7 +4,7 @@
 
 namespace modelLoader {
 
-	Buffer::Buffer(json& data, int accessor)
+	Buffer::Buffer(json& data, buffer_t accessor)
 	{
 		Buffer::accessor = accessor;
 		count = data["accessors"][accessor]["count"];
@@ -44,7 +44,7 @@ namespace modelLoader {
 		mesh.indicesCount = b_indices.count;
 		f.seekg(bufferStart + b_indices.bufferOffset, std::ios::beg);
 		GLshort* indices = new GLshort[b_indices.count];
-		for (int i = 0; i < b_indices.count; ++i)
+		for (buffer_t i = 0; i < b_indices.count; ++i)
 		{
 			indices[i] = ParseUInt16(f);
 		}

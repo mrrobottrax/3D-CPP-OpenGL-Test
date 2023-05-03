@@ -1,11 +1,13 @@
 #pragma once
 
 #include <common/math.h>
+#include <common/types.h>
 
 #include <unordered_set>
 
 struct qhVertex;
 struct qhHalfEdge;
+struct qhEdge;
 struct qhFace;
 
 struct qhVertex
@@ -40,6 +42,14 @@ struct qhHalfEdge
 	}
 };
 
+struct qhEdge
+{
+	qhHalfEdge* pHalfA;
+	qhHalfEdge* pHalfB;
+
+	qhEdge() : pHalfA(), pHalfB() {};
+};
+
 struct qhFace
 {
 	qhHalfEdge* pEdge;
@@ -70,8 +80,8 @@ class ConvexHull
 {
 public:
 	ConvexHull(const int vertCount, const glm::vec3* vertices);
-	ConvexHull() : verts(), edges(), faces(), epsilon(), sqrEpsilon(),
-		edgeCount(), vertCount(), faceCount() {};
+	ConvexHull() : verts(), halfEdges(), edges(), faces(), epsilon(), sqrEpsilon(),
+		vertCount(), halfEdgeCount(), edgeCount(), faceCount() {};
 	~ConvexHull();
 
 public:
@@ -102,11 +112,13 @@ private:
 	void RePartitionVertices(std::unordered_set<qhFace*> visibleFaces, std::vector<qhFace*> newFaces, const glm::vec3 eye);
 
 public:
-	size_t edgeCount;
-	size_t vertCount;
-	size_t faceCount;
+	gSize_t vertCount;
+	gSize_t halfEdgeCount;
+	gSize_t edgeCount;
+	gSize_t faceCount;
 
-	qhHalfEdge* edges;
 	qhVertex* verts;
+	qhHalfEdge* halfEdges;
+	qhEdge* edges;
 	qhFace* faces;
 };

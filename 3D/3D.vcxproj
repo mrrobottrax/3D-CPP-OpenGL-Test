@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="src\common\matrixstack.h" />
     <ClInclude Include="src\common\math.h" />
+    <ClInclude Include="src\common\types.h" />
     <ClInclude Include="src\components\cameracomponent.h" />
     <ClInclude Include="src\components\freecamcomponent.h" />
     <ClInclude Include="src\components\hullcollider.h" />

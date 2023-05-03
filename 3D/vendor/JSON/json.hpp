@@ -4282,7 +4282,10 @@ inline OutStringType concat(Args && ... args)
 {
     OutStringType str;
     str.reserve(concat_length(std::forward<Args>(args)...));
+#pragma warning(push)
+#pragma warning(disable : 26800)
     concat_into(str, std::forward<Args>(args)...);
+#pragma warning(pop)
     return str;
 }
 

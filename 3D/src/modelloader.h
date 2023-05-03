@@ -2,6 +2,8 @@
 
 #include <meshObject.h>
 
+typedef unsigned int buffer_t;
+
 namespace modelLoader {
 	using json = nlohmann::json;
 
@@ -12,11 +14,11 @@ namespace modelLoader {
 
 	struct Buffer
 	{
-		int accessor;
-		int count;
-		int bufferView;
-		int bufferOffset;
+		buffer_t accessor;
+		buffer_t count;
+		buffer_t bufferView;
+		buffer_t bufferOffset;
 
-		Buffer(json&, int);
+		Buffer(json&, buffer_t);
 	};
 }
