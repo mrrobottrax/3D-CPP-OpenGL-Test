@@ -40,9 +40,15 @@ void DrawHull(const qhFace& startFace, const float time = FLT_MAX, const bool po
 {
 	std::unordered_set<qhFace*> visited;
 
+	// TODO: REMOVE
+	int testInt = 0;
+
 	// Depth first search
 	std::function<void(const qhFace&)> DrawHullRecursive = [&](const qhFace& face)
 	{
+		std::cout << testInt << "\n";
+		++testInt;
+
 		qhHalfEdge& startEdge = *face.edge;
 		qhHalfEdge* edge = &startEdge;
 		do {
@@ -780,11 +786,14 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 		lastFace = newFaces[0];
 	}
 
-	//CondenseArrays(*lastFace);
+	if (lastFace != nullptr)
+		CondenseArrays(*lastFace);
+
+	std::cout << "Test\n";
 
 #ifdef QHULL_DEBUG
-	if (lastFace != nullptr)
-		DrawHull(*lastFace, 120, false, 0.5f);
+	if (faceCount > 0)
+		DrawHull(faces[0], 120, false, 0.5f);
 #endif // QHULL_DEBUG
 
 }
@@ -883,23 +892,24 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 	std::unordered_set<qhHalfEdge*> visitedEdges;
 	std::unordered_set<qhVertex*> visitedVertices;
 
+	// Get hull as arrays
 	std::function<void(qhFace&)> GetDataRecursive = [&](qhFace& startFace)
 	{
 		qhHalfEdge& startEdge = *startFace.edge;
-		qhHalfEdge* edge = &startEdge;
+		qhHalfEdge* pEdge = &startEdge;
 		do {
-			visitedEdges.insert(edge);
-			visitedVertices.insert(edge->tail);
+			visitedEdges.insert(pEdge);
+			visitedVertices.insert(pEdge->tail);
 
 			// Only recurse when the face is not already in the list
-			if (visitedFaces.find(edge->twin->face) == visitedFaces.end())
+			if (visitedFaces.find(pEdge->twin->face) == visitedFaces.end())
 			{
-				visitedFaces.insert(edge->twin->face);
-				GetDataRecursive(*(edge->twin->face));
+				visitedFaces.insert(pEdge->twin->face);
+				GetDataRecursive(*(pEdge->twin->face));
 			}
 
-			edge = edge->next;
-		} while (edge != &startEdge);
+			pEdge = pEdge->next;
+		} while (pEdge != &startEdge);
 	};
 
 	GetDataRecursive(startFace);
@@ -909,113 +919,122 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 	faceCount = visitedFaces.size();
 
 	qhVertex* vertArray = new qhVertex[vertCount];
-	memset(vertArray, 0, sizeof(qhVertex) * vertCount);
-
 	qhHalfEdge* edgeArray = new qhHalfEdge[edgeCount];
-	memset(edgeArray, 0, sizeof(qhHalfEdge) * edgeCount);
-
 	qhFace* faceArray = new qhFace[faceCount];
-	memset(faceArray, 0, sizeof(qhFace) * faceCount);
 
-	auto FindInEdges = [&](qhHalfEdge* edge) -> qhHalfEdge*
+	// Move all verts
 	{
-		if (edge == nullptr)
-			return nullptr;
-
-		int placeIndex = -1;
-		for (int i = 0; i < edgeCount; ++i)
+		auto UpdatePointer = [](qhVertex*& pointer, qhVertex* pTest, qhVertex* pSet)
 		{
-			char testblock[sizeof(qhHalfEdge)];
-			memset(testblock, 0, sizeof testblock);
-
-			if (memcmp(&edgeArray[i], testblock, sizeof(qhHalfEdge)))
+			if (pointer == pTest)
 			{
-				placeIndex = i;
+				pointer = pSet;
 			}
+		};
 
-			if (memcmp(&edgeArray[i], edge, sizeof(qhHalfEdge)))
-			{
-				return &edgeArray[i];
-			}
-		}
+		int i = 0;
 
-		edgeArray[placeIndex] = *edge;
-		return &edgeArray[placeIndex];
-	};
-	auto FindInVerts = [&](qhVertex* vert) -> qhVertex*
-	{
-		if (vert == nullptr)
-			return nullptr;
-
-		int placeIndex = 0;
-		for (int i = 0; i < vertCount; ++i)
+		for (auto it = visitedVertices.begin(); it != visitedVertices.end(); ++it)
 		{
-			char testblock[sizeof(qhVertex)];
-			memset(testblock, 0, sizeof testblock);
+			qhVertex* pVert = *it;
 
-			if (memcmp(&vertArray[i], testblock, sizeof(qhVertex)))
+			assert(i < vertCount);
+			vertArray[i] = *pVert;
+
+			qhVertex* pNew = &vertArray[i];
+
+			// Update pointers to this vertex
+			for (auto edgeIt = visitedEdges.begin(); edgeIt != visitedEdges.end(); ++edgeIt)
 			{
-				placeIndex = i;
+				qhHalfEdge& edge = **edgeIt;
+
+				UpdatePointer(edge.tail, pVert, pNew);
 			}
 
-			if (memcmp(&vertArray[i], vert, sizeof(qhVertex)))
-			{
-				return &vertArray[i];
-			}
+			++i;
 		}
-
-		vertArray[placeIndex] = *vert;
-		return &vertArray[placeIndex];
-	};
-	auto FindInFaces = [&](qhFace* face) -> qhFace*
-	{
-		if (face == nullptr)
-			return nullptr;
-
-		int placeIndex = 0;
-		for (int i = 0; i < faceCount; ++i)
-		{
-			char testblock[sizeof(qhFace)];
-			memset(testblock, 0, sizeof testblock);
-
-			if (memcmp(&faceArray[i], testblock, sizeof(qhFace)))
-			{
-				placeIndex = i;
-			}
-
-			if (memcmp(&faceArray[i], face, sizeof(qhFace)))
-			{
-				return &faceArray[i];
-			}
-		}
-
-		faceArray[placeIndex] = *face;
-		return &faceArray[placeIndex];
-	};
-
-	for (auto it = visitedVertices.begin(); it != visitedVertices.end(); ++it)
-	{
-		qhVertex& vert = **it;
-
-		vert.edge = FindInEdges(vert.edge);
 	}
-	for (auto it = visitedEdges.begin(); it != visitedEdges.end(); ++it)
+
+	// Move all edges
 	{
-		qhHalfEdge& edge = **it;
+		auto UpdatePointer = [](qhHalfEdge*& pointer, qhHalfEdge* pTest, qhHalfEdge* pSet)
+		{
+			if (pointer == pTest)
+			{
+				pointer = pSet;
+			}
+		};
 
-		edge.face = FindInFaces(edge.face);
+		int i = 0;
 
-		edge.next = FindInEdges(edge.next);
-		edge.prev = FindInEdges(edge.prev);
-		edge.twin = FindInEdges(edge.twin);
+		for (auto it = visitedEdges.begin(); it != visitedEdges.end(); ++it)
+		{
+			qhHalfEdge* pEdge = *it;
 
-		edge.tail = FindInVerts(edge.tail);
+			assert(i < edgeCount);
+			edgeArray[i] = *pEdge;
+
+			qhHalfEdge* pNew = &edgeArray[i];
+
+			// Update pointers to this edge
+			for (int vertIndex = 0; vertIndex < vertCount; ++vertIndex)
+			{
+				qhVertex& vert = vertArray[vertIndex];
+
+				UpdatePointer(vert.edge, pEdge, pNew);
+			}
+
+			for (auto edgeIt = visitedEdges.begin(); edgeIt != visitedEdges.end(); ++edgeIt)
+			{
+				qhHalfEdge& edge = **edgeIt;
+
+				UpdatePointer(edge.prev, pEdge, pNew);
+				UpdatePointer(edge.next, pEdge, pNew);
+				UpdatePointer(edge.twin, pEdge, pNew);
+			}
+
+			for (auto faceIt = visitedFaces.begin(); faceIt != visitedFaces.end(); ++faceIt)
+			{
+				qhFace& face = **faceIt;
+
+				UpdatePointer(face.edge, pEdge, pNew);
+			}
+
+			++i;
+		}
 	}
-	for (auto it = visitedFaces.begin(); it != visitedFaces.end(); ++it)
-	{
-		qhFace& face = **it;
 
-		face.edge = FindInEdges(face.edge);
+	// Move all faces
+	{
+		auto UpdatePointer = [](qhFace*& pointer, qhFace* pTest, qhFace* pSet)
+		{
+			if (pointer == pTest)
+			{
+				pointer = pSet;
+			}
+		};
+
+		int i = 0;
+
+		for (auto it = visitedFaces.begin(); it != visitedFaces.end(); ++it)
+		{
+			qhFace* pFace = *it;
+
+			assert(i < faceCount);
+			faceArray[i] = *pFace;
+
+			qhFace* pNew = &faceArray[i];
+
+			// Update pointers to this edge
+			for (int edgeIndex = 0; edgeIndex < edgeCount; ++edgeIndex)
+			{
+				qhHalfEdge& edge = edgeArray[edgeIndex];
+
+				UpdatePointer(edge.face, pFace, pNew);
+			}
+
+			++i;
+		}
 	}
 
 	delete[] this->edges;
@@ -1025,6 +1044,11 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 	this->edges = edgeArray;
 	this->faces = faceArray;
 	this->verts = vertArray;
+
+	for (int i = 0; i < faceCount; ++i)
+	{
+		std::cout << faceArray[i].edge->twin->face->edge << "\n";
+	}
 }
 
 ConvexHull::ConvexHull(const int pointCount, const glm::vec3* vertices)
