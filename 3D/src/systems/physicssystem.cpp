@@ -151,23 +151,16 @@ void PhysicsSystem::Update()
 		}
 
 #ifdef DEBUG
-		//std::cout << "\n";
+		std::cout << "\n";
 #endif // DEBUG
 	}
 }
 
-bool IsSeperatingPlane(gMath::Plane testPlane, ConvexHull* pHull, glm::vec3 offset, glm::fquat rotation)
+bool IsSeperatingPlane(gMath::Plane testPlane, ConvexHull* pHull)
 {
-	/*for (int v = 0; v < hull->vertCount; ++v)
+	for (int v = 0; v < pHull->vertCount; ++v)
 	{
-		int i = v * 3;
-
-		glm::vec3 point;
-		point.x = hull->vertices[i];
-		point.y = hull->vertices[i + 1];
-		point.z = hull->vertices[i + 2];
-
-		point = rotation * point - offset;
+		glm::vec3 point = pHull->verts[v].position;
 
 		float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
 
@@ -175,7 +168,7 @@ bool IsSeperatingPlane(gMath::Plane testPlane, ConvexHull* pHull, glm::vec3 offs
 		{
 			return false;
 		}
-	}*/
+	}
 
 	return true;
 }
@@ -183,104 +176,118 @@ bool IsSeperatingPlane(gMath::Plane testPlane, ConvexHull* pHull, glm::vec3 offs
 bool SatFaceTest(HullCollider hullA, PositionComponent positionA, RotationComponent rotationA,
 	HullCollider hullB, PositionComponent positionB, RotationComponent rotationB)
 {
-//	glm::vec3 offset = positionA.value - positionB.value;
-//
-//	Plane testPlane;
-//
-//	for (int f = 0; f < hullA.hull->planeCount; ++f)
-//	{
-//		testPlane = hullA.hull->planes[f];
-//		testPlane.normal = rotationA.value * testPlane.normal;
-//
-//		if (IsSeperatingPlane(testPlane, hullB.hull, offset, rotationB.value))
-//			return true;
-//	}
-//
+	gMath::Plane testPlane;
+
+	for (int f = 0; f < hullA.pHull->faceCount; ++f)
+	{
+		testPlane = hullA.pHull->faces[f].plane;
+
+		// TODO: Should be a way to skip converting to world space first
+
+		// World space
+		testPlane.normal = rotationA.value * testPlane.normal;
+		testPlane.dist = -glm::dot(-(positionA.value + testPlane.normal * testPlane.dist), testPlane.normal);
+
+		// HullB space
+		testPlane.dist = -glm::dot(positionB.value - (testPlane.normal * testPlane.dist), testPlane.normal);
+		testPlane.normal = glm::inverse(rotationB.value) * testPlane.normal;
+
+		if (IsSeperatingPlane(testPlane, hullB.pHull))
+		{
+
+#ifdef PHYS_DEBUG
+			gMath::Plane drawPlane = testPlane;
+			drawPlane.normal = rotationB.value * drawPlane.normal;
+
+			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, {0, 1, 1});
+#endif // PHYS_DEBUG
+
+			return true;
+		}
+	}
+
 	return false;
 }
 
 bool SatEdgeTest(HullCollider hullA, PositionComponent positionA, RotationComponent rotationA,
 	HullCollider hullB, PositionComponent positionB, RotationComponent rotationB)
 {
-//	// Check all edge combinations
-//	//TODO: not all edge combinations are necessary to check
-//	glm::vec3 offset = positionA.value - positionB.value;
-//	for (int eA = 0; eA < hullA.hull->edgeCount; ++eA)
-//	{
-//		int eAi = eA * 6;
-//
-//		glm::vec3 edgeAHead;
-//		edgeAHead.x = hullA.hull->edges[eAi];
-//		edgeAHead.y = hullA.hull->edges[eAi + 1];
-//		edgeAHead.z = hullA.hull->edges[eAi + 2];
-//		edgeAHead = rotationA.value * edgeAHead;
-//
-//		glm::vec3 edgeADir;
-//		edgeADir.x = hullA.hull->edges[eAi + 3];
-//		edgeADir.y = hullA.hull->edges[eAi + 4];
-//		edgeADir.z = hullA.hull->edges[eAi + 5];
-//		edgeADir = rotationA.value * edgeADir;
-//
-//		for (int eB = 0; eB < hullB.hull->edgeCount; ++eB)
-//		{
-//			int eBi = eB * 6;
-//
-//			glm::vec3 edgeBHead;
-//			edgeBHead.x = hullA.hull->edges[eBi];
-//			edgeBHead.y = hullA.hull->edges[eBi + 1];
-//			edgeBHead.z = hullA.hull->edges[eBi + 2];
-//			edgeBHead = rotationB.value * edgeBHead;
-//			edgeBHead -= offset;
-//
-//			glm::vec3 edgeBDir;
-//			edgeBDir.x = hullA.hull->edges[eBi + 3];
-//			edgeBDir.y = hullA.hull->edges[eBi + 4];
-//			edgeBDir.z = hullA.hull->edges[eBi + 5];
-//			edgeBDir = rotationB.value * edgeBDir;
-//
-//			Plane testPlane;
-//			testPlane.normal = glm::normalize(glm::cross(edgeADir, edgeBDir));
-//
-//			// Check if the normal is facing the right direction
-//			if (glm::dot(edgeAHead, testPlane.normal) < 0)
-//			{
-//				testPlane.normal = -testPlane.normal;
-//			}
-//
-//			// Get point furthest in normal direction (support point)
-//			//TODO: There is a way to do this without the support point
-//			glm::vec3 support;
-//			{
-//				int bestI = 0;
-//				float bestDot = -1;
-//				for (int v = 0; v < hullA.hull->vertCount; ++v)
-//				{
-//					int i = v * 3;
-//
-//					glm::vec3 point;
-//					point.x = hullA.hull->vertices[i];
-//					point.y = hullA.hull->vertices[i + 1];
-//					point.z = hullA.hull->vertices[i + 2];
-//
-//					float dot = glm::dot(point, testPlane.normal);
-//					if (dot >= bestDot)
-//					{
-//						bestI = i;
-//						bestDot = dot;
-//					}
-//				}
-//				support.x = hullA.hull->vertices[bestI];
-//				support.y = hullA.hull->vertices[bestI + 1];
-//				support.z = hullA.hull->vertices[bestI + 2];
-//			}
-//
-//			// Move plane to support point
-//			testPlane.dist = glm::dot(support, testPlane.normal);
-//
-//			if (IsSeperatingPlane(testPlane, hullB.hull, offset, rotationB.value))
-//				return true;
-//		}
-//	}
+	// Check all edge combinations
+	// TODO: not all edge combinations are necessary to check
+	for (int edgeAIndex = 0; edgeAIndex < hullA.pHull->edgeCount; ++edgeAIndex)
+	{
+		glm::vec3 edgeATail = hullA.pHull->edges[edgeAIndex].pHalfA->pTail->position;
+		glm::vec3 edgeADir = hullA.pHull->edges[edgeAIndex].pHalfB->pTail->position - edgeATail;
+
+		// TODO: This should be able to be optimized
+		edgeATail = rotationA.value * edgeATail + positionA.value;
+		edgeADir = rotationA.value * edgeADir;
+
+		edgeATail = edgeATail - positionB.value;
+		edgeATail = glm::inverse(rotationB.value) * edgeATail;
+		edgeADir = glm::inverse(rotationB.value) * edgeADir;
+
+		for (int edgeBIndex = 0; edgeBIndex < hullB.pHull->edgeCount; ++edgeBIndex)
+		{
+			glm::vec3 edgeBTail = hullB.pHull->edges[edgeBIndex].pHalfA->pTail->position;
+			glm::vec3 edgeBDir = hullB.pHull->edges[edgeBIndex].pHalfB->pTail->position - edgeBTail;
+
+			gMath::Plane testPlane;
+			testPlane.normal = glm::normalize(glm::cross(edgeADir, edgeBDir));
+
+			// Check if the normal is facing the right direction
+			if (glm::dot(edgeBTail, testPlane.normal) < 0)
+			{
+				testPlane.normal = -testPlane.normal;
+			}
+
+			// Get point furthest in normal direction (support point)
+			// TODO: There is a way to do this without the support point
+			glm::vec3 support;
+			{
+				float bestDot = 0;
+				for (int v = 0; v < hullB.pHull->vertCount; ++v)
+				{
+					glm::vec3 point = hullB.pHull->verts[v].position;
+
+					float dot = glm::dot(point, testPlane.normal);
+					if (dot >= bestDot)
+					{
+						support = point;
+						bestDot = dot;
+					}
+				}
+			}
+
+			// Move plane to support point
+			testPlane.dist = glm::dot(support, testPlane.normal);
+
+			// Move plane to HullA space
+			// TODO: Should be a way to skip converting to world space first
+
+			// World space
+			testPlane.normal = rotationB.value * testPlane.normal;
+			testPlane.dist = -glm::dot(-(positionB.value + testPlane.normal * testPlane.dist), testPlane.normal);
+
+			// HullA space
+			testPlane.dist = -glm::dot(positionA.value - (testPlane.normal * testPlane.dist), testPlane.normal);
+			testPlane.normal = glm::inverse(rotationA.value) * testPlane.normal;
+
+			if (IsSeperatingPlane(testPlane, hullA.pHull))
+			{
+
+#ifdef PHYS_DEBUG
+				testPlane.normal = rotationA.value * testPlane.normal;
+				debugDraw.DrawPlane(positionA.value, testPlane, 1.5f, 1.5f, { 1, 1, 0 });
+
+				const glm::vec3 supportWorld = rotationB.value * support + positionB.value;
+				debugDraw.DrawLine(supportWorld, supportWorld + glm::vec3(0, 0.25f, 0), { 1, 1, 1 });
+#endif // PHYS_DEBUG
+
+				return true;
+			}
+		}
+	}
 
 	return false;
 }
@@ -299,13 +306,34 @@ void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 	HullCollider& hullA = em.GetComponent<HullCollider>(entityA);
 	HullCollider& hullB = em.GetComponent<HullCollider>(entityB);
 
+#ifdef PHYS_DEBUG
+
+	auto DrawHull = [](const ConvexHull* pHull, const glm::vec3 position,
+		const glm::fquat rotation, const glm::vec3 color)
+	{
+		for (int i = 0; i < pHull->edgeCount; ++i)
+		{
+			const qhEdge& edge = pHull->edges[i];
+
+			glm::vec3 start = rotation * edge.pHalfA->pTail->position + position;
+			glm::vec3 end = rotation * edge.pHalfB->pTail->position + position;
+
+			debugDraw.DrawLine(start, end, color);
+		}
+	};
+
+	DrawHull(hullA.pHull, positionA.value, rotationA.value, {1, 0, 0});
+	DrawHull(hullB.pHull, positionB.value, rotationB.value, {0, 0, 1});
+
+#endif // PHYS_DEBUG
+
 	// Check faces of A
 	if (SatFaceTest(hullA, positionA, rotationA, hullB, positionB, rotationB))
 	{
 
-#ifdef DEBUG
+#ifdef PHYS_DEBUG
 		std::cout << "Face test A\n";
-#endif // DEBUG
+#endif // PHYS_DEBUG
 
 		return;
 	}
@@ -314,9 +342,9 @@ void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 	if (SatFaceTest(hullB, positionB, rotationB, hullA, positionA, rotationA))
 	{
 
-#ifdef DEBUG
+#ifdef PHYS_DEBUG
 		std::cout << "Face test B\n";
-#endif // DEBUG
+#endif // PHYS_DEBUG
 
 		return;
 	}
@@ -325,10 +353,12 @@ void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 	if (SatEdgeTest(hullA, positionA, rotationA, hullB, positionB, rotationB))
 	{
 
-#ifdef DEBUG
+#ifdef PHYS_DEBUG
 		std::cout << "Edge test\n";
-#endif // DEBUG
+#endif // PHYS_DEBUG
 
 		return;
 	}
+
+	std::cout << "Collide\n";
 }

@@ -4,6 +4,12 @@
 #include <memory/entity.h>
 #include <components/rigidbodycomponent.h>
 
+#ifdef DEBUG
+
+//#define PHYS_DEBUG
+
+#endif // DEBUG
+
 class PhysicsSystem : public System
 {
 public:

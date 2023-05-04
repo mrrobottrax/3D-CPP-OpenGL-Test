@@ -105,6 +105,7 @@ private:
 	void RemoveFace(qhFace& face);
 
 	void CondenseArrays(qhFace& startFace);
+	void CreateEdges();
 
 	//TODO: make sure these functions are using correct precision with fat planes etc
 	void MergeCoplanar(const std::vector<qhHalfEdge*>& horizon, std::unordered_set<qhFace*>& unvisitedFaces);

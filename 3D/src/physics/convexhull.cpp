@@ -9,6 +9,8 @@
 
 using namespace gMath;
 
+#ifdef QHULL_DEBUG
+
 // Debug functions
 void DrawPoint(glm::vec3 point, glm::vec3 color = { 1, 1, 1 }, float time = FLT_MAX)
 {
@@ -106,6 +108,8 @@ void DrawHull(const qhFace& startFace, const float time = FLT_MAX, const bool po
 		}
 	}
 }
+
+#endif // QHULL_DEBUG
 
 float CalcEpsilon(const std::list<glm::vec3>& verticesList)
 {
@@ -783,6 +787,8 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 	if (pLastFace != nullptr)
 		CondenseArrays(*pLastFace);
 
+	CreateEdges();
+
 #ifdef QHULL_DEBUG
 	if (faceCount > 0)
 		DrawHull(faces[0], 120, false, 0.5f);
@@ -1044,6 +1050,49 @@ void ConvexHull::CondenseArrays(qhFace& startFace)
 	this->verts = vertArray;
 }
 
+void ConvexHull::CreateEdges()
+{
+	edgeCount = halfEdgeCount / 2;
+
+	edges = new qhEdge[edgeCount];
+
+	for (int i = 0; i < edgeCount; ++i)
+	{
+		// Get next unused half edge
+		for (int j = 0; j < halfEdgeCount; ++j)
+		{
+			qhHalfEdge* pHalfEdge = &halfEdges[j];
+
+			// Check if this half edge has already been added
+			bool used = false;
+			for (int k = 0; k < edgeCount; ++k)
+			{
+				const qhEdge& edge = edges[k];
+
+				if (edge.pHalfA == pHalfEdge || edge.pHalfB == pHalfEdge)
+				{
+					// Already added
+					used = true;
+					break;
+				}
+			}
+
+			if (used)
+			{
+				continue;
+			}
+
+			// Set edge to point to this halfedge and its twin
+			qhEdge& edge = edges[i];
+
+			edge.pHalfA = pHalfEdge;
+			edge.pHalfB = pHalfEdge->pTwin;
+
+			break;
+		}
+	}
+}
+
 ConvexHull::ConvexHull(const int pointCount, const glm::vec3* vertices)
 {
 	halfEdgeCount = faceCount = vertCount = 0;
@@ -1057,7 +1106,8 @@ ConvexHull::ConvexHull(const int pointCount, const glm::vec3* vertices)
 
 ConvexHull::~ConvexHull()
 {
-	delete[] this->halfEdges;
 	delete[] this->verts;
+	delete[] this->halfEdges;
+	delete[] this->edges;
 	delete[] this->faces;
 }
