@@ -150,9 +150,9 @@ void PhysicsSystem::Update()
 			break;
 		}
 
-#ifdef DEBUG
+#ifdef PHYS_DEBUG
 		std::cout << "\n";
-#endif // DEBUG
+#endif // PHYS_DEBUG
 	}
 }
 
