@@ -149,34 +149,35 @@ void PhysicsSystem::Update()
 		default:
 			break;
 		}
-
-#ifdef PHYS_DEBUG
-		std::cout << "\n";
-#endif // PHYS_DEBUG
 	}
 }
 
-bool IsSeperatingPlane(gMath::Plane testPlane, ConvexHull* pHull)
+// Find vertex with most penetration
+float GetSeperationDepth(gMath::Plane testPlane, ConvexHull* pHull)
 {
+	float minSeperation = FLT_MAX;
+
 	for (int v = 0; v < pHull->vertCount; ++v)
 	{
 		glm::vec3 point = pHull->verts[v].position;
 
 		float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
 
-		if (dot <= 0)
+		if (dot <= minSeperation)
 		{
-			return false;
+			minSeperation = dot;
 		}
 	}
 
-	return true;
+	return minSeperation;
 }
 
-bool SatFaceTest(HullCollider hullA, PositionComponent positionA, RotationComponent rotationA,
+FaceQuery SatFaceTest(HullCollider hullA, PositionComponent positionA, RotationComponent rotationA,
 	HullCollider hullB, PositionComponent positionB, RotationComponent rotationB)
 {
 	gMath::Plane testPlane;
+	FaceQuery query = FaceQuery();
+	query.seperation = -FLT_MAX;
 
 	for (int f = 0; f < hullA.pHull->faceCount; ++f)
 	{
@@ -192,26 +193,39 @@ bool SatFaceTest(HullCollider hullA, PositionComponent positionA, RotationCompon
 		testPlane.dist = -glm::dot(positionB.value - (testPlane.normal * testPlane.dist), testPlane.normal);
 		testPlane.normal = glm::inverse(rotationB.value) * testPlane.normal;
 
-		if (IsSeperatingPlane(testPlane, hullB.pHull))
+		float seperation = GetSeperationDepth(testPlane, hullB.pHull);
+
+		if (seperation > query.seperation)
+		{
+			query.seperation = seperation;
+			query.pFace = &hullA.pHull->faces[f];
+			query.plane = testPlane;
+		}
+
+		// TODO: Could cause problems?
+		if (seperation > 0)
 		{
 
 #ifdef PHYS_DEBUG
-			gMath::Plane drawPlane = testPlane;
+			gMath::Plane drawPlane = query.plane;
 			drawPlane.normal = rotationB.value * drawPlane.normal;
 
-			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, {0, 1, 1});
+			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
 #endif // PHYS_DEBUG
 
-			return true;
+			return query;
 		}
 	}
 
-	return false;
+	return query;
 }
 
-bool SatEdgeTest(HullCollider hullA, PositionComponent positionA, RotationComponent rotationA,
+EdgeQuery SatEdgeTest(HullCollider hullA, PositionComponent positionA, RotationComponent rotationA,
 	HullCollider hullB, PositionComponent positionB, RotationComponent rotationB)
 {
+	EdgeQuery query;
+	query.seperation = -FLT_MAX;
+
 	// Check all edge combinations
 	// TODO: not all edge combinations are necessary to check
 	for (int edgeAIndex = 0; edgeAIndex < hullA.pHull->edgeCount; ++edgeAIndex)
@@ -273,23 +287,31 @@ bool SatEdgeTest(HullCollider hullA, PositionComponent positionA, RotationCompon
 			testPlane.dist = -glm::dot(positionA.value - (testPlane.normal * testPlane.dist), testPlane.normal);
 			testPlane.normal = glm::inverse(rotationA.value) * testPlane.normal;
 
-			if (IsSeperatingPlane(testPlane, hullA.pHull))
+			float seperation = GetSeperationDepth(testPlane, hullA.pHull);
+
+			if (seperation >= query.seperation)
 			{
+				query.seperation = seperation;
+				query.pEdgeA = &hullA.pHull->edges[edgeAIndex];
+				query.pEdgeB = &hullB.pHull->edges[edgeBIndex];
+				query.plane = testPlane;
+			}
 
+			// TODO: Could cause problems?
+			if (seperation > 0)
+			{
 #ifdef PHYS_DEBUG
-				testPlane.normal = rotationA.value * testPlane.normal;
-				debugDraw.DrawPlane(positionA.value, testPlane, 1.5f, 1.5f, { 1, 1, 0 });
-
-				const glm::vec3 supportWorld = rotationB.value * support + positionB.value;
-				debugDraw.DrawLine(supportWorld, supportWorld + glm::vec3(0, 0.25f, 0), { 1, 1, 1 });
+				gMath::Plane drawPlane = query.plane;
+				drawPlane.normal = rotationA.value * drawPlane.normal;
+				debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, { 1, 1, 0 });
 #endif // PHYS_DEBUG
 
-				return true;
+				return query;
 			}
 		}
 	}
 
-	return false;
+	return query;
 }
 
 void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
@@ -327,38 +349,90 @@ void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 
 #endif // PHYS_DEBUG
 
+	FaceQuery faceQueryA = SatFaceTest(hullA, positionA, rotationA, hullB, positionB, rotationB);
+
 	// Check faces of A
-	if (SatFaceTest(hullA, positionA, rotationA, hullB, positionB, rotationB))
+	if (faceQueryA.seperation > 0)
 	{
 
 #ifdef PHYS_DEBUG
-		std::cout << "Face test A\n";
+		std::cout << "Face test A: " << faceQueryA.seperation << "\n";
 #endif // PHYS_DEBUG
 
 		return;
 	}
+
+	FaceQuery faceQueryB = SatFaceTest(hullB, positionB, rotationB, hullA, positionA, rotationA);
 
 	// Check faces of B
-	if (SatFaceTest(hullB, positionB, rotationB, hullA, positionA, rotationA))
+	if (faceQueryB.seperation > 0)
 	{
 
 #ifdef PHYS_DEBUG
-		std::cout << "Face test B\n";
+		std::cout << "Face test B: " << faceQueryB.seperation << "\n";
 #endif // PHYS_DEBUG
 
 		return;
 	}
+
+	EdgeQuery edgeQuery = SatEdgeTest(hullA, positionA, rotationA, hullB, positionB, rotationB);
 
 	// Check edge combinations
-	if (SatEdgeTest(hullA, positionA, rotationA, hullB, positionB, rotationB))
+	if (edgeQuery.seperation > 0)
 	{
 
 #ifdef PHYS_DEBUG
-		std::cout << "Edge test\n";
+		std::cout << "Edge test: " << edgeQuery.seperation << "\n";
 #endif // PHYS_DEBUG
 
 		return;
 	}
 
-	std::cout << "Collide\n";
+	bool isFaceContactA = faceQueryA.seperation > edgeQuery.seperation;
+	bool isFaceContactB = faceQueryB.seperation > edgeQuery.seperation;
+
+	bool isFaceContact = isFaceContactA || isFaceContactB;
+
+	float seperation;
+
+	if (isFaceContact)
+	{
+		if (isFaceContactA)
+		{
+			seperation = faceQueryA.seperation;
+
+#ifdef PHYS_DEBUG
+			gMath::Plane drawPlane = faceQueryA.plane;
+			drawPlane.normal = rotationB.value * drawPlane.normal;
+
+			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
+#endif // PHYS_DEBUG
+		}
+		else
+		{
+			seperation = faceQueryB.seperation;
+
+#ifdef PHYS_DEBUG
+			gMath::Plane drawPlane = faceQueryB.plane;
+			drawPlane.normal = rotationB.value * drawPlane.normal;
+
+			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
+#endif // PHYS_DEBUG
+		}
+	}
+	else
+	{
+		seperation = edgeQuery.seperation;
+
+#ifdef PHYS_DEBUG
+		gMath::Plane drawPlane = edgeQuery.plane;
+		drawPlane.normal = rotationA.value * drawPlane.normal;
+		debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, { 1, 1, 0 });
+#endif // PHYS_DEBUG
+	}
+
+#ifdef PHYS_DEBUG
+	std::cout << "Collide: " << seperation << "\n";
+#endif // PHYS_DEBUG
+
 }
