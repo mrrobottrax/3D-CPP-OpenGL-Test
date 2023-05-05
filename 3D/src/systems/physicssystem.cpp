@@ -172,33 +172,33 @@ float GetSeperationDepth(gMath::Plane testPlane, ConvexHull* pHull)
 	return minSeperation;
 }
 
-FaceQuery SatFaceTest(HullCollider hullA, PositionComponent positionA, RotationComponent rotationA,
-	HullCollider hullB, PositionComponent positionB, RotationComponent rotationB)
+FaceQuery SatFaceTest(HullCollider referenceHull, PositionComponent referencePosition, RotationComponent referenceRotation,
+	HullCollider incidentHull, PositionComponent incidentPosition, RotationComponent incidentRotation)
 {
 	gMath::Plane testPlane;
 	FaceQuery query = FaceQuery();
 	query.seperation = -FLT_MAX;
 
-	for (int f = 0; f < hullA.pHull->faceCount; ++f)
+	for (int f = 0; f < incidentHull.pHull->faceCount; ++f)
 	{
-		testPlane = hullA.pHull->faces[f].plane;
+		testPlane = incidentHull.pHull->faces[f].plane;
 
 		// TODO: Should be a way to skip converting to world space first
 
 		// World space
-		testPlane.normal = rotationA.value * testPlane.normal;
-		testPlane.dist = -glm::dot(-(positionA.value + testPlane.normal * testPlane.dist), testPlane.normal);
+		testPlane.normal = incidentRotation.value * testPlane.normal;
+		testPlane.dist = -glm::dot(-(incidentPosition.value + testPlane.normal * testPlane.dist), testPlane.normal);
 
-		// HullB space
-		testPlane.dist = -glm::dot(positionB.value - (testPlane.normal * testPlane.dist), testPlane.normal);
-		testPlane.normal = glm::inverse(rotationB.value) * testPlane.normal;
+		// Reference space
+		testPlane.dist = -glm::dot(referencePosition.value - (testPlane.normal * testPlane.dist), testPlane.normal);
+		testPlane.normal = glm::inverse(referenceRotation.value) * testPlane.normal;
 
-		float seperation = GetSeperationDepth(testPlane, hullB.pHull);
+		float seperation = GetSeperationDepth(testPlane, incidentHull.pHull);
 
 		if (seperation > query.seperation)
 		{
 			query.seperation = seperation;
-			query.pFace = &hullA.pHull->faces[f];
+			query.pFace = &referenceHull.pHull->faces[f];
 			query.plane = testPlane;
 		}
 
@@ -208,9 +208,9 @@ FaceQuery SatFaceTest(HullCollider hullA, PositionComponent positionA, RotationC
 
 #ifdef PHYS_DEBUG
 			gMath::Plane drawPlane = query.plane;
-			drawPlane.normal = rotationB.value * drawPlane.normal;
+			drawPlane.normal = referenceRotation.value * drawPlane.normal;
 
-			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
+			debugDraw.DrawPlane(referencePosition.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
 #endif // PHYS_DEBUG
 
 			return query;
@@ -220,31 +220,31 @@ FaceQuery SatFaceTest(HullCollider hullA, PositionComponent positionA, RotationC
 	return query;
 }
 
-EdgeQuery SatEdgeTest(HullCollider hullA, PositionComponent positionA, RotationComponent rotationA,
-	HullCollider hullB, PositionComponent positionB, RotationComponent rotationB)
+EdgeQuery SatEdgeTest(HullCollider referenceHull, PositionComponent refrencePosition, RotationComponent referenceRotation,
+	HullCollider incidentHull, PositionComponent incidentPosition, RotationComponent incidentRotation)
 {
 	EdgeQuery query;
 	query.seperation = -FLT_MAX;
 
 	// Check all edge combinations
 	// TODO: not all edge combinations are necessary to check
-	for (int edgeAIndex = 0; edgeAIndex < hullA.pHull->edgeCount; ++edgeAIndex)
+	for (int edgeAIndex = 0; edgeAIndex < referenceHull.pHull->edgeCount; ++edgeAIndex)
 	{
-		glm::vec3 edgeATail = hullA.pHull->edges[edgeAIndex].pHalfA->pTail->position;
-		glm::vec3 edgeADir = hullA.pHull->edges[edgeAIndex].pHalfB->pTail->position - edgeATail;
+		glm::vec3 edgeATail = referenceHull.pHull->edges[edgeAIndex].pHalfA->pTail->position;
+		glm::vec3 edgeADir = referenceHull.pHull->edges[edgeAIndex].pHalfB->pTail->position - edgeATail;
 
 		// TODO: This should be able to be optimized
-		edgeATail = rotationA.value * edgeATail + positionA.value;
-		edgeADir = rotationA.value * edgeADir;
+		edgeATail = referenceRotation.value * edgeATail + refrencePosition.value;
+		edgeADir = referenceRotation.value * edgeADir;
 
-		edgeATail = edgeATail - positionB.value;
-		edgeATail = glm::inverse(rotationB.value) * edgeATail;
-		edgeADir = glm::inverse(rotationB.value) * edgeADir;
+		edgeATail = edgeATail - incidentPosition.value;
+		edgeATail = glm::inverse(incidentRotation.value) * edgeATail;
+		edgeADir = glm::inverse(incidentRotation.value) * edgeADir;
 
-		for (int edgeBIndex = 0; edgeBIndex < hullB.pHull->edgeCount; ++edgeBIndex)
+		for (int edgeBIndex = 0; edgeBIndex < incidentHull.pHull->edgeCount; ++edgeBIndex)
 		{
-			glm::vec3 edgeBTail = hullB.pHull->edges[edgeBIndex].pHalfA->pTail->position;
-			glm::vec3 edgeBDir = hullB.pHull->edges[edgeBIndex].pHalfB->pTail->position - edgeBTail;
+			glm::vec3 edgeBTail = incidentHull.pHull->edges[edgeBIndex].pHalfA->pTail->position;
+			glm::vec3 edgeBDir = incidentHull.pHull->edges[edgeBIndex].pHalfB->pTail->position - edgeBTail;
 
 			gMath::Plane testPlane;
 			testPlane.normal = glm::normalize(glm::cross(edgeADir, edgeBDir));
@@ -260,9 +260,9 @@ EdgeQuery SatEdgeTest(HullCollider hullA, PositionComponent positionA, RotationC
 			glm::vec3 support;
 			{
 				float bestDot = 0;
-				for (int v = 0; v < hullB.pHull->vertCount; ++v)
+				for (int v = 0; v < incidentHull.pHull->vertCount; ++v)
 				{
-					glm::vec3 point = hullB.pHull->verts[v].position;
+					glm::vec3 point = incidentHull.pHull->verts[v].position;
 
 					float dot = glm::dot(point, testPlane.normal);
 					if (dot >= bestDot)
@@ -280,20 +280,20 @@ EdgeQuery SatEdgeTest(HullCollider hullA, PositionComponent positionA, RotationC
 			// TODO: Should be a way to skip converting to world space first
 
 			// World space
-			testPlane.normal = rotationB.value * testPlane.normal;
-			testPlane.dist = -glm::dot(-(positionB.value + testPlane.normal * testPlane.dist), testPlane.normal);
+			testPlane.normal = incidentRotation.value * testPlane.normal;
+			testPlane.dist = -glm::dot(-(incidentPosition.value + testPlane.normal * testPlane.dist), testPlane.normal);
 
 			// HullA space
-			testPlane.dist = -glm::dot(positionA.value - (testPlane.normal * testPlane.dist), testPlane.normal);
-			testPlane.normal = glm::inverse(rotationA.value) * testPlane.normal;
+			testPlane.dist = -glm::dot(refrencePosition.value - (testPlane.normal * testPlane.dist), testPlane.normal);
+			testPlane.normal = glm::inverse(referenceRotation.value) * testPlane.normal;
 
-			float seperation = GetSeperationDepth(testPlane, hullA.pHull);
+			float seperation = GetSeperationDepth(testPlane, referenceHull.pHull);
 
 			if (seperation >= query.seperation)
 			{
 				query.seperation = seperation;
-				query.pEdgeA = &hullA.pHull->edges[edgeAIndex];
-				query.pEdgeB = &hullB.pHull->edges[edgeBIndex];
+				query.pEdgeA = &referenceHull.pHull->edges[edgeAIndex];
+				query.pEdgeB = &incidentHull.pHull->edges[edgeBIndex];
 				query.plane = testPlane;
 			}
 
@@ -302,8 +302,8 @@ EdgeQuery SatEdgeTest(HullCollider hullA, PositionComponent positionA, RotationC
 			{
 #ifdef PHYS_DEBUG
 				gMath::Plane drawPlane = query.plane;
-				drawPlane.normal = rotationA.value * drawPlane.normal;
-				debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, { 1, 1, 0 });
+				drawPlane.normal = referenceRotation.value * drawPlane.normal;
+				debugDraw.DrawPlane(refrencePosition.value, drawPlane, 1.5f, 1.5f, { 1, 1, 0 });
 #endif // PHYS_DEBUG
 
 				return query;
@@ -314,19 +314,19 @@ EdgeQuery SatEdgeTest(HullCollider hullA, PositionComponent positionA, RotationC
 	return query;
 }
 
-void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
+void PhysicsSystem::HullVsHull(Entity referenceEntity, Entity incidentEntity)
 {
 	// Seperating Axis Theorum
 
 	EntityManager& em = entityManager;
 
-	PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
-	PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
-	RotationComponent& rotationA = em.GetComponent<RotationComponent>(entityA);
-	RotationComponent& rotationB = em.GetComponent<RotationComponent>(entityB);
+	PositionComponent& referencePosition = em.GetComponent<PositionComponent>(referenceEntity);
+	PositionComponent& incidentPosition = em.GetComponent<PositionComponent>(incidentEntity);
+	RotationComponent& referenceRotation = em.GetComponent<RotationComponent>(referenceEntity);
+	RotationComponent& incidentRotation = em.GetComponent<RotationComponent>(incidentEntity);
 
-	HullCollider& hullA = em.GetComponent<HullCollider>(entityA);
-	HullCollider& hullB = em.GetComponent<HullCollider>(entityB);
+	HullCollider& referenceHull = em.GetComponent<HullCollider>(referenceEntity);
+	HullCollider& incidentHull = em.GetComponent<HullCollider>(incidentEntity);
 
 #ifdef PHYS_DEBUG
 
@@ -344,12 +344,12 @@ void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 		}
 	};
 
-	DrawHull(hullA.pHull, positionA.value, rotationA.value, {1, 0, 0});
-	DrawHull(hullB.pHull, positionB.value, rotationB.value, {0, 0, 1});
+	DrawHull(referenceHull.pHull, referencePosition.value, referenceRotation.value, {1, 0, 0});
+	DrawHull(incidentHull.pHull, incidentPosition.value, incidentRotation.value, {0, 0, 1});
 
 #endif // PHYS_DEBUG
 
-	FaceQuery faceQueryA = SatFaceTest(hullA, positionA, rotationA, hullB, positionB, rotationB);
+	FaceQuery faceQueryA = SatFaceTest(referenceHull, referencePosition, referenceRotation, incidentHull, incidentPosition, incidentRotation);
 
 	// Check faces of A
 	if (faceQueryA.seperation > 0)
@@ -362,7 +362,7 @@ void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 		return;
 	}
 
-	FaceQuery faceQueryB = SatFaceTest(hullB, positionB, rotationB, hullA, positionA, rotationA);
+	FaceQuery faceQueryB = SatFaceTest(incidentHull, incidentPosition, incidentRotation, referenceHull, referencePosition, referenceRotation);
 
 	// Check faces of B
 	if (faceQueryB.seperation > 0)
@@ -375,7 +375,7 @@ void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 		return;
 	}
 
-	EdgeQuery edgeQuery = SatEdgeTest(hullA, positionA, rotationA, hullB, positionB, rotationB);
+	EdgeQuery edgeQuery = SatEdgeTest(referenceHull, referencePosition, referenceRotation, incidentHull, incidentPosition, incidentRotation);
 
 	// Check edge combinations
 	if (edgeQuery.seperation > 0)
@@ -403,9 +403,9 @@ void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 
 #ifdef PHYS_DEBUG
 			gMath::Plane drawPlane = faceQueryA.plane;
-			drawPlane.normal = rotationB.value * drawPlane.normal;
+			drawPlane.normal = incidentRotation.value * drawPlane.normal;
 
-			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
+			debugDraw.DrawPlane(incidentPosition.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
 #endif // PHYS_DEBUG
 		}
 		else
@@ -414,9 +414,9 @@ void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 
 #ifdef PHYS_DEBUG
 			gMath::Plane drawPlane = faceQueryB.plane;
-			drawPlane.normal = rotationB.value * drawPlane.normal;
+			drawPlane.normal = incidentRotation.value * drawPlane.normal;
 
-			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
+			debugDraw.DrawPlane(incidentPosition.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
 #endif // PHYS_DEBUG
 		}
 	}
@@ -426,8 +426,8 @@ void PhysicsSystem::HullVsHull(Entity entityA, Entity entityB)
 
 #ifdef PHYS_DEBUG
 		gMath::Plane drawPlane = edgeQuery.plane;
-		drawPlane.normal = rotationA.value * drawPlane.normal;
-		debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, { 1, 1, 0 });
+		drawPlane.normal = referenceRotation.value * drawPlane.normal;
+		debugDraw.DrawPlane(referencePosition.value, drawPlane, 1.5f, 1.5f, { 1, 1, 0 });
 #endif // PHYS_DEBUG
 	}
 
