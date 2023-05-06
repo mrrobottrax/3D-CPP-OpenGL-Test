@@ -54,7 +54,7 @@ void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const 
 {
 	glm::normalize(normal);
 
-	glm::vec3 rightVec = normal == upHint ? glm::vec3(1, 0, 0) : glm::cross(normal, upHint);
+	glm::vec3 rightVec = abs(normal) == abs(upHint) ? glm::vec3(1, 0, 0) : glm::cross(normal, upHint);
 	rightVec = glm::normalize(rightVec);
 	glm::vec3 upVec = glm::cross(normal, rightVec);
 	upVec = glm::normalize(upVec);

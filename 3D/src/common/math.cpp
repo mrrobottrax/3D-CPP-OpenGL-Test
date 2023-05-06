@@ -65,4 +65,9 @@ namespace gMath
 
 		return PlaneFromTri(a, b, c);
 	}
+
+	glm::vec3 Lerp(glm::vec3 x, glm::vec3 y, float t)
+	{
+		return x * (1.0f - t) + y * t;
+	}
 }

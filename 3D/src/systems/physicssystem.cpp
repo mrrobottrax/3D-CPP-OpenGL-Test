@@ -122,6 +122,8 @@ void PhysicsSystem::Update()
 
 	// Narrow phase  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+	std::vector<Manifold> manifolds;
+
 	// For each collision pair
 	for (auto pairsIt = pairs.begin(); pairsIt != pairs.end(); ++pairsIt)
 	{
@@ -131,6 +133,10 @@ void PhysicsSystem::Update()
 		RigidBodyComponent& rbA = *(RigidBodyComponent*)(*pairsIt).pRigidBodyA;
 		RigidBodyComponent& rbB = *(RigidBodyComponent*)(*pairsIt).pRigidBodyB;
 
+		Manifold manifold;
+
+		bool collision = false;
+
 		switch (rbA.colliderType)
 		{
 		case Hull:
@@ -138,7 +144,7 @@ void PhysicsSystem::Update()
 			{
 			case Hull:
 				// HULL VS HULL
-				HullVsHull(entityA, entityB);
+				collision = HullVsHull(entityA, entityB, manifold);
 				break;
 
 			default:
@@ -149,19 +155,39 @@ void PhysicsSystem::Update()
 		default:
 			break;
 		}
+
+		if (collision)
+		{
+			manifolds.push_back(manifold);
+		}
 	}
+
+#ifdef PHYS_DEBUG
+	for (int i = 0; i < manifolds.size(); ++i)
+	{
+		Manifold& manifold = manifolds[i];
+
+		for (int j = 0; j < manifold.numContacts; ++j)
+		{
+			ContactPoint& cp = manifold.contacts[j];
+			debugDraw.DrawLine(cp.position, cp.position + manifold.normal * 0.25f, { 1, 0, 1 });
+		}
+	}
+#endif // PHYS_DEBUG
+
 }
 
 // Find vertex with most penetration
-float GetSeperationDepth(gMath::Plane testPlane, ConvexHull* pHull)
+// Plane MUST be in hull space
+float GetSeperationDepth(const gMath::Plane& testPlane, const ConvexHull& hull)
 {
 	float minSeperation = FLT_MAX;
 
-	for (int v = 0; v < pHull->vertCount; ++v)
+	for (int v = 0; v < hull.vertCount; ++v)
 	{
-		glm::vec3 point = pHull->verts[v].position;
+		glm::vec3 point = hull.verts[v].position;
 
-		float dot = glm::dot(point, testPlane.normal) - testPlane.dist;
+		float dot = glm::dot(point, testPlane.normal);
 
 		if (dot <= minSeperation)
 		{
@@ -169,50 +195,44 @@ float GetSeperationDepth(gMath::Plane testPlane, ConvexHull* pHull)
 		}
 	}
 
+	minSeperation -= testPlane.dist;
+
 	return minSeperation;
 }
 
-FaceQuery SatFaceTest(HullCollider referenceHull, PositionComponent referencePosition, RotationComponent referenceRotation,
-	HullCollider incidentHull, PositionComponent incidentPosition, RotationComponent incidentRotation)
+FaceQuery SatFaceTest(const HullCollider& hullA, const glm::vec3& positionA, const glm::fquat& rotationA,
+	const HullCollider& hullB, const glm::vec3& positionB, const glm::fquat& rotationB)
 {
 	gMath::Plane testPlane;
 	FaceQuery query = FaceQuery();
 	query.seperation = -FLT_MAX;
 
-	for (int f = 0; f < incidentHull.pHull->faceCount; ++f)
+	for (int f = 0; f < hullB.pHull->faceCount; ++f)
 	{
-		testPlane = incidentHull.pHull->faces[f].plane;
+		testPlane = hullB.pHull->faces[f].plane;
 
 		// TODO: Should be a way to skip converting to world space first
 
 		// World space
-		testPlane.normal = incidentRotation.value * testPlane.normal;
-		testPlane.dist = -glm::dot(-(incidentPosition.value + testPlane.normal * testPlane.dist), testPlane.normal);
+		glm::vec3 oldNormal = testPlane.normal;
+		glm::vec3 normal1 = rotationB * oldNormal;
+		testPlane.dist = -glm::dot(-(positionB + normal1 * testPlane.dist), normal1);
 
-		// Reference space
-		testPlane.dist = -glm::dot(referencePosition.value - (testPlane.normal * testPlane.dist), testPlane.normal);
-		testPlane.normal = glm::inverse(referenceRotation.value) * testPlane.normal;
+		// A space
+		testPlane.dist = -glm::dot(positionA - (normal1 * testPlane.dist), normal1);
+		testPlane.normal = glm::inverse(rotationA) * normal1;
 
-		float seperation = GetSeperationDepth(testPlane, incidentHull.pHull);
+		float seperation = GetSeperationDepth(testPlane, *hullB.pHull);
 
 		if (seperation > query.seperation)
 		{
 			query.seperation = seperation;
-			query.pFace = &referenceHull.pHull->faces[f];
-			query.plane = testPlane;
+			query.pFace = &hullA.pHull->faces[f];
 		}
 
-		// TODO: Could cause problems?
+		// TODO: Early exit could cause problems?
 		if (seperation > 0)
 		{
-
-#ifdef PHYS_DEBUG
-			gMath::Plane drawPlane = query.plane;
-			drawPlane.normal = referenceRotation.value * drawPlane.normal;
-
-			debugDraw.DrawPlane(referencePosition.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
-#endif // PHYS_DEBUG
-
 			return query;
 		}
 	}
@@ -220,92 +240,90 @@ FaceQuery SatFaceTest(HullCollider referenceHull, PositionComponent referencePos
 	return query;
 }
 
-EdgeQuery SatEdgeTest(HullCollider referenceHull, PositionComponent refrencePosition, RotationComponent referenceRotation,
-	HullCollider incidentHull, PositionComponent incidentPosition, RotationComponent incidentRotation)
+bool NormalsBuildMinkowskiFace(const glm::vec3& a, const glm::vec3& b, const glm::vec3& b_x_a,
+	const glm::vec3& c, const glm::vec3& d, const glm::vec3& d_x_c)
+{
+	float cba = glm::dot(c, b_x_a);
+	float dba = glm::dot(d, b_x_a);
+	float adc = glm::dot(a, d_x_c);
+	float bdc = glm::dot(b, d_x_c);
+
+	return cba * dba < 0 && adc * bdc < 0 && cba * bdc > 0;
+}
+
+bool EdgesBuildMinkowskiFace(const qhEdge& edgeA, const qhEdge& edgeB,
+	const glm::vec3& edgeADir, const glm::vec3& edgeBDir,
+	const glm::fquat& rotationA, const glm::fquat& rotationB)
+{
+	glm::vec3 a = rotationA * edgeA.pHalfA->pFace->plane.normal;
+	glm::vec3 b = rotationA * edgeA.pHalfB->pFace->plane.normal;
+	glm::vec3 c = rotationB * edgeB.pHalfA->pFace->plane.normal;
+	glm::vec3 d = rotationB * edgeB.pHalfB->pFace->plane.normal;
+
+	return NormalsBuildMinkowskiFace(a, b, edgeADir, -c, -d, edgeBDir);
+}
+
+EdgeQuery SatEdgeTest(const HullCollider& hullA, const glm::vec3& positionA, const glm::fquat& rotationA,
+	const HullCollider& hullB, const glm::vec3& positionB, const glm::fquat& rotationB)
 {
 	EdgeQuery query;
 	query.seperation = -FLT_MAX;
 
-	// Check all edge combinations
-	// TODO: not all edge combinations are necessary to check
-	for (int edgeAIndex = 0; edgeAIndex < referenceHull.pHull->edgeCount; ++edgeAIndex)
+	glm::vec3 bOffset = positionB - positionA;
+
+	// Check edge combinations
+	for (int edgeAIndex = 0; edgeAIndex < hullA.pHull->edgeCount; ++edgeAIndex)
 	{
-		glm::vec3 edgeATail = referenceHull.pHull->edges[edgeAIndex].pHalfA->pTail->position;
-		glm::vec3 edgeADir = referenceHull.pHull->edges[edgeAIndex].pHalfB->pTail->position - edgeATail;
+		glm::vec3 edgeATail = hullA.pHull->edges[edgeAIndex].pHalfA->pTail->position;
+		glm::vec3 edgeADir = hullA.pHull->edges[edgeAIndex].pHalfB->pTail->position - edgeATail;
 
-		// TODO: This should be able to be optimized
-		edgeATail = referenceRotation.value * edgeATail + refrencePosition.value;
-		edgeADir = referenceRotation.value * edgeADir;
+		edgeATail = rotationA * edgeATail + positionA;
+		edgeADir = rotationA * edgeADir;
 
-		edgeATail = edgeATail - incidentPosition.value;
-		edgeATail = glm::inverse(incidentRotation.value) * edgeATail;
-		edgeADir = glm::inverse(incidentRotation.value) * edgeADir;
-
-		for (int edgeBIndex = 0; edgeBIndex < incidentHull.pHull->edgeCount; ++edgeBIndex)
+		for (int edgeBIndex = 0; edgeBIndex < hullB.pHull->edgeCount; ++edgeBIndex)
 		{
-			glm::vec3 edgeBTail = incidentHull.pHull->edges[edgeBIndex].pHalfA->pTail->position;
-			glm::vec3 edgeBDir = incidentHull.pHull->edges[edgeBIndex].pHalfB->pTail->position - edgeBTail;
+			glm::vec3 edgeBTail = hullB.pHull->edges[edgeBIndex].pHalfA->pTail->position;
+			glm::vec3 edgeBDir = hullB.pHull->edges[edgeBIndex].pHalfB->pTail->position - edgeBTail;
+
+			edgeBTail = rotationB * edgeBTail + bOffset;
+			edgeBDir = rotationB * edgeBDir;
+
+			if (!EdgesBuildMinkowskiFace(hullA.pHull->edges[edgeAIndex], hullB.pHull->edges[edgeBIndex],
+				edgeADir, edgeBDir, rotationA, rotationB))
+			{
+				continue;
+			}
 
 			gMath::Plane testPlane;
 			testPlane.normal = glm::normalize(glm::cross(edgeADir, edgeBDir));
 
 			// Check if the normal is facing the right direction
-			if (glm::dot(edgeBTail, testPlane.normal) < 0)
+			if (glm::dot(edgeATail - positionA, testPlane.normal) < 0)
 			{
 				testPlane.normal = -testPlane.normal;
 			}
 
-			// Get point furthest in normal direction (support point)
-			// TODO: There is a way to do this without the support point
-			glm::vec3 support;
-			{
-				float bestDot = 0;
-				for (int v = 0; v < incidentHull.pHull->vertCount; ++v)
-				{
-					glm::vec3 point = incidentHull.pHull->verts[v].position;
+			// Move plane to edge
+			testPlane.dist = glm::dot(edgeATail, testPlane.normal);
 
-					float dot = glm::dot(point, testPlane.normal);
-					if (dot >= bestDot)
-					{
-						support = point;
-						bestDot = dot;
-					}
-				}
-			}
+			// Move plane to Hull B space
+			gMath::Plane bPlane;
+			bPlane.dist = glm::dot(testPlane.normal * testPlane.dist - positionB, testPlane.normal);
+			bPlane.normal = glm::inverse(rotationB) * testPlane.normal;
 
-			// Move plane to support point
-			testPlane.dist = glm::dot(support, testPlane.normal);
-
-			// Move plane to HullA space
-			// TODO: Should be a way to skip converting to world space first
-
-			// World space
-			testPlane.normal = incidentRotation.value * testPlane.normal;
-			testPlane.dist = -glm::dot(-(incidentPosition.value + testPlane.normal * testPlane.dist), testPlane.normal);
-
-			// HullA space
-			testPlane.dist = -glm::dot(refrencePosition.value - (testPlane.normal * testPlane.dist), testPlane.normal);
-			testPlane.normal = glm::inverse(referenceRotation.value) * testPlane.normal;
-
-			float seperation = GetSeperationDepth(testPlane, referenceHull.pHull);
+			float seperation = GetSeperationDepth(bPlane, *hullB.pHull);
 
 			if (seperation >= query.seperation)
 			{
 				query.seperation = seperation;
-				query.pEdgeA = &referenceHull.pHull->edges[edgeAIndex];
-				query.pEdgeB = &incidentHull.pHull->edges[edgeBIndex];
-				query.plane = testPlane;
+				query.pEdgeA = &hullA.pHull->edges[edgeAIndex];
+				query.pEdgeB = &hullB.pHull->edges[edgeBIndex];
+
+				query.normal = testPlane.normal;
 			}
 
-			// TODO: Could cause problems?
 			if (seperation > 0)
 			{
-#ifdef PHYS_DEBUG
-				gMath::Plane drawPlane = query.plane;
-				drawPlane.normal = referenceRotation.value * drawPlane.normal;
-				debugDraw.DrawPlane(refrencePosition.value, drawPlane, 1.5f, 1.5f, { 1, 1, 0 });
-#endif // PHYS_DEBUG
-
 				return query;
 			}
 		}
@@ -314,19 +332,87 @@ EdgeQuery SatEdgeTest(HullCollider referenceHull, PositionComponent refrencePosi
 	return query;
 }
 
-void PhysicsSystem::HullVsHull(Entity referenceEntity, Entity incidentEntity)
+float ProjectPointToLine(const glm::vec3& point, const gMath::Line& line)
+{
+	glm::vec3 lineBProjDir = line.pointB - line.pointA;
+	float interp = glm::dot(point - line.pointA, lineBProjDir) / glm::dot(lineBProjDir, lineBProjDir);
+
+	return interp;
+}
+
+glm::vec3 GetClosestPointOnLine(const gMath::Line& lineA, const gMath::Line& lineB)
+{
+	// Project line B onto the plane of line A
+	glm::vec3 normal = lineA.pointB - lineA.pointA;
+	normal = glm::normalize(normal);
+
+	gMath::Line lineBProj = lineB;
+	{
+		float pointADot = glm::dot(lineB.pointA, normal);
+		float pointBDot = glm::dot(lineB.pointB, normal);
+
+		lineBProj.pointA = -normal * pointADot;
+		lineBProj.pointB = -normal * pointBDot;
+	}
+
+	// Project the first point of line A onto the projected line B
+	float t = ProjectPointToLine(lineA.pointA, lineBProj);
+	glm::vec3 point = gMath::Lerp(lineB.pointA, lineB.pointB, t);
+
+	return point;
+}
+
+void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, const glm::fquat& rotationA,
+	const glm::vec3& positionB, const glm::fquat& rotationB, Manifold& manifold)
+{
+	gMath::Line lineA = {
+		query.pEdgeA->pHalfA->pTail->position,
+		query.pEdgeA->pHalfB->pTail->position,
+	};
+
+	lineA.pointA = rotationA * lineA.pointA + positionA;
+	lineA.pointB = rotationA * lineA.pointB + positionA;
+
+	gMath::Line lineB = {
+		query.pEdgeB->pHalfA->pTail->position,
+		query.pEdgeB->pHalfB->pTail->position,
+	};
+
+	lineB.pointA = rotationB * lineB.pointA + positionB;
+	lineB.pointB = rotationB * lineB.pointB + positionB;
+
+	glm::vec3 pointA = GetClosestPointOnLine(lineA, lineB);
+	glm::vec3 pointB = GetClosestPointOnLine(lineB, lineA);
+
+	ContactPoint cp1;
+	cp1.position = lineA.pointA;
+	ContactPoint cp2;
+	cp2.position = lineA.pointB;
+	ContactPoint cp3;
+	cp3.position = lineB.pointA;
+	ContactPoint cp4;
+	cp4.position = lineB.pointB;
+
+	manifold.contacts[0] = cp1;
+	manifold.contacts[1] = cp2;
+	manifold.contacts[2] = cp3;
+	manifold.contacts[3] = cp4;
+	manifold.numContacts = 4;
+}
+
+bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manifold)
 {
 	// Seperating Axis Theorum
 
 	EntityManager& em = entityManager;
 
-	PositionComponent& referencePosition = em.GetComponent<PositionComponent>(referenceEntity);
-	PositionComponent& incidentPosition = em.GetComponent<PositionComponent>(incidentEntity);
-	RotationComponent& referenceRotation = em.GetComponent<RotationComponent>(referenceEntity);
-	RotationComponent& incidentRotation = em.GetComponent<RotationComponent>(incidentEntity);
+	PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
+	PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
+	RotationComponent& rotationA = em.GetComponent<RotationComponent>(entityA);
+	RotationComponent& rotationB = em.GetComponent<RotationComponent>(entityB);
 
-	HullCollider& referenceHull = em.GetComponent<HullCollider>(referenceEntity);
-	HullCollider& incidentHull = em.GetComponent<HullCollider>(incidentEntity);
+	HullCollider& hullA = em.GetComponent<HullCollider>(entityA);
+	HullCollider& hullB = em.GetComponent<HullCollider>(entityB);
 
 #ifdef PHYS_DEBUG
 
@@ -344,95 +430,89 @@ void PhysicsSystem::HullVsHull(Entity referenceEntity, Entity incidentEntity)
 		}
 	};
 
-	DrawHull(referenceHull.pHull, referencePosition.value, referenceRotation.value, {1, 0, 0});
-	DrawHull(incidentHull.pHull, incidentPosition.value, incidentRotation.value, {0, 0, 1});
+	DrawHull(hullA.pHull, positionA.value, rotationA.value, {1, 0, 0});
+	DrawHull(hullB.pHull, positionB.value, rotationB.value, {0, 0, 1});
 
 #endif // PHYS_DEBUG
 
-	FaceQuery faceQueryA = SatFaceTest(referenceHull, referencePosition, referenceRotation, incidentHull, incidentPosition, incidentRotation);
+	FaceQuery faceQueryA = SatFaceTest(hullA, positionA.value, rotationA.value, hullB, positionB.value, rotationB.value);
 
 	// Check faces of A
 	if (faceQueryA.seperation > 0)
 	{
-
-#ifdef PHYS_DEBUG
-		std::cout << "Face test A: " << faceQueryA.seperation << "\n";
-#endif // PHYS_DEBUG
-
-		return;
+		return false;
 	}
 
-	FaceQuery faceQueryB = SatFaceTest(incidentHull, incidentPosition, incidentRotation, referenceHull, referencePosition, referenceRotation);
+	FaceQuery faceQueryB = SatFaceTest(hullB, positionB.value, rotationB.value, hullA, positionA.value, rotationA.value);
 
 	// Check faces of B
 	if (faceQueryB.seperation > 0)
 	{
-
-#ifdef PHYS_DEBUG
-		std::cout << "Face test B: " << faceQueryB.seperation << "\n";
-#endif // PHYS_DEBUG
-
-		return;
+		return false;
 	}
 
-	EdgeQuery edgeQuery = SatEdgeTest(referenceHull, referencePosition, referenceRotation, incidentHull, incidentPosition, incidentRotation);
+	EdgeQuery edgeQuery = SatEdgeTest(hullA, positionA.value, rotationA.value, hullB, positionB.value, rotationB.value);
 
 	// Check edge combinations
 	if (edgeQuery.seperation > 0)
 	{
-
-#ifdef PHYS_DEBUG
-		std::cout << "Edge test: " << edgeQuery.seperation << "\n";
-#endif // PHYS_DEBUG
-
-		return;
+		return false;
 	}
+
+	manifold.entityA = entityA;
+	manifold.entityB = entityB;
 
 	bool isFaceContactA = faceQueryA.seperation > edgeQuery.seperation;
 	bool isFaceContactB = faceQueryB.seperation > edgeQuery.seperation;
 
-	bool isFaceContact = isFaceContactA || isFaceContactB;
-
+#ifdef PHYS_DEBUG
 	float seperation;
+#endif // PHYS_DEBUG
 
-	if (isFaceContact)
+	if (isFaceContactA && isFaceContactB)
 	{
-		if (isFaceContactA)
-		{
-			seperation = faceQueryA.seperation;
 
 #ifdef PHYS_DEBUG
-			gMath::Plane drawPlane = faceQueryA.plane;
-			drawPlane.normal = incidentRotation.value * drawPlane.normal;
+		bool aIsBiggerThanB = faceQueryA.seperation > faceQueryB.seperation;
 
-			debugDraw.DrawPlane(incidentPosition.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
-#endif // PHYS_DEBUG
+		if (aIsBiggerThanB)
+		{
+			seperation = faceQueryA.seperation;
+			gMath::Plane drawPlane = faceQueryA.pFace->plane;
+			drawPlane.normal = rotationA.value * drawPlane.normal;
+			debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, {1, 1, 0});
 		}
 		else
 		{
 			seperation = faceQueryB.seperation;
-
-#ifdef PHYS_DEBUG
-			gMath::Plane drawPlane = faceQueryB.plane;
-			drawPlane.normal = incidentRotation.value * drawPlane.normal;
-
-			debugDraw.DrawPlane(incidentPosition.value, drawPlane, 1.5f, 1.5f, { 0, 1, 1 });
-#endif // PHYS_DEBUG
+			gMath::Plane drawPlane = faceQueryB.pFace->plane;
+			drawPlane.normal = rotationB.value * drawPlane.normal;
+			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 1, 1, 0 });
 		}
+#endif // PHYS_DEBUG
+
 	}
 	else
 	{
-		seperation = edgeQuery.seperation;
+		manifold.normal = edgeQuery.normal;
+		CreateEdgeContacts(edgeQuery, positionA.value, rotationA.value, positionB.value, rotationB.value, manifold);
 
 #ifdef PHYS_DEBUG
-		gMath::Plane drawPlane = edgeQuery.plane;
-		drawPlane.normal = referenceRotation.value * drawPlane.normal;
-		debugDraw.DrawPlane(referencePosition.value, drawPlane, 1.5f, 1.5f, { 1, 1, 0 });
+		seperation = edgeQuery.seperation;
+
+		gMath::Plane drawPlane;
+		drawPlane.normal = edgeQuery.normal;
+		glm::vec3 edgePos = rotationA.value * edgeQuery.pEdgeA->pHalfA->pTail->position;
+		drawPlane.dist = glm::dot(edgePos, edgeQuery.normal);
+
+		debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, {0, 1, 1});
 #endif // PHYS_DEBUG
+
 	}
 
 #ifdef PHYS_DEBUG
 	std::cout << "Collide: " << seperation << "\n";
 #endif // PHYS_DEBUG
 
+	return true;
 }

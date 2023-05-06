@@ -9,8 +9,6 @@ struct FaceQuery
 {
 	float seperation = -FLT_MAX;
 	qhFace* pFace = nullptr;
-
-	gMath::Plane plane;
 };
 
 struct EdgeQuery
@@ -19,7 +17,23 @@ struct EdgeQuery
 	qhEdge* pEdgeA = nullptr;
 	qhEdge* pEdgeB = nullptr;
 
-	gMath::Plane plane;
+	glm::vec3 normal;
+};
+
+struct ContactPoint
+{
+	glm::vec3 position = glm::vec3(INFINITY);
+};
+
+struct Manifold
+{
+	Entity entityA;
+	Entity entityB;
+
+	char numContacts = 0;
+	ContactPoint contacts[4];
+
+	glm::vec3 normal = glm::vec3(0);
 };
 
 #ifdef DEBUG
@@ -36,5 +50,5 @@ public:
 
 	void Update() override;
 
-	void HullVsHull(Entity entityA, Entity entityB);
+	bool HullVsHull(Entity& entityA, Entity& entityB, Manifold& manifold);
 };
