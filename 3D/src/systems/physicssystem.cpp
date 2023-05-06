@@ -359,6 +359,8 @@ glm::vec3 GetClosestPointOnLine(const gMath::Line& lineA, const gMath::Line& lin
 	float t = ProjectPointToLine(lineA.pointA, lineBProj);
 	glm::vec3 point = gMath::Lerp(lineB.pointA, lineB.pointB, t);
 
+	debugDraw.DrawLine(point, point + glm::vec3(0, 0.25f, 0), { 1, 0.5f, 0 });
+
 	return point;
 }
 
@@ -382,7 +384,7 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	lineB.pointB = rotationB * lineB.pointB + positionB;
 
 	glm::vec3 pointA = GetClosestPointOnLine(lineA, lineB);
-	glm::vec3 pointB = GetClosestPointOnLine(lineB, lineA);
+	//glm::vec3 pointB = GetClosestPointOnLine(lineB, lineA);
 
 	ContactPoint cp1;
 	cp1.position = lineA.pointA;
@@ -391,7 +393,7 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	ContactPoint cp3;
 	cp3.position = lineB.pointA;
 	ContactPoint cp4;
-	cp4.position = lineB.pointB;
+	cp3.position = lineB.pointB;
 
 	manifold.contacts[0] = cp1;
 	manifold.contacts[1] = cp2;

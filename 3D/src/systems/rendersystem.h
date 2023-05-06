@@ -4,15 +4,18 @@
 #include <components/cameraComponent.h>
 #include <memory/entity.h>
 #include <debugtools/debugdraw.h>
+#include <input/console.h>
+
+extern Cvar r_draw;
 
 class RenderSystem : public System
 {
 public:
 	RenderSystem() : pMainCamera(), autoDraw(true)
 	{
-#ifdef DEBUG
+		console.RegisterCvar(r_draw);
+
 		debugDraw.Init();
-#endif // DEBUG
 	};
 	~RenderSystem() {};
 

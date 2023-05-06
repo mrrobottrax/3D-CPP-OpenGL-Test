@@ -10,6 +10,7 @@ Console::Console() : enabled(false), commands()
 	AddCommand("cmd_test", TestCmd);
 	AddCommand("cmd_toggle", ToggleConsoleCommand);
 	AddCommand("echo", Echo);
+	AddCommand("toggle", ToggleCvar);
 }
 
 Console::~Console()
@@ -29,18 +30,36 @@ void Console::AddCommand(const char* name, function<void(Console&)> function)
 	strcpy_s(heap_name, length, name);
 
 	commands.emplace(heap_name, function);
-
-	/*Print("Added command: ");
-	Println(heap_name);*/
 }
 
+void Console::RegisterCvar(Cvar& cvar)
+{
+	if (CvarExists(cvar.name))
+	{
+		Print("Duplicate cvar being registered ");
+		Print(cvar.name);
+		Print("\n");
+		return;
+	}
+
+	cvars.emplace(cvar.name, &cvar);
+}
+
+// WARNING: Inherits args from console
+// Don't use on commands that use args
 void Console::RunCommand(const char* name)
 {
-	if (commands.find(name) == commands.end())
+	if (!CmdExists(name))
 	{
-		Print("Could not find command ");
-		Print(name);
-		Print("\n");
+		if (!CvarExists(name))
+		{
+			Print("Could not find command ");
+			Print(name);
+			Print("\n");
+			return;
+		}
+
+		SetCvar(name, GetArguments());
 		return;
 	}
 
@@ -52,15 +71,32 @@ void Console::RunCommand(const char* name, const char* args)
 	strcpy_s(arguments, MAX_COMMAND_ARGS_LENGTH, args);
 	argIndex = 0;
 
-	if (commands.find(name) == commands.end())
+	RunCommand(name);
+}
+
+void Console::SetCvar(const char* name, const char* value)
+{
+	if (!CvarExists(name))
 	{
-		Print("Could not find command ");
+		Print("Could not find cvar ");
 		Print(name);
 		Print("\n");
 		return;
 	}
 
-	commands[name](*this);
+	float fvalue = std::stof(value);
+
+	cvars[name]->value = fvalue;
+}
+
+float Console::GetCvarValue(const char* name)
+{
+	return cvars[name]->value;
+}
+
+Cvar& Console::GetCvar(const char* name)
+{
+	return *cvars[name];
 }
 
 void Console::AddString(const char* string)
@@ -83,6 +119,8 @@ void Console::ParseInput(char key)
 	keycode = key;
 
 	bool writingArgs = false;
+	bool skippingSpaces = false;
+	bool inQuotes = false;
 
 	char command[MAX_COMMAND_NAME_LENGTH];
 
@@ -107,16 +145,36 @@ void Console::ParseInput(char key)
 				break;
 
 			writingArgs = false;
-			offset = i;
+			offset = i + 1;
+			skippingSpaces = true;
 			continue;
 		}
 
-		if (!writingArgs && input[i] == ' ')
+		if (input[i] == ' ')
 		{
-			command[i - offset] = NULL;
+			if (skippingSpaces)
+			{
+				offset = i + 1;
+				continue;
+			}
 
-			writingArgs = true;
-			offset = i;
+			if (!writingArgs)
+			{
+				command[i - offset] = NULL;
+
+				writingArgs = true;
+				offset = i + 1;
+				skippingSpaces = true;
+				continue;
+			}
+		}
+
+		skippingSpaces = false;
+
+		if (input[i] == '\'' || input[i] == '"')
+		{
+			offset += 1;
+			inQuotes = !inQuotes;
 			continue;
 		}
 
@@ -127,7 +185,7 @@ void Console::ParseInput(char key)
 		else
 		{
 			// Replace space with null
-			if (input[i] == ' ')
+			if (input[i] == ' ' && !inQuotes)
 			{
 				arguments[i - offset] = NULL;
 			}
@@ -151,7 +209,17 @@ void Console::DeleteCommands()
 	}
 }
 
-char* Console::GetNextArgs()
+bool Console::CmdExists(const char* name)
+{
+	return commands.find(name) != commands.end();
+}
+
+bool Console::CvarExists(const char* name)
+{
+	return cvars.find(name) != cvars.end();
+}
+
+const char* Console::GetNextArgs()
 {
 	int start = argIndex;
 
@@ -176,12 +244,11 @@ char* Console::GetNextArgs()
 void Echo(Console& console)
 {
 	console.Print(console.GetArguments());
+	console.Print("\n");
 }
 
 void TestCmd(Console& console)
 {
-	const char* args = console.GetArguments();
-
 	console.Println("TEST CMD!");
 }
 
@@ -189,4 +256,20 @@ void ToggleConsoleCommand(Console& console)
 {
 	console.ToggleConsole();
 	console.Print("TOGGLE CONSOLE");
+}
+
+void ToggleCvar(Console& console)
+{
+	const char* scvar = console.GetNextArgs();
+
+	Cvar& cvar = console.GetCvar(scvar);
+
+	if (cvar.value)
+	{
+		cvar.value = 0;
+	}
+	else
+	{
+		cvar.value = 1;
+	}
 }

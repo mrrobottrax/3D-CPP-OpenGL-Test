@@ -14,6 +14,12 @@ struct cmp_str
 	}
 };
 
+struct Cvar
+{
+	char* name;
+	float value;
+};
+
 class Console
 {
 public:
@@ -31,6 +37,7 @@ private:
 	char keycode; // Key that called the most recent command, -1 for no key
 
 	map<const char*, function<void(Console&)>, cmp_str> commands;
+	map<const char*, Cvar*, cmp_str> cvars; // TODO: a linked list might be faster, same with commands
 
 private:
 	void RunCommand(const char* name);
@@ -38,12 +45,18 @@ private:
 public:
 	void ToggleConsole();
 	void AddCommand(const char* name, function<void(Console&)> function);
+	void RegisterCvar(Cvar& cvar);
 	void RunCommand(const char* name, const char* args);
+	void SetCvar(const char* name, const char* value);
+	float GetCvarValue(const char* name);
+	Cvar& GetCvar(const char* name);
 	void AddString(const char* string);
 	void ParseInput(char key);
 	void DeleteCommands();
-	inline char* GetArguments() { return arguments; };
-	char* GetNextArgs();
+	bool CmdExists(const char* name);
+	bool CvarExists(const char* name);
+	inline const char* GetArguments() { return arguments; };
+	const char* GetNextArgs();
 	inline void SetArguments(const char* args) { strcpy_s(arguments, MAX_COMMAND_ARGS_LENGTH, args); }
 	inline char GetKey() { return keycode; };
 	inline void Print(const char* message) { std::cout << message; }
@@ -53,3 +66,4 @@ public:
 void Echo(Console& console);
 void TestCmd(Console& console);
 void ToggleConsoleCommand(Console& console);
+void ToggleCvar(Console& console);

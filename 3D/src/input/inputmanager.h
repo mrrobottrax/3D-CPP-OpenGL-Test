@@ -23,6 +23,7 @@ private:
 
 public:
 	void BindKey(char key, const char*);
+	void BindToggleKey(char key, const char*);
 	int KeyboardInputToKeycode(int key);
 	int MouseInputToKeycode(int button);
 
@@ -45,6 +46,7 @@ public:
 	// ~~~~~~~~~~~Input Commands~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	void BindCommand();
+	void BindToggleCommand();
 	void AddDefaultInputCommands();
 
 	void MoveForwardDown() { ButtonDown(buttons[IN_MoveForward]); };

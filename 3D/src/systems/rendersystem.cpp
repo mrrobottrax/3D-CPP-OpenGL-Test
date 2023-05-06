@@ -9,6 +9,8 @@
 
 #include <gl/glutil.h>
 
+Cvar r_draw = { "r_draw", 1 };
+
 void RenderSystem::SetMainCameraEntity(Entity& entity)
 {
 	RenderSystem::pMainCamera = &entityManager.GetComponent<CameraComponent>(entity);
@@ -69,10 +71,16 @@ void RenderSystem::Update()
 	}
 
 	DrawShaded();
+	debugDraw.Update();
 }
 
 void RenderSystem::DrawShaded()
 {
+	if (!r_draw.value)
+	{
+		return;
+	}
+
 	glUseProgram(standardShaderProgram);
 	glBindVertexArray(vao);
 
@@ -90,6 +98,7 @@ void RenderSystem::DrawWireframe()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDisable(GL_CULL_FACE);
 	DrawBase();
+	debugDraw.Update();
 	glEnable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -168,6 +177,4 @@ void RenderSystem::DrawBase()
 	mStack.pop();
 
 	delete archetypes;
-
-	debugDraw.Update();
 }

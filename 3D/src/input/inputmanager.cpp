@@ -20,6 +20,8 @@ InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), buttons
 	BindKey(KEY_DownArrow, "+lookdown");
 	BindKey(KEY_LeftArrow, "+lookleft");
 	BindKey(KEY_RightArrow, "+lookright");
+
+	BindToggleKey('R', "r_draw");
 }
 
 InputManager::~InputManager()
@@ -34,6 +36,17 @@ void InputManager::BindKey(char key, const char* action)
 
 	char* keyname = KeycodeToName(key);
 	std::cout << "Bound " << keyname << " to " << action << "\n";
+}
+
+void InputManager::BindToggleKey(char key, const char* cvar)
+{
+	char* keyname = KeycodeToName(key);
+
+	memset(keys[key].binding, NULL, MAX_BIND_LENGTH);
+	strcpy_s(keys[key].binding, "toggle ");
+	strcat_s(keys[key].binding, cvar);
+
+	std::cout << "Bound " << keyname << " to toggle " << cvar << "\n";
 }
 
 int InputManager::KeyboardInputToKeycode(int key)
@@ -273,12 +286,22 @@ void InputManager::SetCursorLoop(bool loop)
 
 void InputManager::BindCommand()
 {
-	char* keyName = console.GetNextArgs();
-	char* command = console.GetNextArgs();
+	const char* keyName = console.GetNextArgs();
+	const char* command = console.GetNextArgs();
 
 	char key = NameToKeycode(keyName);
 
 	BindKey(key, command);
+}
+
+void InputManager::BindToggleCommand()
+{
+	const char* keyName = console.GetNextArgs();
+	const char* cvar = console.GetNextArgs();
+
+	char key = NameToKeycode(keyName);
+
+	BindToggleKey(key, cvar);
 }
 
 void InputManager::Cleanup()
@@ -289,6 +312,7 @@ void InputManager::Cleanup()
 void InputManager::AddDefaultInputCommands()
 {
 	console.AddCommand("bind", std::bind(&InputManager::BindCommand, this));
+	console.AddCommand("bindtoggle", std::bind(&InputManager::BindToggleCommand, this));
 
 	console.AddCommand("+moveforward", std::bind(&InputManager::MoveForwardDown, this));
 	console.AddCommand("-moveforward", std::bind(&InputManager::MoveForwardUp, this));
