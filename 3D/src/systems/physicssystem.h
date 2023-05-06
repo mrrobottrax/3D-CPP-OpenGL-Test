@@ -17,7 +17,7 @@ struct EdgeQuery
 	qhEdge* pEdgeA = nullptr;
 	qhEdge* pEdgeB = nullptr;
 
-	glm::vec3 normal;
+	glm::vec3 normal = glm::vec3(0);
 };
 
 struct ContactPoint

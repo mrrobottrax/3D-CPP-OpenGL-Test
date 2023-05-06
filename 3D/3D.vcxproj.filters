@@ -142,6 +142,7 @@
     <ClInclude Include="src\timemanager.h" />
     <ClInclude Include="src\common\math.h" />
     <ClInclude Include="src\common\types.h" />
+    <ClInclude Include="src\components\unscaledvelocitycomponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">

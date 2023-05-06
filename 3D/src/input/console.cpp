@@ -32,7 +32,7 @@ void Console::AddCommand(const char* name, function<void(Console&)> function)
 	commands.emplace(heap_name, function);
 }
 
-void Console::RegisterCvar(Cvar& cvar)
+void Console::AddCvar(Cvar& cvar)
 {
 	if (CvarExists(cvar.name))
 	{

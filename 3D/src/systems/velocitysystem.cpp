@@ -6,6 +6,7 @@
 #include <components/positioncomponent.h>
 #include <components/rotationcomponent.h>
 #include <components/velocitycomponent.h>
+#include <components/unscaledvelocitycomponent.h>
 #include <memory/component.h>
 #include <timemanager.h>
 
@@ -17,12 +18,8 @@ VelocitySystem::~VelocitySystem()
 {
 }
 
-void VelocitySystem::Update()
+void UpdatePositions(EntityManager& em, const std::vector<ChunkArchetypeElement*>* archetypes, const float& deltaTime, bool scaled = true)
 {
-	EntityManager& em = entityManager;
-
-	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<VelocityComponent>());
-
 	if (archetypes == nullptr)
 		return;
 
@@ -38,11 +35,22 @@ void VelocitySystem::Update()
 				Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
 				PositionComponent& position = em.GetComponent<PositionComponent>(entity);
 				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
-				VelocityComponent& velocity = em.GetComponent<VelocityComponent>(entity);
 
-				position.value += velocity.linear * timeManager.GetDeltaTime();
+				VelocityComponent* pVelocity;
+				if (scaled)
+				{
+					pVelocity = em.GetComponentP<VelocityComponent>(entity);
+				}
+				else
+				{
+					pVelocity = &em.GetComponentP<UnscaledVelocityComponent>(entity)->velocity;
+				}
 
-				glm::vec3 deltaVec = velocity.angular * timeManager.GetDeltaTime();
+				VelocityComponent& velocity = *pVelocity;
+
+				position.value += velocity.linear * deltaTime;
+
+				glm::vec3 deltaVec = velocity.angular * deltaTime;
 				float length = glm::length(deltaVec);
 
 				// Prevent divide by 0
@@ -59,6 +67,21 @@ void VelocitySystem::Update()
 			}
 		}
 	}
+}
 
-	delete archetypes;
+void VelocitySystem::Update()
+{
+	EntityManager& em = entityManager;
+
+	{
+		const std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<VelocityComponent>());
+		UpdatePositions(em, archetypes, timeManager.GetDeltaTime());
+		delete archetypes;
+	}
+
+	{
+		const std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<UnscaledVelocityComponent>());
+		UpdatePositions(em, archetypes, timeManager.GetUnscaledDeltaTime(), false);
+		delete archetypes;
+	}
 }

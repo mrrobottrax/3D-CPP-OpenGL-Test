@@ -22,6 +22,7 @@ InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), buttons
 	BindKey(KEY_RightArrow, "+lookright");
 
 	BindToggleKey('R', "r_draw");
+	BindToggleKey('T', "timescale");
 }
 
 InputManager::~InputManager()

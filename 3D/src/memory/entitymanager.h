@@ -21,6 +21,8 @@ public:
 	int nextEntityIndex;
 
 	template <class T>
+	T* GetComponentP(Entity&);
+	template <class T>
 	T& GetComponent(Entity&);
 
 	Entity AddEntity(EntityArchetype&);
@@ -37,11 +39,27 @@ private:
 }; inline EntityManager entityManager;
 
 template <class T>
+inline T* EntityManager::GetComponentP(Entity& entity)
+{
+	// Get pointer to component stream
+	char* pComponentStream = (char*)(entity.pChunk + 1);
+	short offset = entity.pArchetype->GetComponentOffset(Component().init<T>());
+
+	if (offset < 0)
+		return nullptr;
+
+	T* pTComponentStream = (T*)(pComponentStream + static_cast<uint64_t>(entity.pChunk->maxEntities) * offset);
+	T* p = (pTComponentStream + entity.index);
+	return p;
+}
+
+template <class T>
 inline T& EntityManager::GetComponent(Entity& entity)
 {
 	// Get pointer to component stream
 	char* pComponentStream = (char*)(entity.pChunk + 1);
-	T* pTComponentStream = (T*)(pComponentStream + static_cast<uint64_t>(entity.pChunk->maxEntities) * entity.pArchetype->getComponentOffset(Component().init<T>()));
-	T& ref = *(pTComponentStream + entity.index);
-	return ref;
+	short offset = entity.pArchetype->GetComponentOffset(Component().init<T>());
+	T* pTComponentStream = (T*)(pComponentStream + static_cast<uint64_t>(entity.pChunk->maxEntities) * offset);
+	T& r = *(pTComponentStream + entity.index);
+	return r;
 }

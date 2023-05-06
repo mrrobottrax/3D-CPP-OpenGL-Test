@@ -45,7 +45,7 @@ private:
 public:
 	void ToggleConsole();
 	void AddCommand(const char* name, function<void(Console&)> function);
-	void RegisterCvar(Cvar& cvar);
+	void AddCvar(Cvar& cvar);
 	void RunCommand(const char* name, const char* args);
 	void SetCvar(const char* name, const char* value);
 	float GetCvarValue(const char* name);

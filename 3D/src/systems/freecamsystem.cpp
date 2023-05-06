@@ -4,6 +4,7 @@
 #include <gl/gl.h>
 #include <components/cameracomponent.h>
 #include <components/positioncomponent.h>
+#include <components/unscaledvelocitycomponent.h>
 #include <input/inputmanager.h>
 
 void FreecamSystem::Update()
@@ -34,23 +35,25 @@ void FreecamSystem::Update()
 
 	float rotSpeed = 2;
 
+	float delta = timeManager.GetUnscaledDeltaTime();
+
 	// Look keys
 	if (inputManager.GetButtonDown(IN_LookUp))
 	{
-		pitchDelta -= timeManager.GetDeltaTime() * rotSpeed;
+		pitchDelta -= delta * rotSpeed;
 	}
 	if (inputManager.GetButtonDown(IN_LookDown))
 	{
-		pitchDelta += timeManager.GetDeltaTime() * rotSpeed;
+		pitchDelta += delta * rotSpeed;
 	}
 
 	if (inputManager.GetButtonDown(IN_LookLeft))
 	{
-		yawDelta -= timeManager.GetDeltaTime() * rotSpeed;
+		yawDelta -= delta * rotSpeed;
 	}
 	if (inputManager.GetButtonDown(IN_LookRight))
 	{
-		yawDelta += timeManager.GetDeltaTime() * rotSpeed;
+		yawDelta += delta * rotSpeed;
 	}
 
 	// Look mouse
@@ -80,13 +83,13 @@ void FreecamSystem::Update()
 				Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
 				FreecamComponent&  freeCam  = em.GetComponent<FreecamComponent>(entity);
 				CameraComponent&   cam      = em.GetComponent<CameraComponent>(entity);
-				VelocityComponent& velocity = em.GetComponent<VelocityComponent>(entity);
+				UnscaledVelocityComponent& velocity = em.GetComponent<UnscaledVelocityComponent>(entity);
 				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
 				PositionComponent& position = em.GetComponent<PositionComponent>(entity);
 
 				if (!freeCam.enabled)
 				{
-					velocity.linear *= 0;
+					velocity.velocity.linear *= 0;
 					continue;
 				}
 
@@ -113,30 +116,30 @@ void FreecamSystem::Update()
 					moveVector = moveVector * rotation.value;
 				}
 
-				float speed = glm::length(velocity.linear);
+				float speed = glm::length(velocity.velocity.linear);
 
-				float drop = freeCam.friction * timeManager.GetDeltaTime();
+				float drop = freeCam.friction * delta;
 
 				// Friction
 				if (speed > drop)
 				{
 					float m = (speed - drop) / speed;
 
-					velocity.linear *= m;
+					velocity.velocity.linear *= m;
 				}
 				else
 				{
-					velocity.linear *= 0;
+					velocity.velocity.linear *= 0;
 				}
 
 				// Acceleration
-				velocity.linear += moveVector * freeCam.acceleration * timeManager.GetDeltaTime();
+				velocity.velocity.linear += moveVector * freeCam.acceleration * delta;
 
 				if (speed > freeCam.speed)
 				{
 					float m = freeCam.speed / speed;
 
-					velocity.linear *= m;
+					velocity.velocity.linear *= m;
 				}
 			}
 		}

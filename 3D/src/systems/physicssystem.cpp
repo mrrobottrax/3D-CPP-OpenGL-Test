@@ -393,7 +393,7 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	ContactPoint cp3;
 	cp3.position = lineB.pointA;
 	ContactPoint cp4;
-	cp3.position = lineB.pointB;
+	cp4.position = lineB.pointB;
 
 	manifold.contacts[0] = cp1;
 	manifold.contacts[1] = cp2;

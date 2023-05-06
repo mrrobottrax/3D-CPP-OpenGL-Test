@@ -13,7 +13,7 @@ class RenderSystem : public System
 public:
 	RenderSystem() : pMainCamera(), autoDraw(true)
 	{
-		console.RegisterCvar(r_draw);
+		console.AddCvar(r_draw);
 
 		debugDraw.Init();
 	};

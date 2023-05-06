@@ -19,7 +19,7 @@ EntityArchetype::EntityArchetype(unsigned short componentCount, Component* compo
 	EntityArchetype::entitySize = size;
 }
 
-unsigned short EntityArchetype::getComponentOffset(Component& component)
+unsigned short EntityArchetype::GetComponentOffset(Component& component)
 {
 	// Scan through component list
 	for (int i = 0; i < componentCount; ++i)
@@ -30,7 +30,5 @@ unsigned short EntityArchetype::getComponentOffset(Component& component)
 		}
 	}
 
-	std::cout << "Couldn't find component in archetype for offset!";
-
-	return 0;
+	return -1;
 }

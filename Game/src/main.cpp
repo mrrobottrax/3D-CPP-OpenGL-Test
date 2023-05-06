@@ -19,6 +19,7 @@
 #include <components/rotationcomponent.h>
 #include <components/meshcomponent.h>
 #include <components/velocitycomponent.h>
+#include <components/unscaledvelocitycomponent.h>
 #include <components/positioncomponent.h>
 #include <components/idcomponent.h>
 #include <components/hullcollider.h>
@@ -79,7 +80,7 @@ void Init()
 		Component components[] = {
 			Component().init<IdComponent>(),
 			Component().init<PositionComponent>(),
-			Component().init<VelocityComponent>(),
+			Component().init<UnscaledVelocityComponent>(),
 			Component().init<CameraComponent>(),
 			Component().init<RotationComponent>(),
 			Component().init<FreecamComponent>(),
@@ -87,7 +88,7 @@ void Init()
 
 		Entity entity = em.AddEntity(EntityArchetype(6, components));
 		em.GetComponent<PositionComponent>(entity) = { 0, 2, 0 };
-		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
+		em.GetComponent<UnscaledVelocityComponent>(entity) = { { 0, 0, 0, 0, 0, 0 } };
 		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = { 0.03f, 1000.0f };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 		em.GetComponent<FreecamComponent>(entity) = { 6, 40, 20 };
