@@ -34,6 +34,7 @@ struct Manifold
 	ContactPoint contacts[4];
 
 	glm::vec3 normal = glm::vec3(0);
+	float seperation = 0;
 };
 
 #ifdef DEBUG

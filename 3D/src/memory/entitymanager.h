@@ -21,9 +21,9 @@ public:
 	int nextEntityIndex;
 
 	template <class T>
-	T* GetComponentP(Entity&);
+	T* GetComponentP(const Entity&);
 	template <class T>
-	T& GetComponent(Entity&);
+	T& GetComponent(const Entity&);
 
 	Entity AddEntity(EntityArchetype&);
 	Chunk* CreateChunk(EntityArchetype&);
@@ -39,7 +39,7 @@ private:
 }; inline EntityManager entityManager;
 
 template <class T>
-inline T* EntityManager::GetComponentP(Entity& entity)
+inline T* EntityManager::GetComponentP(const Entity& entity)
 {
 	// Get pointer to component stream
 	char* pComponentStream = (char*)(entity.pChunk + 1);
@@ -54,7 +54,7 @@ inline T* EntityManager::GetComponentP(Entity& entity)
 }
 
 template <class T>
-inline T& EntityManager::GetComponent(Entity& entity)
+inline T& EntityManager::GetComponent(const Entity& entity)
 {
 	// Get pointer to component stream
 	char* pComponentStream = (char*)(entity.pChunk + 1);

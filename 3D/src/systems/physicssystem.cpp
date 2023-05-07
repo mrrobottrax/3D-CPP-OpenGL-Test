@@ -5,6 +5,7 @@
 
 #include <components/positioncomponent.h>
 #include <components/rotationcomponent.h>
+#include <components/masscomponent.h>
 #include <components/idcomponent.h>
 #include <components/hullcollider.h>
 
@@ -26,6 +27,40 @@ struct CollisionPair
 	Entity entityA;
 	Entity entityB;
 };
+
+void ApplyVelocityAtPoint(const glm::vec3& velocity, VelocityComponent& velocityComponent, const glm::vec3& centerOfMass)
+{
+	velocityComponent.linear += velocity;
+}
+
+void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Entity& entityB, EntityManager& em)
+{
+	const PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
+	const PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
+
+	const MassComponent& massA = em.GetComponent<MassComponent>(entityA);
+	const MassComponent& massB = em.GetComponent<MassComponent>(entityB);
+
+	VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
+	VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
+
+	for (int i = 0; i < manifold.numContacts; ++i)
+	{
+		const ContactPoint& contact = manifold.contacts[i];
+
+		glm::vec3 force = manifold.normal * manifold.seperation;
+
+		force *= timescale.value;
+
+		ApplyVelocityAtPoint( force * massA.inv_mass, velocityA, positionA.value);
+		ApplyVelocityAtPoint(-force * massB.inv_mass, velocityB, positionB.value);
+
+#ifdef PHYS_DEBUG
+		debugDraw.DrawLine(contact.position, contact.position + manifold.normal * 0.25f, { 1, 0, 1 });
+#endif // PHYS_DEBUG
+
+	}
+}
 
 void PhysicsSystem::Update()
 {
@@ -162,19 +197,17 @@ void PhysicsSystem::Update()
 		}
 	}
 
-#ifdef PHYS_DEBUG
+	// Resolve collisions
+
 	for (int i = 0; i < manifolds.size(); ++i)
 	{
-		Manifold& manifold = manifolds[i];
+		const Manifold& manifold = manifolds[i];
 
-		for (int j = 0; j < manifold.numContacts; ++j)
-		{
-			ContactPoint& cp = manifold.contacts[j];
-			debugDraw.DrawLine(cp.position, cp.position + manifold.normal * 0.25f, { 1, 0, 1 });
-		}
+		const Entity& entityA = manifold.entityA;
+		const Entity& entityB = manifold.entityB;
+
+		ResolveManifold(manifold, entityA, entityB, em);
 	}
-#endif // PHYS_DEBUG
-
 }
 
 // Find vertex with most penetration
@@ -351,15 +384,13 @@ glm::vec3 GetClosestPointOnLine(const gMath::Line& lineA, const gMath::Line& lin
 		float pointADot = glm::dot(lineB.pointA, normal);
 		float pointBDot = glm::dot(lineB.pointB, normal);
 
-		lineBProj.pointA = -normal * pointADot;
-		lineBProj.pointB = -normal * pointBDot;
+		lineBProj.pointA -= normal * pointADot;
+		lineBProj.pointB -= normal * pointBDot;
 	}
 
 	// Project the first point of line A onto the projected line B
 	float t = ProjectPointToLine(lineA.pointA, lineBProj);
 	glm::vec3 point = gMath::Lerp(lineB.pointA, lineB.pointB, t);
-
-	debugDraw.DrawLine(point, point + glm::vec3(0, 0.25f, 0), { 1, 0.5f, 0 });
 
 	return point;
 }
@@ -384,22 +415,15 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	lineB.pointB = rotationB * lineB.pointB + positionB;
 
 	glm::vec3 pointA = GetClosestPointOnLine(lineA, lineB);
-	//glm::vec3 pointB = GetClosestPointOnLine(lineB, lineA);
+	glm::vec3 pointB = GetClosestPointOnLine(lineB, lineA);
 
-	ContactPoint cp1;
-	cp1.position = lineA.pointA;
-	ContactPoint cp2;
-	cp2.position = lineA.pointB;
-	ContactPoint cp3;
-	cp3.position = lineB.pointA;
-	ContactPoint cp4;
-	cp4.position = lineB.pointB;
+	glm::vec3 average = (pointA - pointB) / 2.0f + pointB;
 
-	manifold.contacts[0] = cp1;
-	manifold.contacts[1] = cp2;
-	manifold.contacts[2] = cp3;
-	manifold.contacts[3] = cp4;
-	manifold.numContacts = 4;
+	ContactPoint contact;
+	contact.position = average;
+
+	manifold.contacts[0] = contact;
+	manifold.numContacts = 1;
 }
 
 bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manifold)
@@ -511,6 +535,8 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 #endif // PHYS_DEBUG
 
 	}
+
+	manifold.seperation = seperation;
 
 #ifdef PHYS_DEBUG
 	std::cout << "Collide: " << seperation << "\n";

@@ -200,6 +200,7 @@ void Init()
 
 		em.GetComponent<HullCollider>(entity) = { &boxHull };
 		em.GetComponent<RigidBodyComponent>(entity) = { true, ColliderType::Hull };
+		em.GetComponent<MassComponent>(entity).SetInverseMass(0);
 	}
 
 	// Hide cursor
