@@ -57,6 +57,7 @@ void UpdatePositions(EntityManager& em, const std::vector<ChunkArchetypeElement*
 				if (length < 1E-16f)
 					continue;
 
+				// TODO: Better way to construct quaternions? Sin and cos are expensive
 				float half = length / 2.0f;
 				float sin = std::sin(half);
 				float cos = std::cos(half);

@@ -491,41 +491,44 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 	bool isFaceContactA = faceQueryA.seperation > edgeQuery.seperation;
 	bool isFaceContactB = faceQueryB.seperation > edgeQuery.seperation;
 
-#ifdef PHYS_DEBUG
 	float seperation;
-#endif // PHYS_DEBUG
 
 	if (isFaceContactA && isFaceContactB)
 	{
-
-#ifdef PHYS_DEBUG
 		bool aIsBiggerThanB = faceQueryA.seperation > faceQueryB.seperation;
 
+#ifdef PHYS_DEBUG
 		if (aIsBiggerThanB)
 		{
-			seperation = faceQueryA.seperation;
 			gMath::Plane drawPlane = faceQueryA.pFace->plane;
 			drawPlane.normal = rotationA.value * drawPlane.normal;
 			debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, {1, 1, 0});
 		}
 		else
 		{
-			seperation = faceQueryB.seperation;
 			gMath::Plane drawPlane = faceQueryB.pFace->plane;
 			drawPlane.normal = rotationB.value * drawPlane.normal;
 			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 1, 1, 0 });
 		}
 #endif // PHYS_DEBUG
 
+		if (aIsBiggerThanB)
+		{
+			seperation = faceQueryA.seperation;
+		}
+		else
+		{
+			seperation = faceQueryB.seperation;
+		}
+
 	}
 	else
 	{
 		manifold.normal = edgeQuery.normal;
 		CreateEdgeContacts(edgeQuery, positionA.value, rotationA.value, positionB.value, rotationB.value, manifold);
-
-#ifdef PHYS_DEBUG
 		seperation = edgeQuery.seperation;
 
+#ifdef PHYS_DEBUG
 		gMath::Plane drawPlane;
 		drawPlane.normal = edgeQuery.normal;
 		glm::vec3 edgePos = rotationA.value * edgeQuery.pEdgeA->pHalfA->pTail->position;

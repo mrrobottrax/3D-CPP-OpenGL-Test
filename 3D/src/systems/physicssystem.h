@@ -39,7 +39,7 @@ struct Manifold
 
 #ifdef DEBUG
 
-#define PHYS_DEBUG
+//#define PHYS_DEBUG
 
 #endif // DEBUG
 
