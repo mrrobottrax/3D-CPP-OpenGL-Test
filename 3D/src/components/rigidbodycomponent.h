@@ -10,4 +10,6 @@ struct RigidBodyComponent
 	bool isStatic;
 
 	ColliderType colliderType;
+
+	float gravityScale = 1;
 };
