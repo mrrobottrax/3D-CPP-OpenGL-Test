@@ -11,19 +11,45 @@ Keyname keynames[] =
 	{NULL, 0} // Terminate when looping
 };
 
-bool IsPrintableASCII(int keycode)
+bool IsNumber(int keycode)
 {
 	// 48 - 57 : Numbers
-	if (keycode >= 48 && keycode <= 57)
+	return keycode >= 48 && keycode <= 57;
+}
+
+bool IsLowercase(int keycode)
+{
+	// 97 - 122 : Lowercase Letters
+	return keycode >= 97 && keycode <= 122;
+}
+
+bool IsUppercase(int keycode)
+{
+	// 65 - 90 : Uppercase Letters
+	return keycode >= 65 && keycode <= 90;
+}
+
+int KeycodeToLowercase(int keycode)
+{
+	// 65 - 90 : Uppercase Letters
+	if (IsUppercase(keycode))
 	{
-		return true;
+		return keycode + 32;
 	}
 
-	// 65 - 90 : Letters
-	if (keycode >= 65 && keycode <= 90)
-	{
+	return keycode;
+}
+
+bool IsPrintableASCII(int keycode)
+{
+	if (IsNumber(keycode))
 		return true;
-	}
+
+	if (IsLowercase(keycode))
+		return true;
+
+	if (IsUppercase(keycode))
+		return true;
 
 	return false;
 }

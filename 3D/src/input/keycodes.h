@@ -23,7 +23,8 @@ enum KeyCode
 	// 65 - 90 : Letters
 };
 
-bool IsPrintableASCII(int keycode);
+int KeycodeToLowercase(const int keycode);
+bool IsPrintableASCII(const int keycode);
 
 #define MAX_KEYCODE_NAME_LENGTH 32
 struct Keyname

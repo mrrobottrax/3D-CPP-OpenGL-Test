@@ -11,18 +11,18 @@ InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), buttons
 	AddDefaultInputCommands();
 
 	//TEMP
-	BindKey('W', "+moveforward");
-	BindKey('S', "+moveback");
-	BindKey('A', "+moveleft");
-	BindKey('D', "+moveright");
+	BindKey('w', "+moveforward");
+	BindKey('s', "+moveback");
+	BindKey('a', "+moveleft");
+	BindKey('d', "+moveright");
 
 	BindKey(KEY_UpArrow, "+lookup");
 	BindKey(KEY_DownArrow, "+lookdown");
 	BindKey(KEY_LeftArrow, "+lookleft");
 	BindKey(KEY_RightArrow, "+lookright");
 
-	BindToggleKey('R', "r_draw");
-	BindToggleKey('T', "timescale");
+	BindToggleKey('r', "r_draw");
+	BindToggleKey('t', "timescale");
 }
 
 InputManager::~InputManager()
@@ -54,6 +54,7 @@ int InputManager::KeyboardInputToKeycode(int key)
 {
 	if (IsPrintableASCII(key))
 	{
+		key = KeycodeToLowercase(key);
 		return key;
 	}
 
