@@ -54,7 +54,7 @@ struct qhFace
 {
 	qhHalfEdge* pEdge;
 
-	gMath::Plane plane;
+	gmath::Plane plane;
 
 	std::vector<glm::vec3> conflictList;
 

@@ -11,6 +11,8 @@
 
 #include <common/math.h>
 
+using namespace gmath;
+
 PhysicsSystem::PhysicsSystem()
 {
 }
@@ -44,40 +46,54 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 	VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
 	VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
 
-	const float invMassMatA[6][6] = {
-		{ massA.inv_mass, 0, 0, 0, 0, 0 },
-		{ 0, massA.inv_mass, 0, 0, 0, 0 },
-		{ 0, 0, massA.inv_mass, 0, 0, 0 },
-		{ 0, 0, 0, massA.inv_mass, 0, 0 },
-		{ 0, 0, 0, 0, massA.inv_mass, 0 },
-		{ 0, 0, 0, 0, 0, massA.inv_mass },
-	};
+	Matrix invMassA = Matrix(6, 6);
+	invMassA[0][0] = massA.inv_mass;
+	invMassA[1][1] = massA.inv_mass;
+	invMassA[2][2] = massA.inv_mass;
+	invMassA[3][3] = massA.inv_mass;
+	invMassA[4][4] = massA.inv_mass;
+	invMassA[5][5] = massA.inv_mass;
 
-	const float invMassMatB[6][6] = {
-		{ massB.inv_mass, 0, 0, 0, 0, 0 },
-		{ 0, massB.inv_mass, 0, 0, 0, 0 },
-		{ 0, 0, massB.inv_mass, 0, 0, 0 },
-		{ 0, 0, 0, massB.inv_mass, 0, 0 },
-		{ 0, 0, 0, 0, massB.inv_mass, 0 },
-		{ 0, 0, 0, 0, 0, massB.inv_mass },
-	};
+	Matrix invMassB = Matrix(6, 6);
+	invMassB[0][0] = massB.inv_mass;
+	invMassB[1][1] = massB.inv_mass;
+	invMassB[2][2] = massB.inv_mass;
+	invMassB[3][3] = massB.inv_mass;
+	invMassB[4][4] = massB.inv_mass;
+	invMassB[5][5] = massB.inv_mass;
 
-	float velA[6] = { velocityA.linear.x, velocityA.linear.y, velocityA.linear.z,
-		velocityA.angular.x, velocityA.angular.y, velocityA.angular.z };
+	Matrix velA = Matrix(6, 1);
+	velA[0][0] = velocityA.linear.x;
+	velA[1][0] = velocityA.linear.y;
+	velA[2][0] = velocityA.linear.z;
+	velA[3][0] = velocityA.angular.x;
+	velA[4][0] = velocityA.angular.y;
+	velA[5][0] = velocityA.angular.z;
 
 	for (int i = 0; i < manifold.numContacts; ++i)
 	{
 		const ContactPoint& contact = manifold.contacts[i];
 		const glm::vec3& normal = manifold.normal;
 
+		//TODO: Make matrices entirely stack based
+
 		// Calculate jacobian matrix
-		const glm::vec3 offset = contact.position - positionA.value;
-		glm::vec3 cross = glm::cross(offset, normal);
-		float jacobian[6] = { normal.x, normal.y, normal.z, cross.x, cross.y, cross.z };
+		Matrix jacobian(1, 6);
+		{
+			const glm::vec3 offset = contact.position - positionA.value;
+			glm::vec3 cross = glm::cross(offset, normal);
 
-		float impulse[6];
-
-		glm::vec3 force = manifold.normal * manifold.seperation;
+			jacobian[0][0] = offset.x;
+			jacobian[0][1] = offset.y;
+			jacobian[0][2] = offset.z;
+			jacobian[0][3] = cross.x;
+			jacobian[0][4] = cross.y;
+			jacobian[0][5] = cross.z;
+		}
+		Matrix jacobianT(jacobian);
+		jacobianT.Transform();
+		
+ 		glm::vec3 force = manifold.normal * manifold.seperation;
 
 		force *= timescale.value;
 
@@ -241,7 +257,7 @@ void PhysicsSystem::Update()
 
 // Find vertex with most penetration
 // Plane MUST be in hull space
-float GetSeperationDepth(const gMath::Plane& testPlane, const ConvexHull& hull)
+float GetSeperationDepth(const gmath::Plane& testPlane, const ConvexHull& hull)
 {
 	float minSeperation = FLT_MAX;
 
@@ -265,7 +281,7 @@ float GetSeperationDepth(const gMath::Plane& testPlane, const ConvexHull& hull)
 FaceQuery SatFaceTest(const HullCollider& hullA, const glm::vec3& positionA, const glm::fquat& rotationA,
 	const HullCollider& hullB, const glm::vec3& positionB, const glm::fquat& rotationB)
 {
-	gMath::Plane testPlane;
+	gmath::Plane testPlane;
 	FaceQuery query = FaceQuery();
 	query.seperation = -FLT_MAX;
 
@@ -356,7 +372,7 @@ EdgeQuery SatEdgeTest(const HullCollider& hullA, const glm::vec3& positionA, con
 				continue;
 			}
 
-			gMath::Plane testPlane;
+			gmath::Plane testPlane;
 			testPlane.normal = glm::normalize(glm::cross(edgeADir, edgeBDir));
 
 			// Check if the normal is facing the right direction
@@ -369,7 +385,7 @@ EdgeQuery SatEdgeTest(const HullCollider& hullA, const glm::vec3& positionA, con
 			testPlane.dist = glm::dot(edgeATail, testPlane.normal);
 
 			// Move plane to Hull B space
-			gMath::Plane bPlane;
+			gmath::Plane bPlane;
 			bPlane.dist = glm::dot(testPlane.normal * testPlane.dist - positionB, testPlane.normal);
 			bPlane.normal = glm::inverse(rotationB) * testPlane.normal;
 
@@ -394,7 +410,7 @@ EdgeQuery SatEdgeTest(const HullCollider& hullA, const glm::vec3& positionA, con
 	return query;
 }
 
-float ProjectPointToLine(const glm::vec3& point, const gMath::Line& line)
+float ProjectPointToLine(const glm::vec3& point, const gmath::Line& line)
 {
 	glm::vec3 lineBProjDir = line.pointB - line.pointA;
 	float interp = glm::dot(point - line.pointA, lineBProjDir) / glm::dot(lineBProjDir, lineBProjDir);
@@ -402,13 +418,13 @@ float ProjectPointToLine(const glm::vec3& point, const gMath::Line& line)
 	return interp;
 }
 
-glm::vec3 GetClosestPointOnLine(const gMath::Line& lineA, const gMath::Line& lineB)
+glm::vec3 GetClosestPointOnLine(const gmath::Line& lineA, const gmath::Line& lineB)
 {
 	// Project line B onto the plane of line A
 	glm::vec3 normal = lineA.pointB - lineA.pointA;
 	normal = glm::normalize(normal);
 
-	gMath::Line lineBProj = lineB;
+	gmath::Line lineBProj = lineB;
 	{
 		float pointADot = glm::dot(lineB.pointA, normal);
 		float pointBDot = glm::dot(lineB.pointB, normal);
@@ -419,7 +435,7 @@ glm::vec3 GetClosestPointOnLine(const gMath::Line& lineA, const gMath::Line& lin
 
 	// Project the first point of line A onto the projected line B
 	float t = ProjectPointToLine(lineA.pointA, lineBProj);
-	glm::vec3 point = gMath::Lerp(lineB.pointA, lineB.pointB, t);
+	glm::vec3 point = gmath::Lerp(lineB.pointA, lineB.pointB, t);
 
 	return point;
 }
@@ -427,7 +443,7 @@ glm::vec3 GetClosestPointOnLine(const gMath::Line& lineA, const gMath::Line& lin
 void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, const glm::fquat& rotationA,
 	const glm::vec3& positionB, const glm::fquat& rotationB, Manifold& manifold)
 {
-	gMath::Line lineA = {
+	gmath::Line lineA = {
 		query.pEdgeA->pHalfA->pTail->position,
 		query.pEdgeA->pHalfB->pTail->position,
 	};
@@ -435,7 +451,7 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	lineA.pointA = rotationA * lineA.pointA + positionA;
 	lineA.pointB = rotationA * lineA.pointB + positionA;
 
-	gMath::Line lineB = {
+	gmath::Line lineB = {
 		query.pEdgeB->pHalfA->pTail->position,
 		query.pEdgeB->pHalfB->pTail->position,
 	};

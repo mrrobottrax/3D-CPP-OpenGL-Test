@@ -1,6 +1,6 @@
 #pragma once
 
-namespace gMath
+namespace gmath
 {
 	struct Plane
 	{
@@ -41,12 +41,17 @@ namespace gMath
 	struct Matrix
 	{
 	private:
-		float** m;
-		int rows, columns;
+		float* m = nullptr;
+		int rows, columns = 0;
 
 	public:
 		Matrix(const int& rows, const int& columns);
-		~Matrix();
+		Matrix(const Matrix& matrix);
+		inline ~Matrix()
+		{
+			if (m)
+				delete[] m;
+		};
 
 		inline const int GetRows() const
 		{
@@ -58,13 +63,17 @@ namespace gMath
 			return columns;
 		};
 
+		void Transform();
+
 		inline constexpr float* operator[] (int i) const
 		{
-			return m[i];
+			return &(m[i * columns]);
 		};
 
-		//friend constexpr Matrix operator* (Matrix lhs, const Matrix& rhs);
+		//constexpr Matrix& operator= (const Matrix& matrix);
+
+		friend Matrix operator* (Matrix lhs, const Matrix& rhs);
 	};
 
-	Matrix* MatrixMultiply(const Matrix& left, const Matrix& right);
+	Matrix MatrixMultiply(const Matrix& left, const Matrix& right);
 }

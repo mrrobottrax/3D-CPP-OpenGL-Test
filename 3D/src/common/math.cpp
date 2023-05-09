@@ -3,7 +3,7 @@
 
 #include <glm.hpp>
 
-namespace gMath
+namespace gmath
 {
 	float SqrMagnitude(const glm::vec3 vec)
 	{
@@ -76,36 +76,75 @@ namespace gMath
 		this->rows = rows;
 		this->columns = columns;
 
-		m = new float* [rows];
+		m = new float[rows * columns];
+	}
 
+	Matrix::Matrix(const Matrix& matrix) : Matrix(matrix.rows, matrix.columns)
+	{
+		// For each row
 		for (int i = 0; i < rows; ++i)
 		{
-			m[i] = new float[columns];
+			// For each column
+			for (int j = 0; j < columns; ++j)
+			{
+				(*this)[i][j] = matrix[i][j];
+			}
 		}
 	}
 
-	Matrix::~Matrix()
+	void Matrix::Transform()
 	{
+		Matrix old(*this);
+
+		this->rows = old.columns;
+		this->columns = old.rows;
+
+		// For each row
 		for (int i = 0; i < rows; ++i)
 		{
-			delete[] m[i];
+			// For each column
+			for (int j = 0; j < columns; ++j)
+			{
+				(*this)[i][j] = old[j][columns - i - 1];
+			}
 		}
+	}
 
-		delete[] m;
+	//constexpr Matrix& Matrix::operator=(const Matrix& matrix)
+	//{
+	//	*this = Matrix(matrix.rows, matrix.columns);
+
+	//	// For each row
+	//	for (int i = 0; i < rows; ++i)
+	//	{
+	//		// For each column
+	//		for (int j = 0; j < columns; ++j)
+	//		{
+	//			*this[i][j] = matrix[j][columns - i - 1];
+	//		}
+	//	}
+
+	//	return *this;
+	//}
+
+	Matrix operator*(Matrix lhs, const Matrix& rhs)
+	{
+		Matrix m = MatrixMultiply(lhs, lhs);
+		return m;
 	}
 
 	// Multiply to arbitrarily sized matrices
 	// Returns null when matrices cannot be multiplied
 	// Size is rows, columns
-	Matrix* MatrixMultiply(const Matrix& left, const Matrix& right)
+	Matrix MatrixMultiply(const Matrix& left, const Matrix& right)
 	{
 		const int rows = left.GetRows();
 		const int columns = right.GetColumns();
 
 		if (left.GetColumns() != right.GetRows())
-			return nullptr;
+			return Matrix(0, 0);
 
-		Matrix& matrix = *new Matrix(rows, columns);
+		Matrix m(rows, columns);
 
 		// For each row
 		for (int i = 0; i < rows; ++i)
@@ -119,10 +158,10 @@ namespace gMath
 					sum += left[i][k] * right[k][j];
 				}
 
-				matrix[i][j] = sum;
+				m[i][j] = sum;
 			}
 		}
 
-		return &matrix;
+		return m;
 	}
 }

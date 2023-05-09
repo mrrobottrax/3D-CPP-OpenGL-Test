@@ -7,7 +7,7 @@
 #include <chrono>
 #include <thread>
 
-using namespace gMath;
+using namespace gmath;
 
 #ifdef QHULL_DEBUG
 
@@ -599,7 +599,7 @@ void ConvexHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3
 
 bool FaceIsVisible(const qhFace& face, const glm::vec3 eye)
 {
-	return gMath::SignedDistFromPlane(face.plane, eye) > 0;
+	return gmath::SignedDistFromPlane(face.plane, eye) > 0;
 }
 
 void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
@@ -665,7 +665,7 @@ void ConvexHull::QuickHull(const int vertCount, const glm::vec3* verticesArray)
 			{
 				glm::vec3& point = face.conflictList[p];
 
-				float dist = gMath::SignedDistFromPlane(face.plane, point);
+				float dist = gmath::SignedDistFromPlane(face.plane, point);
 				if (dist >= bestDist)
 				{
 					bestDist = dist;
