@@ -70,4 +70,59 @@ namespace gMath
 	{
 		return x * (1.0f - t) + y * t;
 	}
+
+	Matrix::Matrix(const int& rows, const int& columns)
+	{
+		this->rows = rows;
+		this->columns = columns;
+
+		m = new float* [rows];
+
+		for (int i = 0; i < rows; ++i)
+		{
+			m[i] = new float[columns];
+		}
+	}
+
+	Matrix::~Matrix()
+	{
+		for (int i = 0; i < rows; ++i)
+		{
+			delete[] m[i];
+		}
+
+		delete[] m;
+	}
+
+	// Multiply to arbitrarily sized matrices
+	// Returns null when matrices cannot be multiplied
+	// Size is rows, columns
+	Matrix* MatrixMultiply(const Matrix& left, const Matrix& right)
+	{
+		const int rows = left.GetRows();
+		const int columns = right.GetColumns();
+
+		if (left.GetColumns() != right.GetRows())
+			return nullptr;
+
+		Matrix& matrix = *new Matrix(rows, columns);
+
+		// For each row
+		for (int i = 0; i < rows; ++i)
+		{
+			// For each column
+			for (int j = 0; j < columns; ++j)
+			{
+				float sum = 0;
+				for (int k = 0; k < left.GetColumns(); ++k)
+				{
+					sum += left[i][k] * right[k][j];
+				}
+
+				matrix[i][j] = sum;
+			}
+		}
+
+		return &matrix;
+	}
 }

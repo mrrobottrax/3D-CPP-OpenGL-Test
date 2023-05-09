@@ -44,15 +44,44 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 	VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
 	VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
 
+	const float invMassMatA[6][6] = {
+		{ massA.inv_mass, 0, 0, 0, 0, 0 },
+		{ 0, massA.inv_mass, 0, 0, 0, 0 },
+		{ 0, 0, massA.inv_mass, 0, 0, 0 },
+		{ 0, 0, 0, massA.inv_mass, 0, 0 },
+		{ 0, 0, 0, 0, massA.inv_mass, 0 },
+		{ 0, 0, 0, 0, 0, massA.inv_mass },
+	};
+
+	const float invMassMatB[6][6] = {
+		{ massB.inv_mass, 0, 0, 0, 0, 0 },
+		{ 0, massB.inv_mass, 0, 0, 0, 0 },
+		{ 0, 0, massB.inv_mass, 0, 0, 0 },
+		{ 0, 0, 0, massB.inv_mass, 0, 0 },
+		{ 0, 0, 0, 0, massB.inv_mass, 0 },
+		{ 0, 0, 0, 0, 0, massB.inv_mass },
+	};
+
+	float velA[6] = { velocityA.linear.x, velocityA.linear.y, velocityA.linear.z,
+		velocityA.angular.x, velocityA.angular.y, velocityA.angular.z };
+
 	for (int i = 0; i < manifold.numContacts; ++i)
 	{
 		const ContactPoint& contact = manifold.contacts[i];
+		const glm::vec3& normal = manifold.normal;
+
+		// Calculate jacobian matrix
+		const glm::vec3 offset = contact.position - positionA.value;
+		glm::vec3 cross = glm::cross(offset, normal);
+		float jacobian[6] = { normal.x, normal.y, normal.z, cross.x, cross.y, cross.z };
+
+		float impulse[6];
 
 		glm::vec3 force = manifold.normal * manifold.seperation;
 
 		force *= timescale.value;
 
-		ApplyVelocityAtPoint( force * massA.inv_mass, velocityA, positionA.value);
+		ApplyVelocityAtPoint(force * massA.inv_mass, velocityA, positionA.value);
 		ApplyVelocityAtPoint(-force * massB.inv_mass, velocityB, positionB.value);
 
 #ifdef PHYS_DEBUG

@@ -37,4 +37,34 @@ namespace gMath
 	Plane PlaneFromTri(const float triPointA[3], const float triPointB[3], const float triPointC[3]);
 
 	glm::vec3 Lerp(glm::vec3 x, glm::vec3 y, float t);
+
+	struct Matrix
+	{
+	private:
+		float** m;
+		int rows, columns;
+
+	public:
+		Matrix(const int& rows, const int& columns);
+		~Matrix();
+
+		inline const int GetRows() const
+		{
+			return rows;
+		};
+
+		inline const int GetColumns() const
+		{
+			return columns;
+		};
+
+		inline constexpr float* operator[] (int i) const
+		{
+			return m[i];
+		};
+
+		//friend constexpr Matrix operator* (Matrix lhs, const Matrix& rhs);
+	};
+
+	Matrix* MatrixMultiply(const Matrix& left, const Matrix& right);
 }
