@@ -73,10 +73,7 @@ namespace gmath
 
 	Matrix::Matrix(const int& rows, const int& columns)
 	{
-		this->rows = rows;
-		this->columns = columns;
-
-		m = new float[rows * columns];
+		Initialize(rows, columns);
 	}
 
 	Matrix::Matrix(const Matrix& matrix) : Matrix(matrix.rows, matrix.columns)
@@ -92,12 +89,20 @@ namespace gmath
 		}
 	}
 
+	void Matrix::Initialize(int rows, int columns)
+	{
+		this->rows = rows;
+		this->columns = columns;
+
+		m = new float[rows * columns];
+	}
+
 	void Matrix::Transform()
 	{
-		Matrix old(*this);
+		Matrix m = *this;
 
-		this->rows = old.columns;
-		this->columns = old.rows;
+		rows = m.columns;
+		columns = m.rows;
 
 		// For each row
 		for (int i = 0; i < rows; ++i)
@@ -105,46 +110,52 @@ namespace gmath
 			// For each column
 			for (int j = 0; j < columns; ++j)
 			{
-				(*this)[i][j] = old[j][columns - i - 1];
+				(*this)[i][j] = m[j][columns - i - 1];
 			}
 		}
 	}
 
-	//constexpr Matrix& Matrix::operator=(const Matrix& matrix)
-	//{
-	//	*this = Matrix(matrix.rows, matrix.columns);
-
-	//	// For each row
-	//	for (int i = 0; i < rows; ++i)
-	//	{
-	//		// For each column
-	//		for (int j = 0; j < columns; ++j)
-	//		{
-	//			*this[i][j] = matrix[j][columns - i - 1];
-	//		}
-	//	}
-
-	//	return *this;
-	//}
-
-	Matrix operator*(Matrix lhs, const Matrix& rhs)
+	Matrix& Matrix::operator=(const Matrix& matrix)
 	{
-		Matrix m = MatrixMultiply(lhs, lhs);
-		return m;
+		// Only allocate new memory when the number of rows and columns is different
+		if (this->rows != matrix.rows || this->columns != matrix.columns)
+		{
+			bool sameSize = this->rows * this->columns == matrix.rows * matrix.columns;
+
+			this->rows = matrix.rows;
+			this->columns = matrix.columns;
+
+			if (!sameSize)
+			{
+				if (this->m)
+					delete[] this->m;
+
+				this->m = new float[rows * columns];
+			}
+		}
+
+		// For each row
+		for (int i = 0; i < rows; ++i)
+		{
+			// For each column
+			for (int j = 0; j < columns; ++j)
+			{
+				(*this)[i][j] = matrix[i][j];
+			}
+		}
+
+		return *this;
 	}
 
-	// Multiply to arbitrarily sized matrices
-	// Returns null when matrices cannot be multiplied
-	// Size is rows, columns
-	Matrix MatrixMultiply(const Matrix& left, const Matrix& right)
+	// Multiply two arbitrarily sized matrices
+	void MatrixMultiply(const Matrix& left, const Matrix& right, Matrix& result)
 	{
 		const int rows = left.GetRows();
 		const int columns = right.GetColumns();
 
-		if (left.GetColumns() != right.GetRows())
-			return Matrix(0, 0);
+		assert(left.GetColumns() == right.GetRows());
 
-		Matrix m(rows, columns);
+		result.Initialize(rows, columns);
 
 		// For each row
 		for (int i = 0; i < rows; ++i)
@@ -158,10 +169,8 @@ namespace gmath
 					sum += left[i][k] * right[k][j];
 				}
 
-				m[i][j] = sum;
+				result[i][j] = sum;
 			}
 		}
-
-		return m;
 	}
 }

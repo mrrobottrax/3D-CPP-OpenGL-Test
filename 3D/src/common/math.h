@@ -47,11 +47,15 @@ namespace gmath
 	public:
 		Matrix(const int& rows, const int& columns);
 		Matrix(const Matrix& matrix);
+		inline Matrix() : m(), rows(), columns() { };
 		inline ~Matrix()
 		{
 			if (m)
 				delete[] m;
 		};
+
+	public:
+		void Initialize(int rows, int columns);
 
 		inline const int GetRows() const
 		{
@@ -70,10 +74,8 @@ namespace gmath
 			return &(m[i * columns]);
 		};
 
-		//constexpr Matrix& operator= (const Matrix& matrix);
-
-		friend Matrix operator* (Matrix lhs, const Matrix& rhs);
+		Matrix& operator= (const Matrix& matrix);
 	};
 
-	Matrix MatrixMultiply(const Matrix& left, const Matrix& right);
+	void MatrixMultiply(const Matrix& left, const Matrix& right, Matrix& result);
 }

@@ -46,52 +46,49 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 	VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
 	VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
 
-	Matrix invMassA = Matrix(6, 6);
-	invMassA[0][0] = massA.inv_mass;
-	invMassA[1][1] = massA.inv_mass;
-	invMassA[2][2] = massA.inv_mass;
-	invMassA[3][3] = massA.inv_mass;
-	invMassA[4][4] = massA.inv_mass;
-	invMassA[5][5] = massA.inv_mass;
+	const glm::vec3& normal = manifold.normal;
 
-	Matrix invMassB = Matrix(6, 6);
-	invMassB[0][0] = massB.inv_mass;
-	invMassB[1][1] = massB.inv_mass;
-	invMassB[2][2] = massB.inv_mass;
-	invMassB[3][3] = massB.inv_mass;
-	invMassB[4][4] = massB.inv_mass;
-	invMassB[5][5] = massB.inv_mass;
+	float jacobians[4][12];
+	float relativeMasses[4];
+	float totalImpulses[4];
 
-	Matrix velA = Matrix(6, 1);
-	velA[0][0] = velocityA.linear.x;
-	velA[1][0] = velocityA.linear.y;
-	velA[2][0] = velocityA.linear.z;
-	velA[3][0] = velocityA.angular.x;
-	velA[4][0] = velocityA.angular.y;
-	velA[5][0] = velocityA.angular.z;
+	for (int i = 0; i < manifold.numContacts; ++i)
+	{
+		totalImpulses[i] = 0;
+		const ContactPoint& contact = manifold.contacts[i];
+
+		// Calculate jacobian matrix
+		jacobians[i][0] = -normal.x;
+		jacobians[i][1] = -normal.y;
+		jacobians[i][2] = -normal.z;
+
+		glm::vec3 crossA = glm::cross(-(contact.position - positionA.value), normal);
+		jacobians[i][3] = crossA.x;
+		jacobians[i][4] = crossA.y;
+		jacobians[i][5] = crossA.z;
+
+		jacobians[i][6] = normal.x;
+		jacobians[i][7] = normal.y;
+		jacobians[i][8] = normal.z;
+
+		glm::vec3 crossB = glm::cross(contact.position - positionB.value, normal);
+		jacobians[i][9] = crossB.x;
+		jacobians[i][10] = crossB.y;
+		jacobians[i][11] = crossB.z;
+
+		// Calculate relative mass
+		{
+			float n = normal.x + normal.y + normal.z;
+			float ca = crossA.x + crossA.y + crossA.z;
+			float cb = crossB.x + crossB.y + crossB.z;
+			relativeMasses[i] = (-2 * n * massA.inv_mass) + (2 * n * massB.inv_mass) +
+				(-2 * ca * massA.inv_inertia) + (2 * cb * massB.inv_inertia);
+		}
+	}
 
 	for (int i = 0; i < manifold.numContacts; ++i)
 	{
 		const ContactPoint& contact = manifold.contacts[i];
-		const glm::vec3& normal = manifold.normal;
-
-		//TODO: Make matrices entirely stack based
-
-		// Calculate jacobian matrix
-		Matrix jacobian(1, 6);
-		{
-			const glm::vec3 offset = contact.position - positionA.value;
-			glm::vec3 cross = glm::cross(offset, normal);
-
-			jacobian[0][0] = offset.x;
-			jacobian[0][1] = offset.y;
-			jacobian[0][2] = offset.z;
-			jacobian[0][3] = cross.x;
-			jacobian[0][4] = cross.y;
-			jacobian[0][5] = cross.z;
-		}
-		Matrix jacobianT(jacobian);
-		jacobianT.Transform();
 		
  		glm::vec3 force = manifold.normal * manifold.seperation;
 
