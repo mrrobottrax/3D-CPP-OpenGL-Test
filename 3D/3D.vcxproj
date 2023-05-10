@@ -149,6 +149,7 @@
     <ClInclude Include="src\components\positioncomponent.h" />
     <ClInclude Include="src\components\rigidbodycomponent.h" />
     <ClInclude Include="src\components\rotationcomponent.h" />
+    <ClInclude Include="src\components\scalecomponent.h" />
     <ClInclude Include="src\components\unscaledvelocitycomponent.h" />
     <ClInclude Include="src\components\velocitycomponent.h" />
     <ClInclude Include="src\debugtools\debugdraw.h" />

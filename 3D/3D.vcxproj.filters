@@ -143,6 +143,7 @@
     <ClInclude Include="src\common\math.h" />
     <ClInclude Include="src\common\types.h" />
     <ClInclude Include="src\components\unscaledvelocitycomponent.h" />
+    <ClInclude Include="src\components\scalecomponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">

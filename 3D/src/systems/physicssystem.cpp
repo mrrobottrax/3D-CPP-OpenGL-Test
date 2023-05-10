@@ -68,20 +68,20 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 		const ContactPoint& contact = manifold.contacts[i];
 
 		// Calculate jacobian matrix
-		jacobians[i][0] = normal.x;
-		jacobians[i][1] = normal.y;
-		jacobians[i][2] = normal.z;
+		jacobians[i][0] = -normal.x;
+		jacobians[i][1] = -normal.y;
+		jacobians[i][2] = -normal.z;
 
 		crossA[i] = glm::cross(contact.position - positionA.value, normal);
 		jacobians[i][3] = crossA[i].x;
 		jacobians[i][4] = crossA[i].y;
 		jacobians[i][5] = crossA[i].z;
 
-		jacobians[i][6] = -normal.x;
-		jacobians[i][7] = -normal.y;
-		jacobians[i][8] = -normal.z;
+		jacobians[i][6] = normal.x;
+		jacobians[i][7] = normal.y;
+		jacobians[i][8] = normal.z;
 
-		crossB[i] = glm::cross(contact.position - positionB.value, -normal);
+		crossB[i] = glm::cross(contact.position - positionB.value, normal);
 		jacobians[i][9] = crossB[i].x;
 		jacobians[i][10] = crossB[i].y;
 		jacobians[i][11] = crossB[i].z;
@@ -109,8 +109,8 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 			const glm::vec3& wA = velocityA.angular;
 			const glm::vec3& wB = velocityB.angular;
 
-			const float velocityAtPoint = glm::dot(normal, vA) + glm::dot(crossA[i], wA)
-				+ glm::dot(-normal, vA) + glm::dot(crossB[i], wB);
+			const float velocityAtPoint = glm::dot(-normal, vA) + glm::dot(-crossA[i], wA)
+				+ glm::dot(normal, vB) + glm::dot(crossB[i], wB);
 			totalImpulses[i] = totalImpulses[i] - (inverseEffectiveMasses[i] * (velocityAtPoint + b));
 
 			// Enforce Signorini conditions
@@ -120,11 +120,11 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 			const float deltaImpulse = totalImpulses[i] - oldImpulse;
 
 			// Add velocity
-			velocityA.linear -= normal * inv_massA * deltaImpulse;
-			velocityA.angular -= crossA[i] * inv_inertiaA * deltaImpulse;
+			velocityA.linear -= normal * inv_massA * deltaImpulse * timescale.value;
+			velocityA.angular -= crossA[i] * inv_inertiaA * deltaImpulse * timescale.value;
 
-			velocityB.linear += normal * inv_massB * deltaImpulse;
-			velocityB.angular += crossB[i] * inv_inertiaB * deltaImpulse;
+			velocityB.linear += normal * inv_massB * deltaImpulse * timescale.value;
+			velocityB.angular += crossB[i] * inv_inertiaB * deltaImpulse * timescale.value;
 		}
 	}
 }
@@ -293,6 +293,13 @@ void PhysicsSystem::Update()
 
 		const Entity& entityA = manifold.entityA;
 		const Entity& entityB = manifold.entityB;
+
+#ifdef PHYS_DEBUG
+		for (int i = 0; i < manifold.numContacts; ++i)
+		{
+			debugDraw.DrawLine(manifold.contacts[i].position, manifold.contacts[i].position + manifold.normal * 0.2f, {1, 0, 1});
+		}
+#endif // PHYS_DEBUG
 
 		ResolveManifold(manifold, entityA, entityB);
 	}
@@ -514,6 +521,35 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	manifold.numContacts = 1;
 }
 
+void CreateFaceContacts(const FaceQuery& queryA, const FaceQuery& queryB, const glm::vec3& positionA, const glm::fquat& rotationA,
+	const glm::vec3& positionB, const glm::fquat& rotationB, Manifold& manifold)
+{
+	const qhFace& reference = *queryA.pFace;
+	const qhFace& incidence = *queryB.pFace;
+
+	const qhHalfEdge* startEdge = reference.pEdge;
+
+	int i = 0;
+	manifold.numContacts = 0;
+	qhHalfEdge* pEdge = const_cast<qhHalfEdge*>(startEdge);
+	do
+	{
+		if (i <= 3)
+		{
+			manifold.contacts[i] = ContactPoint{
+				pEdge->pTail->position
+			};
+
+			manifold.numContacts = i + 1;
+		}
+
+		++i;
+		pEdge = pEdge->pNext;
+	} while (pEdge != startEdge);
+
+	std::cout << manifold.numContacts << "\n";
+}
+
 bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manifold)
 {
 	// Seperating Axis Theorum
@@ -579,45 +615,47 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 	bool isFaceContactA = faceQueryA.seperation > edgeQuery.seperation;
 	bool isFaceContactB = faceQueryB.seperation > edgeQuery.seperation;
 
-	float seperation;
-
 	if (isFaceContactA && isFaceContactB)
 	{
+		std::cout << "test\n";
+
 		bool aIsBiggerThanB = faceQueryA.seperation > faceQueryB.seperation;
 
 #ifdef PHYS_DEBUG
-		if (aIsBiggerThanB)
 		{
-			gMath::Plane drawPlane = faceQueryA.pFace->plane;
+			gmath::Plane drawPlane = faceQueryA.pFace->plane;
 			drawPlane.normal = rotationA.value * drawPlane.normal;
-			debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, {1, 1, 0});
+			debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, {1, 0.5f, 0});
 		}
-		else
+
 		{
-			gMath::Plane drawPlane = faceQueryB.pFace->plane;
+			gmath::Plane drawPlane = faceQueryB.pFace->plane;
 			drawPlane.normal = rotationB.value * drawPlane.normal;
-			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 1, 1, 0 });
+			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 0, 0.5f, 1 });
 		}
 #endif // PHYS_DEBUG
 
 		if (aIsBiggerThanB)
 		{
-			seperation = faceQueryA.seperation;
+			manifold.seperation = faceQueryA.seperation;
+			manifold.normal = rotationA.value * faceQueryA.pFace->plane.normal;
 		}
 		else
 		{
-			seperation = faceQueryB.seperation;
+			manifold.seperation = faceQueryB.seperation;
+			manifold.normal = rotationB.value * -faceQueryB.pFace->plane.normal;
 		}
 
+		CreateFaceContacts(faceQueryA, faceQueryB, positionA.value, rotationA.value, positionB.value, rotationB.value, manifold);
 	}
 	else
 	{
 		manifold.normal = edgeQuery.normal;
+		manifold.seperation = edgeQuery.seperation;
 		CreateEdgeContacts(edgeQuery, positionA.value, rotationA.value, positionB.value, rotationB.value, manifold);
-		seperation = edgeQuery.seperation;
 
 #ifdef PHYS_DEBUG
-		gMath::Plane drawPlane;
+		gmath::Plane drawPlane;
 		drawPlane.normal = edgeQuery.normal;
 		glm::vec3 edgePos = rotationA.value * edgeQuery.pEdgeA->pHalfA->pTail->position;
 		drawPlane.dist = glm::dot(edgePos, edgeQuery.normal);
@@ -626,12 +664,6 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 #endif // PHYS_DEBUG
 
 	}
-
-	manifold.seperation = seperation;
-
-#ifdef PHYS_DEBUG
-	std::cout << "Collide: " << seperation << "\n";
-#endif // PHYS_DEBUG
 
 	return true;
 }
