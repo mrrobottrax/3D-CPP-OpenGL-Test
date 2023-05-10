@@ -30,13 +30,23 @@ struct CollisionPair
 	Entity entityB;
 };
 
-void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Entity& entityB, EntityManager& em)
+void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Entity& entityB)
 {
+	const EntityManager& em = entityManager;
+
 	const PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
 	const PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
 
 	const MassComponent& massA = em.GetComponent<MassComponent>(entityA);
 	const MassComponent& massB = em.GetComponent<MassComponent>(entityB);
+
+	// Unstoppable force vs immovable object
+	if (massA.inv_mass == 0 && massB.inv_mass == 0 || massA.inv_inertia == 0 && massB.inv_inertia == 0)
+		return;
+
+	// Don't allow zero mass
+	if (massA.mass == 0 || massB.mass == 0 || massA.mass == 0 || massB.mass == 0)
+		return;
 
 	VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
 	VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
@@ -44,12 +54,8 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 	const glm::vec3& normal = manifold.normal;
 
 	float jacobians[4][12]{};
-	float inverseRelativeMasses[4]{};
+	float inverseEffectiveMasses[4]{};
 	float totalImpulses[4]{};
-
-	float n[4]{};
-	float cA[4]{};
-	float cB[4]{};
 
 	glm::vec3 crossA[4]{};
 	glm::vec3 crossB[4]{};
@@ -60,40 +66,39 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 		const ContactPoint& contact = manifold.contacts[i];
 
 		// Calculate jacobian matrix
-		jacobians[i][0] = -normal.x;
-		jacobians[i][1] = -normal.y;
-		jacobians[i][2] = -normal.z;
+		jacobians[i][0] = normal.x;
+		jacobians[i][1] = normal.y;
+		jacobians[i][2] = normal.z;
 
-		crossA[i] = glm::cross(-(contact.position - positionA.value), normal);
+		crossA[i] = glm::cross(contact.position - positionA.value, normal);
 		jacobians[i][3] = crossA[i].x;
 		jacobians[i][4] = crossA[i].y;
 		jacobians[i][5] = crossA[i].z;
 
-		jacobians[i][6] = normal.x;
-		jacobians[i][7] = normal.y;
-		jacobians[i][8] = normal.z;
+		jacobians[i][6] = -normal.x;
+		jacobians[i][7] = -normal.y;
+		jacobians[i][8] = -normal.z;
 
-		crossB[i] = glm::cross(contact.position - positionB.value, normal);
+		crossB[i] = glm::cross(contact.position - positionB.value, -normal);
 		jacobians[i][9] = crossB[i].x;
 		jacobians[i][10] = crossB[i].y;
 		jacobians[i][11] = crossB[i].z;
 
 		// Calculate relative mass
 		{
-			n[i] = normal.x + normal.y + normal.z;
-			cA[i] = crossA[i].x + crossA[i].y + crossA[i].z;
-			cB[i] = crossB[i].x + crossB[i].y + crossB[i].z;
-			inverseRelativeMasses[i] = 1 / ((-2 * n[i] * massA.inv_mass) + (2 * n[i] * massB.inv_mass) +
-				(-2 * cA[i] * massA.inv_inertia) + (2 * cB[i] * massB.inv_inertia));
+			float n = glm::dot(normal, normal);
+			float cA = glm::dot(crossA[i], crossA[i]);
+			float cB = glm::dot(crossB[i], crossB[i]);
+			inverseEffectiveMasses[i] = 1.0f / ((n * massA.inv_mass) + (n * massB.inv_mass) +
+				(cA * massA.inv_inertia) + (cB * massB.inv_inertia));
 		}
 	}
 
-	const float b = 0 / (float)manifold.numContacts;
+	const float b = 0.0f / (float)manifold.numContacts;
 	for (int j = 0; j < numIterations; ++j)
 	{
 		for (int i = 0; i < manifold.numContacts; ++i)
 		{
-			const ContactPoint& contact = manifold.contacts[i];
 			const float oldImpulse = totalImpulses[i];
 
 			const glm::vec3& vA = velocityA.linear;
@@ -101,9 +106,9 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 			const glm::vec3& wA = velocityA.angular;
 			const glm::vec3& wB = velocityB.angular;
 
-			const float velocityAtPoint = (-n[i] * (vA.x + vA.y + vA.z)) - (cA[i] * (wA.x + wA.y + wA.z))
-				+ (n[i] * (vB.x + vB.y + vB.z)) + (cB[i] * (wB.x + wB.y + wB.z));
-			totalImpulses[i] = totalImpulses[i] - (inverseRelativeMasses[i] * (velocityAtPoint + b));
+			const float velocityAtPoint = glm::dot(normal, vA) + glm::dot(crossA[i], wA)
+				+ glm::dot(-normal, vA) + glm::dot(crossB[i], wB);
+			totalImpulses[i] = totalImpulses[i] - (inverseEffectiveMasses[i] * (velocityAtPoint + b));
 
 			// Enforce Signorini conditions
 			if (totalImpulses[i] < 0)
@@ -231,6 +236,8 @@ void PhysicsSystem::Update()
 
 		bool collision = false;
 
+		PositionComponent* positionA = entityManager.GetComponentP<PositionComponent>(entityA);
+
 		switch (rbA.colliderType)
 		{
 		case Hull:
@@ -265,7 +272,7 @@ void PhysicsSystem::Update()
 		const Entity& entityA = manifold.entityA;
 		const Entity& entityB = manifold.entityB;
 
-		ResolveManifold(manifold, entityA, entityB, em);
+		ResolveManifold(manifold, entityA, entityB);
 	}
 }
 
