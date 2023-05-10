@@ -30,11 +30,6 @@ struct CollisionPair
 	Entity entityB;
 };
 
-void ApplyVelocityAtPoint(const glm::vec3& velocity, VelocityComponent& velocityComponent, const glm::vec3& centerOfMass)
-{
-	velocityComponent.linear += velocity;
-}
-
 void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Entity& entityB, EntityManager& em)
 {
 	const PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
@@ -48,9 +43,16 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 
 	const glm::vec3& normal = manifold.normal;
 
-	float jacobians[4][12];
-	float relativeMasses[4];
-	float totalImpulses[4];
+	float jacobians[4][12]{};
+	float inverseRelativeMasses[4]{};
+	float totalImpulses[4]{};
+
+	float n[4]{};
+	float cA[4]{};
+	float cB[4]{};
+
+	glm::vec3 crossA[4]{};
+	glm::vec3 crossB[4]{};
 
 	for (int i = 0; i < manifold.numContacts; ++i)
 	{
@@ -62,45 +64,60 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 		jacobians[i][1] = -normal.y;
 		jacobians[i][2] = -normal.z;
 
-		glm::vec3 crossA = glm::cross(-(contact.position - positionA.value), normal);
-		jacobians[i][3] = crossA.x;
-		jacobians[i][4] = crossA.y;
-		jacobians[i][5] = crossA.z;
+		crossA[i] = glm::cross(-(contact.position - positionA.value), normal);
+		jacobians[i][3] = crossA[i].x;
+		jacobians[i][4] = crossA[i].y;
+		jacobians[i][5] = crossA[i].z;
 
 		jacobians[i][6] = normal.x;
 		jacobians[i][7] = normal.y;
 		jacobians[i][8] = normal.z;
 
-		glm::vec3 crossB = glm::cross(contact.position - positionB.value, normal);
-		jacobians[i][9] = crossB.x;
-		jacobians[i][10] = crossB.y;
-		jacobians[i][11] = crossB.z;
+		crossB[i] = glm::cross(contact.position - positionB.value, normal);
+		jacobians[i][9] = crossB[i].x;
+		jacobians[i][10] = crossB[i].y;
+		jacobians[i][11] = crossB[i].z;
 
 		// Calculate relative mass
 		{
-			float n = normal.x + normal.y + normal.z;
-			float ca = crossA.x + crossA.y + crossA.z;
-			float cb = crossB.x + crossB.y + crossB.z;
-			relativeMasses[i] = (-2 * n * massA.inv_mass) + (2 * n * massB.inv_mass) +
-				(-2 * ca * massA.inv_inertia) + (2 * cb * massB.inv_inertia);
+			n[i] = normal.x + normal.y + normal.z;
+			cA[i] = crossA[i].x + crossA[i].y + crossA[i].z;
+			cB[i] = crossB[i].x + crossB[i].y + crossB[i].z;
+			inverseRelativeMasses[i] = 1 / ((-2 * n[i] * massA.inv_mass) + (2 * n[i] * massB.inv_mass) +
+				(-2 * cA[i] * massA.inv_inertia) + (2 * cB[i] * massB.inv_inertia));
 		}
 	}
 
-	for (int i = 0; i < manifold.numContacts; ++i)
+	const float b = 0 / (float)manifold.numContacts;
+	for (int j = 0; j < numIterations; ++j)
 	{
-		const ContactPoint& contact = manifold.contacts[i];
-		
- 		glm::vec3 force = manifold.normal * manifold.seperation;
+		for (int i = 0; i < manifold.numContacts; ++i)
+		{
+			const ContactPoint& contact = manifold.contacts[i];
+			const float oldImpulse = totalImpulses[i];
 
-		force *= timescale.value;
+			const glm::vec3& vA = velocityA.linear;
+			const glm::vec3& vB = velocityB.linear;
+			const glm::vec3& wA = velocityA.angular;
+			const glm::vec3& wB = velocityB.angular;
 
-		ApplyVelocityAtPoint(force * massA.inv_mass, velocityA, positionA.value);
-		ApplyVelocityAtPoint(-force * massB.inv_mass, velocityB, positionB.value);
+			const float velocityAtPoint = (-n[i] * (vA.x + vA.y + vA.z)) - (cA[i] * (wA.x + wA.y + wA.z))
+				+ (n[i] * (vB.x + vB.y + vB.z)) + (cB[i] * (wB.x + wB.y + wB.z));
+			totalImpulses[i] = totalImpulses[i] - (inverseRelativeMasses[i] * (velocityAtPoint + b));
 
-#ifdef PHYS_DEBUG
-		debugDraw.DrawLine(contact.position, contact.position + manifold.normal * 0.25f, { 1, 0, 1 });
-#endif // PHYS_DEBUG
+			// Enforce Signorini conditions
+			if (totalImpulses[i] < 0)
+				totalImpulses[i] = 0;
 
+			const float deltaImpulse = totalImpulses[i] - oldImpulse;
+
+			// Add velocity
+			velocityA.linear -= normal * massA.inv_mass * deltaImpulse;
+			velocityA.angular -= crossA[i] * massA.inv_inertia * deltaImpulse;
+
+			velocityB.linear += normal * massB.inv_mass * deltaImpulse;
+			velocityB.angular += crossB[i] * massB.inv_inertia * deltaImpulse;
+		}
 	}
 }
 

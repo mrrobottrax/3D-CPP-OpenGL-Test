@@ -169,7 +169,7 @@ void Init()
 
 		Entity entity = em.AddEntity(EntityArchetype(8, components));
 		em.GetComponent<PositionComponent>(entity) = { 0, 6, -5 };
-		em.GetComponent<VelocityComponent>(entity) = { 0, -0.1f, 0, 0, 0, 0.05f };
+		em.GetComponent<VelocityComponent>(entity) = { 0, -0.5f, 0, 0, 0, 0.05f };
 		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
 
 		modelLoader::LoadModel(boxMesh, "data/models/box.glb");

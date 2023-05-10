@@ -43,6 +43,7 @@ struct Manifold
 
 #endif // DEBUG
 
+const int numIterations = 4;
 class PhysicsSystem : public System
 {
 public:
