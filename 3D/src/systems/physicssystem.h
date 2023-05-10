@@ -44,6 +44,8 @@ struct Manifold
 #endif // DEBUG
 
 const int numIterations = 4;
+const float gravity = -9.81f;
+
 class PhysicsSystem : public System
 {
 public:

@@ -37,15 +37,17 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 	const PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
 	const PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
 
-	const MassComponent& massA = em.GetComponent<MassComponent>(entityA);
-	const MassComponent& massB = em.GetComponent<MassComponent>(entityB);
+	const float& inv_massA = em.GetComponent<MassComponent>(entityA).inv_mass;
+	const float& inv_inertiaA = em.GetComponent<MassComponent>(entityA).inv_inertia;
+	const float& inv_massB = em.GetComponent<MassComponent>(entityB).inv_mass;
+	const float& inv_inertiaB = em.GetComponent<MassComponent>(entityB).inv_inertia;
 
 	// Unstoppable force vs immovable object
-	if (massA.inv_mass == 0 && massB.inv_mass == 0 || massA.inv_inertia == 0 && massB.inv_inertia == 0)
+	if (inv_massA == 0 && inv_massB == 0 || inv_inertiaA == 0 && inv_inertiaB == 0)
 		return;
 
 	// Don't allow zero mass
-	if (massA.mass == 0 || massB.mass == 0 || massA.mass == 0 || massB.mass == 0)
+	if (inv_massA == INFINITY || inv_inertiaA == INFINITY || inv_massB == INFINITY || inv_inertiaB == INFINITY)
 		return;
 
 	VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
@@ -89,11 +91,12 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 			float n = glm::dot(normal, normal);
 			float cA = glm::dot(crossA[i], crossA[i]);
 			float cB = glm::dot(crossB[i], crossB[i]);
-			inverseEffectiveMasses[i] = 1.0f / ((n * massA.inv_mass) + (n * massB.inv_mass) +
-				(cA * massA.inv_inertia) + (cB * massB.inv_inertia));
+			inverseEffectiveMasses[i] = 1.0f / ((n * inv_massA) + (n * inv_massB) +
+				(cA * inv_inertiaA) + (cB * inv_inertiaB));
 		}
 	}
 
+	// TODO: Maybe this should be related to gravity to stop tunnelling
 	const float b = 0.0f / (float)manifold.numContacts;
 	for (int j = 0; j < numIterations; ++j)
 	{
@@ -117,11 +120,11 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 			const float deltaImpulse = totalImpulses[i] - oldImpulse;
 
 			// Add velocity
-			velocityA.linear -= normal * massA.inv_mass * deltaImpulse;
-			velocityA.angular -= crossA[i] * massA.inv_inertia * deltaImpulse;
+			velocityA.linear -= normal * inv_massA * deltaImpulse;
+			velocityA.angular -= crossA[i] * inv_inertiaA * deltaImpulse;
 
-			velocityB.linear += normal * massB.inv_mass * deltaImpulse;
-			velocityB.angular += crossB[i] * massB.inv_inertia * deltaImpulse;
+			velocityB.linear += normal * inv_massB * deltaImpulse;
+			velocityB.angular += crossB[i] * inv_inertiaB * deltaImpulse;
 		}
 	}
 }
@@ -130,14 +133,33 @@ void PhysicsSystem::Update()
 {
 	EntityManager& em = entityManager;
 
-	// Broad phase ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 	std::vector<CollisionPair> pairs;
 
 	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<RigidBodyComponent>());
 
 	if (archetypes == nullptr)
 		return;
+
+	// For each archetype
+	for (std::vector<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
+	{
+		// For each chunk
+		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
+		{
+			// For each entity
+			for (unsigned int i = 0; i < pChunk->numberOfEntities; i++)
+			{
+				const Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
+
+				// Gravity
+				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(entity);
+				VelocityComponent& vel = em.GetComponent<VelocityComponent>(entity);
+				vel.linear.y += rb.gravityScale * gravity * timeManager.GetDeltaTime();
+			}
+		}
+	}
+
+	// Broad phase ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// For each archetype
 	for (std::vector<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
@@ -176,7 +198,7 @@ void PhysicsSystem::Update()
 					pChunk2 = chunkComplete ? pChunk->pNext : pChunk;
 				}
 
-				Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
+				const Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
 				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(entity);
 
 				// For each archetype
@@ -188,7 +210,7 @@ void PhysicsSystem::Update()
 						// For each entity
 						for (unsigned short i2 = archetypeComplete || chunkComplete ? 0 : i + 1; i2 < pChunk2->numberOfEntities; i2++)
 						{
-							Entity entity2((*chunkArchetypeIt2)->archetype, *pChunk2, i2);
+							const Entity entity2((*chunkArchetypeIt2)->archetype, *pChunk2, i2);
 							RigidBodyComponent& rb2 = em.GetComponent<RigidBodyComponent>(entity2);
 
 							IdComponent& id = em.GetComponent<IdComponent>(entity);
