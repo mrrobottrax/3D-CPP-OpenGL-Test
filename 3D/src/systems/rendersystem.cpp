@@ -6,6 +6,7 @@
 #include <components/meshComponent.h>
 #include <components/positionComponent.h>
 #include <components/rotationComponent.h>
+#include <components/scalecomponent.h>
 
 #include <gl/glutil.h>
 
@@ -117,10 +118,10 @@ void RenderSystem::DrawBase()
 	MatrixStack mStack;
 	glm::mat3 normalMat;
 
-	mStack.push();
-	normalMat = mStack.top();
-	mStack.applyMatrix(glm::mat4_cast(em.GetComponent<RotationComponent>(mainCameraEntity).value));
-	mStack.translate(-em.GetComponent<PositionComponent>(mainCameraEntity).value);
+	mStack.Push();
+	normalMat = mStack.Top();
+	mStack.ApplyMatrix(glm::mat4_cast(em.GetComponent<RotationComponent>(mainCameraEntity).value));
+	mStack.Translate(-em.GetComponent<PositionComponent>(mainCameraEntity).value);
 
 	glm::vec3 sunDir(1, 2, .2f);
 	sunDir = glm::normalize(sunDir);
@@ -143,14 +144,17 @@ void RenderSystem::DrawBase()
 			// For each entity
 			for (unsigned short i = 0; i < pChunk->numberOfEntities; i++)
 			{
-				Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
-				MeshComponent& mesh = em.GetComponent<MeshComponent>(entity);
-				PositionComponent& position = em.GetComponent<PositionComponent>(entity);
-				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
+				const Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
+				const MeshComponent& mesh = em.GetComponent<MeshComponent>(entity);
+				const PositionComponent& position = em.GetComponent<PositionComponent>(entity);
+				const RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
+				const ScaleComponent* pScale = em.GetComponentP<ScaleComponent>(entity);
 
-				mStack.pushCpy();
-				mStack.translate(position.value);
-				mStack.applyMatrix(glm::mat4_cast(rotation.value));
+				mStack.PushCpy();
+				mStack.Translate(position.value);
+				mStack.ApplyMatrix(glm::mat4_cast(rotation.value));
+				if (pScale)
+				mStack.Scale(pScale->value);
 
 				newNormalMat = glm::mat3_cast(rotation.value) * normalMat;
 
@@ -162,19 +166,19 @@ void RenderSystem::DrawBase()
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.pMesh->elementBufferObject);
 
 				// TODO: Faster to have the cpu do this? Or maybe just give the gpu rotation, position, etc matrices? Need to measure...
-				glUniformMatrix4fv(sharedPositionMatrixUnif, 1, GL_FALSE, &mStack.top()[0][0]);
+				glUniformMatrix4fv(sharedPositionMatrixUnif, 1, GL_FALSE, &mStack.Top()[0][0]);
 				glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, &newNormalMat[0][0]);
 				glUniform3f(sunDirUnif, sunDir.x, sunDir.y, sunDir.z);
 				glUniform4f(colorUnif, 1, 1, 1, 1);
 
 				glDrawElements(GL_TRIANGLES, mesh.pMesh->indicesCount, GL_UNSIGNED_SHORT, 0);
 
-				mStack.pop();
+				mStack.Pop();
 			}
 		}
 	}
 
-	mStack.pop();
+	mStack.Pop();
 
 	delete archetypes;
 }

@@ -1,33 +1,33 @@
 #include <pch.h>
 
-#include <common/matrixStack.h>
+#include <common/matrixstack.h>
 
-void MatrixStack::push()
+void MatrixStack::Push()
 {
 	mStack.push(glm::mat4(1.0f));
 }
 
-void MatrixStack::push(glm::mat4& matrix)
+void MatrixStack::Push(glm::mat4& matrix)
 {
 	mStack.push(matrix);
 }
 
-void MatrixStack::pushCpy()
+void MatrixStack::PushCpy()
 {
 	mStack.push(mStack.top());
 }
 
-void MatrixStack::pop()
+void MatrixStack::Pop()
 {
 	mStack.pop();
 }
 
-glm::mat4& MatrixStack::top()
+glm::mat4& MatrixStack::Top()
 {
 	return mStack.top();
 }
 
-void MatrixStack::translate(glm::vec3 offset)
+void MatrixStack::Translate(glm::vec3 offset)
 {
 	glm::mat4 matrix = glm::mat4(0);
 
@@ -40,15 +40,27 @@ void MatrixStack::translate(glm::vec3 offset)
 	matrix[3][1] = offset.y;
 	matrix[3][2] = offset.z;
 
-	applyMatrix(matrix);
+	ApplyMatrix(matrix);
 }
 
-void MatrixStack::applyMatrix(glm::mat4 matrix)
+void MatrixStack::Scale(glm::vec3 scale)
+{
+	glm::mat4 matrix = glm::mat4(0);
+
+	matrix[0][0] = scale.x;
+	matrix[1][1] = scale.y;
+	matrix[2][2] = scale.z;
+	matrix[3][3] = 1;
+
+	ApplyMatrix(matrix);
+}
+
+void MatrixStack::ApplyMatrix(glm::mat4 matrix)
 {
 	mStack.top() *= matrix;
 }
 
-void MatrixStack::invert()
+void MatrixStack::Invert()
 {
 	mStack.top() = glm::inverse(mStack.top());
 }

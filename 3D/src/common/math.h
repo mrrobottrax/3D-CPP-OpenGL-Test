@@ -35,8 +35,11 @@ namespace gmath
 	float SignedDistFromTriPlane(glm::vec3 triPointA, glm::vec3 triPointB, glm::vec3 triPointC, glm::vec3 point);
 	Plane PlaneFromTri(glm::vec3 triPointA, glm::vec3 triPointB, glm::vec3 triPointC);
 	Plane PlaneFromTri(const float triPointA[3], const float triPointB[3], const float triPointC[3]);
+	glm::vec3 LineAndPlane(const Line&, const Plane&);
+	void ScalePlane(Plane&, const glm::vec3&);
 
 	glm::vec3 Lerp(glm::vec3 x, glm::vec3 y, float t);
+	glm::vec3 Lerp(Line, float t);
 
 	struct Matrix
 	{

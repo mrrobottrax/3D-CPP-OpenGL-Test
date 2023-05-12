@@ -66,9 +66,32 @@ namespace gmath
 		return PlaneFromTri(a, b, c);
 	}
 
+	glm::vec3 LineAndPlane(const Line& line, const Plane& plane)
+	{
+		float t = (glm::dot(plane.normal, line.pointA) - plane.dist)
+			/ (glm::dot(plane.normal, line.pointA - line.pointB));
+
+		return Lerp(line, t);
+	}
+
+	void ScalePlane(Plane& plane, const glm::vec3& scale)
+	{
+		const glm::vec3 scaledPoint = plane.normal * plane.dist * scale;
+		plane.normal *= scale;
+
+		plane.normal = glm::normalize(plane.normal);
+
+		plane.dist = glm::dot(scaledPoint, plane.normal);
+	}
+
 	glm::vec3 Lerp(glm::vec3 x, glm::vec3 y, float t)
 	{
 		return x * (1.0f - t) + y * t;
+	}
+
+	glm::vec3 Lerp(Line l, float t)
+	{
+		return Lerp(l.pointA, l.pointB, t);
 	}
 
 	Matrix::Matrix(const int& rows, const int& columns)

@@ -30,7 +30,7 @@ struct Manifold
 	Entity entityA;
 	Entity entityB;
 
-	char numContacts = 0;
+	unsigned short numContacts = 0;
 	ContactPoint contacts[4];
 
 	glm::vec3 normal = glm::vec3(0);
@@ -41,6 +41,12 @@ struct Manifold
 
 #define PHYS_DEBUG
 
+#ifdef PHYS_DEBUG
+
+//#define SAT_DEBUG
+//#define CONTACT_DEBUG
+
+#endif // PHYS_DEBUG
 #endif // DEBUG
 
 const int numIterations = 4;
