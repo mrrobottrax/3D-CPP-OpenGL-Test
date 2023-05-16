@@ -44,7 +44,7 @@ struct Manifold
 #ifdef PHYS_DEBUG
 
 //#define SAT_DEBUG
-//#define CONTACT_DEBUG
+#define CONTACT_DEBUG
 
 #endif // PHYS_DEBUG
 #endif // DEBUG

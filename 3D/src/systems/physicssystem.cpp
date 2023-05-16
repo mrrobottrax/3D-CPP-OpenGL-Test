@@ -732,6 +732,13 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			};
 		}
 	}
+#ifdef PHYS_DEBUG
+	else
+	{
+		std::cout << "FACE CONTACT GENERATION ERROR\n";
+	}
+#endif // PHYS_DEBUG
+
 }
 
 bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manifold)
