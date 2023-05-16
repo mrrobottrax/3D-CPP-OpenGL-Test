@@ -97,8 +97,7 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 		}
 	}
 
-	// TODO: Maybe this should be related to gravity to stop tunnelling
-	const float b = 0.0f / (float)manifold.numContacts;
+	const float b = manifold.seperation * 0.8f;
 	for (int j = 0; j < numIterations; ++j)
 	{
 		for (int i = 0; i < manifold.numContacts; ++i)
@@ -706,6 +705,19 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 
 		swapBuffers = !swapBuffers;
 		inBuffer.clear();
+	}
+
+	// Project onto reference plane
+	{
+		std::vector<glm::vec3>& inBuffer = swapBuffers ? out : in;
+
+		for (int i = 0; i < inBuffer.size(); ++i)
+		{
+			glm::vec3& point = inBuffer[i];
+			const float dist = glm::dot(relativeReferencePlane.normal, point) - relativeReferencePlane.dist;
+
+			point -= relativeReferencePlane.normal * dist;
+		}
 	}
 
 	const std::vector<glm::vec3>& inBuffer = swapBuffers ? out : in;

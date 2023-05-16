@@ -169,20 +169,6 @@ void Init()
 		Component().init<ScaleComponent>(),
 		};
 		EntityArchetype boxArchetype = EntityArchetype(9, components);
-		// Create box 2
-		{
-			Entity entity = em.AddEntity(boxArchetype);
-			em.GetComponent<PositionComponent>(entity) = { 0, 3, -5 };
-			em.GetComponent<VelocityComponent>(entity) = { 0, 15, 0, 0.1f, 0, 0 };
-			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
-			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
-
-			em.GetComponent<MeshComponent>(entity) = { &boxMesh };
-
-			em.GetComponent<HullCollider>(entity) = { &boxHull };
-			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1 };
-			em.GetComponent<MassComponent>(entity).SetMass(1);
-		}
 		// Create box 1
 		{
 			Entity entity = em.AddEntity(boxArchetype);
@@ -196,6 +182,48 @@ void Init()
 			em.GetComponent<HullCollider>(entity) = { &boxHull };
 			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 0 };
 			em.GetComponent<MassComponent>(entity).SetMass(INFINITY);
+		}
+		// Create box 2
+		{
+			Entity entity = em.AddEntity(boxArchetype);
+			em.GetComponent<PositionComponent>(entity) = { 0, 3, -5 };
+			em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
+			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
+			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
+
+			em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+
+			em.GetComponent<HullCollider>(entity) = { &boxHull };
+			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1 };
+			em.GetComponent<MassComponent>(entity).SetMass(1);
+		}
+		// Create box 2
+		{
+			Entity entity = em.AddEntity(boxArchetype);
+			em.GetComponent<PositionComponent>(entity) = { 0, 4, -5 };
+			em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
+			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
+			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
+
+			em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+
+			em.GetComponent<HullCollider>(entity) = { &boxHull };
+			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1 };
+			em.GetComponent<MassComponent>(entity).SetMass(1);
+		}
+		// Create box 2
+		{
+			Entity entity = em.AddEntity(boxArchetype);
+			em.GetComponent<PositionComponent>(entity) = { 0, 5, -5 };
+			em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
+			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
+			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
+
+			em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+
+			em.GetComponent<HullCollider>(entity) = { &boxHull };
+			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1 };
+			em.GetComponent<MassComponent>(entity).SetMass(1);
 		}
 	}
 
