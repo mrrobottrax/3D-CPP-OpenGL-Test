@@ -647,26 +647,39 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 				debugDraw.DrawLine(drawPoint, drawPoint + manifold.normal * 0.2f, { 0, 0.1f, 0 });
 #endif // CONTACT_DEBUG
 
-				if (dist <= 0)
+				const bool pointBehindPlane = dist <= 0;
+
+				const int j = i - 1;
+				const glm::vec3& prev = inBuffer[j < 0 ? inBuffer.size() - 1 : j];
+
+				const bool lineCrossesPlane = (glm::dot(prev, clipPlane.normal) - clipPlane.dist <= 0) != pointBehindPlane;
+				if (lineCrossesPlane)
+				{
+					// Find intersection of line and plane
+					const Line line = {
+						prev,
+						point
+					};
+
+					const glm::vec3 point = LineAndPlane(line, clipPlane);
+					outBuffer.push_back(point);
+
+#ifdef CONTACT_DEBUG
+					debugDraw.DrawPlane(glm::vec3(0), clipPlane, 1.5f, 1.5f);
+					debugDraw.DrawLine(line.pointA, line.pointB, { 1, 1, 1 });
+
+					glm::vec3 drawPoint = point;
+					drawPoint = rotationB * drawPoint + positionB;
+					debugDraw.DrawLine(drawPoint, drawPoint + glm::vec3(0, 0.2f, 0), { 1, 1, 1 });
+#endif // CONTACT_DEBUG
+
+				}
+
+				// Added after to maintain sequence
+				if (pointBehindPlane)
 				{
 					outBuffer.push_back(point);
 				}
-				//else
-				//{
-				//	const glm::vec3& prev = inBuffer[(size_t)(i - 1) % inBuffer.size()];
-
-				//	if (glm::dot(prev, clipPlane.normal) - clipPlane.dist <= 0)
-				//	{
-				//		// Find intersection of line and plane
-				//		const Line line = {
-				//			prev,
-				//			point
-				//		};
-				//		
-				//		const glm::vec3 point = LineAndPlane(line, clipPlane);
-				//		outBuffer.push_back(point);
-				//	}
-				//}
 			}
 
 			inBuffer.clear();
@@ -696,15 +709,6 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	}
 
 	const std::vector<glm::vec3>& inBuffer = swapBuffers ? out : in;
-
-//#ifdef CONTACT_DEBUG
-//	std::cout << inBuffer.size() << "\n";
-//	for (int i = 0; i < inBuffer.size(); ++i)
-//	{
-//		glm::vec3 pos = rotationB * inBuffer[i] + positionB;
-//		debugDraw.DrawLine(pos, pos + manifold.normal * 0.2f, { 1, 1, 0 });
-//	}
-//#endif // CONTACT_DEBUG
 
 	if (inBuffer.size() <= 4)
 	{
