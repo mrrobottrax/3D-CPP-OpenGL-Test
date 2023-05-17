@@ -778,7 +778,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			};
 
 			// Get third point
-			glm::vec3* thirdPoint;
+			glm::vec3* thirdPoint = nullptr;
 			bool thirdSign = 0;
 			{
 				float bestArea = 0;
@@ -806,7 +806,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			}
 
 			// Get fourth point
-			glm::vec3* fourthPoint;
+			glm::vec3* fourthPoint = nullptr;
 			bool fourthSign = 0;
 			{
 				float bestArea = 0;
