@@ -28,8 +28,8 @@ namespace gmath
 		glm::vec3 pointB;
 	};
 
-	float SqrMagnitude(glm::vec3 vector);
-	float SqrDist(glm::vec3 vertexA, glm::vec3 vertexB);
+	float SqrMagnitude(const glm::vec3& vector);
+	float SqrDist(const glm::vec3& vertexA, const glm::vec3& vertexB);
 	float DistFromLine(glm::vec3 linePointA, glm::vec3 linePointB, glm::vec3 point);
 	float SignedDistFromPlane(Plane plane, glm::vec3 point);
 	float SignedDistFromTriPlane(glm::vec3 triPointA, glm::vec3 triPointB, glm::vec3 triPointC, glm::vec3 point);

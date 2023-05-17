@@ -720,25 +720,148 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 		}
 	}
 
-	const std::vector<glm::vec3>& inBuffer = swapBuffers ? out : in;
-
-	if (inBuffer.size() <= 4)
+	// Reduce contact points
 	{
-		manifold.numContacts = (int)inBuffer.size();
-		for (int i = 0; i < inBuffer.size(); ++i)
+		std::vector<glm::vec3>& inBuffer = swapBuffers ? out : in;
+
+		if (inBuffer.size() > 4)
 		{
-			manifold.contacts[i] = {
-				rotationB * inBuffer[i] + positionB
+			std::vector<glm::vec3>& outBuffer = !swapBuffers ? out : in;
+
+			// TODO: First point should be deepest for continuous collision
+			glm::vec3* firstPoint = &inBuffer[0];
+			{
+				const glm::vec3 direction = glm::vec3(1, 1, 1);
+
+				float bestDot = -FLT_MAX;
+				for (int i = 1; i < inBuffer.size(); ++i)
+				{
+					glm::vec3& point = inBuffer[i];
+					const float dot = glm::dot(point, direction);
+
+					if (dot >= bestDot)
+					{
+						firstPoint = const_cast<glm::vec3*>(&point);
+						bestDot = dot;
+					}
+				}
+			}
+
+			// Get furthest point
+			glm::vec3* secondPoint = nullptr;
+			{
+				float bestDist = -FLT_MAX;
+				for (int i = 0; i < inBuffer.size(); ++i)
+				{
+					const glm::vec3* pPoint = &inBuffer[i];
+
+					if (pPoint == firstPoint)
+						continue;
+
+					const glm::vec3 tmp = *pPoint - *firstPoint;
+					const float sqrDist = SqrDist(*pPoint, *firstPoint);
+
+					if (sqrDist >= bestDist)
+					{
+						secondPoint = const_cast<glm::vec3*>(pPoint);
+						bestDist = sqrDist;
+					}
+				}
+			}
+
+			auto GetArea = [&manifold](const glm::vec3& pointA, const glm::vec3& pointB, const glm::vec3& pointC)
+			{
+				const glm::vec3 ca = pointA - pointC;
+				const glm::vec3 cb = pointB - pointC;
+
+				return 0.5f * glm::dot(glm::cross(ca, cb), manifold.normal);
 			};
+
+			// Get third point
+			glm::vec3* thirdPoint;
+			bool thirdSign = 0;
+			{
+				float bestArea = 0;
+				for (int i = 0; i < inBuffer.size(); ++i)
+				{
+					const glm::vec3* pPoint = &inBuffer[i];
+
+					if (pPoint == firstPoint)
+						continue;
+
+					if (pPoint == secondPoint)
+						continue;
+
+					assert(secondPoint != nullptr);
+
+					const float area = GetArea(*firstPoint, *secondPoint, *pPoint);
+
+					if (abs(area) >= abs(bestArea))
+					{
+						thirdPoint = const_cast<glm::vec3*>(pPoint);
+						bestArea = area;
+						thirdSign = signbit(area);
+					}
+				}
+			}
+
+			// Get fourth point
+			glm::vec3* fourthPoint;
+			bool fourthSign = 0;
+			{
+				float bestArea = 0;
+				for (int i = 0; i < inBuffer.size(); ++i)
+				{
+					const glm::vec3* pPoint = &inBuffer[i];
+
+					if (pPoint == firstPoint)
+						continue;
+
+					if (pPoint == secondPoint)
+						continue;
+
+					assert(secondPoint != nullptr);
+
+					const float area = GetArea(*firstPoint, *secondPoint, *pPoint);
+
+					bool sign = signbit(area);
+					if (abs(area) >= abs(bestArea) && sign != thirdSign)
+					{
+						fourthPoint = const_cast<glm::vec3*>(pPoint);
+						bestArea = area;
+						fourthSign = sign;
+					}
+				}
+			}
+
+			assert(firstPoint != nullptr);
+			assert(secondPoint != nullptr);
+			assert(thirdPoint != nullptr);
+			assert(fourthPoint != nullptr);
+
+			outBuffer.push_back(*firstPoint);
+			outBuffer.push_back(*secondPoint);
+			outBuffer.push_back(*thirdPoint);
+			outBuffer.push_back(*fourthPoint);
+
+			swapBuffers = !swapBuffers;
+			inBuffer.clear();
 		}
 	}
-#ifdef PHYS_DEBUG
-	else
-	{
-		std::cout << "FACE CONTACT GENERATION ERROR\n";
-	}
-#endif // PHYS_DEBUG
 
+	// Move contacts to world space
+	{
+		const std::vector<glm::vec3>& inBuffer = swapBuffers ? out : in;
+		{
+			manifold.numContacts = (int)inBuffer.size();
+			for (int i = 0; i < inBuffer.size(); ++i)
+			{
+				manifold.contacts[i] = {
+					rotationB * inBuffer[i] + positionB
+				};
+			}
+		}
+	}
 }
 
 bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manifold)

@@ -5,7 +5,7 @@
 
 namespace gmath
 {
-	float SqrMagnitude(const glm::vec3 vec)
+	float SqrMagnitude(const glm::vec3& vec)
 	{
 		float sqrMagnitude = 0;
 		for (int i = 0; i < 3; ++i)
@@ -16,7 +16,7 @@ namespace gmath
 		return sqrMagnitude;
 	};
 
-	float SqrDist(const glm::vec3 vertexA, const glm::vec3 vertexB)
+	float SqrDist(const glm::vec3& vertexA, const glm::vec3& vertexB)
 	{
 		return SqrMagnitude(vertexA - vertexB);
 	}
