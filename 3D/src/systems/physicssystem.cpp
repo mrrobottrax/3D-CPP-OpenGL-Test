@@ -44,7 +44,7 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 	const float& inv_inertiaB = em.GetComponent<MassComponent>(entityB).inv_inertia;
 
 	// Unstoppable force vs immovable object
-	if (inv_massA == 0 && inv_massB == 0 || inv_inertiaA == 0 && inv_inertiaB == 0)
+	if (inv_massA == 0 && inv_massB == 0)
 		return;
 
 	// Don't allow zero mass
@@ -125,6 +125,18 @@ void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Enti
 
 			velocityB.linear += normal * inv_massB * deltaImpulse * timescale.value;
 			velocityB.angular += crossB[i] * inv_inertiaB * deltaImpulse * timescale.value;
+
+			// Friction
+
+#ifdef FRICTION_DEBUG
+			{
+				const glm::vec3& pos = manifold.contacts[i].position;
+				debugDraw.DrawLine(pos, pos + manifold.cross1 * 0.2f, { 1, 0, 0 });
+				debugDraw.DrawLine(pos, pos + manifold.cross2 * 0.2f, { 0, 1, 0 });
+				debugDraw.DrawLine(pos, pos + manifold.normal * 0.2f, { 0, 0, 1 });
+			}
+#endif // FRICTION_DEBUG
+
 		}
 	}
 }
@@ -540,6 +552,13 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	lineB.pointA = rotationB * lineB.pointA + positionB;
 	lineB.pointB = rotationB * lineB.pointB + positionB;
 
+	// Calculate line directions
+	glm::vec3 dirA = lineA.pointB - lineA.pointA;
+	manifold.cross1 = dirA;
+	manifold.cross2 = glm::cross(dirA, manifold.normal);
+	manifold.cross1 = glm::normalize(manifold.cross1);
+	manifold.cross2 = glm::normalize(manifold.cross2);
+
 #ifdef CONTACT_DEBUG
 	debugDraw.DrawLine(lineA.pointA, lineA.pointB, { 1, 1, 0 });
 	debugDraw.DrawLine(lineB.pointA, lineB.pointB, { 1, 1, 0 });
@@ -595,6 +614,12 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	PlaneToSpace(relativeReferencePlane, positionB, rotationB);
 
 	const qhFace& incidentFace = FindIncidentFace(relativeReferencePlane.normal, hullB);
+
+	// Find friction vectors
+	manifold.cross1 = rotationA * (scaleA * queryA.pFace->pEdge->pTail->position - scaleB * queryA.pFace->pEdge->pTwin->pTail->position);
+	manifold.cross2 = glm::cross(manifold.cross1, manifold.normal);
+	manifold.cross1 = glm::normalize(manifold.cross1);
+	manifold.cross2 = glm::normalize(manifold.cross2);
 
 	// Clip with Sutherland-Hodgman
 	std::vector<glm::vec3> in;

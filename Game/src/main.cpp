@@ -181,7 +181,7 @@ void Init()
 
 			em.GetComponent<HullCollider>(entity) = { &boxHull };
 			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 0 };
-			em.GetComponent<MassComponent>(entity).SetMass(INFINITY);
+			em.GetComponent<MassComponent>(entity).SetMassAndInertia(INFINITY);
 		}
 		// Create box 2
 		{
@@ -195,7 +195,7 @@ void Init()
 
 			em.GetComponent<HullCollider>(entity) = { &boxHull };
 			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1 };
-			em.GetComponent<MassComponent>(entity).SetMass(1);
+			em.GetComponent<MassComponent>(entity).SetMassAndInertia(1);
 		}
 		// Create box 2
 		{
@@ -209,7 +209,7 @@ void Init()
 
 			em.GetComponent<HullCollider>(entity) = { &boxHull };
 			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1 };
-			em.GetComponent<MassComponent>(entity).SetMass(1);
+			em.GetComponent<MassComponent>(entity).SetMassAndInertia(1);
 		}
 		// Create box 2
 		{
@@ -223,7 +223,8 @@ void Init()
 
 			em.GetComponent<HullCollider>(entity) = { &boxHull };
 			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1 };
-			em.GetComponent<MassComponent>(entity).SetMass(1);
+			em.GetComponent<MassComponent>(entity).SetMassAndInertia(1);
+			em.GetComponent<MassComponent>(entity).SetInertia(INFINITY);
 		}
 	}
 

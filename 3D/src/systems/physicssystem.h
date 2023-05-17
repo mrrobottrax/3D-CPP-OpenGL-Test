@@ -33,8 +33,11 @@ struct Manifold
 	unsigned short numContacts = 0;
 	ContactPoint contacts[4];
 
-	glm::vec3 normal = glm::vec3(0);
 	float seperation = 0;
+
+	glm::vec3 normal = glm::vec3(0);
+	glm::vec3 cross1 = glm::vec3(0);
+	glm::vec3 cross2 = glm::vec3(0);
 };
 
 #ifdef DEBUG
@@ -44,7 +47,8 @@ struct Manifold
 #ifdef PHYS_DEBUG
 
 //#define SAT_DEBUG
-#define CONTACT_DEBUG
+//#define CONTACT_DEBUG
+#define FRICTION_DEBUG
 
 #endif // PHYS_DEBUG
 #endif // DEBUG
