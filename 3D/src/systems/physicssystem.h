@@ -38,6 +38,13 @@ struct Manifold
 	glm::vec3 normal = glm::vec3(0);
 	glm::vec3 cross1 = glm::vec3(0);
 	glm::vec3 cross2 = glm::vec3(0);
+
+	float jacobians[4][12]{};
+	float inverseEffectiveMasses[4]{};
+	float totalImpulses[4]{};
+
+	glm::vec3 crossA[4]{};
+	glm::vec3 crossB[4]{};
 };
 
 #ifdef DEBUG

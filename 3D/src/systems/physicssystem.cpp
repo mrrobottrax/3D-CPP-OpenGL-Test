@@ -31,112 +31,145 @@ struct CollisionPair
 	Entity entityB;
 };
 
-void ResolveManifold(const Manifold& manifold, const Entity& entityA, const Entity& entityB)
+void ResolveManifolds(std::vector<Manifold>& manifolds)
 {
 	const EntityManager& em = entityManager;
 
-	const PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
-	const PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
-
-	const float& inv_massA = em.GetComponent<MassComponent>(entityA).inv_mass;
-	const float& inv_inertiaA = em.GetComponent<MassComponent>(entityA).inv_inertia;
-	const float& inv_massB = em.GetComponent<MassComponent>(entityB).inv_mass;
-	const float& inv_inertiaB = em.GetComponent<MassComponent>(entityB).inv_inertia;
-
-	// Unstoppable force vs immovable object
-	if (inv_massA == 0 && inv_massB == 0)
-		return;
-
-	// Don't allow zero mass
-	if (inv_massA == INFINITY || inv_inertiaA == INFINITY || inv_massB == INFINITY || inv_inertiaB == INFINITY)
-		return;
-
-	VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
-	VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
-
-	const glm::vec3& normal = manifold.normal;
-
-	float jacobians[4][12]{};
-	float inverseEffectiveMasses[4]{};
-	float totalImpulses[4]{};
-
-	glm::vec3 crossA[4]{};
-	glm::vec3 crossB[4]{};
-
-	for (int i = 0; i < manifold.numContacts; ++i)
+	// Precalculate some stuff
+	for (int i = 0; i < manifolds.size(); ++i)
 	{
-		totalImpulses[i] = 0;
-		const ContactPoint& contact = manifold.contacts[i];
+		Manifold& manifold = manifolds[i];
 
-		// Calculate jacobian matrix
-		jacobians[i][0] = -normal.x;
-		jacobians[i][1] = -normal.y;
-		jacobians[i][2] = -normal.z;
+		const glm::vec3& normal = manifold.normal;
+		float (*jacobians)[12] = manifold.jacobians;
+		glm::vec3* crossA = manifold.crossA;
+		glm::vec3* crossB = manifold.crossB;
+		float* inverseEffectiveMasses = manifold.inverseEffectiveMasses;
+		float* totalImpulses = manifold.totalImpulses;
 
-		crossA[i] = glm::cross(contact.position - positionA.value, normal);
-		jacobians[i][3] = crossA[i].x;
-		jacobians[i][4] = crossA[i].y;
-		jacobians[i][5] = crossA[i].z;
+		const PositionComponent& positionA = em.GetComponent<PositionComponent>(manifold.entityA);
+		const PositionComponent& positionB = em.GetComponent<PositionComponent>(manifold.entityB);
 
-		jacobians[i][6] = normal.x;
-		jacobians[i][7] = normal.y;
-		jacobians[i][8] = normal.z;
+		MassComponent& massComponentA = em.GetComponent<MassComponent>(manifold.entityA);
+		MassComponent& massComponentB = em.GetComponent<MassComponent>(manifold.entityB);
 
-		crossB[i] = glm::cross(contact.position - positionB.value, normal);
-		jacobians[i][9] = crossB[i].x;
-		jacobians[i][10] = crossB[i].y;
-		jacobians[i][11] = crossB[i].z;
+		float& inv_massA = massComponentA.inv_mass;
+		float& inv_inertiaA = massComponentA.inv_inertia;
 
-		// Calculate relative mass
+		float& inv_massB = massComponentB.inv_mass;
+		float& inv_inertiaB = massComponentB.inv_inertia;
+
+		for (int i = 0; i < manifold.numContacts; ++i)
 		{
-			float n = glm::dot(normal, normal);
-			float cA = glm::dot(crossA[i], crossA[i]);
-			float cB = glm::dot(crossB[i], crossB[i]);
-			inverseEffectiveMasses[i] = 1.0f / ((n * inv_massA) + (n * inv_massB) +
-				(cA * inv_inertiaA) + (cB * inv_inertiaB));
+			manifold.totalImpulses[i] = 0;
+			const ContactPoint& contact = manifold.contacts[i];
+
+			// Calculate jacobian matrix
+			jacobians[i][0] = -normal.x;
+			jacobians[i][1] = -normal.y;
+			jacobians[i][2] = -normal.z;
+
+			crossA[i] = glm::cross(contact.position - positionA.value, normal);
+			jacobians[i][3] = crossA[i].x;
+			jacobians[i][4] = crossA[i].y;
+			jacobians[i][5] = crossA[i].z;
+
+			jacobians[i][6] = normal.x;
+			jacobians[i][7] = normal.y;
+			jacobians[i][8] = normal.z;
+
+			crossB[i] = glm::cross(contact.position - positionB.value, normal);
+			jacobians[i][9] = crossB[i].x;
+			jacobians[i][10] = crossB[i].y;
+			jacobians[i][11] = crossB[i].z;
+
+			// Calculate relative mass
+			{
+				float n = glm::dot(normal, normal);
+				float cA = glm::dot(crossA[i], crossA[i]);
+				float cB = glm::dot(crossB[i], crossB[i]);
+				inverseEffectiveMasses[i] = 1.0f / ((n * inv_massA) + (n * inv_massB) +
+					(cA * inv_inertiaA) + (cB * inv_inertiaB));
+			}
 		}
 	}
 
-	const float b = manifold.seperation * 0.8f;
-	for (int j = 0; j < numIterations; ++j)
+	for (int iter = 0; iter < numIterations; ++iter)
 	{
-		for (int i = 0; i < manifold.numContacts; ++i)
+		for (int i = 0; i < manifolds.size(); ++i)
 		{
-			const float oldImpulse = totalImpulses[i];
+			Manifold& manifold = manifolds[i];
 
-			const glm::vec3& vA = velocityA.linear;
-			const glm::vec3& vB = velocityB.linear;
-			const glm::vec3& wA = velocityA.angular;
-			const glm::vec3& wB = velocityB.angular;
+#ifdef CONTACT_DEBUG
+			for (int i = 0; i < manifold.numContacts; ++i)
+			{
+				debugDraw.DrawLine(manifold.contacts[i].position, manifold.contacts[i].position + manifold.normal * 0.2f, { 1, 0, 1 });
+			}
+#endif // CONTACT_DEBUG
 
-			const float velocityAtPoint = glm::dot(-normal, vA) + glm::dot(-crossA[i], wA)
-				+ glm::dot(normal, vB) + glm::dot(crossB[i], wB);
-			totalImpulses[i] = totalImpulses[i] - (inverseEffectiveMasses[i] * (velocityAtPoint + b));
+			const Entity& entityA = manifold.entityA;
+			const Entity& entityB = manifold.entityB;
 
-			// Enforce Signorini conditions
-			if (totalImpulses[i] < 0)
-				totalImpulses[i] = 0;
+			const PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
+			const PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
 
-			const float deltaImpulse = totalImpulses[i] - oldImpulse;
+			const float& inv_massA = em.GetComponent<MassComponent>(entityA).inv_mass;
+			const float& inv_inertiaA = em.GetComponent<MassComponent>(entityA).inv_inertia;
+			const float& inv_massB = em.GetComponent<MassComponent>(entityB).inv_mass;
+			const float& inv_inertiaB = em.GetComponent<MassComponent>(entityB).inv_inertia;
 
-			// Add velocity
-			velocityA.linear -= normal * inv_massA * deltaImpulse * timescale.value;
-			velocityA.angular -= crossA[i] * inv_inertiaA * deltaImpulse * timescale.value;
+			VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
+			VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
 
-			velocityB.linear += normal * inv_massB * deltaImpulse * timescale.value;
-			velocityB.angular += crossB[i] * inv_inertiaB * deltaImpulse * timescale.value;
+			const glm::vec3& normal = manifold.normal;
+			const float(*jacobians)[12] = manifold.jacobians;
+			const glm::vec3* crossA = manifold.crossA;
+			const glm::vec3* crossB = manifold.crossB;
+			const float* inverseEffectiveMasses = manifold.inverseEffectiveMasses;
 
-			// Friction
+			float* totalImpulses = manifold.totalImpulses;
+
+			// TODO: Maybe use this when we switch to discrete timesteps
+			//const float b = manifold.seperation * 0.8f / timeManager.GetDeltaTime();
+			const float b = manifold.seperation;
+			for (int i = 0; i < manifold.numContacts; ++i)
+			{
+				const float oldImpulse = totalImpulses[i];
+
+				const glm::vec3& vA = velocityA.linear;
+				const glm::vec3& vB = velocityB.linear;
+				const glm::vec3& wA = velocityA.angular;
+				const glm::vec3& wB = velocityB.angular;
+
+				const float velocityAtPoint = glm::dot(-normal, vA) + glm::dot(-crossA[i], wA)
+					+ glm::dot(normal, vB) + glm::dot(crossB[i], wB);
+				totalImpulses[i] = totalImpulses[i] - (inverseEffectiveMasses[i] * (velocityAtPoint + b));
+
+				// Enforce Signorini conditions
+				if (totalImpulses[i] < 0)
+					totalImpulses[i] = 0;
+
+				const float deltaImpulse = totalImpulses[i] - oldImpulse;
+
+				// Add velocity
+				velocityA.linear -= normal * inv_massA * deltaImpulse * timescale.value;
+				velocityA.angular -= crossA[i] * inv_inertiaA * deltaImpulse * timescale.value;
+
+				velocityB.linear += normal * inv_massB * deltaImpulse * timescale.value;
+				velocityB.angular += crossB[i] * inv_inertiaB * deltaImpulse * timescale.value;
+
+				// Friction
 
 #ifdef FRICTION_DEBUG
-			{
-				const glm::vec3& pos = manifold.contacts[i].position;
-				debugDraw.DrawLine(pos, pos + manifold.cross1 * 0.2f, { 1, 0, 0 });
-				debugDraw.DrawLine(pos, pos + manifold.cross2 * 0.2f, { 0, 1, 0 });
-				debugDraw.DrawLine(pos, pos + manifold.normal * 0.2f, { 0, 0, 1 });
-			}
+				{
+					const glm::vec3& pos = manifold.contacts[i].position;
+					debugDraw.DrawLine(pos, pos + manifold.cross1 * 0.2f, { 1, 0, 0 });
+					debugDraw.DrawLine(pos, pos + manifold.cross2 * 0.2f, { 0, 1, 0 });
+					debugDraw.DrawLine(pos, pos + manifold.normal * 0.2f, { 0, 0, 1 });
+				}
 #endif // FRICTION_DEBUG
 
+			}
 		}
 	}
 }
@@ -228,18 +261,30 @@ void PhysicsSystem::Update()
 							IdComponent& id = em.GetComponent<IdComponent>(entity);
 							IdComponent& id2 = em.GetComponent<IdComponent>(entity2);
 
+							const MassComponent& massA = em.GetComponent<MassComponent>(entity);
+							const MassComponent& massB = em.GetComponent<MassComponent>(entity2);
+
 							// No need to check for collisions when both are static
-							if (!rb.isStatic || !rb2.isStatic)
-							{
-								CollisionPair pair = {
+							if (rb.isStatic && rb2.isStatic)
+								continue;
+
+							// Unstoppable force vs immovable object
+							if (massA.inv_mass == 0 && massB.inv_mass == 0)
+								continue;
+
+							// Don't allow zero mass
+							if (massA.inv_mass == INFINITY || massA.inv_inertia == INFINITY ||
+								massB.inv_mass == INFINITY || massA.inv_inertia == INFINITY)
+								continue;
+
+							CollisionPair pair = {
 									&rb,
 									&rb2,
 
 									entity,
 									entity2
-								};
-								pairs.push_back(pair);
-							}
+							};
+							pairs.push_back(pair);
 						}
 
 						pChunk2 = pChunk2->pNext;
@@ -298,23 +343,7 @@ void PhysicsSystem::Update()
 	}
 
 	// Resolve collisions
-
-	for (int i = 0; i < manifolds.size(); ++i)
-	{
-		const Manifold& manifold = manifolds[i];
-
-		const Entity& entityA = manifold.entityA;
-		const Entity& entityB = manifold.entityB;
-
-#ifdef CONTACT_DEBUG
-		for (int i = 0; i < manifold.numContacts; ++i)
-		{
-			debugDraw.DrawLine(manifold.contacts[i].position, manifold.contacts[i].position + manifold.normal * 0.2f, {1, 0, 1});
-		}
-#endif // CONTACT_DEBUG
-
-		ResolveManifold(manifold, entityA, entityB);
-	}
+	ResolveManifolds(manifolds);
 }
 
 // Find vertex with most penetration
