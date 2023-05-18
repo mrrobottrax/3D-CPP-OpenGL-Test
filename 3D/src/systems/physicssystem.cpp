@@ -41,11 +41,8 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 		Manifold& manifold = manifolds[i];
 
 		const glm::vec3& normal = manifold.normal;
-		float (*jacobians)[12] = manifold.jacobians;
-		glm::vec3* crossA = manifold.crossA;
-		glm::vec3* crossB = manifold.crossB;
-		float* inverseEffectiveMasses = manifold.inverseEffectiveMasses;
-		float* totalImpulses = manifold.totalImpulses;
+		const glm::vec3& friction1 = manifold.friction1;
+		const glm::vec3& friction2 = manifold.friction2;
 
 		const PositionComponent& positionA = em.GetComponent<PositionComponent>(manifold.entityA);
 		const PositionComponent& positionB = em.GetComponent<PositionComponent>(manifold.entityB);
@@ -61,44 +58,45 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 
 		for (int i = 0; i < manifold.numContacts; ++i)
 		{
-			manifold.totalImpulses[i] = 0;
-			const ContactPoint& contact = manifold.contacts[i];
+			ContactPoint& contact = manifold.contacts[i];
 
-			// Calculate jacobian matrix
-			jacobians[i][0] = -normal.x;
-			jacobians[i][1] = -normal.y;
-			jacobians[i][2] = -normal.z;
+			contact.totalImpulseNormal = 0;
 
-			crossA[i] = glm::cross(contact.position - positionA.value, normal);
-			jacobians[i][3] = crossA[i].x;
-			jacobians[i][4] = crossA[i].y;
-			jacobians[i][5] = crossA[i].z;
-
-			jacobians[i][6] = normal.x;
-			jacobians[i][7] = normal.y;
-			jacobians[i][8] = normal.z;
-
-			crossB[i] = glm::cross(contact.position - positionB.value, normal);
-			jacobians[i][9] = crossB[i].x;
-			jacobians[i][10] = crossB[i].y;
-			jacobians[i][11] = crossB[i].z;
+			contact.crossANormal = glm::cross(contact.position - positionA.value, normal);
+			contact.crossBNormal = glm::cross(contact.position - positionB.value, normal);
+			contact.crossAFriction1 = glm::cross(contact.position - positionA.value, friction1);
+			contact.crossBFriction1 = glm::cross(contact.position - positionB.value, friction1);
+			contact.crossAFriction2 = glm::cross(contact.position - positionA.value, friction2);
+			contact.crossBFriction2 = glm::cross(contact.position - positionB.value, friction2);
 
 			// Calculate relative mass
 			{
-				float n = glm::dot(normal, normal);
-				float cA = glm::dot(crossA[i], crossA[i]);
-				float cB = glm::dot(crossB[i], crossB[i]);
-				inverseEffectiveMasses[i] = 1.0f / ((n * inv_massA) + (n * inv_massB) +
+				const float n = glm::dot(normal, normal);
+				const float cA = glm::dot(contact.crossANormal, contact.crossANormal);
+				const float cB = glm::dot(contact.crossBNormal, contact.crossBNormal);
+				contact.inverseEffectiveMassNormal = 1.0f / ((n * inv_massA) + (n * inv_massB) +
 					(cA * inv_inertiaA) + (cB * inv_inertiaB));
+
+				const float n1 = glm::dot(friction1, friction1);
+				const float cA1 = glm::dot(contact.crossAFriction1, contact.crossAFriction1);
+				const float cB1 = glm::dot(contact.crossBFriction1, contact.crossBFriction1);
+				contact.inverseEffectiveMassFriction1 = 1.0f / ((n1 * inv_massA) + (n1 * inv_massB) +
+					(cA1 * inv_inertiaA) + (cB1 * inv_inertiaB));
+
+				const float n2 = glm::dot(friction2, friction2);
+				const float cA2 = glm::dot(contact.crossAFriction2, contact.crossAFriction2);
+				const float cB2 = glm::dot(contact.crossBFriction2, contact.crossBFriction2);
+				contact.inverseEffectiveMassFriction2 = 1.0f / ((n2 * inv_massA) + (n2 * inv_massB) +
+					(cA2 * inv_inertiaA) + (cB2 * inv_inertiaB));
 			}
 		}
 	}
 
 	for (int iter = 0; iter < numIterations; ++iter)
 	{
-		for (int i = 0; i < manifolds.size(); ++i)
+		for (int manifoldI = 0; manifoldI < manifolds.size(); ++manifoldI)
 		{
-			Manifold& manifold = manifolds[i];
+			Manifold& manifold = manifolds[manifoldI];
 
 #ifdef CONTACT_DEBUG
 			for (int i = 0; i < manifold.numContacts; ++i)
@@ -109,6 +107,9 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 
 			const Entity& entityA = manifold.entityA;
 			const Entity& entityB = manifold.entityB;
+
+			const RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(entityA);
+			const RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(entityB);
 
 			const PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
 			const PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
@@ -122,52 +123,110 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 			VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
 
 			const glm::vec3& normal = manifold.normal;
-			const float(*jacobians)[12] = manifold.jacobians;
-			const glm::vec3* crossA = manifold.crossA;
-			const glm::vec3* crossB = manifold.crossB;
-			const float* inverseEffectiveMasses = manifold.inverseEffectiveMasses;
+			const glm::vec3& friction1 = manifold.friction1;
+			const glm::vec3& friction2 = manifold.friction2;
 
-			float* totalImpulses = manifold.totalImpulses;
+			const glm::vec3& vA = velocityA.linear;
+			const glm::vec3& vB = velocityB.linear;
+			const glm::vec3& wA = velocityA.angular;
+			const glm::vec3& wB = velocityB.angular;
 
 			// TODO: Maybe use this when we switch to discrete timesteps
 			//const float b = manifold.seperation * 0.8f / timeManager.GetDeltaTime();
 			const float b = manifold.seperation;
 			for (int i = 0; i < manifold.numContacts; ++i)
 			{
-				const float oldImpulse = totalImpulses[i];
+				ContactPoint& contact = manifold.contacts[i];
 
-				const glm::vec3& vA = velocityA.linear;
-				const glm::vec3& vB = velocityB.linear;
-				const glm::vec3& wA = velocityA.angular;
-				const glm::vec3& wB = velocityB.angular;
+				// Normal Force
+				{
+					const float oldImpulse = contact.totalImpulseNormal;
 
-				const float velocityAtPoint = glm::dot(-normal, vA) + glm::dot(-crossA[i], wA)
-					+ glm::dot(normal, vB) + glm::dot(crossB[i], wB);
-				totalImpulses[i] = totalImpulses[i] - (inverseEffectiveMasses[i] * (velocityAtPoint + b));
+					const float velocityAtPoint = glm::dot(-normal, vA) + glm::dot(-contact.crossANormal, wA)
+						+ glm::dot(normal, vB) + glm::dot(contact.crossBNormal, wB);
+					contact.totalImpulseNormal += -(contact.inverseEffectiveMassNormal * (velocityAtPoint + b));
 
-				// Enforce Signorini conditions
-				if (totalImpulses[i] < 0)
-					totalImpulses[i] = 0;
+					// Enforce Signorini conditions
+					if (contact.totalImpulseNormal < 0)
+						contact.totalImpulseNormal = 0;
 
-				const float deltaImpulse = totalImpulses[i] - oldImpulse;
+					const float deltaImpulse = contact.totalImpulseNormal - oldImpulse;
 
-				// Add velocity
-				velocityA.linear -= normal * inv_massA * deltaImpulse * timescale.value;
-				velocityA.angular -= crossA[i] * inv_inertiaA * deltaImpulse * timescale.value;
+					// Add velocity
+					velocityA.linear -= normal * inv_massA * deltaImpulse * timescale.value;
+					velocityA.angular -= contact.crossANormal * inv_inertiaA * deltaImpulse * timescale.value;
 
-				velocityB.linear += normal * inv_massB * deltaImpulse * timescale.value;
-				velocityB.angular += crossB[i] * inv_inertiaB * deltaImpulse * timescale.value;
+					velocityB.linear += normal * inv_massB * deltaImpulse * timescale.value;
+					velocityB.angular += contact.crossBNormal * inv_inertiaB * deltaImpulse * timescale.value;
+				}
 
 				// Friction
+				{
+					const float oldImpulse1 = contact.totalImpulseFriction1;
+					const float oldImpulse2 = contact.totalImpulseFriction2;
+
+					const float velocityAtFriction1 = glm::dot(-friction1, vA) + glm::dot(-contact.crossAFriction1, wA)
+						+ glm::dot(friction1, vB) + glm::dot(contact.crossBFriction1, wB);
+					const float velocityAtFriction2 = glm::dot(-friction2, vA) + glm::dot(-contact.crossAFriction2, wA)
+						+ glm::dot(friction2, vB) + glm::dot(contact.crossBFriction2, wB);
+
+					contact.totalImpulseFriction1 += -contact.inverseEffectiveMassFriction1 * velocityAtFriction1;
+					contact.totalImpulseFriction2 += -contact.inverseEffectiveMassFriction2 * velocityAtFriction2;
+
+					// Clamp force
+					// This is a friction pyramid which is slightly innacurate, but it's faster
+					float frictionC = 0;
+
+					// Coefficient of friction
+					if (rbA.frictionCombine == Min || rbB.frictionCombine == Min)
+					{
+						frictionC = std::fminf(rbA.frictionCoefficient, rbB.frictionCoefficient);
+					}
+					else if (rbA.frictionCombine == Max || rbB.frictionCombine == Max)
+					{
+						frictionC = std::fmaxf(rbA.frictionCoefficient, rbB.frictionCoefficient);
+					}
+					else
+					{
+						frictionC = (rbA.frictionCoefficient + rbB.frictionCoefficient) / 2.0f;
+					}
+
+					contact.totalImpulseFriction1 = clamp(contact.totalImpulseFriction1,
+						-contact.totalImpulseNormal * frictionC, contact.totalImpulseNormal * frictionC);
+					contact.totalImpulseFriction2 = clamp(contact.totalImpulseFriction2,
+						-contact.totalImpulseNormal * frictionC, contact.totalImpulseNormal * frictionC);
+
+					const float deltaImpulse1 = contact.totalImpulseFriction1 - oldImpulse1;
+					const float deltaImpulse2 = contact.totalImpulseFriction2 - oldImpulse2;
+
+					// Add velocity
+					velocityA.linear -= friction1 * inv_massA * deltaImpulse1 * timescale.value;
+					velocityA.angular -= contact.crossAFriction1 * inv_inertiaA * deltaImpulse1 * timescale.value;
+
+					velocityB.linear += friction1 * inv_massB * deltaImpulse1 * timescale.value;
+					velocityB.angular += contact.crossBFriction1 * inv_inertiaB * deltaImpulse1 * timescale.value;
+
+					velocityA.linear -= friction2 * inv_massA * deltaImpulse2 * timescale.value;
+					velocityA.angular -= contact.crossAFriction2 * inv_inertiaA * deltaImpulse2 * timescale.value;
+
+					velocityB.linear += friction2 * inv_massB * deltaImpulse2 * timescale.value;
+					velocityB.angular += contact.crossBFriction2 * inv_inertiaB * deltaImpulse2 * timescale.value;
 
 #ifdef FRICTION_DEBUG
-				{
-					const glm::vec3& pos = manifold.contacts[i].position;
-					debugDraw.DrawLine(pos, pos + manifold.cross1 * 0.2f, { 1, 0, 0 });
-					debugDraw.DrawLine(pos, pos + manifold.cross2 * 0.2f, { 0, 1, 0 });
-					debugDraw.DrawLine(pos, pos + manifold.normal * 0.2f, { 0, 0, 1 });
-				}
+					{
+						const glm::vec3& pos = manifold.contacts[i].position;
+
+						debugDraw.DrawLine(pos, pos + friction1 * velocityAtFriction1, { 1, 0, 0 });
+						debugDraw.DrawLine(pos, pos + friction2 * velocityAtFriction2, { 0, 0, 1 });
+						debugDraw.DrawLine(pos, pos + normal * 0.2f, { 0, 1, 0 });
+
+						debugDraw.DrawLine(pos, pos + friction1 * deltaImpulse1, { 1, 0, 0 });
+						debugDraw.DrawLine(pos, pos + friction2 * deltaImpulse2, { 0, 0, 1 });
+						debugDraw.DrawLine(pos, pos + normal * 0.2f, { 0, 1, 0 });
+					}
 #endif // FRICTION_DEBUG
+
+				}
 
 			}
 		}
@@ -583,10 +642,10 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 
 	// Calculate line directions
 	glm::vec3 dirA = lineA.pointB - lineA.pointA;
-	manifold.cross1 = dirA;
-	manifold.cross2 = glm::cross(dirA, manifold.normal);
-	manifold.cross1 = glm::normalize(manifold.cross1);
-	manifold.cross2 = glm::normalize(manifold.cross2);
+	manifold.friction1 = dirA;
+	manifold.friction2 = glm::cross(dirA, manifold.normal);
+	manifold.friction1 = glm::normalize(manifold.friction1);
+	manifold.friction2 = glm::normalize(manifold.friction2);
 
 #ifdef CONTACT_DEBUG
 	debugDraw.DrawLine(lineA.pointA, lineA.pointB, { 1, 1, 0 });
@@ -645,10 +704,10 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	const qhFace& incidentFace = FindIncidentFace(relativeReferencePlane.normal, hullB);
 
 	// Find friction vectors
-	manifold.cross1 = rotationA * (scaleA * queryA.pFace->pEdge->pTail->position - scaleB * queryA.pFace->pEdge->pTwin->pTail->position);
-	manifold.cross2 = glm::cross(manifold.cross1, manifold.normal);
-	manifold.cross1 = glm::normalize(manifold.cross1);
-	manifold.cross2 = glm::normalize(manifold.cross2);
+	manifold.friction1 = rotationA * (scaleA * queryA.pFace->pEdge->pTail->position - scaleB * queryA.pFace->pEdge->pTwin->pTail->position);
+	manifold.friction2 = glm::cross(manifold.friction1, manifold.normal);
+	manifold.friction1 = glm::normalize(manifold.friction1);
+	manifold.friction2 = glm::normalize(manifold.friction2);
 
 	// Clip with Sutherland-Hodgman
 	std::vector<glm::vec3> in;

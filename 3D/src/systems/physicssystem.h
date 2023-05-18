@@ -23,6 +23,21 @@ struct EdgeQuery
 struct ContactPoint
 {
 	glm::vec3 position = glm::vec3(INFINITY);
+
+	float inverseEffectiveMassNormal = 0;
+	float totalImpulseNormal = 0;
+	glm::vec3 crossANormal = glm::vec3(0);
+	glm::vec3 crossBNormal = glm::vec3(0);
+
+	float inverseEffectiveMassFriction1 = 0;
+	float totalImpulseFriction1 = 0;
+	glm::vec3 crossAFriction1 = glm::vec3(0);
+	glm::vec3 crossBFriction1 = glm::vec3(0);
+
+	float inverseEffectiveMassFriction2 = 0;
+	float totalImpulseFriction2 = 0;
+	glm::vec3 crossAFriction2 = glm::vec3(0);
+	glm::vec3 crossBFriction2 = glm::vec3(0);
 };
 
 struct Manifold
@@ -36,15 +51,8 @@ struct Manifold
 	float seperation = 0;
 
 	glm::vec3 normal = glm::vec3(0);
-	glm::vec3 cross1 = glm::vec3(0);
-	glm::vec3 cross2 = glm::vec3(0);
-
-	float jacobians[4][12]{};
-	float inverseEffectiveMasses[4]{};
-	float totalImpulses[4]{};
-
-	glm::vec3 crossA[4]{};
-	glm::vec3 crossB[4]{};
+	glm::vec3 friction1 = glm::vec3(0);
+	glm::vec3 friction2 = glm::vec3(0);
 };
 
 #ifdef DEBUG
