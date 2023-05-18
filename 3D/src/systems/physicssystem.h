@@ -63,7 +63,7 @@ struct Manifold
 
 //#define SAT_DEBUG
 //#define CONTACT_DEBUG
-//#define FRICTION_DEBUG
+#define FRICTION_DEBUG
 
 #endif // PHYS_DEBUG
 #endif // DEBUG

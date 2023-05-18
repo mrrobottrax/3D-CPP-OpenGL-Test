@@ -472,7 +472,7 @@ FaceQuery SatFaceTest(const HullCollider& hullA, const glm::vec3& positionA, con
 		PlaneToWorld(drawPlane, positionB, rotationB);
 		PlaneToSpace(drawPlane, positionA, rotationA);
 		PlaneToWorld(drawPlane, glm::vec3(0), rotationA);
-		debugDraw.DrawPlane(positionA, drawPlane, 1.5f, 1.5f, glm::vec3(0.5f), {1, 1, 0}, timeManager.GetFixedDeltaTime());
+		debugDraw.DrawPlane(positionA, drawPlane, 1.5f, 1.5f, glm::vec3(0.5f), timeManager.GetFixedDeltaTime());
 #endif // SAT_DEBUG
 
 		float seperation = GetSeperationDepth(testPlane, *hullB.pHull, scaleB);
@@ -493,7 +493,7 @@ FaceQuery SatFaceTest(const HullCollider& hullA, const glm::vec3& positionA, con
 	Plane drawPlane = query.pFace->plane;
 	ScalePlane(drawPlane, scaleA);
 	PlaneToWorld(drawPlane, glm::vec3(0), rotationA);
-	debugDraw.DrawPlane(positionA, drawPlane, 1.5f, 1.5f, glm::vec3(1, 0.5f, 0), {1, 1, 0}, timeManager.GetFixedDeltaTime());
+	debugDraw.DrawPlane(positionA, drawPlane, 1.5f, 1.5f, { 1, 0.5f, 0 }, timeManager.GetFixedDeltaTime());
 #endif // SAT_DEBUG
 
 	return query;
@@ -1068,13 +1068,13 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 		if (aIsBiggerThanB)
 		{
 			gmath::Plane drawPlane = faceQueryA.pFace->plane;
-			PlaneToWorld(drawPlane, glm::vec3(0), rotationA.value, scaleA);
+			PlaneToWorld(drawPlane, glm::vec3(0), rotationA.value);
 			debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, { 1, 0, 0 }, timeManager.GetFixedDeltaTime());
 		}
 		else
 		{
 			gmath::Plane drawPlane = faceQueryB.pFace->plane;
-			PlaneToWorld(drawPlane, glm::vec3(0), rotationB.value, scaleB);
+			PlaneToWorld(drawPlane, glm::vec3(0), rotationB.value);
 			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 0, 0, 1 }, timeManager.GetFixedDeltaTime());
 		}
 #endif // SAT_DEBUG
