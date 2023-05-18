@@ -13,6 +13,7 @@
 #include <systems/velocitysystem.h>
 #include <systems/freecamsystem.h>
 #include <systems/physicssystem.h>
+#include <systems/unscaledvelocitysystem.h>
 
 #include <components/cameracomponent.h>
 #include <components/freecamcomponent.h>
@@ -68,10 +69,12 @@ void Init()
 
 	// Init systems
 	SystemManager& sm = systemManager;
-	sm.AddSystem<FreecamSystem>();
 
-	sm.AddSystem<PhysicsSystem>();
-	sm.AddSystem<VelocitySystem>();
+	sm.AddTickSystem<PhysicsSystem>();
+	sm.AddTickSystem<VelocitySystem>();
+
+	sm.AddSystem<FreecamSystem>();
+	sm.AddSystem<UnscaledVelocitySystem>();
 	sm.AddSystem<RenderSystem>();
 
 	EntityManager& em = entityManager;

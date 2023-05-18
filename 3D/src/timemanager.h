@@ -9,6 +9,11 @@ public:
 	TimeManager();
 
 private:
+	const double dFixedDeltaTime = 1 / 60.0f;
+	double dScaledFixedDeltaTime;
+	float fixedDeltaTime;
+	float scaledFixedDeltaTime;
+
 	float deltaTime;
 	double dDeltaTime;
 
@@ -19,6 +24,12 @@ private:
 
 public:
 	void Update();
+
+	float GetFixedDeltaTime();
+	double GetFixedDeltaTimeDouble();
+
+	float GetUnscaledFixedDeltaTime();
+	double GetUnscaledFixedDeltaTimeDouble();
 
 	float GetDeltaTime();
 	double GetDeltaTimeDouble();

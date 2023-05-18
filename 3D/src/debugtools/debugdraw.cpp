@@ -114,6 +114,11 @@ void DebugDraw::Update()
 
 void DebugDraw::Draw()
 {
+	if (lines.size() <= 0)
+	{
+		return;
+	}
+
 	EntityManager& em = entityManager;
 	SystemManager& sm = systemManager;
 

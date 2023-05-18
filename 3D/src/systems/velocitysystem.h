@@ -10,6 +10,5 @@ public:
 
 	void Update() override;
 
-private:
-
+	static void UpdatePositions(const std::vector<ChunkArchetypeElement*>* archetypes, const float& deltaTime, bool scaled);
 };

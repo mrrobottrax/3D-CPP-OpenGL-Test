@@ -18,10 +18,12 @@ VelocitySystem::~VelocitySystem()
 {
 }
 
-void UpdatePositions(EntityManager& em, const std::vector<ChunkArchetypeElement*>* archetypes, const float& deltaTime, bool scaled = true)
+void VelocitySystem::UpdatePositions(const std::vector<ChunkArchetypeElement*>* archetypes, const float& deltaTime, bool scaled = true)
 {
 	if (archetypes == nullptr)
 		return;
+
+	const EntityManager& em = entityManager;
 
 	// For each archetype
 	for (auto chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
@@ -74,15 +76,7 @@ void VelocitySystem::Update()
 {
 	EntityManager& em = entityManager;
 
-	{
-		const std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<VelocityComponent>());
-		UpdatePositions(em, archetypes, timeManager.GetDeltaTime());
-		delete archetypes;
-	}
-
-	{
-		const std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<UnscaledVelocityComponent>());
-		UpdatePositions(em, archetypes, timeManager.GetUnscaledDeltaTime(), false);
-		delete archetypes;
-	}
+	const std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<VelocityComponent>());
+	UpdatePositions(archetypes, timeManager.GetFixedDeltaTime());
+	delete archetypes;
 }

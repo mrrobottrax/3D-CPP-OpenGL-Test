@@ -18,7 +18,7 @@ void RenderSystem::SetMainCameraEntity(Entity& entity)
 	RenderSystem::mainCameraEntity = entity;
 }
 
-void RenderSystem::CalcFrustumScale(CameraComponent& camera, float fov)
+void RenderSystem::CalcFrustumScale(CameraComponent& camera, const float fov)
 {
 	if (!camera.ortho)
 	{
@@ -30,13 +30,13 @@ void RenderSystem::CalcFrustumScale(CameraComponent& camera, float fov)
 	}
 }
 
-void RenderSystem::UpdateMatrixAspect(CameraComponent& camera, int width, int height)
+void RenderSystem::UpdateMatrixAspect(CameraComponent& camera, const int width, const int height)
 {
 	camera.matrix[0][0] = camera.frustumScale / (width / (float)height);
 	camera.matrix[1][1] = camera.frustumScale;
 }
 
-void RenderSystem::CalcPerspectiveMatrix(CameraComponent& camera, int width, int height)
+void RenderSystem::CalcPerspectiveMatrix(CameraComponent& camera, const int width, const int height)
 {
 	glm::mat4 matrix = glm::mat4(0.0f);
 

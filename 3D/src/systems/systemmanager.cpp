@@ -7,7 +7,8 @@
 
 SystemManager::SystemManager()
 {
-	systems = new std::map<size_t, System*>;
+	systems = std::map<size_t, System*>();
+	tickSystems = std::map<size_t, System*>();
 }
 
 SystemManager::~SystemManager()
@@ -16,7 +17,18 @@ SystemManager::~SystemManager()
 
 void SystemManager::UpdateSystems()
 {
-	for (std::map<size_t, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
+	tickTimer += timeManager.GetDeltaTimeDouble();
+	if (tickTimer >= timeManager.GetUnscaledFixedDeltaTimeDouble())
+	{
+		tickTimer = 0;
+
+		for (std::map<size_t, System*>::iterator it = tickSystems.begin(); it != tickSystems.end(); ++it)
+		{
+			(*it).second->Update();
+		}
+	}
+
+	for (std::map<size_t, System*>::iterator it = systems.begin(); it != systems.end(); ++it)
 	{
 		(*it).second->Update();
 	}
@@ -24,10 +36,13 @@ void SystemManager::UpdateSystems()
 
 void SystemManager::DeleteAllSystems()
 {
-	for (std::map<size_t, System*>::iterator it = systems->begin(); it != systems->end(); ++it)
+	for (std::map<size_t, System*>::iterator it = systems.begin(); it != systems.end(); ++it)
 	{
 		delete (*it).second;
 	}
 
-	delete systems;
+	for (std::map<size_t, System*>::iterator it = tickSystems.begin(); it != tickSystems.end(); ++it)
+	{
+		delete (*it).second;
+	}
 }

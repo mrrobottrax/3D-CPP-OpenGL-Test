@@ -101,7 +101,7 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 #ifdef CONTACT_DEBUG
 			for (int i = 0; i < manifold.numContacts; ++i)
 			{
-				debugDraw.DrawLine(manifold.contacts[i].position, manifold.contacts[i].position + manifold.normal * 0.2f, { 1, 0, 1 });
+				debugDraw.DrawLine(manifold.contacts[i].position, manifold.contacts[i].position + manifold.normal * 0.2f, { 1, 0, 1 }, timeManager.GetFixedDeltaTime());
 			}
 #endif // CONTACT_DEBUG
 
@@ -132,8 +132,8 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 			const glm::vec3& wB = velocityB.angular;
 
 			// TODO: Maybe use this when we switch to discrete timesteps
-			//const float b = manifold.seperation * 0.8f / timeManager.GetDeltaTime();
-			const float b = manifold.seperation;
+			//const float b = manifold.seperation * 0.8f / timeManager.GetFixedDeltaTime();
+			const float b = 0.0f;
 			for (int i = 0; i < manifold.numContacts; ++i)
 			{
 				ContactPoint& contact = manifold.contacts[i];
@@ -216,13 +216,13 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 					{
 						const glm::vec3& pos = manifold.contacts[i].position;
 
-						debugDraw.DrawLine(pos, pos + friction1 * velocityAtFriction1, { 1, 0, 0 });
-						debugDraw.DrawLine(pos, pos + friction2 * velocityAtFriction2, { 0, 0, 1 });
-						debugDraw.DrawLine(pos, pos + normal * 0.2f, { 0, 1, 0 });
+						debugDraw.DrawLine(pos, pos + friction1 * velocityAtFriction1, { 1, 0, 0 }, timeManager.GetFixedDeltaTime());
+						debugDraw.DrawLine(pos, pos + friction2 * velocityAtFriction2, { 0, 0, 1 }, timeManager.GetFixedDeltaTime());
+						debugDraw.DrawLine(pos, pos + normal * 0.2f, { 0, 1, 0 }, timeManager.GetFixedDeltaTime());
 
-						debugDraw.DrawLine(pos, pos + friction1 * deltaImpulse1, { 1, 0, 0 });
-						debugDraw.DrawLine(pos, pos + friction2 * deltaImpulse2, { 0, 0, 1 });
-						debugDraw.DrawLine(pos, pos + normal * 0.2f, { 0, 1, 0 });
+						debugDraw.DrawLine(pos, pos + friction1 * deltaImpulse1, { 1, 0, 0 }, timeManager.GetFixedDeltaTime());
+						debugDraw.DrawLine(pos, pos + friction2 * deltaImpulse2, { 0, 0, 1 }, timeManager.GetFixedDeltaTime());
+						debugDraw.DrawLine(pos, pos + normal * 0.2f, { 0, 1, 0 }, timeManager.GetFixedDeltaTime());
 					}
 #endif // FRICTION_DEBUG
 
@@ -258,7 +258,7 @@ void PhysicsSystem::Update()
 				// Gravity
 				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(entity);
 				VelocityComponent& vel = em.GetComponent<VelocityComponent>(entity);
-				vel.linear.y += rb.gravityScale * gravity * timeManager.GetDeltaTime();
+				vel.linear.y += rb.gravityScale * gravity * timeManager.GetFixedDeltaTime();
 			}
 		}
 	}
@@ -411,7 +411,7 @@ float GetSeperationDepth(gmath::Plane testPlane, const ConvexHull& hull, const g
 {
 
 #ifdef SAT_DEBUG
-	debugDraw.DrawPlane(glm::vec3(0), testPlane, 1.5f, 1.5f, { 1, 0, 0 });
+	debugDraw.DrawPlane(glm::vec3(0), testPlane, 1.5f, 1.5f, { 1, 0, 0 }, timeManager.GetFixedDeltaTime());
 #endif // SAT_DEBUG
 
 	testPlane.normal *= scale;
@@ -430,7 +430,7 @@ float GetSeperationDepth(gmath::Plane testPlane, const ConvexHull& hull, const g
 		}
 
 #ifdef SAT_DEBUG
-		debugDraw.DrawLine(point, point + glm::vec3(0, 0.1f, 0), { 0, 0, 1 });
+		debugDraw.DrawLine(point, point + glm::vec3(0, 0.1f, 0), { 0, 0, 1 }, timeManager.GetFixedDeltaTime());
 #endif // SAT_DEBUG
 
 	}
@@ -472,7 +472,7 @@ FaceQuery SatFaceTest(const HullCollider& hullA, const glm::vec3& positionA, con
 		PlaneToWorld(drawPlane, positionB, rotationB);
 		PlaneToSpace(drawPlane, positionA, rotationA);
 		PlaneToWorld(drawPlane, glm::vec3(0), rotationA);
-		debugDraw.DrawPlane(positionA, drawPlane, 1.5f, 1.5f, glm::vec3(0.5f));
+		debugDraw.DrawPlane(positionA, drawPlane, 1.5f, 1.5f, glm::vec3(0.5f), {1, 1, 0}, timeManager.GetFixedDeltaTime());
 #endif // SAT_DEBUG
 
 		float seperation = GetSeperationDepth(testPlane, *hullB.pHull, scaleB);
@@ -493,7 +493,7 @@ FaceQuery SatFaceTest(const HullCollider& hullA, const glm::vec3& positionA, con
 	Plane drawPlane = query.pFace->plane;
 	ScalePlane(drawPlane, scaleA);
 	PlaneToWorld(drawPlane, glm::vec3(0), rotationA);
-	debugDraw.DrawPlane(positionA, drawPlane, 1.5f, 1.5f, glm::vec3(1, 0.5f, 0));
+	debugDraw.DrawPlane(positionA, drawPlane, 1.5f, 1.5f, glm::vec3(1, 0.5f, 0), {1, 1, 0}, timeManager.GetFixedDeltaTime());
 #endif // SAT_DEBUG
 
 	return query;
@@ -566,7 +566,7 @@ EdgeQuery SatEdgeTest(const HullCollider& hullA, const glm::vec3& positionA, con
 			Plane drawPlane = testPlane;
 			PlaneToSpace(drawPlane, positionA, rotationA);
 			PlaneToWorld(drawPlane, glm::vec3(0), rotationA);
-			debugDraw.DrawPlane(positionA, drawPlane, 0.2f, 0.2f, { 0, 0.5f, 0 });
+			debugDraw.DrawPlane(positionA, drawPlane, 0.2f, 0.2f, { 0, 0.5f, 0 }, timeManager.GetFixedDeltaTime());
 #endif // SAT_DEBUG
 
 			PlaneToSpace(testPlane, positionB, rotationB);
@@ -648,8 +648,8 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	manifold.friction2 = glm::normalize(manifold.friction2);
 
 #ifdef CONTACT_DEBUG
-	debugDraw.DrawLine(lineA.pointA, lineA.pointB, { 1, 1, 0 });
-	debugDraw.DrawLine(lineB.pointA, lineB.pointB, { 1, 1, 0 });
+	debugDraw.DrawLine(lineA.pointA, lineA.pointB, { 1, 1, 0 }, timeManager.GetFixedDeltaTime());
+	debugDraw.DrawLine(lineB.pointA, lineB.pointB, { 1, 1, 0 }, timeManager.GetFixedDeltaTime());
 #endif // CONTACT_DEBUG
 
 	glm::vec3 pointA = GetClosestPointOnLine(lineA, lineB);
@@ -745,7 +745,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 #ifdef CONTACT_DEBUG
 			Plane drawPlane = clipPlane;
 			PlaneToWorld(drawPlane, glm::vec3(0), rotationB);
-			debugDraw.DrawPlane(positionB, drawPlane, 1.5f, 1.5f, { 1, 1, 1 });
+			debugDraw.DrawPlane(positionB, drawPlane, 1.5f, 1.5f, { 1, 1, 1 }, timeManager.GetFixedDeltaTime());
 #endif // CONTACT_DEBUG
 
 			// Keep vertices behind plane
@@ -756,7 +756,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 
 #ifdef CONTACT_DEBUG
 				glm::vec3 drawPoint = rotationB * point + positionB;
-				debugDraw.DrawLine(drawPoint, drawPoint + manifold.normal * 0.2f, { 0, 0.1f, 0 });
+				debugDraw.DrawLine(drawPoint, drawPoint + manifold.normal * 0.2f, { 0, 0.1f, 0 }, timeManager.GetFixedDeltaTime());
 #endif // CONTACT_DEBUG
 
 				const bool pointBehindPlane = dist <= 0;
@@ -777,12 +777,12 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 					outBuffer.push_back(point);
 
 #ifdef CONTACT_DEBUG
-					debugDraw.DrawPlane(glm::vec3(0), clipPlane, 1.5f, 1.5f);
-					debugDraw.DrawLine(line.pointA, line.pointB, { 1, 1, 1 });
+					debugDraw.DrawPlane(glm::vec3(0), clipPlane, 1.5f, 1.5f, {1, 1, 0}, timeManager.GetFixedDeltaTime());
+					debugDraw.DrawLine(line.pointA, line.pointB, { 1, 1, 1 }, timeManager.GetFixedDeltaTime());
 
 					glm::vec3 drawPoint = point;
 					drawPoint = rotationB * drawPoint + positionB;
-					debugDraw.DrawLine(drawPoint, drawPoint + glm::vec3(0, 0.2f, 0), { 1, 1, 1 });
+					debugDraw.DrawLine(drawPoint, drawPoint + glm::vec3(0, 0.2f, 0), { 1, 1, 1 }, timeManager.GetFixedDeltaTime());
 #endif // CONTACT_DEBUG
 
 				}
@@ -1021,7 +1021,7 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 			start = rotation * start + position;
 			end = rotation * end + position;
 
-			debugDraw.DrawLine(start, end, color);
+			debugDraw.DrawLine(start, end, color, timeManager.GetFixedDeltaTime());
 		}
 	};
 
@@ -1069,13 +1069,13 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 		{
 			gmath::Plane drawPlane = faceQueryA.pFace->plane;
 			PlaneToWorld(drawPlane, glm::vec3(0), rotationA.value, scaleA);
-			debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, { 1, 0, 0 });
+			debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, { 1, 0, 0 }, timeManager.GetFixedDeltaTime());
 		}
 		else
 		{
 			gmath::Plane drawPlane = faceQueryB.pFace->plane;
 			PlaneToWorld(drawPlane, glm::vec3(0), rotationB.value, scaleB);
-			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 0, 0, 1 });
+			debugDraw.DrawPlane(positionB.value, drawPlane, 1.5f, 1.5f, { 0, 0, 1 }, timeManager.GetFixedDeltaTime());
 		}
 #endif // SAT_DEBUG
 
@@ -1108,7 +1108,7 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 		glm::vec3 edgePos = rotationA.value * (edgeQuery.pEdgeA->pHalfA->pTail->position * scaleA);
 		drawPlane.dist = glm::dot(edgePos, edgeQuery.normal);
 
-		debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, {0, 1, 1});
+		debugDraw.DrawPlane(positionA.value, drawPlane, 1.5f, 1.5f, {0, 1, 1}, timeManager.GetFixedDeltaTime());
 #endif // SAT_DEBUG
 
 	}

@@ -144,6 +144,7 @@
     <ClInclude Include="src\common\types.h" />
     <ClInclude Include="src\components\unscaledvelocitycomponent.h" />
     <ClInclude Include="src\components\scalecomponent.h" />
+    <ClInclude Include="src\systems\unscaledvelocitysystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">
@@ -215,5 +216,6 @@
     </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
     <ClCompile Include="src\common\math.cpp" />
+    <ClCompile Include="src\systems\unscaledvelocitysystem.cpp" />
   </ItemGroup>
 </Project>

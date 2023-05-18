@@ -26,9 +26,9 @@ public:
 
 	void SetMainCameraEntity(Entity&);
 
-	static void CalcFrustumScale(CameraComponent&, float fov);
-	static void CalcPerspectiveMatrix(CameraComponent&, int width, int height);
-	static void UpdateMatrixAspect(CameraComponent&, int width, int height);
+	static void CalcFrustumScale(CameraComponent&, const float fov);
+	static void CalcPerspectiveMatrix(CameraComponent&, const int width, const int height);
+	static void UpdateMatrixAspect(CameraComponent&, const int width, const int height);
 
 	void Update() override;
 	void DrawBase();
