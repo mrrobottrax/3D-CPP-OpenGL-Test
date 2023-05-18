@@ -57,18 +57,18 @@ struct Manifold
 
 #ifdef DEBUG
 
-#define PHYS_DEBUG
+//#define PHYS_DEBUG
 
 #ifdef PHYS_DEBUG
 
 //#define SAT_DEBUG
 //#define CONTACT_DEBUG
-#define FRICTION_DEBUG
+//#define FRICTION_DEBUG
 
 #endif // PHYS_DEBUG
 #endif // DEBUG
 
-const int numIterations = 4;
+const int numIterations = 10;
 const float gravity = -9.81f;
 
 class PhysicsSystem : public System
