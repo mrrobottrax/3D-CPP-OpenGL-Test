@@ -950,12 +950,15 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			assert(firstPoint != nullptr);
 			assert(secondPoint != nullptr);
 			assert(thirdPoint != nullptr);
-			assert(fourthPoint != nullptr);
 
 			outBuffer.push_back(*firstPoint);
 			outBuffer.push_back(*secondPoint);
 			outBuffer.push_back(*thirdPoint);
-			outBuffer.push_back(*fourthPoint);
+
+			if (fourthPoint != nullptr)
+			{
+				outBuffer.push_back(*fourthPoint);
+			}
 
 			swapBuffers = !swapBuffers;
 			inBuffer.clear();

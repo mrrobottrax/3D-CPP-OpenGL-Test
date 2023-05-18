@@ -186,8 +186,8 @@ void Init()
 		// Create box 2
 		{
 			Entity entity = em.AddEntity(boxArchetype);
-			em.GetComponent<PositionComponent>(entity) = { 5, 1, 0 };
-			em.GetComponent<VelocityComponent>(entity) = { -10, 1, -5, -1, 1, 0 };
+			em.GetComponent<PositionComponent>(entity) = { 0, 1, -5 };
+			em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
 			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
 
@@ -198,6 +198,37 @@ void Init()
 			em.GetComponent<MassComponent>(entity).SetMassAndInertia(1);
 			//em.GetComponent<MassComponent>(entity).SetInertia(INFINITY);
 		}
+		// Create box 2
+		{
+			Entity entity = em.AddEntity(boxArchetype);
+			em.GetComponent<PositionComponent>(entity) = { 0, 2, -5 };
+			em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
+			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
+			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
+
+			em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+
+			em.GetComponent<HullCollider>(entity) = { &boxHull };
+			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1, 0.5f, Average };
+			em.GetComponent<MassComponent>(entity).SetMassAndInertia(1);
+			//em.GetComponent<MassComponent>(entity).SetInertia(INFINITY);
+		}
+		// Create box 2
+		{
+			Entity entity = em.AddEntity(boxArchetype);
+			em.GetComponent<PositionComponent>(entity) = { 0, 3, -5 };
+			em.GetComponent<VelocityComponent>(entity) = { 0, 20, 0, 0, 0, 0 };
+			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
+			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
+
+			em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+
+			em.GetComponent<HullCollider>(entity) = { &boxHull };
+			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1, 0.5f, Average };
+			em.GetComponent<MassComponent>(entity).SetMassAndInertia(1);
+			//em.GetComponent<MassComponent>(entity).SetInertia(INFINITY);
+		}
+
 	}
 
 	// Hide cursor
