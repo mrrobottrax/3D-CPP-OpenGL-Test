@@ -20,9 +20,17 @@ struct EdgeQuery
 	glm::vec3 normal = glm::vec3(0);
 };
 
+struct FeaturePair
+{
+	void* pFeatureA = nullptr;
+	void* pFeatureB = nullptr;
+};
+
 struct ContactPoint
 {
 	glm::vec3 position = glm::vec3(INFINITY);
+
+	FeaturePair featurePair;
 
 	float inverseEffectiveMassNormal = 0;
 	float totalImpulseNormal = 0;
@@ -40,10 +48,21 @@ struct ContactPoint
 	glm::vec3 crossBFriction2 = glm::vec3(0);
 };
 
+struct CollisionPair
+{
+	void* pRigidBodyA;
+	void* pRigidBodyB;
+
+	Entity entityA;
+	Entity entityB;
+};
+
 struct Manifold
 {
 	Entity entityA;
 	Entity entityB;
+
+	float frictionCoefficient = 0;
 
 	unsigned short numContacts = 0;
 	ContactPoint contacts[4];
@@ -68,8 +87,9 @@ struct Manifold
 #endif // PHYS_DEBUG
 #endif // DEBUG
 
-const int numIterations = 10;
+const int numIterations = 4;
 const float gravity = -9.81f;
+const float slop = 0.01f;
 
 class PhysicsSystem : public System
 {
@@ -78,6 +98,7 @@ public:
 	~PhysicsSystem();
 
 	void Update() override;
+
 
 	bool HullVsHull(Entity& entityA, Entity& entityB, Manifold& manifold);
 };

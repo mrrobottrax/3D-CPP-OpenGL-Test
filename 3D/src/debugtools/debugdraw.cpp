@@ -183,7 +183,7 @@ void DebugDraw::DrawLines()
 			i += 6;
 
 			// Remove expired lines
-			if ((*it).timer <= 0)
+			if ((*it).timer < 0)
 			{
 				lines.erase(it++);
 			}

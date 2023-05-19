@@ -17,10 +17,10 @@ SystemManager::~SystemManager()
 
 void SystemManager::UpdateSystems()
 {
-	tickTimer += timeManager.GetDeltaTimeDouble();
-	if (tickTimer >= timeManager.GetUnscaledFixedDeltaTimeDouble())
+	tickTimer -= timeManager.GetDeltaTimeDouble();
+	if (tickTimer <= 0)
 	{
-		tickTimer = 0;
+		tickTimer = timeManager.GetFixedDeltaTimeDouble();
 
 		for (std::map<size_t, System*>::iterator it = tickSystems.begin(); it != tickSystems.end(); ++it)
 		{

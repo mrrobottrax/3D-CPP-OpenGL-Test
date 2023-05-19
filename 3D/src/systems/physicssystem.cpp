@@ -22,15 +22,6 @@ PhysicsSystem::~PhysicsSystem()
 {
 }
 
-struct CollisionPair
-{
-	void* pRigidBodyA;
-	void* pRigidBodyB;
-
-	Entity entityA;
-	Entity entityB;
-};
-
 void ResolveManifolds(std::vector<Manifold>& manifolds)
 {
 	const EntityManager& em = entityManager;
@@ -44,6 +35,9 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 		const glm::vec3& friction1 = manifold.friction1;
 		const glm::vec3& friction2 = manifold.friction2;
 
+		const RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(manifold.entityA);
+		const RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(manifold.entityB);
+
 		const PositionComponent& positionA = em.GetComponent<PositionComponent>(manifold.entityA);
 		const PositionComponent& positionB = em.GetComponent<PositionComponent>(manifold.entityB);
 
@@ -55,6 +49,20 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 
 		float& inv_massB = massComponentB.inv_mass;
 		float& inv_inertiaB = massComponentB.inv_inertia;
+
+		// Coefficient of friction
+		if (rbA.frictionCombine == Min || rbB.frictionCombine == Min)
+		{
+			manifold.frictionCoefficient = std::fminf(rbA.frictionCoefficient, rbB.frictionCoefficient);
+		}
+		else if (rbA.frictionCombine == Max || rbB.frictionCombine == Max)
+		{
+			manifold.frictionCoefficient = std::fmaxf(rbA.frictionCoefficient, rbB.frictionCoefficient);
+		}
+		else
+		{
+			manifold.frictionCoefficient = std::sqrtf(rbA.frictionCoefficient * rbB.frictionCoefficient);
+		}
 
 		for (int i = 0; i < manifold.numContacts; ++i)
 		{
@@ -132,11 +140,15 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 			const glm::vec3& wB = velocityB.angular;
 
 			// TODO: Maybe use this when we switch to discrete timesteps
-			//const float b = manifold.seperation * 0.8f / timeManager.GetFixedDeltaTime();
-			const float b = 0.0f;
+			const float b = -0.2f / timeManager.GetFixedDeltaTime() * std::fminf(0.0f, manifold.seperation + slop);
 			for (int i = 0; i < manifold.numContacts; ++i)
 			{
 				ContactPoint& contact = manifold.contacts[i];
+
+				glm::vec3 impulseAL = glm::vec3(0);
+				glm::vec3 impulseAA = glm::vec3(0);
+				glm::vec3 impulseBL = glm::vec3(0);
+				glm::vec3 impulseBA = glm::vec3(0);
 
 				// Normal Force
 				{
@@ -144,7 +156,7 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 
 					const float velocityAtPoint = glm::dot(-normal, vA) + glm::dot(-contact.crossANormal, wA)
 						+ glm::dot(normal, vB) + glm::dot(contact.crossBNormal, wB);
-					contact.totalImpulseNormal += -(contact.inverseEffectiveMassNormal * (velocityAtPoint + b));
+					contact.totalImpulseNormal += contact.inverseEffectiveMassNormal * (-velocityAtPoint + b);
 
 					// Enforce Signorini conditions
 					if (contact.totalImpulseNormal < 0)
@@ -152,12 +164,11 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 
 					const float deltaImpulse = contact.totalImpulseNormal - oldImpulse;
 
-					// Add velocity
-					velocityA.linear -= normal * inv_massA * deltaImpulse * timescale.value;
-					velocityA.angular -= contact.crossANormal * inv_inertiaA * deltaImpulse * timescale.value;
+					impulseAL += normal * deltaImpulse;
+					impulseAA += contact.crossANormal * deltaImpulse;
 
-					velocityB.linear += normal * inv_massB * deltaImpulse * timescale.value;
-					velocityB.angular += contact.crossBNormal * inv_inertiaB * deltaImpulse * timescale.value;
+					impulseBL += normal * deltaImpulse;
+					impulseBA += contact.crossBNormal * deltaImpulse;
 				}
 
 				// Friction
@@ -175,21 +186,7 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 
 					// Clamp force
 					// This is a friction pyramid which is slightly innacurate, but it's faster
-					float frictionC = 0;
-
-					// Coefficient of friction
-					if (rbA.frictionCombine == Min || rbB.frictionCombine == Min)
-					{
-						frictionC = std::fminf(rbA.frictionCoefficient, rbB.frictionCoefficient);
-					}
-					else if (rbA.frictionCombine == Max || rbB.frictionCombine == Max)
-					{
-						frictionC = std::fmaxf(rbA.frictionCoefficient, rbB.frictionCoefficient);
-					}
-					else
-					{
-						frictionC = (rbA.frictionCoefficient + rbB.frictionCoefficient) / 2.0f;
-					}
+					const float& frictionC = manifold.frictionCoefficient;
 
 					contact.totalImpulseFriction1 = clamp(contact.totalImpulseFriction1,
 						-contact.totalImpulseNormal * frictionC, contact.totalImpulseNormal * frictionC);
@@ -199,18 +196,11 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 					const float deltaImpulse1 = contact.totalImpulseFriction1 - oldImpulse1;
 					const float deltaImpulse2 = contact.totalImpulseFriction2 - oldImpulse2;
 
-					// Add velocity
-					velocityA.linear -= friction1 * inv_massA * deltaImpulse1 * timescale.value;
-					velocityA.angular -= contact.crossAFriction1 * inv_inertiaA * deltaImpulse1 * timescale.value;
+					impulseAL += (friction1 * deltaImpulse1) + (friction2 * deltaImpulse2);
+					impulseAA += (contact.crossAFriction1 * deltaImpulse1) + (contact.crossAFriction2 * deltaImpulse2);
 
-					velocityB.linear += friction1 * inv_massB * deltaImpulse1 * timescale.value;
-					velocityB.angular += contact.crossBFriction1 * inv_inertiaB * deltaImpulse1 * timescale.value;
-
-					velocityA.linear -= friction2 * inv_massA * deltaImpulse2 * timescale.value;
-					velocityA.angular -= contact.crossAFriction2 * inv_inertiaA * deltaImpulse2 * timescale.value;
-
-					velocityB.linear += friction2 * inv_massB * deltaImpulse2 * timescale.value;
-					velocityB.angular += contact.crossBFriction2 * inv_inertiaB * deltaImpulse2 * timescale.value;
+					impulseBL += (friction1 * deltaImpulse1) + (friction2 * deltaImpulse2);
+					impulseBA += (contact.crossBFriction1 * deltaImpulse1) + (contact.crossBFriction2 * deltaImpulse2);
 
 #ifdef FRICTION_DEBUG
 					{
@@ -228,8 +218,23 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 
 				}
 
+				velocityA.linear -= inv_massA * impulseAL;
+				velocityA.angular -= inv_inertiaA * impulseAA;
+
+				velocityB.linear += inv_massB * impulseBL;
+				velocityB.angular += inv_inertiaB * impulseBA;
 			}
 		}
+	}
+}
+
+void UpdateContacts(const std::vector<Manifold>& manifolds)
+{
+	// TODO: Warm starting
+
+	for (int i = 0; i < manifolds.size(); ++i)
+	{
+
 	}
 }
 
@@ -400,6 +405,9 @@ void PhysicsSystem::Update()
 			manifolds.push_back(manifold);
 		}
 	}
+
+	// Update contacts
+	UpdateContacts(manifolds);
 
 	// Resolve collisions
 	ResolveManifolds(manifolds);
@@ -1062,7 +1070,7 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 
 	if (isFaceContactA || isFaceContactB)
 	{
-		bool aIsBiggerThanB = faceQueryA.seperation > faceQueryB.seperation;
+		bool aIsBiggerThanB = faceQueryA.seperation >= faceQueryB.seperation;
 
 #ifdef SAT_DEBUG
 		if (aIsBiggerThanB)
