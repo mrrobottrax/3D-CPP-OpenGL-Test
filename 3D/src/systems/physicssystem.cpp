@@ -14,7 +14,7 @@
 
 using namespace gmath;
 
-PhysicsSystem::PhysicsSystem()
+PhysicsSystem::PhysicsSystem() : manifolds()
 {
 }
 
@@ -22,89 +22,173 @@ PhysicsSystem::~PhysicsSystem()
 {
 }
 
-void ResolveManifolds(std::vector<Manifold>& manifolds)
+void Manifold::UpdateContacts(const Manifold& manifold)
+{
+	ContactPoint mergedContacts[4];
+
+	for (int i = 0; i < manifold.numContacts; ++i)
+	{
+		const ContactPoint& newContact = manifold.contacts[i];
+
+		// Find matching contact
+		int k = -1;
+		for (int j = 0; j < numContacts; ++j)
+		{
+			const ContactPoint& oldContact = contacts[j];
+
+			if (newContact.featurePair == oldContact.featurePair)
+			{
+				k = j;
+				break;
+			}
+		}
+
+		if (k > -1)
+		{
+			ContactPoint& contact = mergedContacts[i];
+			const ContactPoint& old = contacts[k];
+
+			contact = newContact;
+			contact.totalImpulseNormal = old.totalImpulseNormal;
+			contact.totalImpulseFriction1 = old.totalImpulseFriction1;
+			contact.totalImpulseFriction2 = old.totalImpulseFriction2;
+
+#ifdef WARMSTART_DEBUG
+			debugDraw.DrawLine(contact.position, contact.position + manifold.normal * contact.totalImpulseNormal, {1, 1, 0}, timeManager.GetFixedDeltaTime());
+#endif // WARMSTART_DEBUG
+
+		}
+		else
+		{
+			mergedContacts[i] = newContact;
+		}
+	}
+
+	*this = manifold;
+
+	for (int i = 0; i < manifold.numContacts; ++i)
+		contacts[i] = mergedContacts[i];
+
+	numContacts = manifold.numContacts;
+}
+
+void Manifold::PreStep(const CollisionPair& pair)
+{
+	const EntityManager& em = entityManager;
+
+	const Entity& entityA = pair.entityA;
+	const Entity& entityB = pair.entityB;
+
+	const RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(entityA);
+	const RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(entityB);
+
+	const PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
+	const PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
+
+	MassComponent& massComponentA = em.GetComponent<MassComponent>(entityA);
+	MassComponent& massComponentB = em.GetComponent<MassComponent>(entityB);
+
+	float& inv_massA = massComponentA.inv_mass;
+	float& inv_inertiaA = massComponentA.inv_inertia;
+
+	float& inv_massB = massComponentB.inv_mass;
+	float& inv_inertiaB = massComponentB.inv_inertia;
+
+	VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
+	VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
+
+	// Coefficient of friction
+	if (rbA.frictionCombine == Min || rbB.frictionCombine == Min)
+	{
+		frictionCoefficient = std::fminf(rbA.frictionCoefficient, rbB.frictionCoefficient);
+	}
+	else if (rbA.frictionCombine == Max || rbB.frictionCombine == Max)
+	{
+		frictionCoefficient = std::fmaxf(rbA.frictionCoefficient, rbB.frictionCoefficient);
+	}
+	else
+	{
+		frictionCoefficient = std::sqrtf(rbA.frictionCoefficient * rbB.frictionCoefficient);
+	}
+
+	bias = -0.2f / timeManager.GetFixedDeltaTime() * std::fminf(0.0f, seperation + slop);
+
+	for (int i = 0; i < numContacts; ++i)
+	{
+		ContactPoint& contact = contacts[i];
+
+		contact.totalImpulseNormal = 0;
+
+		contact.crossANormal = glm::cross(contact.position - positionA.value, normal);
+		contact.crossBNormal = glm::cross(contact.position - positionB.value, normal);
+		contact.crossAFriction1 = glm::cross(contact.position - positionA.value, friction1);
+		contact.crossBFriction1 = glm::cross(contact.position - positionB.value, friction1);
+		contact.crossAFriction2 = glm::cross(contact.position - positionA.value, friction2);
+		contact.crossBFriction2 = glm::cross(contact.position - positionB.value, friction2);
+
+		// Calculate relative mass
+		{
+			const float n = glm::dot(normal, normal);
+			const float cA = glm::dot(contact.crossANormal, contact.crossANormal);
+			const float cB = glm::dot(contact.crossBNormal, contact.crossBNormal);
+			contact.inverseEffectiveMassNormal = 1.0f / ((n * inv_massA) + (n * inv_massB) +
+				(cA * inv_inertiaA) + (cB * inv_inertiaB));
+
+			const float n1 = glm::dot(friction1, friction1);
+			const float cA1 = glm::dot(contact.crossAFriction1, contact.crossAFriction1);
+			const float cB1 = glm::dot(contact.crossBFriction1, contact.crossBFriction1);
+			contact.inverseEffectiveMassFriction1 = 1.0f / ((n1 * inv_massA) + (n1 * inv_massB) +
+				(cA1 * inv_inertiaA) + (cB1 * inv_inertiaB));
+
+			const float n2 = glm::dot(friction2, friction2);
+			const float cA2 = glm::dot(contact.crossAFriction2, contact.crossAFriction2);
+			const float cB2 = glm::dot(contact.crossBFriction2, contact.crossBFriction2);
+			contact.inverseEffectiveMassFriction2 = 1.0f / ((n2 * inv_massA) + (n2 * inv_massB) +
+				(cA2 * inv_inertiaA) + (cB2 * inv_inertiaB));
+		}
+
+		// Apply impulses
+		{
+			glm::vec3 impulseAL = normal * contact.totalImpulseNormal;
+			glm::vec3 impulseAA = contact.crossANormal * contact.totalImpulseNormal;
+
+			glm::vec3 impulseBL = normal * contact.totalImpulseNormal;
+			glm::vec3 impulseBA = contact.crossBNormal * contact.totalImpulseNormal;
+
+			impulseAL += (friction1 * contact.totalImpulseFriction1) + (friction2 * contact.totalImpulseFriction2);
+			impulseAA += (contact.crossAFriction1 * contact.totalImpulseFriction1) + (contact.crossAFriction2 * contact.totalImpulseFriction2);
+
+			impulseBL += (friction1 * contact.totalImpulseFriction1) + (friction2 * contact.totalImpulseFriction2);
+			impulseBA += (contact.crossBFriction1 * contact.totalImpulseFriction1) + (contact.crossBFriction2 * contact.totalImpulseFriction2);
+
+			velocityA.linear -= inv_massA * impulseAL;
+			velocityA.angular -= inv_inertiaA * impulseAA;
+
+			velocityB.linear += inv_massB * impulseBL;
+			velocityB.angular += inv_inertiaB * impulseBA;
+		}
+	}
+}
+
+void PhysicsSystem::ResolveManifolds()
 {
 	const EntityManager& em = entityManager;
 
 	// Precalculate some stuff
-	for (int i = 0; i < manifolds.size(); ++i)
+	for (auto manifoldIter = manifolds.begin(); manifoldIter != manifolds.end(); ++manifoldIter)
 	{
-		Manifold& manifold = manifolds[i];
+		Manifold& manifold = manifoldIter->second;
+		const CollisionPair& pair = manifoldIter->first;
 
-		const glm::vec3& normal = manifold.normal;
-		const glm::vec3& friction1 = manifold.friction1;
-		const glm::vec3& friction2 = manifold.friction2;
-
-		const RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(manifold.entityA);
-		const RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(manifold.entityB);
-
-		const PositionComponent& positionA = em.GetComponent<PositionComponent>(manifold.entityA);
-		const PositionComponent& positionB = em.GetComponent<PositionComponent>(manifold.entityB);
-
-		MassComponent& massComponentA = em.GetComponent<MassComponent>(manifold.entityA);
-		MassComponent& massComponentB = em.GetComponent<MassComponent>(manifold.entityB);
-
-		float& inv_massA = massComponentA.inv_mass;
-		float& inv_inertiaA = massComponentA.inv_inertia;
-
-		float& inv_massB = massComponentB.inv_mass;
-		float& inv_inertiaB = massComponentB.inv_inertia;
-
-		// Coefficient of friction
-		if (rbA.frictionCombine == Min || rbB.frictionCombine == Min)
-		{
-			manifold.frictionCoefficient = std::fminf(rbA.frictionCoefficient, rbB.frictionCoefficient);
-		}
-		else if (rbA.frictionCombine == Max || rbB.frictionCombine == Max)
-		{
-			manifold.frictionCoefficient = std::fmaxf(rbA.frictionCoefficient, rbB.frictionCoefficient);
-		}
-		else
-		{
-			manifold.frictionCoefficient = std::sqrtf(rbA.frictionCoefficient * rbB.frictionCoefficient);
-		}
-
-		for (int i = 0; i < manifold.numContacts; ++i)
-		{
-			ContactPoint& contact = manifold.contacts[i];
-
-			contact.totalImpulseNormal = 0;
-
-			contact.crossANormal = glm::cross(contact.position - positionA.value, normal);
-			contact.crossBNormal = glm::cross(contact.position - positionB.value, normal);
-			contact.crossAFriction1 = glm::cross(contact.position - positionA.value, friction1);
-			contact.crossBFriction1 = glm::cross(contact.position - positionB.value, friction1);
-			contact.crossAFriction2 = glm::cross(contact.position - positionA.value, friction2);
-			contact.crossBFriction2 = glm::cross(contact.position - positionB.value, friction2);
-
-			// Calculate relative mass
-			{
-				const float n = glm::dot(normal, normal);
-				const float cA = glm::dot(contact.crossANormal, contact.crossANormal);
-				const float cB = glm::dot(contact.crossBNormal, contact.crossBNormal);
-				contact.inverseEffectiveMassNormal = 1.0f / ((n * inv_massA) + (n * inv_massB) +
-					(cA * inv_inertiaA) + (cB * inv_inertiaB));
-
-				const float n1 = glm::dot(friction1, friction1);
-				const float cA1 = glm::dot(contact.crossAFriction1, contact.crossAFriction1);
-				const float cB1 = glm::dot(contact.crossBFriction1, contact.crossBFriction1);
-				contact.inverseEffectiveMassFriction1 = 1.0f / ((n1 * inv_massA) + (n1 * inv_massB) +
-					(cA1 * inv_inertiaA) + (cB1 * inv_inertiaB));
-
-				const float n2 = glm::dot(friction2, friction2);
-				const float cA2 = glm::dot(contact.crossAFriction2, contact.crossAFriction2);
-				const float cB2 = glm::dot(contact.crossBFriction2, contact.crossBFriction2);
-				contact.inverseEffectiveMassFriction2 = 1.0f / ((n2 * inv_massA) + (n2 * inv_massB) +
-					(cA2 * inv_inertiaA) + (cB2 * inv_inertiaB));
-			}
-		}
+		manifold.PreStep(pair);
 	}
 
 	for (int iter = 0; iter < numIterations; ++iter)
 	{
-		for (int manifoldI = 0; manifoldI < manifolds.size(); ++manifoldI)
+		for (auto manifoldIter = manifolds.begin(); manifoldIter != manifolds.end(); ++manifoldIter)
 		{
-			Manifold& manifold = manifolds[manifoldI];
+			Manifold& manifold = manifoldIter->second;
+			const CollisionPair& pair = manifoldIter->first;
 
 #ifdef CONTACT_DEBUG
 			for (int i = 0; i < manifold.numContacts; ++i)
@@ -113,8 +197,8 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 			}
 #endif // CONTACT_DEBUG
 
-			const Entity& entityA = manifold.entityA;
-			const Entity& entityB = manifold.entityB;
+			const Entity& entityA = pair.entityA;
+			const Entity& entityB = pair.entityB;
 
 			const RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(entityA);
 			const RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(entityB);
@@ -139,8 +223,6 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 			const glm::vec3& wA = velocityA.angular;
 			const glm::vec3& wB = velocityB.angular;
 
-			// TODO: Maybe use this when we switch to discrete timesteps
-			const float b = -0.2f / timeManager.GetFixedDeltaTime() * std::fminf(0.0f, manifold.seperation + slop);
 			for (int i = 0; i < manifold.numContacts; ++i)
 			{
 				ContactPoint& contact = manifold.contacts[i];
@@ -156,7 +238,7 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 
 					const float velocityAtPoint = glm::dot(-normal, vA) + glm::dot(-contact.crossANormal, wA)
 						+ glm::dot(normal, vB) + glm::dot(contact.crossBNormal, wB);
-					contact.totalImpulseNormal += contact.inverseEffectiveMassNormal * (-velocityAtPoint + b);
+					contact.totalImpulseNormal += contact.inverseEffectiveMassNormal * (-velocityAtPoint + manifold.bias);
 
 					// Enforce Signorini conditions
 					if (contact.totalImpulseNormal < 0)
@@ -218,23 +300,66 @@ void ResolveManifolds(std::vector<Manifold>& manifolds)
 
 				}
 
-				velocityA.linear -= inv_massA * impulseAL;
-				velocityA.angular -= inv_inertiaA * impulseAA;
+				glm::vec3& velLinearA = velocityA.linear;
+				glm::vec3& velAngularA = velocityA.angular;
+				glm::vec3& velLinearB = velocityB.linear;
+				glm::vec3& velAngularB = velocityB.angular;
 
-				velocityB.linear += inv_massB * impulseBL;
-				velocityB.angular += inv_inertiaB * impulseBA;
+				velLinearA -= inv_massA * impulseAL;
+				velAngularA -= inv_inertiaA * impulseAA;
+
+				velLinearB += inv_massB * impulseBL;
+				velAngularB += inv_inertiaB * impulseBA;
 			}
 		}
 	}
-}
 
-void UpdateContacts(const std::vector<Manifold>& manifolds)
-{
-	// TODO: Warm starting
-
-	for (int i = 0; i < manifolds.size(); ++i)
+	// Stop bodies with low velocity
+	for (auto manifoldIter = manifolds.begin(); manifoldIter != manifolds.end(); ++manifoldIter)
 	{
+		Manifold& manifold = manifoldIter->second;
+		const CollisionPair& pair = manifoldIter->first;
 
+		const Entity& entityA = pair.entityA;
+		const Entity& entityB = pair.entityB;
+
+		VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
+		VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
+
+		glm::vec3& velLinearA = velocityA.linear;
+		glm::vec3& velAngularA = velocityA.angular;
+		glm::vec3& velLinearB = velocityB.linear;
+		glm::vec3& velAngularB = velocityB.angular;
+
+		// Linear
+		{
+			glm::vec3* vels[2] = { &velLinearA, &velLinearB };
+
+			for (int i = 0; i < 2; ++i)
+			{
+				glm::vec3& vel = *vels[i];
+
+				if (glm::dot(vel, vel) <= velEpsilonLinear)
+				{
+					vel = glm::vec3(0);
+				}
+			}
+		}
+
+		// Angular
+		{
+			glm::vec3* vels[2] = { &velAngularA, &velAngularB };
+
+			for (int i = 0; i < 2; ++i)
+			{
+				glm::vec3& vel = *vels[i];
+
+				if (glm::dot(vel, vel) <= velEpsilonAngular)
+				{
+					vel = glm::vec3(0);
+				}
+			}
+		}
 	}
 }
 
@@ -341,13 +466,7 @@ void PhysicsSystem::Update()
 								massB.inv_mass == INFINITY || massA.inv_inertia == INFINITY)
 								continue;
 
-							CollisionPair pair = {
-									&rb,
-									&rb2,
-
-									entity,
-									entity2
-							};
+							CollisionPair pair(entity, entity2);
 							pairs.push_back(pair);
 						}
 
@@ -364,22 +483,18 @@ void PhysicsSystem::Update()
 
 	// Narrow phase  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	std::vector<Manifold> manifolds;
-
 	// For each collision pair
 	for (auto pairsIt = pairs.begin(); pairsIt != pairs.end(); ++pairsIt)
 	{
 		Entity entityA = (*pairsIt).entityA;
 		Entity entityB = (*pairsIt).entityB;
 
-		RigidBodyComponent& rbA = *(RigidBodyComponent*)(*pairsIt).pRigidBodyA;
-		RigidBodyComponent& rbB = *(RigidBodyComponent*)(*pairsIt).pRigidBodyB;
+		RigidBodyComponent& rbA = entityManager.GetComponent<RigidBodyComponent>(entityA);
+		RigidBodyComponent& rbB = entityManager.GetComponent<RigidBodyComponent>(entityB);
 
 		Manifold manifold;
 
 		bool collision = false;
-
-		PositionComponent* positionA = entityManager.GetComponentP<PositionComponent>(entityA);
 
 		switch (rbA.colliderType)
 		{
@@ -402,15 +517,25 @@ void PhysicsSystem::Update()
 
 		if (collision)
 		{
-			manifolds.push_back(manifold);
+			auto iter = manifolds.find(*pairsIt);
+			if (iter == manifolds.end())
+			{
+				manifolds.insert(std::pair<CollisionPair, Manifold>(*pairsIt, manifold));
+			}
+			else
+			{
+				// TODO:
+				iter->second.UpdateContacts(manifold);
+				//iter->second = manifold;
+			}
+		}
+		else
+		{
+			manifolds.erase(*pairsIt);
 		}
 	}
 
-	// Update contacts
-	UpdateContacts(manifolds);
-
-	// Resolve collisions
-	ResolveManifolds(manifolds);
+	ResolveManifolds();
 }
 
 // Find vertex with most penetration
@@ -667,6 +792,10 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 
 	ContactPoint contact;
 	contact.position = average;
+	contact.featurePair = {
+		query.pEdgeA,
+		query.pEdgeB
+	};
 
 	manifold.contacts[0] = contact;
 	manifold.numContacts = 1;
@@ -717,9 +846,15 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	manifold.friction1 = glm::normalize(manifold.friction1);
 	manifold.friction2 = glm::normalize(manifold.friction2);
 
+	struct SimpleContact
+	{
+		glm::vec3 pos;
+		FeaturePair featurePair;
+	};
+
 	// Clip with Sutherland-Hodgman
-	std::vector<glm::vec3> in;
-	std::vector<glm::vec3> out;
+	std::vector<SimpleContact> in;
+	std::vector<SimpleContact> out;
 
 	// Get starting verts
 	{
@@ -727,7 +862,10 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 		qhHalfEdge* pEdge = const_cast<qhHalfEdge*>(startEdge);
 		do
 		{
-			in.push_back(pEdge->pTail->position * scaleB);
+			in.push_back({
+				pEdge->pTail->position * scaleB,
+				{ pEdge, nullptr }
+				});
 
 			pEdge = pEdge->pNext;
 		} while (pEdge != startEdge);
@@ -740,8 +878,8 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 		qhHalfEdge* pEdge = const_cast<qhHalfEdge*>(startEdge);
 		do
 		{
-			std::vector<glm::vec3>& inBuffer = swapBuffers ? out : in;
-			std::vector<glm::vec3>& outBuffer = !swapBuffers ? out : in;
+			auto& inBuffer = swapBuffers ? out : in;
+			auto& outBuffer = !swapBuffers ? out : in;
 
 			const qhFace& clipFace = *pEdge->pTwin->pFace;
 			Plane clipPlane = clipFace.plane;
@@ -759,18 +897,18 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			// Keep vertices behind plane
 			for (int i = 0; i < inBuffer.size(); ++i)
 			{
-				const glm::vec3& point = inBuffer[i];
+				const glm::vec3& point = inBuffer[i].pos;
 				const float dist = glm::dot(point, clipPlane.normal) - clipPlane.dist;
 
 #ifdef CONTACT_DEBUG
 				glm::vec3 drawPoint = rotationB * point + positionB;
-				debugDraw.DrawLine(drawPoint, drawPoint + manifold.normal * 0.2f, { 0, 0.1f, 0 }, timeManager.GetFixedDeltaTime());
+				debugDraw.DrawLine(drawPoint, drawPoint + manifold.normal * 0.2f, { 0, 0.2f, 0 }, timeManager.GetFixedDeltaTime());
 #endif // CONTACT_DEBUG
 
 				const bool pointBehindPlane = dist <= 0;
 
 				const int j = i - 1;
-				const glm::vec3& prev = inBuffer[j < 0 ? inBuffer.size() - 1 : j];
+				const glm::vec3& prev = inBuffer[j < 0 ? inBuffer.size() - 1 : j].pos;
 
 				const bool lineCrossesPlane = (glm::dot(prev, clipPlane.normal) - clipPlane.dist <= 0) != pointBehindPlane;
 				if (lineCrossesPlane)
@@ -782,7 +920,10 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 					};
 
 					const glm::vec3 point = LineAndPlane(line, clipPlane);
-					outBuffer.push_back(point);
+					outBuffer.push_back({
+						point,
+						{ inBuffer[i].featurePair.pFeatureA, &clipFace }
+						});
 
 #ifdef CONTACT_DEBUG
 					debugDraw.DrawPlane(glm::vec3(0), clipPlane, 1.5f, 1.5f, {1, 1, 0}, timeManager.GetFixedDeltaTime());
@@ -794,11 +935,10 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 #endif // CONTACT_DEBUG
 
 				}
-
-				// Added after to maintain sequence
+				
 				if (pointBehindPlane)
 				{
-					outBuffer.push_back(point);
+					outBuffer.push_back(inBuffer[i]);
 				}
 			}
 
@@ -811,16 +951,16 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 
 	// Remove contacts above the reference face
 	{
-		std::vector<glm::vec3>& inBuffer = swapBuffers ? out : in;
-		std::vector<glm::vec3>& outBuffer = !swapBuffers ? out : in;
+		auto& inBuffer = swapBuffers ? out : in;
+		auto& outBuffer = !swapBuffers ? out : in;
 		for (int i = 0; i < inBuffer.size(); ++i)
 		{
-			const glm::vec3& point = inBuffer[i];
+			const glm::vec3& point = inBuffer[i].pos;
 			const float dist = glm::dot(relativeReferencePlane.normal, point) - relativeReferencePlane.dist;
 
 			if (dist <= 0)
 			{
-				outBuffer.push_back(point);
+				outBuffer.push_back(inBuffer[i]);
 			}
 		}
 
@@ -830,11 +970,11 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 
 	// Project onto reference plane
 	{
-		std::vector<glm::vec3>& inBuffer = swapBuffers ? out : in;
+		auto& inBuffer = swapBuffers ? out : in;
 
 		for (int i = 0; i < inBuffer.size(); ++i)
 		{
-			glm::vec3& point = inBuffer[i];
+			glm::vec3& point = inBuffer[i].pos;
 			const float dist = glm::dot(relativeReferencePlane.normal, point) - relativeReferencePlane.dist;
 
 			point -= relativeReferencePlane.normal * dist;
@@ -843,48 +983,48 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 
 	// Reduce contact points
 	{
-		std::vector<glm::vec3>& inBuffer = swapBuffers ? out : in;
+		auto& inBuffer = swapBuffers ? out : in;
 
 		if (inBuffer.size() > 4)
 		{
-			std::vector<glm::vec3>& outBuffer = !swapBuffers ? out : in;
+			auto& outBuffer = !swapBuffers ? out : in;
 
 			// TODO: First point should be deepest for continuous collision
-			glm::vec3* firstPoint = &inBuffer[0];
+			int firstPoint = 0;
 			{
 				const glm::vec3 direction = glm::vec3(1, 1, 1);
 
 				float bestDot = -FLT_MAX;
 				for (int i = 1; i < inBuffer.size(); ++i)
 				{
-					glm::vec3& point = inBuffer[i];
+					const glm::vec3& point = inBuffer[i].pos;
 					const float dot = glm::dot(point, direction);
 
 					if (dot >= bestDot)
 					{
-						firstPoint = const_cast<glm::vec3*>(&point);
+						firstPoint = i;
 						bestDot = dot;
 					}
 				}
 			}
 
 			// Get furthest point
-			glm::vec3* secondPoint = nullptr;
+			int secondPoint = -1;
 			{
 				float bestDist = -FLT_MAX;
 				for (int i = 0; i < inBuffer.size(); ++i)
 				{
-					const glm::vec3* pPoint = &inBuffer[i];
+					const glm::vec3& pPoint = inBuffer[i].pos;
 
-					if (pPoint == firstPoint)
+					if (&pPoint == &inBuffer[firstPoint].pos)
 						continue;
 
-					const glm::vec3 tmp = *pPoint - *firstPoint;
-					const float sqrDist = SqrDist(*pPoint, *firstPoint);
+					const glm::vec3 tmp = pPoint - inBuffer[firstPoint].pos;
+					const float sqrDist = SqrDist(pPoint, inBuffer[firstPoint].pos);
 
 					if (sqrDist >= bestDist)
 					{
-						secondPoint = const_cast<glm::vec3*>(pPoint);
+						secondPoint = i;
 						bestDist = sqrDist;
 					}
 				}
@@ -899,27 +1039,27 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			};
 
 			// Get third point
-			glm::vec3* thirdPoint = nullptr;
+			int thirdPoint = -1;
 			bool thirdSign = 0;
 			{
 				float bestArea = 0;
 				for (int i = 0; i < inBuffer.size(); ++i)
 				{
-					const glm::vec3* pPoint = &inBuffer[i];
+					const glm::vec3& pPoint = inBuffer[i].pos;
 
-					if (pPoint == firstPoint)
+					if (&pPoint == &inBuffer[firstPoint].pos)
 						continue;
 
-					if (pPoint == secondPoint)
+					if (&pPoint == &inBuffer[secondPoint].pos)
 						continue;
 
-					assert(secondPoint != nullptr);
+					assert(secondPoint > -1);
 
-					const float area = GetArea(*firstPoint, *secondPoint, *pPoint);
+					const float area = GetArea(inBuffer[firstPoint].pos, inBuffer[secondPoint].pos, pPoint);
 
 					if (abs(area) >= abs(bestArea))
 					{
-						thirdPoint = const_cast<glm::vec3*>(pPoint);
+						thirdPoint = i;
 						bestArea = area;
 						thirdSign = signbit(area);
 					}
@@ -927,45 +1067,45 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			}
 
 			// Get fourth point
-			glm::vec3* fourthPoint = nullptr;
+			int fourthPoint = -1;
 			bool fourthSign = 0;
 			{
 				float bestArea = 0;
 				for (int i = 0; i < inBuffer.size(); ++i)
 				{
-					const glm::vec3* pPoint = &inBuffer[i];
+					const glm::vec3& pPoint = inBuffer[i].pos;
 
-					if (pPoint == firstPoint)
+					if (&pPoint == &inBuffer[firstPoint].pos)
 						continue;
 
-					if (pPoint == secondPoint)
+					if (&pPoint == &inBuffer[secondPoint].pos)
 						continue;
 
-					assert(secondPoint != nullptr);
+					assert(secondPoint > -1);
 
-					const float area = GetArea(*firstPoint, *secondPoint, *pPoint);
+					const float area = GetArea(inBuffer[firstPoint].pos, inBuffer[secondPoint].pos, pPoint);
 
 					bool sign = signbit(area);
 					if (abs(area) >= abs(bestArea) && sign != thirdSign)
 					{
-						fourthPoint = const_cast<glm::vec3*>(pPoint);
+						fourthPoint = i;
 						bestArea = area;
 						fourthSign = sign;
 					}
 				}
 			}
 
-			assert(firstPoint != nullptr);
-			assert(secondPoint != nullptr);
-			assert(thirdPoint != nullptr);
+			assert(firstPoint > -1);
+			assert(secondPoint > -1);
+			assert(thirdPoint > -1);
 
-			outBuffer.push_back(*firstPoint);
-			outBuffer.push_back(*secondPoint);
-			outBuffer.push_back(*thirdPoint);
+			outBuffer.push_back(inBuffer[firstPoint]);
+			outBuffer.push_back(inBuffer[secondPoint]);
+			outBuffer.push_back(inBuffer[thirdPoint]);
 
-			if (fourthPoint != nullptr)
+			if (fourthPoint > -1)
 			{
-				outBuffer.push_back(*fourthPoint);
+				outBuffer.push_back(inBuffer[fourthPoint]);
 			}
 
 			swapBuffers = !swapBuffers;
@@ -975,14 +1115,13 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 
 	// Move contacts to world space
 	{
-		const std::vector<glm::vec3>& inBuffer = swapBuffers ? out : in;
+		const auto& inBuffer = swapBuffers ? out : in;
 		{
 			manifold.numContacts = (int)inBuffer.size();
 			for (int i = 0; i < inBuffer.size(); ++i)
 			{
-				manifold.contacts[i] = {
-					rotationB * inBuffer[i] + positionB
-				};
+				manifold.contacts[i].position =	rotationB * inBuffer[i].pos + positionB;
+				manifold.contacts[i].featurePair = inBuffer[i].featurePair;
 			}
 		}
 	}
@@ -1061,9 +1200,6 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 	{
 		return false;
 	}
-
-	manifold.entityA = entityA;
-	manifold.entityB = entityB;
 
 	bool isFaceContactA = faceQueryA.seperation >= edgeQuery.seperation;
 	bool isFaceContactB = faceQueryB.seperation >= edgeQuery.seperation;
