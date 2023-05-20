@@ -202,6 +202,21 @@ void Init()
 			em.GetComponent<MassComponent>(entity).SetMassAndInertia(1);
 			//em.GetComponent<MassComponent>(entity).SetInertia(INFINITY);
 		}
+		// Throw box
+		{
+			Entity entity = em.AddEntity(boxArchetype);
+			em.GetComponent<PositionComponent>(entity) = { 40, -20, -5 };
+			em.GetComponent<VelocityComponent>(entity) = { -10, 24.5f, 0, 0, 0, 0 };
+			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
+			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
+
+			em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+
+			em.GetComponent<HullCollider>(entity) = { &boxHull };
+			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1, 0.5f, Average };
+			em.GetComponent<MassComponent>(entity).SetMassAndInertia(1);
+			//em.GetComponent<MassComponent>(entity).SetInertia(INFINITY);
+		}
 	}
 
 	// Hide cursor

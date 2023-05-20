@@ -49,9 +49,11 @@ void Manifold::UpdateContacts(const Manifold& manifold)
 			const ContactPoint& old = contacts[k];
 
 			contact = newContact;
-			contact.totalImpulseNormal = old.totalImpulseNormal;
-			contact.totalImpulseFriction1 = old.totalImpulseFriction1;
-			contact.totalImpulseFriction2 = old.totalImpulseFriction2;
+
+			const float warmStartPercent = 1.0f;
+			contact.totalImpulseNormal = old.totalImpulseNormal * warmStartPercent;
+			contact.totalImpulseFriction1 = old.totalImpulseFriction1 * warmStartPercent;
+			contact.totalImpulseFriction2 = old.totalImpulseFriction2 * warmStartPercent;
 
 #ifdef WARMSTART_DEBUG
 			debugDraw.DrawLine(contact.position, contact.position + manifold.normal * contact.totalImpulseNormal, {1, 1, 0}, timeManager.GetFixedDeltaTime());
