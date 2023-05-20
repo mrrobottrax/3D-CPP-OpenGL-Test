@@ -113,7 +113,7 @@ void Manifold::PreStep(const CollisionPair& pair)
 		frictionCoefficient = std::sqrtf(rbA.frictionCoefficient * rbB.frictionCoefficient);
 	}
 
-	bias = -0.2f / timeManager.GetFixedDeltaTime() * std::fminf(0.0f, seperation + slop);
+	bias = -biasPercent / timeManager.GetFixedDeltaTime() * std::fminf(0.0f, seperation + slop);
 
 	for (int i = 0; i < numContacts; ++i)
 	{

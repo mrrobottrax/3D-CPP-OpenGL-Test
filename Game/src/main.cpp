@@ -206,7 +206,7 @@ void Init()
 		{
 			Entity entity = em.AddEntity(boxArchetype);
 			em.GetComponent<PositionComponent>(entity) = { 40, -20, -5 };
-			em.GetComponent<VelocityComponent>(entity) = { -10, 24.5f, 0, 0, 0, 0 };
+			em.GetComponent<VelocityComponent>(entity) = { -10, 24.6f, 0, 0, 0, 0 };
 			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
 			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
 
