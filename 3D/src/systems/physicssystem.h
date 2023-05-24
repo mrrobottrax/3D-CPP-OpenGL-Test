@@ -127,7 +127,7 @@ const float slop = 0.01f;
 const float biasPercent = 0.2f;
 const float velEpsilonLinear = 0.0001f;
 const float velEpsilonAngular = 0.00001f;
-const float contactOffset = 1; // TODO: Implement
+const float contactOffset = 0.01f; // TODO: Implement
 
 class PhysicsSystem : public System
 {

@@ -11,7 +11,7 @@ struct MassComponent
 	void SetMassAndInertia(float mass)
 	{
 		SetMass(mass);
-		SetInertia(mass);
+		SetInertiaFromMass(mass);
 	}
 
 	void SetMass(float mass)
@@ -37,9 +37,11 @@ struct MassComponent
 		}
 	}
 
-	void SetInertia(float inertia)
+	void SetInertiaFromMass(float mass)
 	{
-		if (inertia == INFINITY)
+		float inertia = mass / 24.0f;
+
+		if (mass == INFINITY)
 			SetInverseInertia(0);
 
 		this->inertia = inertia;
