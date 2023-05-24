@@ -121,12 +121,13 @@ struct Manifold
 #endif // PHYS_DEBUG
 #endif // DEBUG
 
-const int numIterations = 20;
+const int numIterations = 6;
 const float gravity = -9.81f;
 const float slop = 0.01f;
 const float biasPercent = 0.2f;
 const float velEpsilonLinear = 0.0001f;
 const float velEpsilonAngular = 0.00001f;
+const float contactOffset = 1; // TODO: Implement
 
 class PhysicsSystem : public System
 {

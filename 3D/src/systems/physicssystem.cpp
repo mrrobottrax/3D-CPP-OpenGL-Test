@@ -129,6 +129,7 @@ void Manifold::PreStep(const CollisionPair& pair)
 		contact.crossBFriction2 = glm::cross(contact.position - positionB.value, friction2);
 
 		// Calculate relative mass
+		// TODO: Implement inertia tensor
 		{
 			const float n = glm::dot(normal, normal);
 			const float cA = glm::dot(contact.crossANormal, contact.crossANormal);

@@ -17,6 +17,6 @@ struct RigidBodyComponent
 	bool isStatic;
 	ColliderType colliderType;
 	float gravityScale = 1;
-	float frictionCoefficient = 0.5f;
+	float frictionCoefficient = 0.6f;
 	FrictionCombine frictionCombine = Average;
 };
