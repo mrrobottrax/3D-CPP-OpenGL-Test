@@ -37,6 +37,7 @@ struct MassComponent
 		}
 	}
 
+	// TODO: Inertia tensor is in reality much more complicated
 	void SetInertiaFromMass(float mass)
 	{
 		float inertia = mass / 24.0f;
