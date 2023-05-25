@@ -90,11 +90,11 @@ void Manifold::PreStep(const CollisionPair& pair)
 	MassComponent& massComponentA = em.GetComponent<MassComponent>(entityA);
 	MassComponent& massComponentB = em.GetComponent<MassComponent>(entityB);
 
-	float& inv_massA = massComponentA.inv_mass;
-	float& inv_inertiaA = massComponentA.inv_inertia;
+	const float& inv_massA = massComponentA.inv_mass;
+	const glm::vec3 inv_inertiaA = massComponentA.inv_inertia * inv_massA;
 
-	float& inv_massB = massComponentB.inv_mass;
-	float& inv_inertiaB = massComponentB.inv_inertia;
+	const float& inv_massB = massComponentB.inv_mass;
+	const glm::vec3 inv_inertiaB = massComponentB.inv_inertia * inv_massB;
 
 	VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
 	VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
@@ -130,22 +130,22 @@ void Manifold::PreStep(const CollisionPair& pair)
 		// TODO: Implement inertia tensor
 		{
 			const float n = glm::dot(normal, normal);
-			const float cA = glm::dot(contact.crossANormal, contact.crossANormal);
-			const float cB = glm::dot(contact.crossBNormal, contact.crossBNormal);
+			const glm::vec3& cA = contact.crossANormal;
+			const glm::vec3& cB = contact.crossBNormal;
 			contact.inverseEffectiveMassNormal = 1.0f / ((n * inv_massA) + (n * inv_massB) +
-				(cA * inv_inertiaA) + (cB * inv_inertiaB));
+				glm::dot(cA * inv_inertiaA, cA) + glm::dot(cB * inv_inertiaB, cB));
 
 			const float n1 = glm::dot(friction1, friction1);
-			const float cA1 = glm::dot(contact.crossAFriction1, contact.crossAFriction1);
-			const float cB1 = glm::dot(contact.crossBFriction1, contact.crossBFriction1);
+			const glm::vec3& cA1 = contact.crossAFriction1;
+			const glm::vec3& cB1 = contact.crossBFriction1;
 			contact.inverseEffectiveMassFriction1 = 1.0f / ((n1 * inv_massA) + (n1 * inv_massB) +
-				(cA1 * inv_inertiaA) + (cB1 * inv_inertiaB));
+				glm::dot(cA1 * inv_inertiaA, cA1) + glm::dot(cB1 * inv_inertiaB, cB1));
 
 			const float n2 = glm::dot(friction2, friction2);
-			const float cA2 = glm::dot(contact.crossAFriction2, contact.crossAFriction2);
-			const float cB2 = glm::dot(contact.crossBFriction2, contact.crossBFriction2);
+			const glm::vec3& cA2 = contact.crossAFriction2;
+			const glm::vec3& cB2 = contact.crossBFriction2;
 			contact.inverseEffectiveMassFriction2 = 1.0f / ((n2 * inv_massA) + (n2 * inv_massB) +
-				(cA2 * inv_inertiaA) + (cB2 * inv_inertiaB));
+				glm::dot(cA2 * inv_inertiaA, cA2) + glm::dot(cB2 * inv_inertiaB, cB2));
 		}
 
 		// Apply impulses
@@ -210,9 +210,9 @@ void PhysicsSystem::ResolveManifolds()
 			RotationComponent& rotationB = em.GetComponent<RotationComponent>(entityB);
 
 			const float& inv_massA = em.GetComponent<MassComponent>(entityA).inv_mass;
-			const float& inv_inertiaA = em.GetComponent<MassComponent>(entityA).inv_inertia;
+			const glm::vec3& inv_inertiaA = em.GetComponent<MassComponent>(entityA).inv_inertia * inv_massA;
 			const float& inv_massB = em.GetComponent<MassComponent>(entityB).inv_mass;
-			const float& inv_inertiaB = em.GetComponent<MassComponent>(entityB).inv_inertia;
+			const glm::vec3& inv_inertiaB = em.GetComponent<MassComponent>(entityB).inv_inertia * inv_massB;
 
 			VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
 			VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
@@ -464,9 +464,9 @@ void PhysicsSystem::Update()
 							if (massA.inv_mass == 0 && massB.inv_mass == 0)
 								continue;
 
-							// Don't allow zero mass
-							if (massA.inv_mass == INFINITY || massA.inv_inertia == INFINITY ||
-								massB.inv_mass == INFINITY || massA.inv_inertia == INFINITY)
+							// Don't allow zero mass/inertia
+							if (massA.mass == 0 || glm::dot(massA.inertia, massA.inertia) == 0 ||
+								massB.mass == 0 || glm::dot(massB.inertia, massB.inertia) == 0)
 								continue;
 
 							// TODO: Test against AABB tree

@@ -5,14 +5,8 @@ struct MassComponent
 	float mass;
 	float inv_mass;
 
-	float inertia;
-	float inv_inertia;
-
-	void SetMassAndInertia(float mass)
-	{
-		SetMass(mass);
-		SetInertiaFromMass(mass);
-	}
+	glm::vec3 inertia;
+	glm::vec3 inv_inertia;
 
 	void SetMass(float mass)
 	{
@@ -21,6 +15,9 @@ struct MassComponent
 
 		this->mass = mass;
 		this->inv_mass = 1 / mass;
+
+		inertia = glm::vec3(1 / 24.0f);
+		inv_inertia = glm::vec3(24.0f);
 	}
 
 	void SetInverseMass(float inv_mass)
@@ -34,32 +31,6 @@ struct MassComponent
 		else
 		{
 			this->mass = INFINITY;
-		}
-	}
-
-	// TODO: Inertia tensor is in reality much more complicated
-	void SetInertiaFromMass(float mass)
-	{
-		float inertia = mass / 24.0f;
-
-		if (mass == INFINITY)
-			SetInverseInertia(0);
-
-		this->inertia = inertia;
-		this->inv_inertia = 1 / inertia;
-	}
-
-	void SetInverseInertia(float inv_inertia)
-	{
-		this->inv_inertia = inv_inertia;
-
-		if (inv_inertia != 0)
-		{
-			this->inertia = 1 / inv_inertia;
-		}
-		else
-		{
-			this->inertia = INFINITY;
 		}
 	}
 };
