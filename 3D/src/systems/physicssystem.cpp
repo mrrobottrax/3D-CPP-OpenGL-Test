@@ -117,7 +117,7 @@ void Manifold::PreStep(const CollisionPair& pair)
 	{
 		ContactPoint& contact = contacts[i];
 
-		contact.bias = -biasPercent / timeManager.GetFixedDeltaTime() * std::fminf(0.0f, contact.seperation + slop);
+		contact.bias = -correctionPercent / timeManager.GetFixedDeltaTime() * std::fminf(0.0f, contact.seperation + slop);
 
 		contact.crossANormal = glm::cross(contact.position - positionA.value, normal);
 		contact.crossBNormal = glm::cross(contact.position - positionB.value, normal);
@@ -204,8 +204,10 @@ void PhysicsSystem::ResolveManifolds()
 			const RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(entityA);
 			const RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(entityB);
 
-			const PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
-			const PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
+			PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
+			PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
+			RotationComponent& rotationA = em.GetComponent<RotationComponent>(entityA);
+			RotationComponent& rotationB = em.GetComponent<RotationComponent>(entityB);
 
 			const float& inv_massA = em.GetComponent<MassComponent>(entityA).inv_mass;
 			const float& inv_inertiaA = em.GetComponent<MassComponent>(entityA).inv_inertia;
@@ -320,6 +322,7 @@ void PhysicsSystem::ResolveManifolds()
 	}
 
 	// Stop bodies with low velocity
+	// TODO: This should probably be force based or something
 	for (auto manifoldIter = manifolds.begin(); manifoldIter != manifolds.end(); ++manifoldIter)
 	{
 		Manifold& manifold = manifoldIter->second;
@@ -1239,12 +1242,14 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 		if (aIsBiggerThanB)
 		{
 			manifold.normal = rotationA.value * faceQueryA.pFace->plane.normal;
+			manifold.seperation = faceQueryA.seperation;
 			CreateFaceContacts(faceQueryA, positionA.value, rotationA.value, scaleA,
 				*hullB.pHull, positionB.value, rotationB.value, scaleB, manifold);
 		}
 		else
 		{
 			manifold.normal = rotationB.value * -faceQueryB.pFace->plane.normal;
+			manifold.seperation = faceQueryB.seperation;
 			CreateFaceContacts(faceQueryB, positionB.value, rotationB.value, scaleB,
 				*hullA.pHull, positionA.value, rotationA.value, scaleA, manifold);
 		}
@@ -1252,6 +1257,7 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 	else
 	{
 		manifold.normal = edgeQuery.normal;
+		manifold.seperation = edgeQuery.seperation;
 		CreateEdgeContacts(edgeQuery, positionA.value, rotationA.value, scaleA, positionB.value, rotationB.value, scaleB, manifold);
 
 #ifdef SAT_DEBUG

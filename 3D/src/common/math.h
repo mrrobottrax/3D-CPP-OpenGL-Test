@@ -38,8 +38,11 @@ namespace gmath
 	glm::vec3 LineAndPlane(const Line&, const Plane&);
 	void ScalePlane(Plane&, const glm::vec3&);
 
+	// TODO: Make these const references
 	glm::vec3 Lerp(glm::vec3 x, glm::vec3 y, float t);
 	glm::vec3 Lerp(Line, float t);
+
+	glm::fquat EulerToQuaternion(const glm::vec3&);
 
 	struct Matrix
 	{

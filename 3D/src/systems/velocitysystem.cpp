@@ -1,6 +1,8 @@
 #include <pch.h>
 #include <systems/velocitySystem.h>
 
+#include <common/math.h>
+
 #include <systems/systemmanager.h>
 #include <memory/entitymanager.h>
 #include <components/positioncomponent.h>
@@ -52,21 +54,9 @@ void VelocitySystem::UpdatePositions(const std::vector<ChunkArchetypeElement*>* 
 
 				position.value += velocity.linear * deltaTime;
 
-				glm::vec3 deltaVec = velocity.angular * deltaTime;
-				float length = glm::length(deltaVec);
-
-				// Prevent divide by 0
-				if (length < 1E-16f)
-					continue;
-
-				// TODO: Better way to construct quaternions? Sin and cos are expensive
-				float half = length / 2.0f;
-				float sin = std::sin(half);
-				float cos = std::cos(half);
-
-				glm::fquat deltaRot(length * cos, deltaVec.x * sin, deltaVec.y * sin, deltaVec.z * sin);
+				const glm::vec3& deltaVec = velocity.angular * deltaTime;
+				const glm::fquat& deltaRot = gmath::EulerToQuaternion(deltaVec);
 				rotation.value = deltaRot * rotation.value;
-				rotation.value = glm::normalize(rotation.value);
 			}
 		}
 	}

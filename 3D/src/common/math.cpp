@@ -94,6 +94,20 @@ namespace gmath
 		return Lerp(l.pointA, l.pointB, t);
 	}
 
+	glm::fquat EulerToQuaternion(const glm::vec3& euler)
+	{
+		float length = glm::length(euler);
+
+		// TODO: Better way to construct quaternions? Sin and cos are expensive
+		float half = length / 2.0f;
+		float sin = std::sin(half);
+		float cos = std::cos(half);
+
+		glm::fquat quat(length * cos, euler.x * sin, euler.y * sin, euler.z * sin);
+
+		return glm::normalize(quat);
+	}
+
 	Matrix::Matrix(const int& rows, const int& columns)
 	{
 		Initialize(rows, columns);

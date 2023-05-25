@@ -97,7 +97,7 @@ struct Manifold
 	unsigned short numContacts = 0;
 	ContactPoint contacts[4];
 
-	//float seperation = 0;
+	float seperation = 0;
 
 	glm::vec3 normal = glm::vec3(0);
 	glm::vec3 friction1 = glm::vec3(0);
@@ -125,7 +125,7 @@ const int numIterations = 6;
 const float gravity = -9.81f;
 const float slop = 0.01f;
 const float offset = 0.01f;
-const float biasPercent = 0.2f;
+const float correctionPercent = 0.2f;
 const float velEpsilonLinear = 0;
 const float velEpsilonAngular = 0;
 
