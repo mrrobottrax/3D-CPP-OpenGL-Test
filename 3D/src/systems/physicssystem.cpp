@@ -1197,6 +1197,10 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 
 	EdgeQuery edgeQuery = SatEdgeTest(hullA, positionA.value, rotationA.value, scaleA, hullB, positionB.value, rotationB.value, scaleB);
 
+	// TODO: THIS IS A HACK AND SHOULD BE FIXED PROPERLY
+	// Bias towards face collisions a bit because they are better
+	edgeQuery.seperation -= 0.01f; // TEMP
+
 	// Check edge combinations
 	if (edgeQuery.seperation > 0)
 	{
