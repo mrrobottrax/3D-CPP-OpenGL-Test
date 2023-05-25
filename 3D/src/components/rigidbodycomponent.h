@@ -19,4 +19,6 @@ struct RigidBodyComponent
 	float gravityScale = 1;
 	float frictionCoefficient = 0.6f;
 	FrictionCombine frictionCombine = Average;
+
+	bool sleeping = false;
 };

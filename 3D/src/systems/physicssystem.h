@@ -109,13 +109,13 @@ struct Manifold
 
 #ifdef DEBUG
 
-#define PHYS_DEBUG
+//#define PHYS_DEBUG
 
 #ifdef PHYS_DEBUG
 
 //#define SAT_DEBUG
 //#define CONTACT_DEBUG
-#define FRICTION_DEBUG
+//#define FRICTION_DEBUG
 //#define WARMSTART_DEBUG
 
 #endif // PHYS_DEBUG
@@ -124,10 +124,10 @@ struct Manifold
 const int numIterations = 6;
 const float gravity = -9.81f;
 const float slop = 0.01f;
-const float offset = 0.01f;
+const float offset = 0.0f;
 const float correctionPercent = 0.2f;
-const float velEpsilonLinear = 0;
-const float velEpsilonAngular = 0;
+const float velEpsilonLinear = 0.01f;
+const float velEpsilonAngular = 0.001f;
 
 class PhysicsSystem : public System
 {

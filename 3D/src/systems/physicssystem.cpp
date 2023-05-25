@@ -322,7 +322,7 @@ void PhysicsSystem::ResolveManifolds()
 	}
 
 	// Stop bodies with low velocity
-	// TODO: This should probably be force based or something
+	// TODO: This should probably be energy based or something
 	for (auto manifoldIter = manifolds.begin(); manifoldIter != manifolds.end(); ++manifoldIter)
 	{
 		Manifold& manifold = manifoldIter->second;
@@ -334,38 +334,33 @@ void PhysicsSystem::ResolveManifolds()
 		VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
 		VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
 
+		RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(entityA);
+		RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(entityB);
+
 		glm::vec3& velLinearA = velocityA.linear;
 		glm::vec3& velAngularA = velocityA.angular;
 		glm::vec3& velLinearB = velocityB.linear;
 		glm::vec3& velAngularB = velocityB.angular;
 
-		// Linear
+		RigidBodyComponent* rbs[2] = { &rbA, &rbB };
+		glm::vec3* linearVels[2] = { &velLinearA, &velLinearB };
+		glm::vec3* angularVels[2] = { &velAngularA, &velAngularB };
+
+		for (int i = 0; i < 2; ++i)
 		{
-			glm::vec3* vels[2] = { &velLinearA, &velLinearB };
+			glm::vec3& linearVel = *linearVels[i];
+			glm::vec3& angularVel = *angularVels[i];
 
-			for (int i = 0; i < 2; ++i)
+			if (glm::dot(linearVel, linearVel) <= velEpsilonLinear &&
+				glm::dot(angularVel, angularVel) <= velEpsilonAngular)
 			{
-				glm::vec3& vel = *vels[i];
-
-				if (glm::dot(vel, vel) <= velEpsilonLinear)
-				{
-					vel = glm::vec3(0);
-				}
+				linearVel = glm::vec3(0);
+				angularVel = glm::vec3(0);
+				rbs[i]->sleeping = true;
 			}
-		}
-
-		// Angular
-		{
-			glm::vec3* vels[2] = { &velAngularA, &velAngularB };
-
-			for (int i = 0; i < 2; ++i)
+			else
 			{
-				glm::vec3& vel = *vels[i];
-
-				if (glm::dot(vel, vel) <= velEpsilonAngular)
-				{
-					vel = glm::vec3(0);
-				}
+				rbs[i]->sleeping = false;
 			}
 		}
 	}
@@ -463,6 +458,10 @@ void PhysicsSystem::Update()
 
 							// No need to check for collisions when both are static
 							if (rb.isStatic && rb2.isStatic)
+								continue;
+
+							// No need to check for collisions when both are asleep
+							if (rb.sleeping && rb2.sleeping)
 								continue;
 
 							// Unstoppable force vs immovable object
