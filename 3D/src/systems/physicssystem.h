@@ -115,7 +115,7 @@ struct Manifold
 
 //#define SAT_DEBUG
 //#define CONTACT_DEBUG
-//#define FRICTION_DEBUG
+#define FRICTION_DEBUG
 //#define WARMSTART_DEBUG
 
 #endif // PHYS_DEBUG
@@ -125,9 +125,8 @@ const int numIterations = 6;
 const float gravity = -9.81f;
 const float slop = 0.01f;
 const float biasPercent = 0.2f;
-const float velEpsilonLinear = 0.0001f;
-const float velEpsilonAngular = 0.00001f;
-const float contactOffset = 0.01f; // TODO: Implement
+const float velEpsilonLinear = 0;
+const float velEpsilonAngular = 0;
 
 class PhysicsSystem : public System
 {

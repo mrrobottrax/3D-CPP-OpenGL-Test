@@ -119,8 +119,6 @@ void Manifold::PreStep(const CollisionPair& pair)
 	{
 		ContactPoint& contact = contacts[i];
 
-		contact.totalImpulseNormal = 0;
-
 		contact.crossANormal = glm::cross(contact.position - positionA.value, normal);
 		contact.crossBNormal = glm::cross(contact.position - positionB.value, normal);
 		contact.crossAFriction1 = glm::cross(contact.position - positionA.value, friction1);
@@ -275,6 +273,7 @@ void PhysicsSystem::ResolveManifolds()
 
 					contact.totalImpulseFriction1 = clamp(contact.totalImpulseFriction1,
 						-contact.totalImpulseNormal * frictionC, contact.totalImpulseNormal * frictionC);
+
 					contact.totalImpulseFriction2 = clamp(contact.totalImpulseFriction2,
 						-contact.totalImpulseNormal * frictionC, contact.totalImpulseNormal * frictionC);
 
