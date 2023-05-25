@@ -113,11 +113,11 @@ void Manifold::PreStep(const CollisionPair& pair)
 		frictionCoefficient = std::sqrtf(rbA.frictionCoefficient * rbB.frictionCoefficient);
 	}
 
-	bias = -biasPercent / timeManager.GetFixedDeltaTime() * std::fminf(0.0f, seperation + slop);
-
 	for (int i = 0; i < numContacts; ++i)
 	{
 		ContactPoint& contact = contacts[i];
+
+		contact.bias = -biasPercent / timeManager.GetFixedDeltaTime() * std::fminf(0.0f, contact.seperation + slop);
 
 		contact.crossANormal = glm::cross(contact.position - positionA.value, normal);
 		contact.crossBNormal = glm::cross(contact.position - positionB.value, normal);
@@ -228,6 +228,9 @@ void PhysicsSystem::ResolveManifolds()
 			{
 				ContactPoint& contact = manifold.contacts[i];
 
+				if (contact.seperation > 0)
+					continue;
+
 				glm::vec3 impulseAL = glm::vec3(0);
 				glm::vec3 impulseAA = glm::vec3(0);
 				glm::vec3 impulseBL = glm::vec3(0);
@@ -239,7 +242,7 @@ void PhysicsSystem::ResolveManifolds()
 
 					const float velocityAtPoint = glm::dot(-normal, vA) + glm::dot(-contact.crossANormal, wA)
 						+ glm::dot(normal, vB) + glm::dot(contact.crossBNormal, wB);
-					contact.totalImpulseNormal += contact.inverseEffectiveMassNormal * (-velocityAtPoint + manifold.bias);
+					contact.totalImpulseNormal += contact.inverseEffectiveMassNormal * (-velocityAtPoint + contact.bias);
 
 					// Enforce Signorini conditions
 					if (contact.totalImpulseNormal < 0)
@@ -526,9 +529,7 @@ void PhysicsSystem::Update()
 			}
 			else
 			{
-				// TODO:
 				iter->second.UpdateContacts(manifold);
-				//iter->second = manifold;
 			}
 		}
 		else
@@ -618,7 +619,7 @@ FaceQuery SatFaceTest(const HullCollider& hullA, const glm::vec3& positionA, con
 			query.pFace = &hullA.pHull->faces[f];
 		}
 
-		if (seperation > 0)
+		if (seperation > offset)
 		{
 			return query;
 		}
@@ -716,7 +717,7 @@ EdgeQuery SatEdgeTest(const HullCollider& hullA, const glm::vec3& positionA, con
 				query.normal = rotationB * testPlane.normal;
 			}
 
-			if (seperation > 0)
+			if (seperation > offset)
 			{
 				return query;
 			}
@@ -798,6 +799,7 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 		query.pEdgeA,
 		query.pEdgeB
 	};
+	contact.seperation = query.seperation;
 
 	manifold.contacts[0] = contact;
 	manifold.numContacts = 1;
@@ -852,6 +854,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	{
 		glm::vec3 pos;
 		FeaturePair featurePair;
+		float seperation = 0.0f;
 	};
 
 	// Clip with Sutherland-Hodgman
@@ -957,11 +960,14 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 		auto& outBuffer = !swapBuffers ? out : in;
 		for (int i = 0; i < inBuffer.size(); ++i)
 		{
+			SimpleContact& contact = inBuffer[i];
 			const glm::vec3& point = inBuffer[i].pos;
 			const float dist = glm::dot(relativeReferencePlane.normal, point) - relativeReferencePlane.dist;
 
-			if (dist <= 0)
+			// Keep contacts for warm starting even when slightly apart
+			if (dist <= offset)
 			{
+				contact.seperation = dist;
 				outBuffer.push_back(inBuffer[i]);
 			}
 		}
@@ -1124,6 +1130,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			{
 				manifold.contacts[i].position =	rotationB * inBuffer[i].pos + positionB;
 				manifold.contacts[i].featurePair = inBuffer[i].featurePair;
+				manifold.contacts[i].seperation = inBuffer[i].seperation;
 			}
 		}
 	}
@@ -1182,7 +1189,7 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 	FaceQuery faceQueryA = SatFaceTest(hullA, positionA.value, rotationA.value, scaleA, hullB, positionB.value, rotationB.value, scaleB);
 
 	// Check faces of A
-	if (faceQueryA.seperation > 0)
+	if (faceQueryA.seperation > offset)
 	{
 		return false;
 	}
@@ -1190,7 +1197,7 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 	FaceQuery faceQueryB = SatFaceTest(hullB, positionB.value, rotationB.value, scaleB, hullA, positionA.value, rotationA.value, scaleA);
 
 	// Check faces of B
-	if (faceQueryB.seperation > 0)
+	if (faceQueryB.seperation > offset)
 	{
 		return false;
 	}
@@ -1202,7 +1209,7 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 	edgeQuery.seperation -= 0.01f; // TEMP
 
 	// Check edge combinations
-	if (edgeQuery.seperation > 0)
+	if (edgeQuery.seperation > offset)
 	{
 		return false;
 	}
@@ -1231,17 +1238,13 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 
 		if (aIsBiggerThanB)
 		{
-			manifold.seperation = faceQueryA.seperation;
 			manifold.normal = rotationA.value * faceQueryA.pFace->plane.normal;
-
 			CreateFaceContacts(faceQueryA, positionA.value, rotationA.value, scaleA,
 				*hullB.pHull, positionB.value, rotationB.value, scaleB, manifold);
 		}
 		else
 		{
-			manifold.seperation = faceQueryB.seperation;
 			manifold.normal = rotationB.value * -faceQueryB.pFace->plane.normal;
-
 			CreateFaceContacts(faceQueryB, positionB.value, rotationB.value, scaleB,
 				*hullA.pHull, positionA.value, rotationA.value, scaleA, manifold);
 		}
@@ -1249,7 +1252,6 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 	else
 	{
 		manifold.normal = edgeQuery.normal;
-		manifold.seperation = edgeQuery.seperation;
 		CreateEdgeContacts(edgeQuery, positionA.value, rotationA.value, scaleA, positionB.value, rotationB.value, scaleB, manifold);
 
 #ifdef SAT_DEBUG
