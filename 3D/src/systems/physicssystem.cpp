@@ -457,11 +457,7 @@ void PhysicsSystem::Update()
 							const MassComponent& massB = em.GetComponent<MassComponent>(entity2);
 
 							// No need to check for collisions when both are static
-							if (rb.isStatic && rb2.isStatic)
-								continue;
-
-							// No need to check for collisions when both are asleep
-							if (rb.sleeping && rb2.sleeping)
+							if ((rb.isStatic || rb.sleeping) && (rb2.isStatic || rb2.sleeping))
 								continue;
 
 							// Unstoppable force vs immovable object
@@ -472,6 +468,8 @@ void PhysicsSystem::Update()
 							if (massA.inv_mass == INFINITY || massA.inv_inertia == INFINITY ||
 								massB.inv_mass == INFINITY || massA.inv_inertia == INFINITY)
 								continue;
+
+							// TODO: Test against AABB tree
 
 							CollisionPair pair(entity, entity2);
 							pairs.push_back(pair);
