@@ -124,10 +124,10 @@ struct Manifold
 const int numIterations = 6;
 const float gravity = -9.81f;
 const float slop = 0.01f;
-const float offset = 0.0f;
+const float offset = 0.01f;
 const float correctionPercent = 0.2f;
-const float velEpsilonLinear = 0.01f;
-const float velEpsilonAngular = 0.001f;
+const float velEpsilonLinear = 0;
+const float velEpsilonAngular = 0;
 
 class PhysicsSystem : public System
 {

@@ -175,7 +175,7 @@ void Init()
 		// Create box 1
 		{
 			Entity entity = em.AddEntity(boxArchetype);
-			em.GetComponent<PositionComponent>(entity) = { 0, -20, -5 };
+			em.GetComponent<PositionComponent>(entity) = { 0, -10, -5 };
 			em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
 			em.GetComponent<ScaleComponent>(entity) = { 200, 20, 200 };
@@ -192,6 +192,20 @@ void Init()
 			Entity entity = em.AddEntity(boxArchetype);
 			em.GetComponent<PositionComponent>(entity) = { 0, i * 0.6f, -5 };
 			em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
+			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
+			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
+
+			em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+
+			em.GetComponent<HullCollider>(entity) = { &boxHull };
+			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1, 0.6f, Average };
+			em.GetComponent<MassComponent>(entity).SetMass(1);
+			//em.GetComponent<MassComponent>(entity).SetInertia(INFINITY);
+		}
+		{
+			Entity entity = em.AddEntity(boxArchetype);
+			em.GetComponent<PositionComponent>(entity) = { 1, 1, -5 };
+			em.GetComponent<VelocityComponent>(entity) = { 0, 10, 0, 5, 5, 0 };
 			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
 			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
 

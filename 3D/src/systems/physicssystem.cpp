@@ -754,6 +754,11 @@ glm::vec3 GetClosestPointOnLine(const gmath::Line& lineA, const gmath::Line& lin
 	float t = ProjectPointToLine(lineA.pointA, lineBProj);
 	glm::vec3 point = gmath::Lerp(lineB.pointA, lineB.pointB, t);
 
+	if (t < 0 || t > 1)
+	{
+		return glm::vec3(NAN);
+	}
+
 	return point;
 }
 
@@ -790,6 +795,13 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 
 	glm::vec3 pointA = GetClosestPointOnLine(lineA, lineB);
 	glm::vec3 pointB = GetClosestPointOnLine(lineB, lineA);
+
+	// Line don't intersect
+	if (glm::any(glm::isnan(pointA)) || glm::any(glm::isnan(pointB)))
+	{
+		manifold.numContacts = 0;
+		return;
+	}
 
 	glm::vec3 average = (pointA - pointB) / 2.0f + pointB;
 
@@ -965,7 +977,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			const float dist = glm::dot(relativeReferencePlane.normal, point) - relativeReferencePlane.dist;
 
 			// Keep contacts for warm starting even when slightly apart
-			if (dist <= offset)
+			if (dist <= 0)
 			{
 				contact.seperation = dist;
 				outBuffer.push_back(inBuffer[i]);
@@ -1205,6 +1217,7 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 	EdgeQuery edgeQuery = SatEdgeTest(hullA, positionA.value, rotationA.value, scaleA, hullB, positionB.value, rotationB.value, scaleB);
 
 	// TODO: THIS IS A HACK AND SHOULD BE FIXED PROPERLY
+	// Proper method is temporal coherence
 	// Bias towards face collisions a bit because they are better
 	edgeQuery.seperation -= 0.01f; // TEMP
 
@@ -1219,6 +1232,7 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 
 	if (isFaceContactA || isFaceContactB)
 	{
+		// TODO: Only switch when A is significantly larger than B
 		bool aIsBiggerThanB = faceQueryA.seperation >= faceQueryB.seperation;
 
 #ifdef SAT_DEBUG
