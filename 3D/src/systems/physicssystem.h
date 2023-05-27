@@ -131,7 +131,7 @@ struct Manifold
 #endif // PHYS_DEBUG
 #endif // DEBUG
 
-const int numIterations = 6;
+const int numIterations = 10;
 const float gravity = -9.81f;
 const float slop = 0.01f;
 const float offset = 0.0f;
