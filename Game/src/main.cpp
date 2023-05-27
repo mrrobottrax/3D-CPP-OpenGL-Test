@@ -187,7 +187,7 @@ void Init()
 			em.GetComponent<MassComponent>(entity).SetMass(INFINITY);
 		}
 		// Create box 2
-		for (int i = 0; i < 5; ++i)
+		for (int i = 0; i < 10; ++i)
 		{
 			Entity entity = em.AddEntity(boxArchetype);
 			em.GetComponent<PositionComponent>(entity) = { 0, i * 0.6f + 0.5f, -5 };

@@ -136,8 +136,8 @@ const float gravity = -9.81f;
 const float slop = 0.01f;
 const float offset = 0.0f;
 const float correctionPercent = 0.2f;
-const float velEpsilonLinear = 0;
-const float velEpsilonAngular = 0;
+const float velEpsilonLinear = 0.01f;
+const float velEpsilonAngular = 0.001f;
 
 class PhysicsSystem : public System
 {
