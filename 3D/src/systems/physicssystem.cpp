@@ -76,12 +76,12 @@ void Manifold::UpdateContacts(const Manifold& manifold)
 
 void Manifold::UpdateCollisionData(const Manifold& oldManifold)
 {
-	lastFrameInfo.isValid = true;
-	lastFrameInfo.seperation = oldManifold.seperation;
-	lastFrameInfo.axisIsFace = oldManifold.axisIsFace;
-	lastFrameInfo.featureA = oldManifold.featureA;
-	lastFrameInfo.featureB = oldManifold.featureB;
-	lastFrameInfo.faceIsPolyA = oldManifold.faceIsPolyA;
+	isValid = true;
+	seperation = oldManifold.seperation;
+	axisIsFace = oldManifold.axisIsFace;
+	featureA = oldManifold.featureA;
+	featureB = oldManifold.featureB;
+	faceIsPolyA = oldManifold.faceIsPolyA;
 }
 
 void Manifold::PreStep(const CollisionPair& pair)
@@ -1225,44 +1225,42 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 #endif // PHYS_DEBUG
 
 	// Temporal coherence
-	if (manifold.lastFrameInfo.isValid)
+	if (manifold.isValid)
 	{
-		const LastFrameInfo& info = manifold.lastFrameInfo;
-
-		bool wasColliding = info.seperation <= 0;
+		bool wasColliding = manifold.seperation <= 0;
 		bool isColliding = false;
 
 		Manifold newManifold;
 
-		if (info.axisIsFace)
+		if (manifold.axisIsFace)
 		{
 			float seperation;
 			
-			if (info.faceIsPolyA)
-				seperation = GetSingleFaceSeperation(*static_cast<qhFace*>(info.featureA),
+			if (manifold.faceIsPolyA)
+				seperation = GetSingleFaceSeperation(*static_cast<qhFace*>(manifold.featureA),
 					positionA.value, rotationA.value, scaleA,
 					hullB, positionB.value, rotationB.value, scaleB);
 			else
-				seperation = GetSingleFaceSeperation(*static_cast<qhFace*>(info.featureA),
+				seperation = GetSingleFaceSeperation(*static_cast<qhFace*>(manifold.featureA),
 					positionB.value, rotationB.value, scaleB,
 					hullA, positionA.value, rotationA.value, scaleA);
 
 			isColliding = seperation <= 0;
 
-			if (info.faceIsPolyA)
-				newManifold.normal = rotationA.value * (*static_cast<qhFace*>(info.featureA)).plane.normal;
+			if (manifold.faceIsPolyA)
+				newManifold.normal = rotationA.value * (*static_cast<qhFace*>(manifold.featureA)).plane.normal;
 			else
-				newManifold.normal = rotationB.value * (*static_cast<qhFace*>(info.featureA)).plane.normal;
+				newManifold.normal = rotationB.value * (*static_cast<qhFace*>(manifold.featureA)).plane.normal;
 
 			newManifold.axisIsFace = true;
-			newManifold.featureA = info.featureA;
+			newManifold.featureA = manifold.featureA;
 			newManifold.seperation = seperation;
-			newManifold.faceIsPolyA = info.faceIsPolyA;
+			newManifold.faceIsPolyA = manifold.faceIsPolyA;
 		}
 		else
 		{
-			const qhEdge& edgeA = *static_cast<qhEdge*>(info.featureA);
-			const qhEdge& edgeB = *static_cast<qhEdge*>(info.featureB);
+			const qhEdge& edgeA = *static_cast<qhEdge*>(manifold.featureA);
+			const qhEdge& edgeB = *static_cast<qhEdge*>(manifold.featureB);
 
 			const glm::vec3& edgeATail = rotationA.value * (edgeA.pHalfA->pTail->position * scaleA) + positionA.value;
 			const glm::vec3& edgeADir = rotationA.value * ((edgeA.pHalfB->pTail->position - edgeA.pHalfA->pTail->position) * scaleA);
@@ -1291,8 +1289,8 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 				isColliding = seperation <= 0;
 
 				newManifold.axisIsFace = false;
-				newManifold.featureA = info.featureA;
-				newManifold.featureB = info.featureB;
+				newManifold.featureA = manifold.featureA;
+				newManifold.featureB = manifold.featureB;
 				newManifold.seperation = seperation;
 			}
 		}

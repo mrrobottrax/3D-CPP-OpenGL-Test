@@ -90,17 +90,6 @@ struct CollisionPair
 	}
 };
 
-struct LastFrameInfo
-{
-	bool isValid = false;
-	float seperation = 0;
-
-	bool axisIsFace = false;
-	bool faceIsPolyA = false;
-	void* featureA;
-	void* featureB;
-};
-
 struct Manifold
 {
 	float frictionCoefficient = 0;
@@ -114,12 +103,11 @@ struct Manifold
 	glm::vec3 friction1 = glm::vec3(0);
 	glm::vec3 friction2 = glm::vec3(0);
 
-	// TODO: struct and duplicate value are unnecessary
-	LastFrameInfo lastFrameInfo;
+	bool isValid = false;
 	bool axisIsFace = false;
 	bool faceIsPolyA = false;
-	void* featureA;
-	void* featureB;
+	void* featureA = nullptr;
+	void* featureB = nullptr;
 
 	void UpdateContacts(const Manifold&);
 	void UpdateCollisionData(const Manifold&);
