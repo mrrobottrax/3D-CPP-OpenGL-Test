@@ -74,6 +74,16 @@ void Manifold::UpdateContacts(const Manifold& manifold)
 	numContacts = manifold.numContacts;
 }
 
+void Manifold::UpdateCollisionData(const Manifold& oldManifold)
+{
+	lastFrameInfo.isValid = true;
+	lastFrameInfo.seperation = oldManifold.seperation;
+	lastFrameInfo.axisIsFace = oldManifold.axisIsFace;
+	lastFrameInfo.featureA = oldManifold.featureA;
+	lastFrameInfo.featureB = oldManifold.featureB;
+	lastFrameInfo.faceIsPolyA = oldManifold.faceIsPolyA;
+}
+
 void Manifold::PreStep(const CollisionPair& pair)
 {
 	const EntityManager& em = entityManager;
@@ -499,6 +509,15 @@ void PhysicsSystem::Update()
 
 		Manifold manifold;
 
+		// Get last frame collision data
+		{
+			auto iter = manifolds.find(*pairsIt);
+			if (iter != manifolds.end())
+			{
+				manifold.UpdateCollisionData(iter->second);
+			}
+		}
+
 		bool collision = false;
 
 		switch (rbA.colliderType)
@@ -554,6 +573,7 @@ float GetSeperationDepth(gmath::Plane testPlane, const ConvexHull& hull, const g
 
 	float minSeperation = FLT_MAX;
 
+	// TODO: Find support point by walking up mesh
 	for (int v = 0; v < hull.vertCount; ++v)
 	{
 		glm::vec3 point = hull.verts[v].position;
@@ -588,30 +608,36 @@ void PlaneToSpace(Plane& plane, const glm::vec3& spacePosition, const glm::fquat
 	plane.normal = glm::inverse(spaceRotation) * plane.normal;
 }
 
+float GetSingleFaceSeperation(const qhFace& face, const glm::vec3& positionA, const glm::fquat& rotationA, const glm::vec3& scaleA,
+	const HullCollider& hullB, const glm::vec3& positionB, const glm::fquat& rotationB, const glm::vec3& scaleB)
+{
+	gmath::Plane testPlane = face.plane;
+
+	ScalePlane(testPlane, scaleA);
+	PlaneToWorld(testPlane, positionA, rotationA);
+	PlaneToSpace(testPlane, positionB, rotationB);
+
+#ifdef SAT_DEBUG
+	Plane drawPlane = testPlane;
+	PlaneToWorld(drawPlane, positionB, rotationB);
+	PlaneToSpace(drawPlane, positionA, rotationA);
+	PlaneToWorld(drawPlane, glm::vec3(0), rotationA);
+	debugDraw.DrawPlane(positionA, drawPlane, 1.5f, 1.5f, glm::vec3(0.5f), timeManager.GetFixedDeltaTime());
+#endif // SAT_DEBUG
+
+	return GetSeperationDepth(testPlane, *hullB.pHull, scaleB);
+}
+
 FaceQuery SatFaceTest(const HullCollider& hullA, const glm::vec3& positionA, const glm::fquat& rotationA, const glm::vec3& scaleA,
 	const HullCollider& hullB, const glm::vec3& positionB, const glm::fquat& rotationB, const glm::vec3& scaleB)
 {
-	gmath::Plane testPlane;
 	FaceQuery query = FaceQuery();
 	query.seperation = -FLT_MAX;
 
 	for (int f = 0; f < hullA.pHull->faceCount; ++f)
 	{
-		testPlane = hullA.pHull->faces[f].plane;
-
-		ScalePlane(testPlane, scaleA);
-		PlaneToWorld(testPlane, positionA, rotationA);
-		PlaneToSpace(testPlane, positionB, rotationB);
-
-#ifdef SAT_DEBUG
-		Plane drawPlane = testPlane;
-		PlaneToWorld(drawPlane, positionB, rotationB);
-		PlaneToSpace(drawPlane, positionA, rotationA);
-		PlaneToWorld(drawPlane, glm::vec3(0), rotationA);
-		debugDraw.DrawPlane(positionA, drawPlane, 1.5f, 1.5f, glm::vec3(0.5f), timeManager.GetFixedDeltaTime());
-#endif // SAT_DEBUG
-
-		float seperation = GetSeperationDepth(testPlane, *hullB.pHull, scaleB);
+		const float& seperation = GetSingleFaceSeperation(hullA.pHull->faces[f], positionA, rotationA, scaleA,
+			hullB, positionB, rotationB, scaleB);
 
 		if (seperation > query.seperation)
 		{
@@ -781,6 +807,16 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	lineB.pointA = rotationB * lineB.pointA + positionB;
 	lineB.pointB = rotationB * lineB.pointB + positionB;
 
+	const glm::vec3 pointA = GetClosestPointOnLine(lineA, lineB);
+	const glm::vec3 pointB = GetClosestPointOnLine(lineB, lineA);
+
+	// Line don't intersect
+	if (glm::any(glm::isnan(pointA)) || glm::any(glm::isnan(pointB)))
+	{
+		manifold.numContacts = 0;
+		return;
+	}
+
 	// Calculate line directions
 	glm::vec3 dirA = lineA.pointB - lineA.pointA;
 	manifold.friction1 = dirA;
@@ -792,16 +828,6 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	debugDraw.DrawLine(lineA.pointA, lineA.pointB, { 1, 1, 0 }, timeManager.GetFixedDeltaTime());
 	debugDraw.DrawLine(lineB.pointA, lineB.pointB, { 1, 1, 0 }, timeManager.GetFixedDeltaTime());
 #endif // CONTACT_DEBUG
-
-	glm::vec3 pointA = GetClosestPointOnLine(lineA, lineB);
-	glm::vec3 pointB = GetClosestPointOnLine(lineB, lineA);
-
-	// Line don't intersect
-	if (glm::any(glm::isnan(pointA)) || glm::any(glm::isnan(pointB)))
-	{
-		manifold.numContacts = 0;
-		return;
-	}
 
 	glm::vec3 average = (pointA - pointB) / 2.0f + pointB;
 
@@ -1198,37 +1224,157 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 
 #endif // PHYS_DEBUG
 
-	FaceQuery faceQueryA = SatFaceTest(hullA, positionA.value, rotationA.value, scaleA, hullB, positionB.value, rotationB.value, scaleB);
+	// Temporal coherence
+	if (manifold.lastFrameInfo.isValid)
+	{
+		const LastFrameInfo& info = manifold.lastFrameInfo;
+
+		bool wasColliding = info.seperation <= 0;
+		bool isColliding = false;
+
+		Manifold newManifold;
+
+		if (info.axisIsFace)
+		{
+			float seperation;
+			
+			if (info.faceIsPolyA)
+				seperation = GetSingleFaceSeperation(*static_cast<qhFace*>(info.featureA),
+					positionA.value, rotationA.value, scaleA,
+					hullB, positionB.value, rotationB.value, scaleB);
+			else
+				seperation = GetSingleFaceSeperation(*static_cast<qhFace*>(info.featureA),
+					positionB.value, rotationB.value, scaleB,
+					hullA, positionA.value, rotationA.value, scaleA);
+
+			isColliding = seperation <= 0;
+
+			if (info.faceIsPolyA)
+				newManifold.normal = rotationA.value * (*static_cast<qhFace*>(info.featureA)).plane.normal;
+			else
+				newManifold.normal = rotationB.value * (*static_cast<qhFace*>(info.featureA)).plane.normal;
+
+			newManifold.axisIsFace = true;
+			newManifold.featureA = info.featureA;
+			newManifold.seperation = seperation;
+			newManifold.faceIsPolyA = info.faceIsPolyA;
+		}
+		else
+		{
+			const qhEdge& edgeA = *static_cast<qhEdge*>(info.featureA);
+			const qhEdge& edgeB = *static_cast<qhEdge*>(info.featureB);
+
+			const glm::vec3& edgeATail = rotationA.value * (edgeA.pHalfA->pTail->position * scaleA) + positionA.value;
+			const glm::vec3& edgeADir = rotationA.value * ((edgeA.pHalfB->pTail->position - edgeA.pHalfA->pTail->position) * scaleA);
+			const glm::vec3& edgeBDir = rotationB.value * ((edgeB.pHalfB->pTail->position - edgeB.pHalfA->pTail->position) * scaleB);
+
+			if (EdgesBuildMinkowskiFace(edgeA, edgeADir, rotationA.value,
+				edgeB, edgeBDir, rotationB.value))
+			{
+				gmath::Plane testPlane;
+				testPlane.normal = glm::normalize(glm::cross(edgeADir, edgeBDir));
+
+				// Check if the normal is facing the right direction
+				if (glm::dot(edgeATail - positionA.value, testPlane.normal) < 0)
+				{
+					testPlane.normal = -testPlane.normal;
+				}
+
+				// Move plane to edge
+				testPlane.dist = glm::dot(edgeATail, testPlane.normal);
+
+				newManifold.normal = testPlane.normal;
+
+				PlaneToSpace(testPlane, positionB.value, rotationB.value);
+				float seperation = GetSeperationDepth(testPlane, *hullB.pHull, scaleB);
+
+				isColliding = seperation <= 0;
+
+				newManifold.axisIsFace = false;
+				newManifold.featureA = info.featureA;
+				newManifold.featureB = info.featureB;
+				newManifold.seperation = seperation;
+			}
+		}
+
+		if (wasColliding == isColliding)
+		{
+			// TODO: Do we even need to calculate if colliding?
+			// Maybe just use contact generation
+			if (isColliding)
+			{
+				// Regen contacts
+				if (newManifold.axisIsFace)
+				{
+					// Prev collision was face
+
+					FaceQuery faceQuery;
+					faceQuery.pFace = static_cast<qhFace*>(newManifold.featureA);
+					faceQuery.seperation = newManifold.seperation;
+
+					if (newManifold.faceIsPolyA)
+						CreateFaceContacts(faceQuery, positionA.value, rotationA.value, scaleA,
+							*hullB.pHull, positionB.value, rotationB.value, scaleB, newManifold);
+					else
+						CreateFaceContacts(faceQuery, positionB.value, rotationB.value, scaleB,
+							*hullA.pHull, positionA.value, rotationA.value, scaleA, newManifold);
+
+					if (!newManifold.faceIsPolyA)
+						newManifold.normal *= -1;
+				}
+				else
+				{
+					// Prev collision was edge
+
+					EdgeQuery edgeQuery;
+					edgeQuery.pEdgeA = static_cast<qhEdge*>(newManifold.featureA);
+					edgeQuery.pEdgeB = static_cast<qhEdge*>(newManifold.featureB);
+					edgeQuery.seperation = newManifold.seperation;
+
+					CreateEdgeContacts(edgeQuery, positionA.value, rotationA.value, scaleA,
+						positionB.value, rotationB.value, scaleB, newManifold);
+				}
+
+				if (newManifold.numContacts > 0)
+				{
+					manifold = newManifold;
+					return true;
+				}
+			}
+			else
+			{
+				// Found seperating axis
+				manifold = newManifold;
+				return false;
+			}
+		}
+	}
 
 	// Check faces of A
+	FaceQuery faceQueryA = SatFaceTest(hullA, positionA.value, rotationA.value, scaleA, hullB, positionB.value, rotationB.value, scaleB);
 	if (faceQueryA.seperation > offset)
 	{
 		return false;
 	}
 
-	FaceQuery faceQueryB = SatFaceTest(hullB, positionB.value, rotationB.value, scaleB, hullA, positionA.value, rotationA.value, scaleA);
-
 	// Check faces of B
+	FaceQuery faceQueryB = SatFaceTest(hullB, positionB.value, rotationB.value, scaleB, hullA, positionA.value, rotationA.value, scaleA);
 	if (faceQueryB.seperation > offset)
 	{
 		return false;
 	}
 
-	EdgeQuery edgeQuery = SatEdgeTest(hullA, positionA.value, rotationA.value, scaleA, hullB, positionB.value, rotationB.value, scaleB);
-
-	// TODO: THIS IS A HACK AND SHOULD BE FIXED PROPERLY
-	// Proper method is temporal coherence
-	// Bias towards face collisions a bit because they are better
-	edgeQuery.seperation -= 0.01f; // TEMP
-
 	// Check edge combinations
+	EdgeQuery edgeQuery = SatEdgeTest(hullA, positionA.value, rotationA.value, scaleA, hullB, positionB.value, rotationB.value, scaleB);
 	if (edgeQuery.seperation > offset)
 	{
 		return false;
 	}
 
-	bool isFaceContactA = faceQueryA.seperation >= edgeQuery.seperation;
-	bool isFaceContactB = faceQueryB.seperation >= edgeQuery.seperation;
+	// Prefer face collisions
+	const float faceBias = 0.01f;
+	bool isFaceContactA = faceQueryA.seperation + faceBias >= edgeQuery.seperation;
+	bool isFaceContactB = faceQueryB.seperation + faceBias >= edgeQuery.seperation;
 
 	if (isFaceContactA || isFaceContactB)
 	{
@@ -1254,21 +1400,34 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 		{
 			manifold.normal = rotationA.value * faceQueryA.pFace->plane.normal;
 			manifold.seperation = faceQueryA.seperation;
+			manifold.axisIsFace = true;
+			manifold.featureA = faceQueryA.pFace;
+			manifold.faceIsPolyA = true;
+
 			CreateFaceContacts(faceQueryA, positionA.value, rotationA.value, scaleA,
 				*hullB.pHull, positionB.value, rotationB.value, scaleB, manifold);
 		}
 		else
 		{
-			manifold.normal = rotationB.value * -faceQueryB.pFace->plane.normal;
+			manifold.normal = rotationB.value * faceQueryB.pFace->plane.normal;
 			manifold.seperation = faceQueryB.seperation;
+			manifold.axisIsFace = true;
+			manifold.featureA = faceQueryB.pFace;
+			manifold.faceIsPolyA = false;
+
 			CreateFaceContacts(faceQueryB, positionB.value, rotationB.value, scaleB,
 				*hullA.pHull, positionA.value, rotationA.value, scaleA, manifold);
+			manifold.normal *= -1;
 		}
 	}
 	else
 	{
 		manifold.normal = edgeQuery.normal;
 		manifold.seperation = edgeQuery.seperation;
+		manifold.axisIsFace = false;
+		manifold.featureA = edgeQuery.pEdgeA;
+		manifold.featureB = edgeQuery.pEdgeB;
+
 		CreateEdgeContacts(edgeQuery, positionA.value, rotationA.value, scaleA, positionB.value, rotationB.value, scaleB, manifold);
 
 #ifdef SAT_DEBUG

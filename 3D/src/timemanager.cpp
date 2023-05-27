@@ -5,7 +5,7 @@
 Cvar timescale = { "timescale", 1 };
 
 TimeManager::TimeManager() : dDeltaTime(), deltaTime(), lastTime(), unscaledDeltaTime(), dUnscaledDeltaTime(),
-	fixedDeltaTime((float)dFixedDeltaTime), scaledFixedDeltaTime(), dScaledFixedDeltaTime()
+	fixedDeltaTime((float)dFixedDeltaTime)
 {
 	console.AddCvar(timescale);
 }
@@ -20,27 +20,14 @@ void TimeManager::Update()
 
 	deltaTime *= timescale.value;
 	dDeltaTime *= timescale.value;
-
-	dScaledFixedDeltaTime = dFixedDeltaTime * timescale.value;
-	scaledFixedDeltaTime = (float)dScaledFixedDeltaTime;
 }
 
 float TimeManager::GetFixedDeltaTime()
-{
-	return scaledFixedDeltaTime;
-}
-
-float TimeManager::GetUnscaledFixedDeltaTime()
 {
 	return fixedDeltaTime;
 }
 
 double TimeManager::GetFixedDeltaTimeDouble()
-{
-	return dScaledFixedDeltaTime;
-}
-
-double TimeManager::GetUnscaledFixedDeltaTimeDouble()
 {
 	return dFixedDeltaTime;
 }

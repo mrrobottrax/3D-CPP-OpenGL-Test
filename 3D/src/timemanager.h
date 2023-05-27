@@ -10,9 +10,7 @@ public:
 
 private:
 	const double dFixedDeltaTime = 1 / 60.0f;
-	double dScaledFixedDeltaTime;
 	float fixedDeltaTime;
-	float scaledFixedDeltaTime;
 
 	float deltaTime;
 	double dDeltaTime;
@@ -27,9 +25,6 @@ public:
 
 	float GetFixedDeltaTime();
 	double GetFixedDeltaTimeDouble();
-
-	float GetUnscaledFixedDeltaTime();
-	double GetUnscaledFixedDeltaTimeDouble();
 
 	float GetDeltaTime();
 	double GetDeltaTimeDouble();

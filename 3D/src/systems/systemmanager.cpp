@@ -9,6 +9,13 @@ SystemManager::SystemManager()
 {
 	systems = std::map<size_t, System*>();
 	tickSystems = std::map<size_t, System*>();
+
+	auto advance = [&](Console& console)
+	{
+		tickTimer = 0;
+		UpdateSystems();
+	};
+	console.AddCommand("advance", advance);
 }
 
 SystemManager::~SystemManager()
