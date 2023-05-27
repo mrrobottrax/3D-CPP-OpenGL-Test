@@ -84,6 +84,27 @@ void Manifold::UpdateCollisionData(const Manifold& oldManifold)
 	faceIsPolyA = oldManifold.faceIsPolyA;
 }
 
+void ComputeWorldInverseInertiaTensor(const glm::fquat& rotation, const glm::vec3& localInverseInertia, glm::mat3& inertiaTensor)
+{
+	// No clue what this does but it seems important
+
+	glm::mat3 orientation = glm::mat3(rotation);
+
+	inertiaTensor[0][0] = orientation[0][0] * localInverseInertia.x;
+	inertiaTensor[0][1] = orientation[1][0] * localInverseInertia.y;
+	inertiaTensor[0][2] = orientation[2][0] * localInverseInertia.z;
+
+	inertiaTensor[1][0] = orientation[0][1] * localInverseInertia.x;
+	inertiaTensor[1][1] = orientation[1][1] * localInverseInertia.y;
+	inertiaTensor[1][2] = orientation[2][1] * localInverseInertia.z;
+
+	inertiaTensor[2][0] = orientation[0][2] * localInverseInertia.x;
+	inertiaTensor[2][1] = orientation[1][2] * localInverseInertia.y;
+	inertiaTensor[2][2] = orientation[2][2] * localInverseInertia.z;
+
+	inertiaTensor = orientation * inertiaTensor;
+}
+
 void Manifold::PreStep(const CollisionPair& pair)
 {
 	const EntityManager& em = entityManager;
@@ -97,14 +118,23 @@ void Manifold::PreStep(const CollisionPair& pair)
 	const PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
 	const PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
 
+	const RotationComponent& rotationA = em.GetComponent<RotationComponent>(entityA);
+	const RotationComponent& rotationB = em.GetComponent<RotationComponent>(entityB);
+
 	MassComponent& massComponentA = em.GetComponent<MassComponent>(entityA);
 	MassComponent& massComponentB = em.GetComponent<MassComponent>(entityB);
 
 	const float& inv_massA = massComponentA.inv_mass;
-	const glm::vec3 inv_inertiaA = massComponentA.inv_inertia * inv_massA;
+	const glm::vec3 localInertiaA = massComponentA.inv_inertia * inv_massA;
 
 	const float& inv_massB = massComponentB.inv_mass;
-	const glm::vec3 inv_inertiaB = massComponentB.inv_inertia * inv_massB;
+	const glm::vec3 localInertiaB = massComponentB.inv_inertia * inv_massB;
+
+	inv_inertiaA = glm::mat3(0);
+	ComputeWorldInverseInertiaTensor(rotationA.value, localInertiaA, inv_inertiaA);
+
+	inv_inertiaB = glm::mat3(0);
+	ComputeWorldInverseInertiaTensor(rotationB.value, localInertiaB, inv_inertiaB);
 
 	VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
 	VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
@@ -137,25 +167,24 @@ void Manifold::PreStep(const CollisionPair& pair)
 		contact.crossBFriction2 = glm::cross(contact.position - positionB.value, friction2);
 
 		// Calculate relative mass
-		// TODO: Implement inertia tensor
 		{
 			const float n = glm::dot(normal, normal);
 			const glm::vec3& cA = contact.crossANormal;
 			const glm::vec3& cB = contact.crossBNormal;
 			contact.inverseEffectiveMassNormal = 1.0f / ((n * inv_massA) + (n * inv_massB) +
-				glm::dot(cA * inv_inertiaA, cA) + glm::dot(cB * inv_inertiaB, cB));
+				glm::dot(inv_inertiaA * cA, cA) + glm::dot(inv_inertiaB * cB, cB));
 
 			const float n1 = glm::dot(friction1, friction1);
 			const glm::vec3& cA1 = contact.crossAFriction1;
 			const glm::vec3& cB1 = contact.crossBFriction1;
 			contact.inverseEffectiveMassFriction1 = 1.0f / ((n1 * inv_massA) + (n1 * inv_massB) +
-				glm::dot(cA1 * inv_inertiaA, cA1) + glm::dot(cB1 * inv_inertiaB, cB1));
+				glm::dot(inv_inertiaA * cA1, cA1) + glm::dot(inv_inertiaB * cB1, cB1));
 
 			const float n2 = glm::dot(friction2, friction2);
 			const glm::vec3& cA2 = contact.crossAFriction2;
 			const glm::vec3& cB2 = contact.crossBFriction2;
 			contact.inverseEffectiveMassFriction2 = 1.0f / ((n2 * inv_massA) + (n2 * inv_massB) +
-				glm::dot(cA2 * inv_inertiaA, cA2) + glm::dot(cB2 * inv_inertiaB, cB2));
+				glm::dot(inv_inertiaA * cA2, cA2) + glm::dot(inv_inertiaB * cB2, cB2));
 		}
 
 		// Apply impulses
@@ -220,9 +249,7 @@ void PhysicsSystem::ResolveManifolds()
 			RotationComponent& rotationB = em.GetComponent<RotationComponent>(entityB);
 
 			const float& inv_massA = em.GetComponent<MassComponent>(entityA).inv_mass;
-			const glm::vec3& inv_inertiaA = em.GetComponent<MassComponent>(entityA).inv_inertia * inv_massA;
 			const float& inv_massB = em.GetComponent<MassComponent>(entityB).inv_mass;
-			const glm::vec3& inv_inertiaB = em.GetComponent<MassComponent>(entityB).inv_inertia * inv_massB;
 
 			VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
 			VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
@@ -270,6 +297,7 @@ void PhysicsSystem::ResolveManifolds()
 				}
 
 				// Friction
+				// TODO: Only do friction at the center of the manifold
 				{
 					const float oldImpulse1 = contact.totalImpulseFriction1;
 					const float oldImpulse2 = contact.totalImpulseFriction2;
@@ -323,10 +351,10 @@ void PhysicsSystem::ResolveManifolds()
 				glm::vec3& velAngularB = velocityB.angular;
 
 				velLinearA -= inv_massA * impulseAL;
-				velAngularA -= inv_inertiaA * impulseAA;
+				velAngularA -= manifold.inv_inertiaA * impulseAA;
 
 				velLinearB += inv_massB * impulseBL;
-				velAngularB += inv_inertiaB * impulseBA;
+				velAngularB += manifold.inv_inertiaB * impulseBA;
 			}
 		}
 	}

@@ -109,6 +109,9 @@ struct Manifold
 	void* featureA = nullptr;
 	void* featureB = nullptr;
 
+	glm::mat3 inv_inertiaA = glm::mat3(0);
+	glm::mat3 inv_inertiaB = glm::mat3(0);
+
 	void UpdateContacts(const Manifold&);
 	void UpdateCollisionData(const Manifold&);
 	void PreStep(const CollisionPair&);
