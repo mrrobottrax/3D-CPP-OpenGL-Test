@@ -22,6 +22,52 @@ PhysicsSystem::~PhysicsSystem()
 {
 }
 
+void PhysicsSystem::ComputeInertia(const Entity& entity)
+{
+	const EntityManager& em = entityManager;
+
+	MassComponent& mass = em.GetComponent<MassComponent>(entity);
+	const RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(entity);
+
+	auto ComputeHullInertia = [&em, &entity, &mass]()
+	{
+		const HullCollider& hull = em.GetComponent<HullCollider>(entity);
+
+		mass.inertia = glm::vec3(1 / 24.0f);
+		mass.inv_inertia = glm::vec3(24.0f);
+	};
+
+	switch (rb.colliderType)
+	{
+	case ColliderType::Hull:
+		ComputeHullInertia();
+		break;
+
+	default:
+		break;
+	}
+
+	//mass.inertia = glm::vec3(1 / 24.0f);
+	//mass.inv_inertia = glm::vec3(24.0f);
+}
+
+CollisionPair::CollisionPair(const Entity& entityA, const Entity& entityB)
+{
+	const IdComponent& idA = entityManager.GetComponent<IdComponent>(entityA);
+	const IdComponent& idB = entityManager.GetComponent<IdComponent>(entityB);
+
+	if (idA.index < idB.index)
+	{
+		this->entityA = entityA;
+		this->entityB = entityB;
+	}
+	else
+	{
+		this->entityA = entityB;
+		this->entityB = entityA;
+	}
+}
+
 void Manifold::UpdateContacts(const Manifold& manifold)
 {
 	ContactPoint mergedContacts[4];
@@ -673,7 +719,7 @@ FaceQuery SatFaceTest(const HullCollider& hullA, const glm::vec3& positionA, con
 			query.pFace = &hullA.pHull->faces[f];
 		}
 
-		if (seperation > offset)
+		if (seperation > 0)
 		{
 			return query;
 		}
@@ -771,7 +817,7 @@ EdgeQuery SatEdgeTest(const HullCollider& hullA, const glm::vec3& positionA, con
 				query.normal = rotationB * testPlane.normal;
 			}
 
-			if (seperation > offset)
+			if (seperation > 0)
 			{
 				return query;
 			}
@@ -1202,16 +1248,16 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	}
 }
 
-bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manifold)
+bool PhysicsSystem::HullVsHull(const Entity& entityA, const Entity& entityB, Manifold& manifold)
 {
 	// Seperating Axis Theorum
 
-	EntityManager& em = entityManager;
+	const EntityManager& em = entityManager;
 
-	PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
-	PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
-	RotationComponent& rotationA = em.GetComponent<RotationComponent>(entityA);
-	RotationComponent& rotationB = em.GetComponent<RotationComponent>(entityB);
+	const PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
+	const PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
+	const RotationComponent& rotationA = em.GetComponent<RotationComponent>(entityA);
+	const RotationComponent& rotationB = em.GetComponent<RotationComponent>(entityB);
 
 	const HullCollider& hullA = em.GetComponent<HullCollider>(entityA);
 	const HullCollider& hullB = em.GetComponent<HullCollider>(entityB);
@@ -1378,21 +1424,21 @@ bool PhysicsSystem::HullVsHull(Entity& entityA, Entity& entityB, Manifold& manif
 
 	// Check faces of A
 	FaceQuery faceQueryA = SatFaceTest(hullA, positionA.value, rotationA.value, scaleA, hullB, positionB.value, rotationB.value, scaleB);
-	if (faceQueryA.seperation > offset)
+	if (faceQueryA.seperation > 0)
 	{
 		return false;
 	}
 
 	// Check faces of B
 	FaceQuery faceQueryB = SatFaceTest(hullB, positionB.value, rotationB.value, scaleB, hullA, positionA.value, rotationA.value, scaleA);
-	if (faceQueryB.seperation > offset)
+	if (faceQueryB.seperation > 0)
 	{
 		return false;
 	}
 
 	// Check edge combinations
 	EdgeQuery edgeQuery = SatEdgeTest(hullA, positionA.value, rotationA.value, scaleA, hullB, positionB.value, rotationB.value, scaleB);
-	if (edgeQuery.seperation > offset)
+	if (edgeQuery.seperation > 0)
 	{
 		return false;
 	}

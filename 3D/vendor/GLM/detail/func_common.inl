@@ -614,7 +614,7 @@ namespace detail
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'isnan' only accept floating-point inputs");
 
-		vec<L, bool, Q> Result;
+		vec<L, bool, Q> Result{};
 		for (length_t l = 0; l < v.length(); ++l)
 			Result[l] = glm::isnan(v[l]);
 		return Result;

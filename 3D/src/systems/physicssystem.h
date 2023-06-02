@@ -2,6 +2,7 @@
 
 #include <systems/system.h>
 #include <memory/entity.h>
+#include <memory/entitymanager.h>
 #include <components/rigidbodycomponent.h>
 #include <physics/convexhull.h>
 #include <map>
@@ -64,19 +65,7 @@ struct CollisionPair
 	Entity entityA;
 	Entity entityB;
 
-	CollisionPair(const Entity& entityA, const Entity& entityB)
-	{
-		if (&entityA < &entityB)
-		{
-			this->entityA = entityA;
-			this->entityB = entityB;
-		}
-		else
-		{
-			this->entityA = entityB;
-			this->entityB = entityA;
-		}
-	};
+	CollisionPair(const Entity& entityA, const Entity& entityB);
 
 	inline bool operator < (const CollisionPair& other) const
 	{
@@ -134,7 +123,6 @@ struct Manifold
 const int numIterations = 10;
 const float gravity = -9.81f;
 const float slop = 0.01f;
-const float offset = 0.0f;
 const float correctionPercent = 0.2f;
 const float velEpsilonLinear = 0.01f;
 const float velEpsilonAngular = 0.001f;
@@ -152,5 +140,7 @@ private:
 
 public:
 	void Update() override;
-	bool HullVsHull(Entity& entityA, Entity& entityB, Manifold& manifold);
+	bool HullVsHull(const Entity& entityA, const Entity& entityB, Manifold& manifold);
+
+	static void ComputeInertia(const Entity& entity);
 };

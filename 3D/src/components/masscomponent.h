@@ -15,9 +15,6 @@ struct MassComponent
 
 		this->mass = mass;
 		this->inv_mass = 1 / mass;
-
-		inertia = glm::vec3(1 / 24.0f);
-		inv_inertia = glm::vec3(24.0f);
 	}
 
 	void SetInverseMass(float inv_mass)

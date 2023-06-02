@@ -175,7 +175,7 @@ void InputManager::MouseCallback(int button, int action)
 	ButtonCallback(keycode, action);
 }
 
-const int loopMargin = 10;
+const GLsizei loopMargin = 10;
 
 void InputManager::UpdateCursorDelta(double xPos, double yPos)
 {
@@ -195,10 +195,10 @@ void InputManager::UpdateCursorDelta(double xPos, double yPos)
 	// Loop cursor TODO: This should probably be in mallet code
 	if (cursorLoop)
 	{
-		GLsizei windowSize[2];
+		GLsizei windowSize[2]{};
 		glfwGetWindowSize(pMainWindow, &windowSize[0], &windowSize[1]);
 
-		double cursorPos[2];
+		double cursorPos[2]{};
 		cursorPos[0] = xPos;
 		cursorPos[1] = yPos;
 
@@ -208,13 +208,13 @@ void InputManager::UpdateCursorDelta(double xPos, double yPos)
 		{
 			while (cursorPos[i] < loopMargin)
 			{
-				cursorPos[i] += windowSize[i] - loopMargin * 2;
+				cursorPos[i] += windowSize[i] - GLsizei(loopMargin * 2);
 				looped = true;
 			}
 
 			while (cursorPos[i] > windowSize[i] - loopMargin)
 			{
-				cursorPos[i] -= windowSize[i] - loopMargin * 2;
+				cursorPos[i] -= windowSize[i] - GLsizei(loopMargin * 2);
 				looped = true;
 			}
 		}
@@ -269,7 +269,7 @@ bool InputManager::GetButtonDown(int buttonIndex)
 {
 	if (buttonIndex >= MAX_BUTTONS)
 	{
-		char number[3];
+		char number[3]{};
 		number[0] = int(buttonIndex / 10) % 10;
 		number[1] = buttonIndex % 10;
 
