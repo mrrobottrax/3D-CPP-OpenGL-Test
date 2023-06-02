@@ -33,6 +33,7 @@ void PhysicsSystem::ComputeInertia(const Entity& entity)
 	{
 		const HullCollider& hull = em.GetComponent<HullCollider>(entity);
 
+		// TODO:
 		mass.inertia = glm::vec3(1 / 24.0f);
 		mass.inv_inertia = glm::vec3(24.0f);
 	};
