@@ -145,6 +145,7 @@
     <ClInclude Include="src\components\hullcollider.h" />
     <ClInclude Include="src\components\idcomponent.h" />
     <ClInclude Include="src\components\masscomponent.h" />
+    <ClInclude Include="src\components\meshcollider.h" />
     <ClInclude Include="src\components\meshcomponent.h" />
     <ClInclude Include="src\components\positioncomponent.h" />
     <ClInclude Include="src\components\rigidbodycomponent.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="src\meshobject.h" />
     <ClInclude Include="src\modelloader.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\physics\collisionmesh.h" />
     <ClInclude Include="src\physics\convexhull.h" />
     <ClInclude Include="src\systems\freecamsystem.h" />
     <ClInclude Include="src\systems\physicssystem.h" />
