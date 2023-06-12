@@ -47,9 +47,6 @@ void PhysicsSystem::ComputeInertia(const Entity& entity)
 	default:
 		break;
 	}
-
-	//mass.inertia = glm::vec3(1 / 24.0f);
-	//mass.inv_inertia = glm::vec3(24.0f);
 }
 
 CollisionPair::CollisionPair(const Entity& entityA, const Entity& entityB)
