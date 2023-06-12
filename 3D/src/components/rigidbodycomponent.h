@@ -20,5 +20,5 @@ struct RigidBodyComponent
 	float frictionCoefficient = 0.6f;
 	FrictionCombine frictionCombine = Average;
 
-	bool sleeping = false;
+	float sleepTimer = 0.2f;
 };

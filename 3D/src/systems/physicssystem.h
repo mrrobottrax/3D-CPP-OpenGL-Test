@@ -124,8 +124,9 @@ const int numIterations = 10;
 const float gravity = -9.81f;
 const float slop = 0.01f;
 const float correctionPercent = 0.2f;
-const float velEpsilonLinear = 0.01f;
-const float velEpsilonAngular = 0.001f;
+const float sleepTime = 0.5f;
+const float velEpsilonLinear = 0.1f;
+const float velEpsilonAngular = 0.1f;
 
 class PhysicsSystem : public System
 {

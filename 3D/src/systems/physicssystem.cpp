@@ -403,8 +403,7 @@ void PhysicsSystem::ResolveManifolds()
 		}
 	}
 
-	// Stop bodies with low velocity
-	// TODO: This should probably be energy based or something
+	// Sleep bodies with low velocity
 	for (auto manifoldIter = manifolds.begin(); manifoldIter != manifolds.end(); ++manifoldIter)
 	{
 		Manifold& manifold = manifoldIter->second;
@@ -436,13 +435,19 @@ void PhysicsSystem::ResolveManifolds()
 			if (glm::dot(linearVel, linearVel) <= velEpsilonLinear &&
 				glm::dot(angularVel, angularVel) <= velEpsilonAngular)
 			{
-				linearVel = glm::vec3(0);
-				angularVel = glm::vec3(0);
-				rbs[i]->sleeping = true;
+				if (rbs[i]->sleepTimer <= 0)
+				{
+					linearVel = glm::vec3(0);
+					angularVel = glm::vec3(0);
+				}
+				else
+				{
+					rbs[i]->sleepTimer -= timeManager.GetDeltaTime();
+				}
 			}
 			else
 			{
-				rbs[i]->sleeping = false;
+				rbs[i]->sleepTimer = sleepTime;
 			}
 		}
 	}
@@ -539,7 +544,7 @@ void PhysicsSystem::Update()
 							const MassComponent& massB = em.GetComponent<MassComponent>(entity2);
 
 							// No need to check for collisions when both are static
-							if ((rb.isStatic || rb.sleeping) && (rb2.isStatic || rb2.sleeping))
+							if ((rb.isStatic || rb.sleepTimer <= 0) && (rb2.isStatic || rb2.sleepTimer <= 0))
 								continue;
 
 							// Unstoppable force vs immovable object
