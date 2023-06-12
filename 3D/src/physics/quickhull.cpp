@@ -932,7 +932,6 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 			qhVertex& vert = **it;
 
 			assert(i < vertCount);
-			vertArray[i].pEdge = (heHalfEdge*)vert.pEdge;
 			vertArray[i].position = vert.position;
 
 			++i;
@@ -1023,14 +1022,6 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 					pointer = set;
 				}
 			};
-
-			// Update all pointers to this edge in vertices
-			for (int j = 0; j < vertCount; ++j)
-			{
-				heVertex& vert = vertArray[j];
-
-				UpdatePointer(vert.pEdge, pOldEdge, pNewEdge);
-			}
 
 			// Update all pointers to this edge in edges
 			for (int j = 0; j < halfEdgeCount; ++j)

@@ -10,15 +10,13 @@ struct heFace;
 
 struct heVertex
 {
-	heHalfEdge* pEdge;
-
 	glm::vec3 position;
 
-	heVertex() : pEdge(), position(0, 0, 0) {};
+	heVertex() : position(0, 0, 0) {};
 
 	bool operator ==(heVertex& other)
 	{
-		return this->pEdge == other.pEdge && this->position == other.position;
+		return this->position == other.position;
 	}
 };
 
