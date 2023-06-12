@@ -52,9 +52,7 @@ struct heFace
 
 	gmath::Plane plane;
 
-	std::vector<glm::vec3> conflictList;
-
-	heFace() : pEdge(), plane(), conflictList() {};
+	heFace() : pEdge(), plane() {};
 
 	bool operator ==(heFace& other)
 	{
