@@ -13,15 +13,13 @@ struct qhFace;
 
 struct qhVertex
 {
-	qhHalfEdge* pEdge;
-
 	glm::vec3 position;
 
-	qhVertex() : pEdge(), position(0, 0, 0) {};
+	qhVertex() : position(0, 0, 0) {};
 
 	bool operator ==(qhVertex& other)
 	{
-		return this->pEdge == other.pEdge && this->position == other.position;
+		return this->position == other.position;
 	}
 };
 

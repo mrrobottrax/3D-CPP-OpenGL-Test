@@ -410,7 +410,7 @@ void QuickHull::InitialHull(std::list<glm::vec3>& points)
 	qhHalfEdge* baseEdges[3]{};
 	if (!planeFlipped)
 	{
-		baseVerts[0]->pEdge = baseEdges[0] = AddEdge();
+		baseEdges[0] = AddEdge();
 		baseEdges[0]->pTail = baseVerts[0];
 		
 #ifdef QHULL_DEBUG
@@ -418,7 +418,7 @@ void QuickHull::InitialHull(std::list<glm::vec3>& points)
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // QHULL_DEBUG
 
-		baseVerts[1]->pEdge = baseEdges[1] = AddEdge();
+		baseEdges[1] = AddEdge();
 		baseEdges[1]->pTail = baseVerts[1];
 
 #ifdef QHULL_DEBUG
@@ -426,7 +426,7 @@ void QuickHull::InitialHull(std::list<glm::vec3>& points)
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // QHULL_DEBUG
 
-		baseVerts[2]->pEdge = baseEdges[2] = AddEdge();
+		baseEdges[2] = AddEdge();
 		baseEdges[2]->pTail = baseVerts[2];
 
 #ifdef QHULL_DEBUG
@@ -437,7 +437,7 @@ void QuickHull::InitialHull(std::list<glm::vec3>& points)
 	}
 	else // Swap order of vertices to make face counter clockwise
 	{
-		baseVerts[2]->pEdge = baseEdges[0] = AddEdge();
+		baseEdges[0] = AddEdge();
 		baseEdges[0]->pTail = baseVerts[2];
 
 #ifdef QHULL_DEBUG
@@ -445,7 +445,7 @@ void QuickHull::InitialHull(std::list<glm::vec3>& points)
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // QHULL_DEBUG
 
-		baseVerts[1]->pEdge = baseEdges[1] = AddEdge();
+		baseEdges[1] = AddEdge();
 		baseEdges[1]->pTail = baseVerts[1];
 
 #ifdef QHULL_DEBUG
@@ -453,7 +453,7 @@ void QuickHull::InitialHull(std::list<glm::vec3>& points)
 		std::this_thread::sleep_for(std::chrono::milliseconds((long)(1000 * delayTest)));
 #endif // QHULL_DEBUG
 
-		baseVerts[0]->pEdge = baseEdges[2] = AddEdge();
+		baseEdges[2] = AddEdge();
 		baseEdges[2]->pTail = baseVerts[0];
 
 #ifdef QHULL_DEBUG
