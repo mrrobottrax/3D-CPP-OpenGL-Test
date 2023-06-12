@@ -1,3 +1,3 @@
 #pragma once
 
-typedef size_t gSize_t;
+typedef int gSize_t;

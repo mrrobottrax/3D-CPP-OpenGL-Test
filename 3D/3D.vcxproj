@@ -174,8 +174,8 @@
     <ClInclude Include="src\meshobject.h" />
     <ClInclude Include="src\modelloader.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\physics\collisionmesh.h" />
-    <ClInclude Include="src\physics\convexhull.h" />
+    <ClInclude Include="src\physics\halfedgemesh.h" />
+    <ClInclude Include="src\physics\quickhull.h" />
     <ClInclude Include="src\systems\freecamsystem.h" />
     <ClInclude Include="src\systems\physicssystem.h" />
     <ClInclude Include="src\systems\rendersystem.h" />
@@ -208,7 +208,8 @@
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\physics\convexhull.cpp" />
+    <ClCompile Include="src\physics\halfedgemesh.cpp" />
+    <ClCompile Include="src\physics\quickhull.cpp" />
     <ClCompile Include="src\systems\freecamsystem.cpp" />
     <ClCompile Include="src\systems\physicssystem.cpp" />
     <ClCompile Include="src\systems\rendersystem.cpp" />

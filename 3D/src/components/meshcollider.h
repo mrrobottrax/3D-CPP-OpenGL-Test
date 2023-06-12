@@ -1,8 +1,8 @@
 #pragma once
 
-#include <physics/collisionmesh.h>
+#include <physics/halfedgemesh.h>
 
 struct MeshCollider
 {
-	CollisionMesh* pMesh;
+	HalfEdgeMesh* pMesh;
 };

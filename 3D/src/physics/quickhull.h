@@ -4,6 +4,7 @@
 #include <common/types.h>
 
 #include <unordered_set>
+#include <physics/halfedgemesh.h>
 
 struct qhVertex;
 struct qhHalfEdge;
@@ -76,19 +77,19 @@ struct qhFace
 const float delayTest = 0.1f;
 #endif // QHULL_DEBUG
 
-class ConvexHull
+class QuickHull
 {
 public:
-	ConvexHull(const int vertCount, const glm::vec3* vertices);
-	ConvexHull() : verts(), halfEdges(), edges(), faces(), epsilon(), sqrEpsilon(),
+	QuickHull(const int vertCount, const glm::vec3* vertices, HalfEdgeMesh& destinationMesh);
+	QuickHull() : verts(), halfEdges(), edges(), faces(), epsilon(), sqrEpsilon(),
 		vertCount(), halfEdgeCount(), edgeCount(), faceCount() {};
-	~ConvexHull();
+	~QuickHull();
 
 public:
 	float epsilon, sqrEpsilon;
 
 public:
-	void QuickHull(const int vertCount, const glm::vec3* verticesArray);
+	void Algorithm(const int vertCount, const glm::vec3* verticesArray, HalfEdgeMesh& dest);
 
 private:
 	void AllocateMemory(const int vertCount);
@@ -104,8 +105,7 @@ private:
 	void RemoveVertex(qhVertex& vertex);
 	void RemoveFace(qhFace& face);
 
-	void CondenseArrays(qhFace& startFace);
-	void CreateEdges();
+	void CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest);
 
 	//TODO: make sure these functions are using correct precision with fat planes etc
 	void MergeCoplanar(const std::vector<qhHalfEdge*>& horizon, std::unordered_set<qhFace*>& unvisitedFaces);

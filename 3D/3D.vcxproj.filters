@@ -115,7 +115,7 @@
     <ClInclude Include="src\meshobject.h" />
     <ClInclude Include="src\modelloader.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\physics\convexhull.h">
+    <ClInclude Include="src\physics\quickhull.h">
       <Filter>physics</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\freecamsystem.h">
@@ -146,7 +146,7 @@
     <ClInclude Include="src\components\scalecomponent.h" />
     <ClInclude Include="src\systems\unscaledvelocitysystem.h" />
     <ClInclude Include="src\components\meshcollider.h" />
-    <ClInclude Include="src\physics\collisionmesh.h" />
+    <ClInclude Include="src\physics\halfedgemesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">
@@ -195,7 +195,7 @@
     <ClCompile Include="src\meshobject.cpp" />
     <ClCompile Include="src\modelloader.cpp" />
     <ClCompile Include="src\pch.cpp" />
-    <ClCompile Include="src\physics\convexhull.cpp">
+    <ClCompile Include="src\physics\quickhull.cpp">
       <Filter>physics</Filter>
     </ClCompile>
     <ClCompile Include="src\systems\freecamsystem.cpp">
@@ -219,5 +219,6 @@
     <ClCompile Include="src\timemanager.cpp" />
     <ClCompile Include="src\common\math.cpp" />
     <ClCompile Include="src\systems\unscaledvelocitysystem.cpp" />
+    <ClCompile Include="src\physics\halfedgemesh.cpp" />
   </ItemGroup>
 </Project>

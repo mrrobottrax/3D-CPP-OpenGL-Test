@@ -4,20 +4,20 @@
 #include <memory/entity.h>
 #include <memory/entitymanager.h>
 #include <components/rigidbodycomponent.h>
-#include <physics/convexhull.h>
+#include <physics/halfedgemesh.h>
 #include <map>
 
 struct FaceQuery
 {
 	float seperation = -FLT_MAX;
-	qhFace* pFace = nullptr;
+	heFace* pFace = nullptr;
 };
 
 struct EdgeQuery
 {
 	float seperation = -FLT_MAX;
-	qhEdge* pEdgeA = nullptr;
-	qhEdge* pEdgeB = nullptr;
+	heEdge* pEdgeA = nullptr;
+	heEdge* pEdgeB = nullptr;
 
 	glm::vec3 normal = glm::vec3(0);
 };

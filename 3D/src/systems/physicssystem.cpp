@@ -639,7 +639,7 @@ void PhysicsSystem::Update()
 
 // Find vertex with most penetration
 // Plane MUST be in hull space
-float GetSeperationDepth(gmath::Plane testPlane, const ConvexHull& hull, const glm::vec3& scale)
+float GetSeperationDepth(gmath::Plane testPlane, const HalfEdgeMesh& hull, const glm::vec3& scale)
 {
 
 #ifdef SAT_DEBUG
@@ -685,7 +685,7 @@ void PlaneToSpace(Plane& plane, const glm::vec3& spacePosition, const glm::fquat
 	plane.normal = glm::inverse(spaceRotation) * plane.normal;
 }
 
-float GetSingleFaceSeperation(const qhFace& face, const glm::vec3& positionA, const glm::fquat& rotationA, const glm::vec3& scaleA,
+float GetSingleFaceSeperation(const heFace& face, const glm::vec3& positionA, const glm::fquat& rotationA, const glm::vec3& scaleA,
 	const HullCollider& hullB, const glm::vec3& positionB, const glm::fquat& rotationB, const glm::vec3& scaleB)
 {
 	gmath::Plane testPlane = face.plane;
@@ -749,8 +749,8 @@ bool NormalsBuildMinkowskiFace(const glm::vec3& a, const glm::vec3& b, const glm
 	return cba * dba < 0 && adc * bdc < 0 && cba * bdc > 0;
 }
 
-bool EdgesBuildMinkowskiFace(const qhEdge& edgeA, const glm::vec3& edgeADir, const glm::fquat& rotationA,
-	const qhEdge& edgeB, const glm::vec3& edgeBDir, const glm::fquat& rotationB)
+bool EdgesBuildMinkowskiFace(const heEdge& edgeA, const glm::vec3& edgeADir, const glm::fquat& rotationA,
+	const heEdge& edgeB, const glm::vec3& edgeBDir, const glm::fquat& rotationB)
 {
 	glm::vec3 a = rotationA * edgeA.pHalfA->pFace->plane.normal;
 	glm::vec3 b = rotationA * edgeA.pHalfB->pFace->plane.normal;
@@ -922,24 +922,24 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 
 // Find most anti-parallel face
 // Normal must be in hull space
-qhFace& FindIncidentFace(const glm::vec3& normal, const ConvexHull& hull)
+heFace& FindIncidentFace(const glm::vec3& normal, const HalfEdgeMesh& hull)
 {
 	// TODO: Walking adjacent faces would be faster
 	// Like finding support point
 
-	qhFace* pFace = nullptr;
+	heFace* pFace = nullptr;
 	float bestDot = FLT_MAX;
 
 	for (int i = 0; i < hull.faceCount; ++i)
 	{
-		const qhFace& face = hull.faces[i];
+		const heFace& face = hull.faces[i];
 
 		const float dot = glm::dot(normal, face.plane.normal);
 
 		if (dot <= bestDot)
 		{
 			bestDot = dot;
-			pFace = const_cast<qhFace*>(&face);
+			pFace = const_cast<heFace*>(&face);
 		}
 	}
 
@@ -947,9 +947,9 @@ qhFace& FindIncidentFace(const glm::vec3& normal, const ConvexHull& hull)
 }
 
 void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, const glm::fquat& rotationA, const glm::vec3& scaleA,
-	const ConvexHull& hullB, const glm::vec3& positionB, const glm::fquat& rotationB, const glm::vec3& scaleB, Manifold& manifold)
+	const HalfEdgeMesh& hullB, const glm::vec3& positionB, const glm::fquat& rotationB, const glm::vec3& scaleB, Manifold& manifold)
 {
-	const qhFace& referenceFace = *queryA.pFace;
+	const heFace& referenceFace = *queryA.pFace;
 
 	Plane relativeReferencePlane = referenceFace.plane;
 	ScalePlane(relativeReferencePlane, scaleA);
@@ -957,7 +957,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	PlaneToWorld(relativeReferencePlane, positionA, rotationA);
 	PlaneToSpace(relativeReferencePlane, positionB, rotationB);
 
-	const qhFace& incidentFace = FindIncidentFace(relativeReferencePlane.normal, hullB);
+	const heFace& incidentFace = FindIncidentFace(relativeReferencePlane.normal, hullB);
 
 	// Find friction vectors
 	manifold.friction1 = rotationA * (scaleA * queryA.pFace->pEdge->pTail->position - scaleB * queryA.pFace->pEdge->pTwin->pTail->position);
@@ -978,8 +978,8 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 
 	// Get starting verts
 	{
-		const qhHalfEdge* startEdge = incidentFace.pEdge;
-		qhHalfEdge* pEdge = const_cast<qhHalfEdge*>(startEdge);
+		const heHalfEdge* startEdge = incidentFace.pEdge;
+		heHalfEdge* pEdge = const_cast<heHalfEdge*>(startEdge);
 		do
 		{
 			in.push_back({
@@ -994,14 +994,14 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	// Clip against adjacent planes
 	bool swapBuffers = false;
 	{
-		const qhHalfEdge* startEdge = referenceFace.pEdge;
-		qhHalfEdge* pEdge = const_cast<qhHalfEdge*>(startEdge);
+		const heHalfEdge* startEdge = referenceFace.pEdge;
+		heHalfEdge* pEdge = const_cast<heHalfEdge*>(startEdge);
 		do
 		{
 			auto& inBuffer = swapBuffers ? out : in;
 			auto& outBuffer = !swapBuffers ? out : in;
 
-			const qhFace& clipFace = *pEdge->pTwin->pFace;
+			const heFace& clipFace = *pEdge->pTwin->pFace;
 			Plane clipPlane = clipFace.plane;
 			ScalePlane(clipPlane, scaleA);
 
@@ -1314,20 +1314,20 @@ bool PhysicsSystem::HullVsHull(const Entity& entityA, const Entity& entityB, Man
 			float seperation;
 			
 			if (manifold.faceIsPolyA)
-				seperation = GetSingleFaceSeperation(*static_cast<qhFace*>(manifold.featureA),
+				seperation = GetSingleFaceSeperation(*static_cast<heFace*>(manifold.featureA),
 					positionA.value, rotationA.value, scaleA,
 					hullB, positionB.value, rotationB.value, scaleB);
 			else
-				seperation = GetSingleFaceSeperation(*static_cast<qhFace*>(manifold.featureA),
+				seperation = GetSingleFaceSeperation(*static_cast<heFace*>(manifold.featureA),
 					positionB.value, rotationB.value, scaleB,
 					hullA, positionA.value, rotationA.value, scaleA);
 
 			isColliding = seperation <= 0;
 
 			if (manifold.faceIsPolyA)
-				newManifold.normal = rotationA.value * (*static_cast<qhFace*>(manifold.featureA)).plane.normal;
+				newManifold.normal = rotationA.value * (*static_cast<heFace*>(manifold.featureA)).plane.normal;
 			else
-				newManifold.normal = rotationB.value * (*static_cast<qhFace*>(manifold.featureA)).plane.normal;
+				newManifold.normal = rotationB.value * (*static_cast<heFace*>(manifold.featureA)).plane.normal;
 
 			newManifold.axisIsFace = true;
 			newManifold.featureA = manifold.featureA;
@@ -1336,8 +1336,8 @@ bool PhysicsSystem::HullVsHull(const Entity& entityA, const Entity& entityB, Man
 		}
 		else
 		{
-			const qhEdge& edgeA = *static_cast<qhEdge*>(manifold.featureA);
-			const qhEdge& edgeB = *static_cast<qhEdge*>(manifold.featureB);
+			const heEdge& edgeA = *static_cast<heEdge*>(manifold.featureA);
+			const heEdge& edgeB = *static_cast<heEdge*>(manifold.featureB);
 
 			const glm::vec3& edgeATail = rotationA.value * (edgeA.pHalfA->pTail->position * scaleA) + positionA.value;
 			const glm::vec3& edgeADir = rotationA.value * ((edgeA.pHalfB->pTail->position - edgeA.pHalfA->pTail->position) * scaleA);
@@ -1384,7 +1384,7 @@ bool PhysicsSystem::HullVsHull(const Entity& entityA, const Entity& entityB, Man
 					// Prev collision was face
 
 					FaceQuery faceQuery;
-					faceQuery.pFace = static_cast<qhFace*>(newManifold.featureA);
+					faceQuery.pFace = static_cast<heFace*>(newManifold.featureA);
 					faceQuery.seperation = newManifold.seperation;
 
 					if (newManifold.faceIsPolyA)
@@ -1402,8 +1402,8 @@ bool PhysicsSystem::HullVsHull(const Entity& entityA, const Entity& entityB, Man
 					// Prev collision was edge
 
 					EdgeQuery edgeQuery;
-					edgeQuery.pEdgeA = static_cast<qhEdge*>(newManifold.featureA);
-					edgeQuery.pEdgeB = static_cast<qhEdge*>(newManifold.featureB);
+					edgeQuery.pEdgeA = static_cast<heEdge*>(newManifold.featureA);
+					edgeQuery.pEdgeB = static_cast<heEdge*>(newManifold.featureB);
 					edgeQuery.seperation = newManifold.seperation;
 
 					CreateEdgeContacts(edgeQuery, positionA.value, rotationA.value, scaleA,

@@ -33,6 +33,9 @@
 
 #include <thread>
 
+#include <physics/halfedgemesh.h>
+#include <physics/quickhull.h>
+
 using namespace std;
 
 // Show memory leaks
@@ -44,18 +47,7 @@ MeshObject testMap = MeshObject();
 MeshObject testMesh = MeshObject();
 MeshObject boxMesh = MeshObject();
 
-glm::vec3 vertices[] = {
-	{ -0.5f, -0.5f, -0.5f },
-	{  0.5f, -0.5f, -0.5f },
-	{ -0.5f,  0.5f, -0.5f },
-	{  0.5f,  0.5f, -0.5f },
-
-	{ -0.5f, -0.5f,  0.5f },
-	{  0.5f, -0.5f,  0.5f },
-	{ -0.5f,  0.5f,  0.5f },
-	{  0.5f,  0.5f,  0.5f },
-};
-ConvexHull boxHull = ConvexHull(8, vertices);
+HalfEdgeMesh boxHull;
 
 void Init()
 {
@@ -172,6 +164,27 @@ void Init()
 		Component().init<ScaleComponent>(),
 		};
 		EntityArchetype boxArchetype = EntityArchetype(9, components);
+
+		glm::vec3 vertices[] = {
+			{ -0.5f, -0.5f, -0.5f },
+			{  0.5f, -0.5f, -0.5f },
+			{ -0.5f,  0.5f, -0.5f },
+			{  0.5f,  0.5f, -0.5f },
+
+			{ -0.5f, -0.5f,  0.5f },
+			{  0.5f, -0.5f,  0.5f },
+			{ -0.5f,  0.5f,  0.5f },
+			{  0.5f,  0.5f,  0.5f },
+		};
+
+		// Quickhull
+		{
+			QuickHull qh = QuickHull();
+			qh.Algorithm(8, vertices, boxHull);
+		}
+
+		boxHull.Draw(20);
+
 		// Create box 1
 		{
 			Entity entity = em.AddEntity(boxArchetype);

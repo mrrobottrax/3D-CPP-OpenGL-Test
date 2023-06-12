@@ -1,8 +1,8 @@
 #pragma once
 
-#include <physics/convexhull.h>
+#include <physics/halfedgemesh.h>
 
 struct HullCollider
 {
-	ConvexHull* pHull;
+	HalfEdgeMesh* pHull;
 };
