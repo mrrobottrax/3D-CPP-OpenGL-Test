@@ -147,6 +147,7 @@
     <ClInclude Include="src\systems\unscaledvelocitysystem.h" />
     <ClInclude Include="src\components\meshcollider.h" />
     <ClInclude Include="src\physics\halfedgemesh.h" />
+    <ClInclude Include="src\physics\aabbtree.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\matrixstack.cpp">

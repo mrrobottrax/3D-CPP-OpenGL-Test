@@ -96,7 +96,7 @@ private:
 
 	void CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest);
 
-	//TODO: make sure these functions are using correct precision with fat planes etc
+	// TODO: make sure these functions are using correct precision with fat planes etc
 	void MergeCoplanar(const std::vector<qhHalfEdge*>& horizon, std::unordered_set<qhFace*>& unvisitedFaces);
 	bool IsCoplanar(qhFace& a, qhFace& b);
 	void RePartitionVertices(std::unordered_set<qhFace*> visibleFaces, std::vector<qhFace*> newFaces, const glm::vec3 eye);
