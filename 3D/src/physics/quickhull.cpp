@@ -1096,6 +1096,5 @@ QuickHull::~QuickHull()
 {
 	delete[] this->verts;
 	delete[] this->halfEdges;
-	delete[] this->edges;
 	delete[] this->faces;
 }

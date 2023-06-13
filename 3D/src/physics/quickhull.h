@@ -8,7 +8,6 @@
 
 struct qhVertex;
 struct qhHalfEdge;
-struct qhEdge;
 struct qhFace;
 
 struct qhVertex
@@ -41,14 +40,6 @@ struct qhHalfEdge
 	}
 };
 
-struct qhEdge
-{
-	qhHalfEdge* pHalfA;
-	qhHalfEdge* pHalfB;
-
-	qhEdge() : pHalfA(), pHalfB() {};
-};
-
 struct qhFace
 {
 	qhHalfEdge* pEdge;
@@ -79,8 +70,8 @@ class QuickHull
 {
 public:
 	QuickHull(const int vertCount, const glm::vec3* vertices, HalfEdgeMesh& destinationMesh);
-	QuickHull() : verts(), halfEdges(), edges(), faces(), epsilon(), sqrEpsilon(),
-		vertCount(), halfEdgeCount(), edgeCount(), faceCount() {};
+	QuickHull() : verts(), halfEdges(), faces(), epsilon(), sqrEpsilon(),
+		vertCount(), halfEdgeCount(), faceCount() {};
 	~QuickHull();
 
 public:
@@ -113,11 +104,9 @@ private:
 public:
 	gSize_t vertCount;
 	gSize_t halfEdgeCount;
-	gSize_t edgeCount;
 	gSize_t faceCount;
 
 	qhVertex* verts;
 	qhHalfEdge* halfEdges;
-	qhEdge* edges;
 	qhFace* faces;
 };
