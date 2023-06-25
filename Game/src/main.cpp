@@ -9,6 +9,8 @@
 #include <timemanager.h>
 #include <modelloader.h>
 
+#include <systems/systemmanager.h>
+
 #include <systems/rendersystem.h>
 #include <systems/debugdraw.h>
 #include <physics/velocitysystem.h>

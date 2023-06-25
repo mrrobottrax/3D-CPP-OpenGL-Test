@@ -238,6 +238,26 @@ void InputSystem::GetCursorDelta(double* deltaX, double* deltaY)
 	*deltaY = cursorDeltaY;
 }
 
+bool InputSystem::GetCursorFree()
+{
+	return cursorFree;
+}
+
+void InputSystem::SetCursorFree(bool free)
+{
+	cursorFree = free;
+
+	if (cursorFree)
+		glfwSetInputMode(pMainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	else
+		glfwSetInputMode(pMainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void InputSystem::ToggleCursorFree()
+{
+	SetCursorFree(!cursorFree);
+}
+
 void InputSystem::ButtonDown(Button& button)
 {
 	if (!button.down[0] || button.down[0] == console.GetKey())

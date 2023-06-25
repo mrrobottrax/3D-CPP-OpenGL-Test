@@ -23,6 +23,7 @@ private:
 	double lastCursorPosY = 0;
 
 	bool cursorLoop = false;
+	bool cursorFree = false;
 
 	void ButtonCallback(int, int);
 
@@ -43,6 +44,9 @@ public:
 
 	void UpdateCursorDelta(double xPos, double yPos);
 	void GetCursorDelta(double* deltaX, double* deltaY);
+	void ToggleCursorFree();
+	void SetCursorFree(bool);
+	bool GetCursorFree();
 
 	void ButtonDown(Button& button);
 	void ButtonUp(Button& button);

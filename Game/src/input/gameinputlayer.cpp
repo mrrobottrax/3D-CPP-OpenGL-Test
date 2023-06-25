@@ -15,6 +15,6 @@ void GameKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
-		glfwSetWindowShouldClose(pWindow, GLFW_TRUE);
+		inputSystem.ToggleCursorFree();
 	}
 }

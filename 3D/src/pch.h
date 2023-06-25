@@ -19,5 +19,6 @@
 #include <stack>
 #include <list>
 
-//#include <imgui/imguiutil.h>
+// IMGUI should be loaded before OpenGL
+#include <imgui/imguiload.h>
 #include <gl/glload.h>

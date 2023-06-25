@@ -27,7 +27,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\common\math.h">
+      <Filter>common</Filter>
+    </ClInclude>
     <ClInclude Include="src\common\matrixstack.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\types.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="src\components\cameracomponent.h">
@@ -45,6 +51,9 @@
     <ClInclude Include="src\components\masscomponent.h">
       <Filter>components</Filter>
     </ClInclude>
+    <ClInclude Include="src\components\meshcollider.h">
+      <Filter>components</Filter>
+    </ClInclude>
     <ClInclude Include="src\components\meshcomponent.h">
       <Filter>components</Filter>
     </ClInclude>
@@ -57,10 +66,15 @@
     <ClInclude Include="src\components\rotationcomponent.h">
       <Filter>components</Filter>
     </ClInclude>
+    <ClInclude Include="src\components\scalecomponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\components\unscaledvelocitycomponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
     <ClInclude Include="src\components\velocitycomponent.h">
       <Filter>components</Filter>
     </ClInclude>
-    <ClInclude Include="src\systems\debugdraw.h" />
     <ClInclude Include="src\gl\glload.h">
       <Filter>gl</Filter>
     </ClInclude>
@@ -69,15 +83,6 @@
     </ClInclude>
     <ClInclude Include="src\gl\shaderloader.h">
       <Filter>gl</Filter>
-    </ClInclude>
-    <ClInclude Include="src\imgui\imgui_impl_glfw.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\imgui\imgui_impl_opengl3.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\imgui\imgui_impl_opengl3_loader.h">
-      <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="src\imgui\imguiutil.h">
       <Filter>imgui</Filter>
@@ -112,13 +117,28 @@
     <ClInclude Include="src\meshobject.h" />
     <ClInclude Include="src\modelloader.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\physics\aabbtree.h">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physics\halfedgemesh.h">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physics\physicssystem.h">
+      <Filter>physics</Filter>
+    </ClInclude>
     <ClInclude Include="src\physics\quickhull.h">
       <Filter>physics</Filter>
     </ClInclude>
-    <ClInclude Include="src\systems\freecamsystem.h">
+    <ClInclude Include="src\physics\unscaledvelocitysystem.h">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\physics\velocitysystem.h">
+      <Filter>physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\systems\debugdraw.h">
       <Filter>systems</Filter>
     </ClInclude>
-    <ClInclude Include="src\physics\physicssystem.h">
+    <ClInclude Include="src\systems\freecamsystem.h">
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\rendersystem.h">
@@ -130,35 +150,21 @@
     <ClInclude Include="src\systems\systemmanager.h">
       <Filter>systems</Filter>
     </ClInclude>
-    <ClInclude Include="src\physics\velocitysystem.h">
-      <Filter>systems</Filter>
-    </ClInclude>
     <ClInclude Include="src\timemanager.h" />
-    <ClInclude Include="src\common\math.h" />
-    <ClInclude Include="src\common\types.h" />
-    <ClInclude Include="src\components\unscaledvelocitycomponent.h" />
-    <ClInclude Include="src\components\scalecomponent.h" />
-    <ClInclude Include="src\physics\unscaledvelocitysystem.h" />
-    <ClInclude Include="src\components\meshcollider.h" />
-    <ClInclude Include="src\physics\halfedgemesh.h" />
-    <ClInclude Include="src\physics\aabbtree.h" />
+    <ClInclude Include="src\imgui\imguiload.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\common\math.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
     <ClCompile Include="src\common\matrixstack.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="src\systems\debugdraw.cpp" />
     <ClCompile Include="src\gl\glutil.cpp">
       <Filter>gl</Filter>
     </ClCompile>
     <ClCompile Include="src\gl\shaderloader.cpp">
       <Filter>gl</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui\imgui_impl_glfw.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\imgui\imgui_impl_opengl3.cpp">
-      <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="src\imgui\imguiutil.cpp">
       <Filter>imgui</Filter>
@@ -190,13 +196,25 @@
     <ClCompile Include="src\meshobject.cpp" />
     <ClCompile Include="src\modelloader.cpp" />
     <ClCompile Include="src\pch.cpp" />
+    <ClCompile Include="src\physics\halfedgemesh.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\physicssystem.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
     <ClCompile Include="src\physics\quickhull.cpp">
       <Filter>physics</Filter>
     </ClCompile>
-    <ClCompile Include="src\systems\freecamsystem.cpp">
+    <ClCompile Include="src\physics\unscaledvelocitysystem.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\velocitysystem.cpp">
+      <Filter>physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\systems\debugdraw.cpp">
       <Filter>systems</Filter>
     </ClCompile>
-    <ClCompile Include="src\physics\physicssystem.cpp">
+    <ClCompile Include="src\systems\freecamsystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\systems\rendersystem.cpp">
@@ -205,12 +223,6 @@
     <ClCompile Include="src\systems\systemmanager.cpp">
       <Filter>systems</Filter>
     </ClCompile>
-    <ClCompile Include="src\physics\velocitysystem.cpp">
-      <Filter>systems</Filter>
-    </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
-    <ClCompile Include="src\common\math.cpp" />
-    <ClCompile Include="src\physics\unscaledvelocitysystem.cpp" />
-    <ClCompile Include="src\physics\halfedgemesh.cpp" />
   </ItemGroup>
 </Project>

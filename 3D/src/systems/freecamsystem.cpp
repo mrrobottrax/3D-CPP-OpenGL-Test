@@ -61,7 +61,12 @@ void FreecamSystem::Update()
 
 	// Look mouse
 	double xDelta, yDelta;
-	inputSystem.GetCursorDelta(&xDelta, &yDelta);
+
+	xDelta = yDelta = 0.0;
+
+	if (!inputSystem.GetCursorFree())
+		inputSystem.GetCursorDelta(&xDelta, &yDelta);
+
 	panVector.y = -(float)xDelta;
 	panVector.x = -(float)yDelta;
 	pitchDelta += yDelta * 0.0015f;
