@@ -1,5 +1,5 @@
-#include <pch.h>
-#include <input/keycodes.h>
+#include "pch.h"
+#include "keycodes.h"
 
 Keyname keynames[] =
 {

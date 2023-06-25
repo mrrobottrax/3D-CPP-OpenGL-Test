@@ -156,14 +156,13 @@
     <ClInclude Include="src\systems\debugdraw.h" />
     <ClInclude Include="src\gl\glload.h" />
     <ClInclude Include="src\gl\glutil.h" />
-    <ClInclude Include="src\gl\shader.h" />
     <ClInclude Include="src\gl\shaderloader.h" />
     <ClInclude Include="src\imgui\imgui_impl_glfw.h" />
     <ClInclude Include="src\imgui\imgui_impl_opengl3.h" />
     <ClInclude Include="src\imgui\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="src\imgui\imguiutil.h" />
     <ClInclude Include="src\input\console.h" />
-    <ClInclude Include="src\input\inputmanager.h" />
+    <ClInclude Include="src\input\inputsystem.h" />
     <ClInclude Include="src\input\keycodes.h" />
     <ClInclude Include="src\memory\chunk.h" />
     <ClInclude Include="src\memory\chunkarchetypeelement.h" />
@@ -178,12 +177,12 @@
     <ClInclude Include="src\physics\halfedgemesh.h" />
     <ClInclude Include="src\physics\quickhull.h" />
     <ClInclude Include="src\systems\freecamsystem.h" />
-    <ClInclude Include="src\systems\physicssystem.h" />
+    <ClInclude Include="src\physics\physicssystem.h" />
     <ClInclude Include="src\systems\rendersystem.h" />
     <ClInclude Include="src\systems\system.h" />
     <ClInclude Include="src\systems\systemmanager.h" />
-    <ClInclude Include="src\systems\unscaledvelocitysystem.h" />
-    <ClInclude Include="src\systems\velocitysystem.h" />
+    <ClInclude Include="src\physics\unscaledvelocitysystem.h" />
+    <ClInclude Include="src\physics\velocitysystem.h" />
     <ClInclude Include="src\timemanager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -196,7 +195,7 @@
     <ClCompile Include="src\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\imgui\imguiutil.cpp" />
     <ClCompile Include="src\input\console.cpp" />
-    <ClCompile Include="src\input\inputmanager.cpp" />
+    <ClCompile Include="src\input\inputsystem.cpp" />
     <ClCompile Include="src\input\keycodes.cpp" />
     <ClCompile Include="src\memory\chunkarchetypeelement.cpp" />
     <ClCompile Include="src\memory\component.cpp" />
@@ -211,11 +210,11 @@
     <ClCompile Include="src\physics\halfedgemesh.cpp" />
     <ClCompile Include="src\physics\quickhull.cpp" />
     <ClCompile Include="src\systems\freecamsystem.cpp" />
-    <ClCompile Include="src\systems\physicssystem.cpp" />
+    <ClCompile Include="src\physics\physicssystem.cpp" />
     <ClCompile Include="src\systems\rendersystem.cpp" />
     <ClCompile Include="src\systems\systemmanager.cpp" />
-    <ClCompile Include="src\systems\unscaledvelocitysystem.cpp" />
-    <ClCompile Include="src\systems\velocitysystem.cpp" />
+    <ClCompile Include="src\physics\unscaledvelocitysystem.cpp" />
+    <ClCompile Include="src\physics\velocitysystem.cpp" />
     <ClCompile Include="src\timemanager.cpp" />
   </ItemGroup>
   <ItemGroup>

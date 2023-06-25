@@ -1,7 +1,6 @@
 #pragma once
-
-#include <memory/chunk.h>
-#include <memory/entityArchetype.h>
+#include "chunk.h"
+#include "entityarchetype.h"
 
 struct Entity
 {

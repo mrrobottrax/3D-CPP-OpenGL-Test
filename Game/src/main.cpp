@@ -11,10 +11,10 @@
 
 #include <systems/rendersystem.h>
 #include <systems/debugdraw.h>
-#include <systems/velocitysystem.h>
+#include <physics/velocitysystem.h>
 #include <systems/freecamsystem.h>
-#include <systems/physicssystem.h>
-#include <systems/unscaledvelocitysystem.h>
+#include <physics/physicssystem.h>
+#include <physics/unscaledvelocitysystem.h>
 
 #include <components/cameracomponent.h>
 #include <components/freecamcomponent.h>
@@ -30,9 +30,7 @@
 #include <components/scalecomponent.h>
 
 #include <imgui/imguiutil.h>
-#include <input/inputmanager.h>
-
-#include <thread>
+#include <input/inputsystem.h>
 
 #include <physics/halfedgemesh.h>
 #include <physics/quickhull.h>
@@ -66,6 +64,7 @@ void Init()
 	sm.AddTickSystem<PhysicsSystem>(physicsSystem);
 	sm.AddTickSystem<VelocitySystem>(velocitySystem);
 
+	sm.AddSystem<InputSystem>(inputSystem);
 	sm.AddSystem<FreecamSystem>(freecamSystem);
 	sm.AddSystem<UnscaledVelocitySystem>(unscaledVelocitySystem);
 	sm.AddSystem<RenderSystem>(renderSystem);
@@ -262,10 +261,6 @@ int main()
 	{
 		timeManager.Update();
 		glfwPollEvents();
-
-		double xPos, yPos;
-		glfwGetCursorPos(pMainWindow, &xPos, &yPos);
-		inputManager.UpdateCursorDelta(xPos, yPos);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClearDepth(1.0f);

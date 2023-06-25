@@ -7,8 +7,7 @@
 #include <components/rotationcomponent.h>
 
 #include <common/matrixstack.h>
-
-//#include <systems/systemmanager.h>
+#include <gl/glutil.h>
 
 void DebugDraw::DrawLine(const float start[3], const float end[3], glm::vec3 color, float time)
 {

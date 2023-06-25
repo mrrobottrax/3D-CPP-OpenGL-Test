@@ -1,9 +1,11 @@
-#include <pch.h>
-#include <input/inputmanager.h>
+#include "pch.h"
+#include "inputsystem.h"
+
+#include "console.h"
 
 #include <gl/glutil.h>
 
-InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), buttons()
+void InputSystem::Init()
 {
 	lastCursorPosX = 0;
 	lastCursorPosY = 0;
@@ -26,12 +28,7 @@ InputManager::InputManager() : keys(), cursorDeltaX(0), cursorDeltaY(0), buttons
 	BindKey('y', "advance");
 }
 
-InputManager::~InputManager()
-{
-	
-}
-
-void InputManager::BindKey(char key, const char* action)
+void InputSystem::BindKey(char key, const char* action)
 {
 	memset(keys[key].binding, NULL, MAX_BIND_LENGTH);
 	strcpy_s(keys[key].binding, action);
@@ -40,7 +37,7 @@ void InputManager::BindKey(char key, const char* action)
 	std::cout << "Bound " << keyname << " to " << action << "\n";
 }
 
-void InputManager::BindToggleKey(char key, const char* cvar)
+void InputSystem::BindToggleKey(char key, const char* cvar)
 {
 	char* keyname = KeycodeToName(key);
 
@@ -51,7 +48,7 @@ void InputManager::BindToggleKey(char key, const char* cvar)
 	std::cout << "Bound " << keyname << " to toggle " << cvar << "\n";
 }
 
-int InputManager::KeyboardInputToKeycode(int key)
+int InputSystem::KeyboardInputToKeycode(int key)
 {
 	if (IsPrintableASCII(key))
 	{
@@ -74,12 +71,12 @@ int InputManager::KeyboardInputToKeycode(int key)
 	}
 }
 
-int InputManager::MouseInputToKeycode(int button)
+int InputSystem::MouseInputToKeycode(int button)
 {
 	return 0;
 }
 
-char* InputManager::KeycodeToName(int keycode)
+char* InputSystem::KeycodeToName(int keycode)
 {
 	if (keycode >= MAX_KEYS)
 	{
@@ -111,7 +108,7 @@ char* InputManager::KeycodeToName(int keycode)
 	return "<UNKNOWN KEY>";
 }
 
-int InputManager::NameToKeycode(const char* name)
+int InputSystem::NameToKeycode(const char* name)
 {
 	if (IsPrintableASCII(name[0]))
 	{
@@ -130,7 +127,7 @@ int InputManager::NameToKeycode(const char* name)
 	return -1;
 }
 
-void InputManager::ButtonCallback(int keycode, int action)
+void InputSystem::ButtonCallback(int keycode, int action)
 {
 	if (action == GLFW_PRESS)
 	{
@@ -161,23 +158,29 @@ void InputManager::ButtonCallback(int keycode, int action)
 	}
 }
 
-void InputManager::KeyCallback(int key, int scancode, int action, int mods)
+void InputSystem::KeyCallback(int key, int scancode, int action, int mods)
 {
 	int keycode = KeyboardInputToKeycode(key);
 
 	ButtonCallback(keycode, action);
 }
 
-void InputManager::MouseCallback(int button, int action)
+void InputSystem::MouseCallback(int button, int action)
 {
 	int keycode = MouseInputToKeycode(button);
 
 	ButtonCallback(keycode, action);
 }
 
-const GLsizei loopMargin = 10;
+void InputSystem::Update()
+{
+	double xPos, yPos;
+	glfwGetCursorPos(pMainWindow, &xPos, &yPos);
+	UpdateCursorDelta(xPos, yPos);
+}
 
-void InputManager::UpdateCursorDelta(double xPos, double yPos)
+const GLsizei loopMargin = 10;
+void InputSystem::UpdateCursorDelta(double xPos, double yPos)
 {
 	if (lastCursorPosX == 0 && lastCursorPosY == 0)
 	{
@@ -208,13 +211,13 @@ void InputManager::UpdateCursorDelta(double xPos, double yPos)
 		{
 			while (cursorPos[i] < loopMargin)
 			{
-				cursorPos[i] += windowSize[i] - GLsizei(loopMargin * 2);
+				cursorPos[i] += (windowSize[i] - GLsizei(loopMargin * 2));
 				looped = true;
 			}
 
-			while (cursorPos[i] > windowSize[i] - loopMargin)
+			while (cursorPos[i] > (windowSize[i] - loopMargin))
 			{
-				cursorPos[i] -= windowSize[i] - GLsizei(loopMargin * 2);
+				cursorPos[i] -= (windowSize[i] - GLsizei(loopMargin * 2));
 				looped = true;
 			}
 		}
@@ -229,13 +232,13 @@ void InputManager::UpdateCursorDelta(double xPos, double yPos)
 	}
 }
 
-void InputManager::GetCursorDelta(double* deltaX, double* deltaY)
+void InputSystem::GetCursorDelta(double* deltaX, double* deltaY)
 {
 	*deltaX = cursorDeltaX;
 	*deltaY = cursorDeltaY;
 }
 
-void InputManager::ButtonDown(Button& button)
+void InputSystem::ButtonDown(Button& button)
 {
 	if (!button.down[0] || button.down[0] == console.GetKey())
 	{
@@ -250,7 +253,7 @@ void InputManager::ButtonDown(Button& button)
 	}
 }
 
-void InputManager::ButtonUp(Button& button)
+void InputSystem::ButtonUp(Button& button)
 {
 	if (button.down[0] == console.GetKey())
 	{
@@ -265,7 +268,7 @@ void InputManager::ButtonUp(Button& button)
 	}
 }
 
-bool InputManager::GetButtonDown(int buttonIndex)
+bool InputSystem::GetButtonDown(int buttonIndex)
 {
 	if (buttonIndex >= MAX_BUTTONS)
 	{
@@ -282,12 +285,12 @@ bool InputManager::GetButtonDown(int buttonIndex)
 	return buttons[buttonIndex].down[0] || buttons[buttonIndex].down[1];
 }
 
-void InputManager::SetCursorLoop(bool loop)
+void InputSystem::SetCursorLoop(bool loop)
 {
 	cursorLoop = loop;
 }
 
-void InputManager::BindCommand()
+void InputSystem::BindCommand()
 {
 	const char* keyName = console.GetNextArgs();
 	const char* command = console.GetNextArgs();
@@ -297,7 +300,7 @@ void InputManager::BindCommand()
 	BindKey(key, command);
 }
 
-void InputManager::BindToggleCommand()
+void InputSystem::BindToggleCommand()
 {
 	const char* keyName = console.GetNextArgs();
 	const char* cvar = console.GetNextArgs();
@@ -307,31 +310,31 @@ void InputManager::BindToggleCommand()
 	BindToggleKey(key, cvar);
 }
 
-void InputManager::Cleanup()
+void InputSystem::Cleanup()
 {
 	console.~Console();
 }
 
-void InputManager::AddDefaultInputCommands()
+void InputSystem::AddDefaultInputCommands()
 {
-	console.AddCommand("bind", std::bind(&InputManager::BindCommand, this));
-	console.AddCommand("bindtoggle", std::bind(&InputManager::BindToggleCommand, this));
+	console.AddCommand("bind", std::bind(&InputSystem::BindCommand, this));
+	console.AddCommand("bindtoggle", std::bind(&InputSystem::BindToggleCommand, this));
 
-	console.AddCommand("+moveforward", std::bind(&InputManager::MoveForwardDown, this));
-	console.AddCommand("-moveforward", std::bind(&InputManager::MoveForwardUp, this));
-	console.AddCommand("+moveback", std::bind(&InputManager::MoveBackDown, this));
-	console.AddCommand("-moveback", std::bind(&InputManager::MoveBackUp, this));
-	console.AddCommand("+moveleft", std::bind(&InputManager::MoveLeftDown, this));
-	console.AddCommand("-moveleft", std::bind(&InputManager::MoveLeftUp, this));
-	console.AddCommand("+moveright", std::bind(&InputManager::MoveRightDown, this));
-	console.AddCommand("-moveright", std::bind(&InputManager::MoveRightUp, this));
+	console.AddCommand("+moveforward", std::bind(&InputSystem::MoveForwardDown, this));
+	console.AddCommand("-moveforward", std::bind(&InputSystem::MoveForwardUp, this));
+	console.AddCommand("+moveback", std::bind(&InputSystem::MoveBackDown, this));
+	console.AddCommand("-moveback", std::bind(&InputSystem::MoveBackUp, this));
+	console.AddCommand("+moveleft", std::bind(&InputSystem::MoveLeftDown, this));
+	console.AddCommand("-moveleft", std::bind(&InputSystem::MoveLeftUp, this));
+	console.AddCommand("+moveright", std::bind(&InputSystem::MoveRightDown, this));
+	console.AddCommand("-moveright", std::bind(&InputSystem::MoveRightUp, this));
 
-	console.AddCommand("+lookup", std::bind(&InputManager::LookUpDown, this));
-	console.AddCommand("-lookup", std::bind(&InputManager::LookUpUp, this));
-	console.AddCommand("+lookdown", std::bind(&InputManager::LookDownDown, this));
-	console.AddCommand("-lookdown", std::bind(&InputManager::LookDownUp, this));
-	console.AddCommand("+lookleft", std::bind(&InputManager::LookLeftDown, this));
-	console.AddCommand("-lookleft", std::bind(&InputManager::LookLeftUp, this));
-	console.AddCommand("+lookright", std::bind(&InputManager::LookRightDown, this));
-	console.AddCommand("-lookright", std::bind(&InputManager::LookRightUp, this));
+	console.AddCommand("+lookup", std::bind(&InputSystem::LookUpDown, this));
+	console.AddCommand("-lookup", std::bind(&InputSystem::LookUpUp, this));
+	console.AddCommand("+lookdown", std::bind(&InputSystem::LookDownDown, this));
+	console.AddCommand("-lookdown", std::bind(&InputSystem::LookDownUp, this));
+	console.AddCommand("+lookleft", std::bind(&InputSystem::LookLeftDown, this));
+	console.AddCommand("-lookleft", std::bind(&InputSystem::LookLeftUp, this));
+	console.AddCommand("+lookright", std::bind(&InputSystem::LookRightDown, this));
+	console.AddCommand("-lookright", std::bind(&InputSystem::LookRightUp, this));
 }

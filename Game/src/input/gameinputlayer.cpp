@@ -1,12 +1,12 @@
 #include <gamepch.h>
 #include <input/gameinputlayer.h>
 
-#include <input/inputmanager.h>
+#include <input/inputsystem.h>
 #include <imgui/imguiutil.h>
 
 void GameKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
 {
-	inputManager.KeyCallback(key, scancode, action, mods);
+	inputSystem.KeyCallback(key, scancode, action, mods);
 
 	if (key == GLFW_KEY_DELETE && mods & GLFW_MOD_CONTROL && action == GLFW_PRESS)
 	{

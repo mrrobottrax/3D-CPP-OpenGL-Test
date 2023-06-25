@@ -1,5 +1,4 @@
 #pragma once
-
 #include <systems/system.h>
 
 class SystemManager {

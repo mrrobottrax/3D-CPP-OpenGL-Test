@@ -1,15 +1,14 @@
-#include <pch.h>
-#include <systems/physicssystem.h>
-#include <systems/systemmanager.h>
-#include <systems/debugdraw.h>
+#include "pch.h"
+#include "physicssystem.h"
 
-#include <components/positioncomponent.h>
-#include <components/rotationcomponent.h>
-#include <components/masscomponent.h>
-#include <components/idcomponent.h>
-#include <components/hullcollider.h>
+#include <components/rigidbodycomponent.h>
 #include <components/scalecomponent.h>
 #include <components/velocitycomponent.h>
+#include <components/rotationcomponent.h>
+#include <components/positioncomponent.h>
+#include <components/idcomponent.h>
+#include <components/hullcollider.h>
+#include <components/masscomponent.h>
 
 #include <common/math.h>
 

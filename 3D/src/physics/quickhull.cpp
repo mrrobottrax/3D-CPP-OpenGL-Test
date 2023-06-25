@@ -1,11 +1,5 @@
-#include <pch.h>
-#include <physics/quickhull.h>
-
-#include <systems/debugdraw.h>
-#include <unordered_set>
-
-#include <chrono>
-#include <thread>
+#include "pch.h"
+#include "quickhull.h"
 
 using namespace gmath;
 

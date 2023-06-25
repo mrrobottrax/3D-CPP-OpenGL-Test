@@ -67,9 +67,6 @@
     <ClInclude Include="src\gl\glutil.h">
       <Filter>gl</Filter>
     </ClInclude>
-    <ClInclude Include="src\gl\shader.h">
-      <Filter>gl</Filter>
-    </ClInclude>
     <ClInclude Include="src\gl\shaderloader.h">
       <Filter>gl</Filter>
     </ClInclude>
@@ -88,7 +85,7 @@
     <ClInclude Include="src\input\console.h">
       <Filter>input</Filter>
     </ClInclude>
-    <ClInclude Include="src\input\inputmanager.h">
+    <ClInclude Include="src\input\inputsystem.h">
       <Filter>input</Filter>
     </ClInclude>
     <ClInclude Include="src\input\keycodes.h">
@@ -121,7 +118,7 @@
     <ClInclude Include="src\systems\freecamsystem.h">
       <Filter>systems</Filter>
     </ClInclude>
-    <ClInclude Include="src\systems\physicssystem.h">
+    <ClInclude Include="src\physics\physicssystem.h">
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\rendersystem.h">
@@ -133,7 +130,7 @@
     <ClInclude Include="src\systems\systemmanager.h">
       <Filter>systems</Filter>
     </ClInclude>
-    <ClInclude Include="src\systems\velocitysystem.h">
+    <ClInclude Include="src\physics\velocitysystem.h">
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\timemanager.h" />
@@ -141,7 +138,7 @@
     <ClInclude Include="src\common\types.h" />
     <ClInclude Include="src\components\unscaledvelocitycomponent.h" />
     <ClInclude Include="src\components\scalecomponent.h" />
-    <ClInclude Include="src\systems\unscaledvelocitysystem.h" />
+    <ClInclude Include="src\physics\unscaledvelocitysystem.h" />
     <ClInclude Include="src\components\meshcollider.h" />
     <ClInclude Include="src\physics\halfedgemesh.h" />
     <ClInclude Include="src\physics\aabbtree.h" />
@@ -169,7 +166,7 @@
     <ClCompile Include="src\input\console.cpp">
       <Filter>input</Filter>
     </ClCompile>
-    <ClCompile Include="src\input\inputmanager.cpp">
+    <ClCompile Include="src\input\inputsystem.cpp">
       <Filter>input</Filter>
     </ClCompile>
     <ClCompile Include="src\input\keycodes.cpp">
@@ -199,7 +196,7 @@
     <ClCompile Include="src\systems\freecamsystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
-    <ClCompile Include="src\systems\physicssystem.cpp">
+    <ClCompile Include="src\physics\physicssystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\systems\rendersystem.cpp">
@@ -208,12 +205,12 @@
     <ClCompile Include="src\systems\systemmanager.cpp">
       <Filter>systems</Filter>
     </ClCompile>
-    <ClCompile Include="src\systems\velocitysystem.cpp">
+    <ClCompile Include="src\physics\velocitysystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\timemanager.cpp" />
     <ClCompile Include="src\common\math.cpp" />
-    <ClCompile Include="src\systems\unscaledvelocitysystem.cpp" />
+    <ClCompile Include="src\physics\unscaledvelocitysystem.cpp" />
     <ClCompile Include="src\physics\halfedgemesh.cpp" />
   </ItemGroup>
 </Project>

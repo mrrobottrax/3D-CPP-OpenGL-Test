@@ -1,8 +1,5 @@
-#include <pch.h>
-
-#include <systems/systemmanager.h>
-
-#include <memory/entitymanager.h>
+#include "pch.h"
+#include "systemmanager.h"
 
 SystemManager::SystemManager()
 {

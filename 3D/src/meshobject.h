@@ -1,7 +1,5 @@
 #pragma once
 
-#include <common/types.h>
-
 typedef GLshort meshIndex_t;
 typedef GLsizei meshSize_t;
 

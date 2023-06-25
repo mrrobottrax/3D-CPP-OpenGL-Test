@@ -1,7 +1,6 @@
 #pragma once
-
-#include <memory/chunk.h>
-#include <memory/entityArchetype.h>
+#include "entityarchetype.h"
+#include "chunk.h"
 
 // Points to a linked list of chunks, each of the same archetype
 class ChunkArchetypeElement

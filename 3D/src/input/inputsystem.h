@@ -1,11 +1,16 @@
 #pragma once
-#include <input/keycodes.h>
-#include <input/console.h>
+#include "keycodes.h"
 
-class InputManager {
+#include <systems/system.h>
+
+class InputSystem : public System
+{
 public:
-	InputManager();
-	~InputManager();
+	InputSystem() : keys(), cursorDeltaX(0), cursorDeltaY(0), buttons()
+	{};
+
+	~InputSystem()
+	{};
 
 private:
 	Key keys[MAX_KEYS];
@@ -20,6 +25,10 @@ private:
 	bool cursorLoop = false;
 
 	void ButtonCallback(int, int);
+
+public:
+	void Update() override;
+	void Init() override;
 
 public:
 	void BindKey(char key, const char*);
@@ -66,4 +75,4 @@ public:
 	void LookLeftUp() { ButtonUp(buttons[IN_LookLeft]); };
 	void LookRightDown() { ButtonDown(buttons[IN_LookRight]); };
 	void LookRightUp() { ButtonUp(buttons[IN_LookRight]); };
-}; inline InputManager inputManager;
+}; inline InputSystem inputSystem;

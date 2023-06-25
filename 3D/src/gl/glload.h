@@ -10,6 +10,6 @@
 
 #ifdef USE_GLAD
 	#include <glad/glad.h>
-#endif // USE_GLEW
+#endif // USE_GLAD
 
 #include <GLFW/glfw3.h>

@@ -1,13 +1,7 @@
 #pragma once
-#include <list>
-#include <mutex>
-#include <glm.hpp>
-#include <glad/glad.h>
-#include <gl/glutil.h>
+#include "system.h"
 
 #include <common/math.h>
-
-#include <systems/system.h>
 
 class DebugDraw : public System
 {

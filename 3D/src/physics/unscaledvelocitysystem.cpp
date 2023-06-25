@@ -1,6 +1,8 @@
-#include <pch.h>
-#include <systems/unscaledvelocitysystem.h>
-#include <systems/velocitysystem.h>
+#include "pch.h"
+#include "unscaledvelocitysystem.h"
+
+#include "velocitysystem.h"
+
 #include <components/unscaledvelocitycomponent.h>
 
 void UnscaledVelocitySystem::Update()

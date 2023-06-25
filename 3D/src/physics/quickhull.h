@@ -1,10 +1,7 @@
 #pragma once
-
-#include <common/math.h>
-#include <common/types.h>
-
+#include "halfedgemesh.h"
 #include <unordered_set>
-#include <physics/halfedgemesh.h>
+#include <common/math.h>
 
 struct qhVertex;
 struct qhHalfEdge;

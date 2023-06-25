@@ -1,5 +1,5 @@
 #pragma once
 
 namespace shaderLoader {
-	const char* loadShader(const char*);
+	const char* LoadShader(const char*);
 }

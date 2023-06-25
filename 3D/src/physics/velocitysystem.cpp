@@ -1,24 +1,12 @@
-#include <pch.h>
-#include <systems/velocitySystem.h>
+#include "pch.h"
+#include "velocitysystem.h"
+
+#include <components/unscaledvelocitycomponent.h>
+#include <components/velocitycomponent.h>
+#include <components/rotationcomponent.h>
+#include <components/positioncomponent.h>
 
 #include <common/math.h>
-
-#include <systems/systemmanager.h>
-#include <memory/entitymanager.h>
-#include <components/positioncomponent.h>
-#include <components/rotationcomponent.h>
-#include <components/velocitycomponent.h>
-#include <components/unscaledvelocitycomponent.h>
-#include <memory/component.h>
-#include <timemanager.h>
-
-VelocitySystem::VelocitySystem()
-{
-}
-
-VelocitySystem::~VelocitySystem()
-{
-}
 
 void VelocitySystem::UpdatePositions(const std::vector<ChunkArchetypeElement*>* archetypes, const float& deltaTime, bool scaled = true)
 {

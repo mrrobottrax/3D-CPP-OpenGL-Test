@@ -1,6 +1,5 @@
-#include <pch.h>
-
-#include <memory/chunkArchetypeElement.h>
+#include "pch.h"
+#include "chunkarchetypeelement.h"
 
 ChunkArchetypeElement::ChunkArchetypeElement()
 {

@@ -1,15 +1,14 @@
-#include <pch.h>
-#include <systems/freecamsystem.h>
+#include "pch.h"
+#include "freecamsystem.h"
 
-#include <gl/gl.h>
-
-#include <components/cameracomponent.h>
 #include <components/positioncomponent.h>
-#include <components/unscaledvelocitycomponent.h>
-#include <components/freecamcomponent.h>
 #include <components/rotationcomponent.h>
+#include <components/unscaledvelocitycomponent.h>
+#include <components/cameracomponent.h>
+#include <components/freecamcomponent.h>
 
-#include <input/inputmanager.h>
+#include <input/keycodes.h>
+#include <input/inputsystem.h>
 
 void FreecamSystem::Update()
 {
@@ -19,20 +18,20 @@ void FreecamSystem::Update()
 	double yawDelta = 0;
 
 	// Move keys
-	if (inputManager.GetButtonDown(IN_MoveForward))
+	if (inputSystem.GetButtonDown(IN_MoveForward))
 	{
 		moveVector.z -= 1;
 	}
-	if (inputManager.GetButtonDown(IN_MoveBack))
+	if (inputSystem.GetButtonDown(IN_MoveBack))
 	{
 		moveVector.z += 1;
 	}
 
-	if (inputManager.GetButtonDown(IN_MoveLeft))
+	if (inputSystem.GetButtonDown(IN_MoveLeft))
 	{
 		moveVector.x -= 1;
 	}
-	if (inputManager.GetButtonDown(IN_MoveRight))
+	if (inputSystem.GetButtonDown(IN_MoveRight))
 	{
 		moveVector.x += 1;
 	}
@@ -42,27 +41,27 @@ void FreecamSystem::Update()
 	float delta = timeManager.GetUnscaledDeltaTime();
 
 	// Look keys
-	if (inputManager.GetButtonDown(IN_LookUp))
+	if (inputSystem.GetButtonDown(IN_LookUp))
 	{
 		pitchDelta -= delta * rotSpeed;
 	}
-	if (inputManager.GetButtonDown(IN_LookDown))
+	if (inputSystem.GetButtonDown(IN_LookDown))
 	{
 		pitchDelta += delta * rotSpeed;
 	}
 
-	if (inputManager.GetButtonDown(IN_LookLeft))
+	if (inputSystem.GetButtonDown(IN_LookLeft))
 	{
 		yawDelta -= delta * rotSpeed;
 	}
-	if (inputManager.GetButtonDown(IN_LookRight))
+	if (inputSystem.GetButtonDown(IN_LookRight))
 	{
 		yawDelta += delta * rotSpeed;
 	}
 
 	// Look mouse
 	double xDelta, yDelta;
-	inputManager.GetCursorDelta(&xDelta, &yDelta);
+	inputSystem.GetCursorDelta(&xDelta, &yDelta);
 	panVector.y = -(float)xDelta;
 	panVector.x = -(float)yDelta;
 	pitchDelta += yDelta * 0.0015f;

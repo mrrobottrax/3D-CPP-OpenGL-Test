@@ -1,10 +1,7 @@
 #pragma once
 
 #include <systems/system.h>
-
-#include <components/cameraComponent.h>
-#include <memory/entity.h>
-#include <input/console.h>
+#include <components/cameracomponent.h>
 
 extern Cvar r_draw;
 

@@ -1,11 +1,6 @@
 #pragma once
-
 #include <systems/system.h>
-#include <memory/entity.h>
-#include <memory/entitymanager.h>
-#include <components/rigidbodycomponent.h>
 #include <physics/halfedgemesh.h>
-#include <map>
 
 struct FaceQuery
 {

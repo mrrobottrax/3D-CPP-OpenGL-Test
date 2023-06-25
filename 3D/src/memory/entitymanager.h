@@ -1,9 +1,6 @@
 #pragma once
-
-#include <memory/entityArchetype.h>
-#include <memory/chunkArchetypeElement.h>
-#include <memory/component.h>
-#include <memory/entity.h>
+#include "chunkarchetypeelement.h"
+#include "entity.h"
 
 // Each chunk is 16kB
 const unsigned short chunkSize = 16384;
