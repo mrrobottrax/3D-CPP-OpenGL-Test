@@ -153,7 +153,7 @@
     <ClInclude Include="src\components\scalecomponent.h" />
     <ClInclude Include="src\components\unscaledvelocitycomponent.h" />
     <ClInclude Include="src\components\velocitycomponent.h" />
-    <ClInclude Include="src\debugtools\debugdraw.h" />
+    <ClInclude Include="src\systems\debugdraw.h" />
     <ClInclude Include="src\gl\glload.h" />
     <ClInclude Include="src\gl\glutil.h" />
     <ClInclude Include="src\gl\shader.h" />
@@ -182,7 +182,6 @@
     <ClInclude Include="src\systems\rendersystem.h" />
     <ClInclude Include="src\systems\system.h" />
     <ClInclude Include="src\systems\systemmanager.h" />
-    <ClInclude Include="src\systems\systemslist.h" />
     <ClInclude Include="src\systems\unscaledvelocitysystem.h" />
     <ClInclude Include="src\systems\velocitysystem.h" />
     <ClInclude Include="src\timemanager.h" />
@@ -190,7 +189,7 @@
   <ItemGroup>
     <ClCompile Include="src\common\math.cpp" />
     <ClCompile Include="src\common\matrixstack.cpp" />
-    <ClCompile Include="src\debugtools\debugdraw.cpp" />
+    <ClCompile Include="src\systems\debugdraw.cpp" />
     <ClCompile Include="src\gl\glutil.cpp" />
     <ClCompile Include="src\gl\shaderloader.cpp" />
     <ClCompile Include="src\imgui\imgui_impl_glfw.cpp" />
@@ -214,7 +213,6 @@
     <ClCompile Include="src\systems\freecamsystem.cpp" />
     <ClCompile Include="src\systems\physicssystem.cpp" />
     <ClCompile Include="src\systems\rendersystem.cpp" />
-    <ClCompile Include="src\systems\system.cpp" />
     <ClCompile Include="src\systems\systemmanager.cpp" />
     <ClCompile Include="src\systems\unscaledvelocitysystem.cpp" />
     <ClCompile Include="src\systems\velocitysystem.cpp" />

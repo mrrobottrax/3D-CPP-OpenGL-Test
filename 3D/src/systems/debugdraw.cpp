@@ -1,11 +1,14 @@
 #include "pch.h"
 #include "debugdraw.h"
 
+#include "rendersystem.h"
+
 #include <components/positioncomponent.h>
+#include <components/rotationcomponent.h>
+
 #include <common/matrixstack.h>
 
-#include <systems/systemmanager.h>
-#include <systems/rendersystem.h>
+//#include <systems/systemmanager.h>
 
 void DebugDraw::DrawLine(const float start[3], const float end[3], glm::vec3 color, float time)
 {
@@ -120,12 +123,10 @@ void DebugDraw::Draw()
 	}
 
 	EntityManager& em = entityManager;
-	SystemManager& sm = systemManager;
 
 	// Camera
 	MatrixStack mStack;
 
-	RenderSystem& renderSystem = sm.GetSystem<RenderSystem>();
 	Entity& mainCameraEntity = renderSystem.mainCameraEntity;
 	mStack.Push();
 	mStack.ApplyMatrix(glm::mat4_cast(em.GetComponent<RotationComponent>(mainCameraEntity).value));

@@ -10,6 +10,7 @@
 #include <modelloader.h>
 
 #include <systems/rendersystem.h>
+#include <systems/debugdraw.h>
 #include <systems/velocitysystem.h>
 #include <systems/freecamsystem.h>
 #include <systems/physicssystem.h>
@@ -62,24 +63,27 @@ void Init()
 	// Init systems
 	SystemManager& sm = systemManager;
 
-	sm.AddTickSystem<PhysicsSystem>();
-	sm.AddTickSystem<VelocitySystem>();
+	sm.AddTickSystem<PhysicsSystem>(physicsSystem);
+	sm.AddTickSystem<VelocitySystem>(velocitySystem);
 
-	sm.AddSystem<FreecamSystem>();
-	sm.AddSystem<UnscaledVelocitySystem>();
-	sm.AddSystem<RenderSystem>();
+	sm.AddSystem<FreecamSystem>(freecamSystem);
+	sm.AddSystem<UnscaledVelocitySystem>(unscaledVelocitySystem);
+	sm.AddSystem<RenderSystem>(renderSystem);
+	sm.AddSystem<DebugDraw>(debugDraw);
+
+	sm.InitSystems();
 
 	EntityManager& em = entityManager;
 
 	// Create player
 	{
 		Component components[] = {
-			Component().init<IdComponent>(),
-			Component().init<PositionComponent>(),
-			Component().init<UnscaledVelocityComponent>(),
-			Component().init<CameraComponent>(),
-			Component().init<RotationComponent>(),
-			Component().init<FreecamComponent>(),
+			Component().Init<IdComponent>(),
+			Component().Init<PositionComponent>(),
+			Component().Init<UnscaledVelocityComponent>(),
+			Component().Init<CameraComponent>(),
+			Component().Init<RotationComponent>(),
+			Component().Init<FreecamComponent>(),
 		};
 
 		Entity entity = em.AddEntity(EntityArchetype(6, components));
@@ -92,7 +96,7 @@ void Init()
 		int w, h;
 		glfwGetWindowSize(pMainWindow, &w, &h);
 
-		RenderSystem& rs = sm.GetSystem<RenderSystem>();
+		RenderSystem& rs = renderSystem;
 		rs.SetMainCameraEntity(entity);
 		rs.CalcFrustumScale(cam, 80);
 		rs.CalcPerspectiveMatrix(cam, w, h);
@@ -100,11 +104,11 @@ void Init()
 	// Create monkey
 	{
 		Component components[] = {
-			Component().init<IdComponent>(),
-			Component().init<PositionComponent>(),
-			Component().init<VelocityComponent>(),
-			Component().init<MeshComponent>(),
-			Component().init<RotationComponent>(),
+			Component().Init<IdComponent>(),
+			Component().Init<PositionComponent>(),
+			Component().Init<VelocityComponent>(),
+			Component().Init<MeshComponent>(),
+			Component().Init<RotationComponent>(),
 		};
 
 		Entity entity = em.AddEntity(EntityArchetype(5, components));
@@ -135,11 +139,11 @@ void Init()
 	// Create teapot
 	{
 		Component components[] = {
-			Component().init<IdComponent>(),
-			Component().init<PositionComponent>(),
-			Component().init<VelocityComponent>(),
-			Component().init<MeshComponent>(),
-			Component().init<RotationComponent>(),
+			Component().Init<IdComponent>(),
+			Component().Init<PositionComponent>(),
+			Component().Init<VelocityComponent>(),
+			Component().Init<MeshComponent>(),
+			Component().Init<RotationComponent>(),
 		};
 
 		Entity entity = em.AddEntity(EntityArchetype(5, components));
@@ -153,15 +157,15 @@ void Init()
 	{
 		modelLoader::LoadModel(boxMesh, "data/models/box.glb");
 		Component components[] = {
-		Component().init<IdComponent>(),
-		Component().init<PositionComponent>(),
-		Component().init<VelocityComponent>(),
-		Component().init<MeshComponent>(),
-		Component().init<RotationComponent>(),
-		Component().init<HullCollider>(),
-		Component().init<RigidBodyComponent>(),
-		Component().init<MassComponent>(),
-		Component().init<ScaleComponent>(),
+		Component().Init<IdComponent>(),
+		Component().Init<PositionComponent>(),
+		Component().Init<VelocityComponent>(),
+		Component().Init<MeshComponent>(),
+		Component().Init<RotationComponent>(),
+		Component().Init<HullCollider>(),
+		Component().Init<RigidBodyComponent>(),
+		Component().Init<MassComponent>(),
+		Component().Init<ScaleComponent>(),
 		};
 		EntityArchetype boxArchetype = EntityArchetype(9, components);
 
@@ -241,7 +245,6 @@ void End()
 	ImGuiTerminate();
 
 	entityManager.DeleteAllEntities();
-	systemManager.DeleteAllSystems();
 	console.DeleteCommands();
 	glfwTerminate();
 

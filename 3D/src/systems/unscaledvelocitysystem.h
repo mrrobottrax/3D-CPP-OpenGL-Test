@@ -8,4 +8,4 @@ public:
 	~UnscaledVelocitySystem() {};
 
 	void Update() override;
-};
+}; inline UnscaledVelocitySystem unscaledVelocitySystem;

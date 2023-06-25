@@ -1,19 +1,22 @@
 #pragma once
-
+#include <list>
+#include <mutex>
+#include <glm.hpp>
+#include <glad/glad.h>
 #include <gl/glutil.h>
 
 #include <common/math.h>
 
-class DebugDraw
+#include <systems/system.h>
+
+class DebugDraw : public System
 {
 public:
 	DebugDraw() : vertexBuffer(), colorBuffer()
-	{
-	}
+	{};
 
 	~DebugDraw()
-	{
-	}
+	{};
 
 private:
 	GLuint vertexBuffer;

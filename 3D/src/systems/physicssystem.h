@@ -131,8 +131,11 @@ const float velEpsilonAngular = 0.1f;
 class PhysicsSystem : public System
 {
 public:
-	PhysicsSystem();
-	~PhysicsSystem();
+	PhysicsSystem() : manifolds()
+	{};
+
+	~PhysicsSystem()
+	{};
 
 private:
 	std::map<CollisionPair, Manifold> manifolds;
@@ -144,4 +147,4 @@ public:
 	bool HullVsHull(const Entity& entityA, const Entity& entityB, Manifold& manifold);
 
 	static void ComputeInertia(const Entity& entity);
-};
+}; inline PhysicsSystem physicsSystem;

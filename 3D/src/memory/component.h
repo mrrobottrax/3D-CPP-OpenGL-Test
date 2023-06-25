@@ -5,7 +5,7 @@ struct Component
 	Component();
 
 	template <class T>
-	Component& init();
+	Component& Init();
 
 	unsigned short size;
 	unsigned short offset;
@@ -27,7 +27,7 @@ struct Component
 };
 
 template <class T>
-inline Component& Component::init()
+inline Component& Component::Init()
 {
 	Component::offset = 0;
 	Component::hash = typeid(T).hash_code();

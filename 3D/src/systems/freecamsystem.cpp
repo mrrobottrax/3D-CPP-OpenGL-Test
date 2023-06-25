@@ -2,9 +2,13 @@
 #include <systems/freecamsystem.h>
 
 #include <gl/gl.h>
+
 #include <components/cameracomponent.h>
 #include <components/positioncomponent.h>
 #include <components/unscaledvelocitycomponent.h>
+#include <components/freecamcomponent.h>
+#include <components/rotationcomponent.h>
+
 #include <input/inputmanager.h>
 
 void FreecamSystem::Update()
@@ -66,7 +70,7 @@ void FreecamSystem::Update()
 
 	EntityManager& em = entityManager;
 
-	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<FreecamComponent>());
+	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().Init<FreecamComponent>());
 
 	if (archetypes == nullptr)
 		return;

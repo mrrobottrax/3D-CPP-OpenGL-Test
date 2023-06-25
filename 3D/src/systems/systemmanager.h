@@ -8,41 +8,25 @@ public:
 	~SystemManager();
 
 private:
-	std::map<size_t, System*> systems;
-	std::map<size_t, System*> tickSystems;
+	std::vector<System*> systems;
+	std::vector<System*> tickSystems;
 
 	double tickTimer = 0;
 
 public:
+	void InitSystems();
 	void UpdateSystems();
-	void DeleteAllSystems();
 
 public:
 	template <class T>
-	inline T& GetSystem()
+	inline void AddSystem(System& pSystem)
 	{
-		return *(T*)systems.at(typeid(T).hash_code());
+		systems.push_back(&pSystem);
 	}
 
 	template <class T>
-	inline T& GetTickSystem()
+	inline void AddTickSystem(System& pSystem)
 	{
-		return *(T*)tickSystems.at(typeid(T).hash_code());
-	}
-
-	template <class T>
-	inline T& AddSystem()
-	{
-		T* pSystem = new T();
-		systems.emplace(typeid(T).hash_code(), pSystem);
-		return *pSystem;
-	}
-
-	template <class T>
-	inline T& AddTickSystem()
-	{
-		T* pSystem = new T();
-		tickSystems.emplace(typeid(T).hash_code(), pSystem);
-		return *pSystem;
+		tickSystems.push_back(&pSystem);
 	}
 }; inline SystemManager systemManager;

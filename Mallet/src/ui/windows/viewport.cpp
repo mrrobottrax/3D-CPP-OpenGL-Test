@@ -22,10 +22,10 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 	EntityManager& em = entityManager;
 
 	Component components[] = {
-		Component().init<IdComponent>(),
-		Component().init<PositionComponent>(),
+		Component().Init<IdComponent>(),
+		Component().Init<PositionComponent>(),
 		Component().init<VelocityComponent>(),
-		Component().init<CameraComponent>(),
+		Component().Init<CameraComponent>(),
 		Component().init<RotationComponent>(),
 		Component().init<FreecamComponent>(),
 	};

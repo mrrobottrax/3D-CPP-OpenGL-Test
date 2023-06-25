@@ -1,5 +1,6 @@
 #include <pch.h>
 #include <systems/renderSystem.h>
+#include <systems/debugdraw.h>
 
 #include <common/matrixStack.h>
 #include <memory/entityManager.h>
@@ -72,7 +73,6 @@ void RenderSystem::Update()
 	}
 
 	DrawShaded();
-	debugDraw.Update();
 }
 
 void RenderSystem::DrawShaded()
@@ -111,7 +111,7 @@ void RenderSystem::DrawBase()
 {
 	EntityManager& em = entityManager;
 
-	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<MeshComponent>());
+	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().Init<MeshComponent>());
 	if (archetypes == nullptr)
 		return;
 

@@ -60,7 +60,7 @@
     <ClInclude Include="src\components\velocitycomponent.h">
       <Filter>components</Filter>
     </ClInclude>
-    <ClInclude Include="src\debugtools\debugdraw.h" />
+    <ClInclude Include="src\systems\debugdraw.h" />
     <ClInclude Include="src\gl\glload.h">
       <Filter>gl</Filter>
     </ClInclude>
@@ -133,9 +133,6 @@
     <ClInclude Include="src\systems\systemmanager.h">
       <Filter>systems</Filter>
     </ClInclude>
-    <ClInclude Include="src\systems\systemslist.h">
-      <Filter>systems</Filter>
-    </ClInclude>
     <ClInclude Include="src\systems\velocitysystem.h">
       <Filter>systems</Filter>
     </ClInclude>
@@ -153,7 +150,7 @@
     <ClCompile Include="src\common\matrixstack.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="src\debugtools\debugdraw.cpp" />
+    <ClCompile Include="src\systems\debugdraw.cpp" />
     <ClCompile Include="src\gl\glutil.cpp">
       <Filter>gl</Filter>
     </ClCompile>
@@ -206,9 +203,6 @@
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\systems\rendersystem.cpp">
-      <Filter>systems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\systems\system.cpp">
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\systems\systemmanager.cpp">

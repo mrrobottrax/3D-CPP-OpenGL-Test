@@ -1,14 +1,13 @@
 #include <pch.h>
 
 #include <systems/systemmanager.h>
-#include <systems/systemslist.h>
 
 #include <memory/entitymanager.h>
 
 SystemManager::SystemManager()
 {
-	systems = std::map<size_t, System*>();
-	tickSystems = std::map<size_t, System*>();
+	systems = std::vector<System*>();
+	tickSystems = std::vector<System*>();
 
 	auto advance = [this](Console& console)
 	{
@@ -23,6 +22,14 @@ SystemManager::~SystemManager()
 {
 }
 
+void SystemManager::InitSystems()
+{
+	for (auto it = systems.begin(); it != systems.end(); ++it)
+	{
+		(*it)->Init();
+	}
+}
+
 void SystemManager::UpdateSystems()
 {
 	tickTimer -= timeManager.GetDeltaTimeDouble();
@@ -30,27 +37,14 @@ void SystemManager::UpdateSystems()
 	{
 		tickTimer = timeManager.GetFixedDeltaTimeDouble();
 
-		for (std::map<size_t, System*>::iterator it = tickSystems.begin(); it != tickSystems.end(); ++it)
+		for (auto it = tickSystems.begin(); it != tickSystems.end(); ++it)
 		{
-			(*it).second->Update();
+			(*it)->Update();
 		}
 	}
 
-	for (std::map<size_t, System*>::iterator it = systems.begin(); it != systems.end(); ++it)
+	for (auto it = systems.begin(); it != systems.end(); ++it)
 	{
-		(*it).second->Update();
-	}
-}
-
-void SystemManager::DeleteAllSystems()
-{
-	for (std::map<size_t, System*>::iterator it = systems.begin(); it != systems.end(); ++it)
-	{
-		delete (*it).second;
-	}
-
-	for (std::map<size_t, System*>::iterator it = tickSystems.begin(); it != tickSystems.end(); ++it)
-	{
-		delete (*it).second;
+		(*it)->Update();
 	}
 }

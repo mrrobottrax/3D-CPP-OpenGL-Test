@@ -7,7 +7,7 @@ void UnscaledVelocitySystem::Update()
 {
 	EntityManager& em = entityManager;
 
-	const std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<UnscaledVelocityComponent>());
+	const std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().Init<UnscaledVelocityComponent>());
 	VelocitySystem::UpdatePositions(archetypes, timeManager.GetUnscaledDeltaTime(), false);
 	delete archetypes;
 }

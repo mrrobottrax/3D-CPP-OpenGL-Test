@@ -35,7 +35,7 @@ void KeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mod
 void DefaultWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
 {
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-	RenderSystem& rs = systemManager.GetSystem<RenderSystem>();
+	RenderSystem& rs = renderSystem;
 	rs.UpdateMatrixAspect(*rs.pMainCamera, width, height);
 }
 

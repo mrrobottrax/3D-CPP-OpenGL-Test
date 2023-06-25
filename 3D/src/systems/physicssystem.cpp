@@ -1,7 +1,7 @@
 #include <pch.h>
 #include <systems/physicssystem.h>
 #include <systems/systemmanager.h>
-#include <debugtools/debugdraw.h>
+#include <systems/debugdraw.h>
 
 #include <components/positioncomponent.h>
 #include <components/rotationcomponent.h>
@@ -9,18 +9,11 @@
 #include <components/idcomponent.h>
 #include <components/hullcollider.h>
 #include <components/scalecomponent.h>
+#include <components/velocitycomponent.h>
 
 #include <common/math.h>
 
 using namespace gmath;
-
-PhysicsSystem::PhysicsSystem() : manifolds()
-{
-}
-
-PhysicsSystem::~PhysicsSystem()
-{
-}
 
 void PhysicsSystem::ComputeInertia(const Entity& entity)
 {
@@ -459,7 +452,7 @@ void PhysicsSystem::Update()
 
 	std::vector<CollisionPair> pairs;
 
-	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<RigidBodyComponent>());
+	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().Init<RigidBodyComponent>());
 
 	if (archetypes == nullptr)
 		return;
