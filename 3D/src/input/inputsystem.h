@@ -46,7 +46,6 @@ public:
 	void GetCursorDelta(double* deltaX, double* deltaY);
 	void ToggleCursorFree();
 	void SetCursorFree(bool);
-	bool GetCursorFree();
 
 	void ButtonDown(Button& button);
 	void ButtonUp(Button& button);

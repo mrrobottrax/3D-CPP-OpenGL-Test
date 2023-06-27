@@ -4,7 +4,7 @@
 #include "shaderloader.h"
 
 #include <input/inputsystem.h>
-#include <systems/rendersystem.h>
+#include <rendering/rendersystem.h>
 
 GLFWwindow* pMainWindow;
 

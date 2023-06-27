@@ -135,13 +135,13 @@
     <ClInclude Include="src\physics\velocitysystem.h">
       <Filter>physics</Filter>
     </ClInclude>
-    <ClInclude Include="src\systems\debugdraw.h">
+    <ClInclude Include="src\rendering\debugdraw.h">
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\freecamsystem.h">
       <Filter>systems</Filter>
     </ClInclude>
-    <ClInclude Include="src\systems\rendersystem.h">
+    <ClInclude Include="src\rendering\rendersystem.h">
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\system.h">
@@ -211,13 +211,13 @@
     <ClCompile Include="src\physics\velocitysystem.cpp">
       <Filter>physics</Filter>
     </ClCompile>
-    <ClCompile Include="src\systems\debugdraw.cpp">
+    <ClCompile Include="src\rendering\debugdraw.cpp">
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\systems\freecamsystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
-    <ClCompile Include="src\systems\rendersystem.cpp">
+    <ClCompile Include="src\rendering\rendersystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\systems\systemmanager.cpp">

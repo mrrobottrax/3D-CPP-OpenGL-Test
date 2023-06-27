@@ -129,6 +129,11 @@ int InputSystem::NameToKeycode(const char* name)
 
 void InputSystem::ButtonCallback(int keycode, int action)
 {
+	if (cursorFree)
+	{
+		return;
+	}
+
 	if (action == GLFW_PRESS)
 	{
 		keys[keycode].pressed = true;
@@ -234,13 +239,14 @@ void InputSystem::UpdateCursorDelta(double xPos, double yPos)
 
 void InputSystem::GetCursorDelta(double* deltaX, double* deltaY)
 {
+	if (cursorFree)
+	{
+		*deltaX = *deltaY = 0;
+		return;
+	}
+
 	*deltaX = cursorDeltaX;
 	*deltaY = cursorDeltaY;
-}
-
-bool InputSystem::GetCursorFree()
-{
-	return cursorFree;
 }
 
 void InputSystem::SetCursorFree(bool free)

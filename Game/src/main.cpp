@@ -11,8 +11,8 @@
 
 #include <systems/systemmanager.h>
 
-#include <systems/rendersystem.h>
-#include <systems/debugdraw.h>
+#include <rendering/rendersystem.h>
+#include <rendering/debugdraw.h>
 #include <physics/velocitysystem.h>
 #include <systems/freecamsystem.h>
 #include <physics/physicssystem.h>

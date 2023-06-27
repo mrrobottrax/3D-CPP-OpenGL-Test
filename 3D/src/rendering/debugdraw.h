@@ -1,6 +1,5 @@
 #pragma once
-#include "system.h"
-
+#include <systems/system.h>
 #include <common/math.h>
 
 class DebugDraw : public System

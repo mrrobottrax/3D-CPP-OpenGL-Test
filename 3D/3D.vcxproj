@@ -176,9 +176,9 @@
     <ClInclude Include="src\physics\quickhull.h" />
     <ClInclude Include="src\physics\unscaledvelocitysystem.h" />
     <ClInclude Include="src\physics\velocitysystem.h" />
-    <ClInclude Include="src\systems\debugdraw.h" />
+    <ClInclude Include="src\rendering\debugdraw.h" />
     <ClInclude Include="src\systems\freecamsystem.h" />
-    <ClInclude Include="src\systems\rendersystem.h" />
+    <ClInclude Include="src\rendering\rendersystem.h" />
     <ClInclude Include="src\systems\system.h" />
     <ClInclude Include="src\systems\systemmanager.h" />
     <ClInclude Include="src\timemanager.h" />
@@ -207,9 +207,9 @@
     <ClCompile Include="src\physics\quickhull.cpp" />
     <ClCompile Include="src\physics\unscaledvelocitysystem.cpp" />
     <ClCompile Include="src\physics\velocitysystem.cpp" />
-    <ClCompile Include="src\systems\debugdraw.cpp" />
+    <ClCompile Include="src\rendering\debugdraw.cpp" />
     <ClCompile Include="src\systems\freecamsystem.cpp" />
-    <ClCompile Include="src\systems\rendersystem.cpp" />
+    <ClCompile Include="src\rendering\rendersystem.cpp" />
     <ClCompile Include="src\systems\systemmanager.cpp" />
     <ClCompile Include="src\timemanager.cpp" />
   </ItemGroup>
