@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <gtc/quaternion.hpp>
 #include <forward_list>
+#include <unordered_set>
 #include <map>
 #include <typeindex>
 #include <iostream>
@@ -16,4 +17,8 @@
 #include <vector>
 #include <string>
 #include <stack>
+#include <list>
+
+// IMGUI should be loaded before OpenGL
+#include <imgui/imguiload.h>
 #include <gl/glload.h>
