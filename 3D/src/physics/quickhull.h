@@ -1,26 +1,21 @@
 #pragma once
-
-#include <common/math.h>
-#include <common/types.h>
-
+#include "halfedgemesh.h"
 #include <unordered_set>
+#include <common/math.h>
 
 struct qhVertex;
 struct qhHalfEdge;
-struct qhEdge;
 struct qhFace;
 
 struct qhVertex
 {
-	qhHalfEdge* pEdge;
-
 	glm::vec3 position;
 
-	qhVertex() : pEdge(), position(0, 0, 0) {};
+	qhVertex() : position(0, 0, 0) {};
 
 	bool operator ==(qhVertex& other)
 	{
-		return this->pEdge == other.pEdge && this->position == other.position;
+		return this->position == other.position;
 	}
 };
 
@@ -40,14 +35,6 @@ struct qhHalfEdge
 	{
 		return !memcmp(this, &other, sizeof(qhHalfEdge));
 	}
-};
-
-struct qhEdge
-{
-	qhHalfEdge* pHalfA;
-	qhHalfEdge* pHalfB;
-
-	qhEdge() : pHalfA(), pHalfB() {};
 };
 
 struct qhFace
@@ -76,19 +63,19 @@ struct qhFace
 const float delayTest = 0.1f;
 #endif // QHULL_DEBUG
 
-class ConvexHull
+class QuickHull
 {
 public:
-	ConvexHull(const int vertCount, const glm::vec3* vertices);
-	ConvexHull() : verts(), halfEdges(), edges(), faces(), epsilon(), sqrEpsilon(),
-		vertCount(), halfEdgeCount(), edgeCount(), faceCount() {};
-	~ConvexHull();
+	QuickHull(const int vertCount, const glm::vec3* vertices, HalfEdgeMesh& destinationMesh);
+	QuickHull() : verts(), halfEdges(), faces(), epsilon(), sqrEpsilon(),
+		vertCount(), halfEdgeCount(), faceCount() {};
+	~QuickHull();
 
 public:
 	float epsilon, sqrEpsilon;
 
 public:
-	void QuickHull(const int vertCount, const glm::vec3* verticesArray);
+	void Algorithm(const int vertCount, const glm::vec3* verticesArray, HalfEdgeMesh& dest);
 
 private:
 	void AllocateMemory(const int vertCount);
@@ -104,10 +91,9 @@ private:
 	void RemoveVertex(qhVertex& vertex);
 	void RemoveFace(qhFace& face);
 
-	void CondenseArrays(qhFace& startFace);
-	void CreateEdges();
+	void CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest);
 
-	//TODO: make sure these functions are using correct precision with fat planes etc
+	// TODO: make sure these functions are using correct precision with fat planes etc
 	void MergeCoplanar(const std::vector<qhHalfEdge*>& horizon, std::unordered_set<qhFace*>& unvisitedFaces);
 	bool IsCoplanar(qhFace& a, qhFace& b);
 	void RePartitionVertices(std::unordered_set<qhFace*> visibleFaces, std::vector<qhFace*> newFaces, const glm::vec3 eye);
@@ -115,11 +101,9 @@ private:
 public:
 	gSize_t vertCount;
 	gSize_t halfEdgeCount;
-	gSize_t edgeCount;
 	gSize_t faceCount;
 
 	qhVertex* verts;
 	qhHalfEdge* halfEdges;
-	qhEdge* edges;
 	qhFace* faces;
 };

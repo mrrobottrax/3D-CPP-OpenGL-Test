@@ -3,7 +3,7 @@
 #include <gl/shaderLoader.h>
 
 namespace shaderLoader {
-	const char* loadShader(const char* path)
+	const char* LoadShader(const char* path)
 	{
 		std::ifstream f;
 		f.open(path, std::ios::ate | std::ios::binary);

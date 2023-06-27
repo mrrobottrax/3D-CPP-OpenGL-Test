@@ -1,6 +1,5 @@
-#include <pch.h>
-
-#include <memory/entityArchetype.h>
+#include "pch.h"
+#include "entityArchetype.h"
 
 EntityArchetype::EntityArchetype(unsigned short componentCount, Component* components)
 {

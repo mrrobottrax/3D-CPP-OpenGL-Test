@@ -1,6 +1,5 @@
 #pragma once
-
-#include <meshObject.h>
+#include <meshobject.h>
 
 typedef unsigned int buffer_t;
 

@@ -1,9 +1,6 @@
 #pragma once
-
-#include <memory/entityArchetype.h>
-#include <memory/chunkArchetypeElement.h>
-#include <memory/component.h>
-#include <memory/entity.h>
+#include "chunkarchetypeelement.h"
+#include "entity.h"
 
 // Each chunk is 16kB
 const unsigned short chunkSize = 16384;
@@ -43,7 +40,7 @@ inline T* EntityManager::GetComponentP(const Entity& entity) const
 {
 	// Get pointer to component stream
 	char* pComponentStream = (char*)(entity.pChunk + 1);
-	short offset = entity.pArchetype->GetComponentOffset(Component().init<T>());
+	short offset = entity.pArchetype->GetComponentOffset(Component().Init<T>());
 
 	if (offset < 0)
 		return nullptr;
@@ -58,7 +55,7 @@ inline T& EntityManager::GetComponent(const Entity& entity) const
 {
 	// Get pointer to component stream
 	char* pComponentStream = (char*)(entity.pChunk + 1);
-	short offset = entity.pArchetype->GetComponentOffset(Component().init<T>());
+	short offset = entity.pArchetype->GetComponentOffset(Component().Init<T>());
 	T* pTComponentStream = (T*)(pComponentStream + static_cast<uint64_t>(entity.pChunk->maxEntities) * offset);
 	T& r = *(pTComponentStream + entity.index);
 	return r;

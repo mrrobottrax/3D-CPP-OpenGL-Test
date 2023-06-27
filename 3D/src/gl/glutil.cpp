@@ -1,10 +1,10 @@
-#include <pch.h>
-#include <gl/glutil.h>
+#include "pch.h"
+#include "glutil.h"
 
-#include <gl/shaderLoader.h>
-#include <systems/renderSystem.h>
-#include <input/inputmanager.h>
-#include <systems/systemmanager.h>
+#include "shaderloader.h"
+
+#include <input/inputsystem.h>
+#include <rendering/rendersystem.h>
 
 GLFWwindow* pMainWindow;
 
@@ -29,13 +29,13 @@ void ErrorCallback(int error, const char* description)
 
 void KeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
 {
-	inputManager.KeyCallback(key, scancode, action, mods);
+	inputSystem.KeyCallback(key, scancode, action, mods);
 }
 
 void DefaultWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
 {
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-	RenderSystem& rs = systemManager.GetSystem<RenderSystem>();
+	RenderSystem& rs = renderSystem;
 	rs.UpdateMatrixAspect(*rs.pMainCamera, width, height);
 }
 
@@ -117,8 +117,8 @@ void InitializeOpenGL()
 
 	// Standard shader
 	{
-		const char* strVertShader = shaderLoader::loadShader("data/shaders/normal.vert");
-		const char* strFragShader = shaderLoader::loadShader("data/shaders/normal.frag");
+		const char* strVertShader = shaderLoader::LoadShader("data/shaders/normal.vert");
+		const char* strFragShader = shaderLoader::LoadShader("data/shaders/normal.frag");
 		shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
 		shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
 		delete[] strVertShader;
@@ -138,8 +138,8 @@ void InitializeOpenGL()
 
 	// Wireframe shader
 	{
-		const char* strVertShader = shaderLoader::loadShader("data/shaders/wireframe.vert");
-		const char* strFragShader = shaderLoader::loadShader("data/shaders/wireframe.frag");
+		const char* strVertShader = shaderLoader::LoadShader("data/shaders/wireframe.vert");
+		const char* strFragShader = shaderLoader::LoadShader("data/shaders/wireframe.frag");
 		shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
 		shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
 		delete[] strVertShader;

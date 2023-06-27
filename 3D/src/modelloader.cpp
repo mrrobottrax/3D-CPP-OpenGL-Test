@@ -1,6 +1,5 @@
-#include <pch.h>
-
-#include <modelLoader.h>
+#include "pch.h"
+#include "modelLoader.h"
 
 namespace modelLoader {
 
@@ -37,12 +36,12 @@ namespace modelLoader {
 
 		json data = json::parse(str_json);
 
-		const int bufferStart = 20 + json_length + 8;
+		const buffer_t bufferStart = 20 + json_length + 8;
 
 		// Elements
 		Buffer b_indices(data, data["meshes"][0]["primitives"][0]["indices"]);
 		mesh.indicesCount = b_indices.count;
-		f.seekg(bufferStart + b_indices.bufferOffset, std::ios::beg);
+		f.seekg(static_cast<std::basic_istream<char, std::char_traits<char>>::off_type>(bufferStart) + b_indices.bufferOffset, std::ios::beg);
 		GLshort* indices = new GLshort[b_indices.count];
 		for (buffer_t i = 0; i < b_indices.count; ++i)
 		{
@@ -53,7 +52,7 @@ namespace modelLoader {
 		// Positions
 		Buffer b_positions(data, data["meshes"][0]["primitives"][0]["attributes"]["POSITION"]);
 		mesh.vertCount = b_positions.count * 3;
-		f.seekg(bufferStart + b_positions.bufferOffset, std::ios::beg);
+		f.seekg(static_cast<std::basic_istream<char, std::char_traits<char>>::off_type>(bufferStart) + b_positions.bufferOffset, std::ios::beg);
 		float* positions = new float[mesh.vertCount];
 		for (int i = 0; i < mesh.vertCount; ++i)
 		{
@@ -64,7 +63,7 @@ namespace modelLoader {
 		// Normals
 		Buffer b_normals(data, data["meshes"][0]["primitives"][0]["attributes"]["NORMAL"]);
 		mesh.normalCount = b_normals.count * 3;
-		f.seekg(bufferStart + b_normals.bufferOffset, std::ios::beg);
+		f.seekg(static_cast<std::basic_istream<char, std::char_traits<char>>::off_type>(bufferStart) + b_normals.bufferOffset, std::ios::beg);
 		float* normals = new float[mesh.normalCount];
 		for (int i = 0; i < mesh.normalCount; ++i)
 		{

@@ -1,11 +1,7 @@
-#include <pch.h>
+#include "pch.h"
+#include "entitymanager.h"
 
-#include <memory/entitymanager.h>
 #include <components/idcomponent.h>
-#include <components/positioncomponent.h>
-#include <components/cameracomponent.h>
-#include <components/velocitycomponent.h>
-#include <components/meshcomponent.h>
 
 EntityManager::EntityManager()
 {

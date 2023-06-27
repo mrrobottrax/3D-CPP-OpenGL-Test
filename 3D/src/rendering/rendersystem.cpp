@@ -1,12 +1,11 @@
-#include <pch.h>
-#include <systems/renderSystem.h>
+#include "pch.h"
+#include "renderSystem.h"
 
-#include <common/matrixStack.h>
-#include <memory/entityManager.h>
-#include <components/meshComponent.h>
-#include <components/positionComponent.h>
-#include <components/rotationComponent.h>
 #include <components/scalecomponent.h>
+#include <components/positioncomponent.h>
+#include <components/rotationcomponent.h>
+#include <components/meshcomponent.h>
+#include <common/matrixstack.h>
 
 #include <gl/glutil.h>
 
@@ -72,7 +71,6 @@ void RenderSystem::Update()
 	}
 
 	DrawShaded();
-	debugDraw.Update();
 }
 
 void RenderSystem::DrawShaded()
@@ -99,7 +97,6 @@ void RenderSystem::DrawWireframe()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDisable(GL_CULL_FACE);
 	DrawBase();
-	debugDraw.Update();
 	glEnable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -111,7 +108,7 @@ void RenderSystem::DrawBase()
 {
 	EntityManager& em = entityManager;
 
-	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().init<MeshComponent>());
+	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().Init<MeshComponent>());
 	if (archetypes == nullptr)
 		return;
 

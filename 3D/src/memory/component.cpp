@@ -1,8 +1,5 @@
-#pragma once
-
-#include <pch.h>
-
-#include <memory/component.h>
+#include "pch.h"
+#include "component.h"
 
 Component::Component()
 {

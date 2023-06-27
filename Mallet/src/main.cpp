@@ -63,11 +63,11 @@ void Init()
 	// Create monkey
 	{
 		Component components[] = {
-			Component().init<IdComponent>(),
-			Component().init<PositionComponent>(),
-			Component().init<VelocityComponent>(),
-			Component().init<MeshComponent>(),
-			Component().init<RotationComponent>(),
+			Component().Init<IdComponent>(),
+			Component().Init<PositionComponent>(),
+			Component().Init<VelocityComponent>(),
+			Component().Init<MeshComponent>(),
+			Component().Init<RotationComponent>(),
 		};
 
 		Entity entity = em.AddEntity(EntityArchetype(5, components));
@@ -82,11 +82,11 @@ void Init()
 	// Create map
 	{
 		Component components[] = {
-			Component().init<IdComponent>(),
-			Component().init<PositionComponent>(),
-			Component().init<VelocityComponent>(),
-			Component().init<MeshComponent>(),
-			Component().init<RotationComponent>(),
+			Component().Init<IdComponent>(),
+			Component().Init<PositionComponent>(),
+			Component().Init<VelocityComponent>(),
+			Component().Init<MeshComponent>(),
+			Component().Init<RotationComponent>(),
 		};
 
 		Entity entity = em.AddEntity(EntityArchetype(5, components));
@@ -101,11 +101,11 @@ void Init()
 	// Create teapot
 	{
 		Component components[] = {
-			Component().init<IdComponent>(),
-			Component().init<PositionComponent>(),
-			Component().init<VelocityComponent>(),
-			Component().init<MeshComponent>(),
-			Component().init<RotationComponent>(),
+			Component().Init<IdComponent>(),
+			Component().Init<PositionComponent>(),
+			Component().Init<VelocityComponent>(),
+			Component().Init<MeshComponent>(),
+			Component().Init<RotationComponent>(),
 		};
 
 		Entity entity = em.AddEntity(EntityArchetype(5, components));

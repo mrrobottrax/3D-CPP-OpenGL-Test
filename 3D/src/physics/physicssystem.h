@@ -1,23 +1,18 @@
 #pragma once
-
 #include <systems/system.h>
-#include <memory/entity.h>
-#include <memory/entitymanager.h>
-#include <components/rigidbodycomponent.h>
-#include <physics/convexhull.h>
-#include <map>
+#include <physics/halfedgemesh.h>
 
 struct FaceQuery
 {
 	float seperation = -FLT_MAX;
-	qhFace* pFace = nullptr;
+	heFace* pFace = nullptr;
 };
 
 struct EdgeQuery
 {
 	float seperation = -FLT_MAX;
-	qhEdge* pEdgeA = nullptr;
-	qhEdge* pEdgeB = nullptr;
+	heEdge* pEdgeA = nullptr;
+	heEdge* pEdgeB = nullptr;
 
 	glm::vec3 normal = glm::vec3(0);
 };
@@ -131,8 +126,11 @@ const float velEpsilonAngular = 0.1f;
 class PhysicsSystem : public System
 {
 public:
-	PhysicsSystem();
-	~PhysicsSystem();
+	PhysicsSystem() : manifolds()
+	{};
+
+	~PhysicsSystem()
+	{};
 
 private:
 	std::map<CollisionPair, Manifold> manifolds;
@@ -144,4 +142,4 @@ public:
 	bool HullVsHull(const Entity& entityA, const Entity& entityB, Manifold& manifold);
 
 	static void ComputeInertia(const Entity& entity);
-};
+}; inline PhysicsSystem physicsSystem;

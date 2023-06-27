@@ -1,6 +1,5 @@
 #pragma once
-
-#include <memory/component.h>
+#include "component.h"
 
 class EntityArchetype
 {

@@ -2,7 +2,7 @@
 
 #include <physics/halfedgemesh.h>
 
-struct HullCollider
+struct MeshCollider
 {
-	HalfEdgeMesh* pHull;
+	HalfEdgeMesh* pMesh;
 };

@@ -1,7 +1,5 @@
-#include <pch.h>
-#include <input/console.h>
-
-//#include <managers.h>
+#include "pch.h"
+#include "console.h"
 
 Console::Console() : enabled(false), commands()
 {
@@ -122,7 +120,7 @@ void Console::ParseInput(char key)
 	bool skippingSpaces = false;
 	bool inQuotes = false;
 
-	char command[MAX_COMMAND_NAME_LENGTH];
+	char command[MAX_COMMAND_NAME_LENGTH]{};
 
 	int offset = 0;
 

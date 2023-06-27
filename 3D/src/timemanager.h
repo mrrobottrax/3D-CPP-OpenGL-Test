@@ -1,5 +1,4 @@
 #pragma once
-
 #include <input/console.h>
 
 extern Cvar timescale;

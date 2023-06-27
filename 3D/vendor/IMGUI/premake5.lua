@@ -5,6 +5,16 @@ project "IMGUI"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir    ("obj/" .. outputdir .. "/%{prj.name}")
 
+	includedirs
+	{
+		"%{IncludeDir.GLFW}"
+	}
+
+	links
+	{
+		"GLFW",
+	}
+
 	files
 	{
 		"imconfig.h",
@@ -18,6 +28,11 @@ project "IMGUI"
 		"imstb_rectpack.h",
 		"imstb_textedit.h",
 		"imstb_truetype.h",
+		"imgui_impl_glfw.cpp",
+		"imgui_impl_glfw.h",
+		"imgui_impl_opengl3.cpp",
+		"imgui_impl_opengl3.h",
+		"imgui_impl_opengl3_loader.h",
 	}
 
 	filter "system:windows"

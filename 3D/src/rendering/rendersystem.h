@@ -1,10 +1,7 @@
 #pragma once
 
 #include <systems/system.h>
-#include <components/cameraComponent.h>
-#include <memory/entity.h>
-#include <debugtools/debugdraw.h>
-#include <input/console.h>
+#include <components/cameracomponent.h>
 
 extern Cvar r_draw;
 
@@ -12,12 +9,16 @@ class RenderSystem : public System
 {
 public:
 	RenderSystem() : pMainCamera(), autoDraw(true)
+	{};
+
+	~RenderSystem()
+	{};
+
+public:
+	void Init() override
 	{
 		console.AddCvar(r_draw);
-
-		debugDraw.Init();
-	};
-	~RenderSystem() {};
+	}
 
 	bool autoDraw;
 
@@ -34,4 +35,4 @@ public:
 	void DrawBase();
 	void DrawShaded();
 	void DrawWireframe();
-};
+}; inline RenderSystem renderSystem;

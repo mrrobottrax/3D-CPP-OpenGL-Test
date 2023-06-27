@@ -1,6 +1,6 @@
 #pragma once
 
-#include <components/velocitycomponent.h>
+#include "velocitycomponent.h"
 
 struct UnscaledVelocityComponent
 {

@@ -9,4 +9,4 @@ public:
 	~FreecamSystem() {};
 
 	void Update() override;
-};
+}; inline FreecamSystem freecamSystem;

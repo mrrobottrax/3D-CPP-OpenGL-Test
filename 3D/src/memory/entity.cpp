@@ -1,6 +1,5 @@
-#include <pch.h>
-
-#include <memory/entity.h>
+#include "pch.h"
+#include "entity.h"
 
 Entity::Entity(EntityArchetype& archetype, Chunk& chunk, unsigned short index)
 {
