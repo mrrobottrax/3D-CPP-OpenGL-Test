@@ -42,7 +42,8 @@ public:
 		glGenBuffers(1, &colorBuffer);
 	};
 
-	void Update();
+	void Update() override;
+	void Render();
 
 	void DrawLine(const float start[3], const float end[3], const glm::vec3 color = { 0, 1, 1 }, const float time = 0);
 	void DrawLine(const glm::vec3 start, const glm::vec3 end, const glm::vec3 color = { 0, 1, 1 }, const float time = 0);

@@ -1,28 +1,33 @@
 #pragma once
 
+#include "dockingnode.h"
 #include <ui/windows/malletwindow.h>
 
-enum DockingLeafFlags
-{
-	leafIsUsed = 1 << 0,
-};
-
-class MalletWindow;
-
-struct DockingLeaf
+struct DockingLeaf : public DockingNode
 {
 public:
-	DockingLeaf();
-	DockingLeaf(int parentNodeIndex, MalletWindow* window);
+	DockingLeaf() : position(), size(), pWindow()
+	{
+		isLeaf = true;
+	};
 
-	~DockingLeaf();
+	DockingLeaf(MalletWindow* pWindow) : position(), size(), pWindow(pWindow)
+	{
+		isLeaf = true;
+		pWindow->SetLeaf(this);
+	};
+
+	~DockingLeaf()
+	{
+		if (pWindow)
+		{
+			delete pWindow;
+		}
+	};
 
 public:
-	int parentNodeIndex;
-	int flags;
+	int position[2];
+	int size[2];
 
-	int absPos[2];
-	int absSize[2];
-
-	MalletWindow* window;
+	MalletWindow* pWindow;
 };

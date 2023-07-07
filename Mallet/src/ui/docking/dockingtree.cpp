@@ -1,444 +1,199 @@
-#include <malletpch.h>
+#include "malletpch.h"
+#include "dockingtree.h"
 
 #include <gl/glutil.h>
-#include <imgui/imguiutil.h>
-#include <ui/docking/dockingtree.h>
 
-#include <debugtools/debugcolorcycle.h>
-
-// Windows - TEMP (should add to big windows.h file?)
-#include <ui/windows/viewport.h>
-#include <ui/windows/toolbar.h>
-
-//#define DRAW_DEBUG
-
-#define NODE_MIN_MOUSE_DIST 5
-
-DockingTree::DockingTree() : nodeArray(), leafArray()
+DockingLeaf* DockingTree::AddLeaf(MalletWindow* pWindow, DockingLeaf* pLeafToSplit, SplitDirection direction,
+	float ratio, bool flip)
 {
-	int leaf = AddLeaf(-1, new Toolbar);
-	rootNode = -(leaf + 1);
+	DockingLeaf* pNewLeaf = new DockingLeaf(pWindow);
 
-	// Toolbar
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.05f, new Viewport(ViewportMode::perspective));
-
-	// Top right, bottom left, bottom right
-	leaf = SplitLeaf(leaf, DockingDirection::vertical, 0.5f, new Viewport(ViewportMode::top));
-	leaf = SplitLeaf(1, DockingDirection::horizontal, 0.5f, new Viewport(ViewportMode::front));
-	leaf = SplitLeaf(2, DockingDirection::horizontal, 0.5f, new Viewport(ViewportMode::side));
-
-	RecalculateSizes();
-}
-
-DockingTree::~DockingTree()
-{
-}
-
-void DockingTree::PrintTree()
-{
-	std::cout << "Start Node: " << rootNode << "\n\n";
-
-	// Print nodes
-	std::cout << "Nodes:" << "\n";
-	for (int i = 0; i < MAX_PARTITIONS; i++)
+	// If leaf is new base node
+	if (!pLeafToSplit)
 	{
-		if (!(nodeArray[i].flags & DockingNodeFlags::nodeIsUsed))
-			continue;
+		Clear();
 
-		std::cout << "Node " << i << "\n";
-		std::cout << "   " << "Flags: " << "\n";
-		std::cout << "      " << nodeArray[i].flags << "\n";
-		std::cout << "   " << "Direction: " << "\n";
-		std::cout << "      " << nodeArray[i].direction << "\n";
-		std::cout << "   " << "Ratio: " << "\n";
-		std::cout << "      " << nodeArray[i].ratio << "\n";
-		std::cout << "   " << "Back: " << "\n";
-		std::cout << "      " << nodeArray[i].backIndex << "\n";
-		std::cout << "   " << "Front: " << "\n";
-		std::cout << "      " << nodeArray[i].frontIndex << "\n";
-		std::cout << "   " << "Offset: " << "\n";
-		std::cout << "      " << nodeArray[i].absOffset << "\n";
-		std::cout << "   " << "Parent: " << "\n";
-		std::cout << "      " << nodeArray[i].parentNodeIndex << "\n";
+		pBaseNode = pNewLeaf;
+
+		return pNewLeaf;
 	}
 
-	// Print leafs
-	std::cout << "Leafs:" << "\n";
-	for (int i = 0; i < MAX_PARTITIONS; i++)
+	DockingSplit* pSplit = new DockingSplit();
+
+	pSplit->splitRatio = ratio;
+	pSplit->direction = direction;
+
+	if (!flip)
 	{
-		if (!(leafArray[i].flags & DockingLeafFlags::leafIsUsed))
-			continue;
-
-		std::cout << "Leaf " << i << "\n";
-		std::cout << "   " << "Flags: " << "\n";
-		std::cout << "      " << leafArray[i].flags << "\n";
-		std::cout << "   " << "Parent Node: " << "\n";
-		std::cout << "      " << leafArray[i].parentNodeIndex << "\n";
-	}
-}
-
-bool DockingTree::IsLeaf(int index)
-{
-	return index < 0;
-}
-
-int DockingTree::SplitLeaf(int leafIndex, DockingDirection dir, float ratio, MalletWindow* window)
-{
-	DockingLeaf& leafToSplit = leafArray[leafIndex];
-	DockingNode& parentNode = nodeArray[leafToSplit.parentNodeIndex];
-	bool isLeafToSplitBack = -(leafIndex + 1) == parentNode.backIndex;
-
-	int newLeafIndex = AddLeaf(-1, window);
-	int newNodeIndex = AddNode(leafToSplit.parentNodeIndex, -(leafIndex + 1), -(newLeafIndex + 1), dir, ratio);
-	
-	DockingLeaf& newLeaf = leafArray[newLeafIndex];
-
-	// Leaf was not connected to any node
-	if (leafToSplit.parentNodeIndex < 0)
-	{
-		rootNode = newNodeIndex;
-	}
-
-	leafToSplit.parentNodeIndex = newNodeIndex;
-	newLeaf.parentNodeIndex = newNodeIndex;
-
-	if (isLeafToSplitBack)
-	{
-		parentNode.backIndex = newNodeIndex;
+		pSplit->back = pLeafToSplit;
+		pSplit->front = pNewLeaf;
 	}
 	else
 	{
-		parentNode.frontIndex = newNodeIndex;
+		pSplit->back = pNewLeaf;
+		pSplit->front = pLeafToSplit;
 	}
 
-	return newLeafIndex;
+	pSplit->pParentSplit = pLeafToSplit->pParentSplit;
+	pLeafToSplit->pParentSplit = pSplit;
+	pNewLeaf->pParentSplit = pSplit;
+
+	// If split is base node
+	if (!pSplit->pParentSplit)
+	{
+		pBaseNode = pSplit;
+		return pNewLeaf;
+	}
+
+	// Set parent node to point to split
+	if (pSplit->pParentSplit->back == pLeafToSplit)
+	{
+		pSplit->pParentSplit->back = pSplit;
+	}
+	else if (pSplit->pParentSplit->front == pLeafToSplit)
+	{
+		pSplit->pParentSplit->front = pSplit;
+	}
+
+	return pNewLeaf;
 }
 
-void DockingTree::RecalculateSizes()
+void UpdateSizeRecursive(DockingNode* pNode, int width, int height, int posX, int posY)
 {
-	int windowWidth, windowHeight;
-	glfwGetWindowSize(pMainWindow, &windowWidth, &windowHeight);
-
-	if (IsLeaf(rootNode))
+	// If leaf
+	if (pNode->isLeaf)
 	{
-		DockingLeaf& leaf = leafArray[abs(rootNode) - 1];
+		DockingLeaf& leaf = *reinterpret_cast<DockingLeaf*>(pNode);
 
-		leaf.absPos[0] = 0;
-		leaf.absPos[1] = 0;
+		leaf.size[0] = width;
+		leaf.size[1] = height;
 
-		leaf.absSize[0] = windowWidth;
-		leaf.absSize[1] = windowHeight;
+		leaf.position[0] = posX;
+		leaf.position[1] = posY;
 
-		leaf.window->OnResize(leaf, windowWidth, windowHeight);
+		leaf.pWindow->OnResize();
 
 		return;
 	}
 
-	GetSizesRecursive(rootNode, 0, 0, windowWidth, windowHeight, windowWidth, windowHeight);
-}
+	// If split
+	DockingSplit& split = *reinterpret_cast<DockingSplit*>(pNode);
 
-void DockingTree::GetSizesRecursive(int index, int lowerBoundX, int lowerBoundY, int higherBoundX, int higherBoundY,
-	int& windowWidth, int& windowHeight)
-{
-	if (IsLeaf(index))
+	switch (split.direction)
 	{
-		DockingLeaf& leaf = leafArray[abs(index) - 1];
+	case SplitDirection::horizontal:
+		{
+			const int heightXRatio = static_cast<int>(height * split.splitRatio);
 
-		leaf.absPos[0] = lowerBoundX;
-		leaf.absPos[1] = lowerBoundY;
+			split.min = posY;
+			split.max = posY + height;
+			split.splitPosition = posY + heightXRatio;
 
-		leaf.absSize[0] = higherBoundX - lowerBoundX;
-		leaf.absSize[1] = higherBoundY - lowerBoundY;
-
-		if (leaf.window != nullptr)
-			leaf.window->OnResize(leaf, windowWidth, windowHeight);
-
-		return;
-	}
-
-	DockingNode& node = nodeArray[index];
-
-	switch (node.direction)
-	{
-	case horizontal:
-		node.absOffset = int(node.ratio * (higherBoundY - lowerBoundY)) + lowerBoundY;
+			UpdateSizeRecursive(split.back, width, heightXRatio, posX, posY);
+			UpdateSizeRecursive(split.front, width, static_cast<int>(height * (1.0f - split.splitRatio)), posX, split.splitPosition);
+		}
 		break;
 
-	case vertical:
-		node.absOffset = int(node.ratio * (higherBoundX - lowerBoundX)) + lowerBoundX;
+	case SplitDirection::vertical:
+		{
+			const int widthXRatio = static_cast<int>(width * split.splitRatio);
+
+			split.min = posX;
+			split.max = posX + width;
+			split.splitPosition = posX + widthXRatio;
+
+			UpdateSizeRecursive(split.back, widthXRatio, height, posX, posY);
+			UpdateSizeRecursive(split.front, static_cast<int>(width * (1.0f - split.splitRatio)), height, split.splitPosition, posY);
+		}
 		break;
 
 	default:
 		break;
 	}
-
-	// Back
-	int backHigherBoundX = higherBoundX;
-	int backHigherBoundY = higherBoundY;
-	{
-		switch (node.direction)
-		{
-		case horizontal:
-			backHigherBoundY = node.absOffset;
-			break;
-
-		case vertical:
-			backHigherBoundX = node.absOffset;
-			break;
-
-		default:
-			break;
-		}
-
-		GetSizesRecursive(node.backIndex, lowerBoundX, lowerBoundY, backHigherBoundX, backHigherBoundY, windowWidth, windowHeight);
-	}
-
-	// Front
-	{
-		int frontHigherBoundX = lowerBoundX;
-		int frontHigherBoundY = lowerBoundY;
-
-		switch (node.direction)
-		{
-		case horizontal:
-			frontHigherBoundY = backHigherBoundY;
-			break;
-
-		case vertical:
-			frontHigherBoundX = backHigherBoundX;
-			break;
-
-		default:
-			break;
-		}
-
-		GetSizesRecursive(node.frontIndex, frontHigherBoundX, frontHigherBoundY, higherBoundX, higherBoundY, windowWidth, windowHeight);
-	}
 }
 
-int DockingTree::AddNode(int parentNodeIndex, int backIndex, int frontIndex, DockingDirection dir, float ratio)
+void DockingTree::UpdateSize()
 {
-	// Find free space in array
-	int index;
-	for (index = 0; index < MAX_PARTITIONS; index++)
-	{
-		if (!(nodeArray[index].flags & DockingNodeFlags::nodeIsUsed))
-		{
-			nodeArray[index] = DockingNode(parentNodeIndex, backIndex, frontIndex, dir, ratio);
-			return index;
-		}
-	}
+	if (!pBaseNode)
+		return;
 
-	return -1;
+	int width, height;
+	glfwGetWindowSize(pMainWindow, &width, &height);
+
+	UpdateSizeRecursive(pBaseNode, width, height, 0, 0);
 }
 
-int DockingTree::AddLeaf(int parentNodeIndex, MalletWindow* window)
+void DrawTreeRecursive(DockingNode* pNode)
 {
-	// Find free space in array
-	int index;
-	for (index = 0; index < MAX_PARTITIONS; index++)
+	if (pNode->isLeaf)
 	{
-		if (!(leafArray[index].flags & DockingLeafFlags::leafIsUsed))
-		{
-			DockingLeaf leaf(parentNodeIndex, window);
-			leafArray[index] = leaf;
-			leaf.window = nullptr;
-			return index;
-		}
+		DockingLeaf& leaf = *reinterpret_cast<DockingLeaf*>(pNode);
+
+		leaf.pWindow->Draw();
+
+		return;
 	}
 
-	return -1;
+	DockingSplit& split = *reinterpret_cast<DockingSplit*>(pNode);
+
+	DrawTreeRecursive(split.back);
+	DrawTreeRecursive(split.front);
 }
 
 void DockingTree::DrawTree()
 {
-	srand(0);
-
-	int windowSizeX, windowSizeY;
-	float workingSizeX, workingSizeY;
-	float workingPosX, workingPosY;
-	glfwGetWindowSize(pMainWindow, &windowSizeX, &windowSizeY);
-
-	workingSizeX = float(windowSizeX);
-	workingSizeY = float(windowSizeY);
-
-	workingPosX = 0;
-	workingPosY = 0;
-
-	DrawNodeRecursive(rootNode, workingPosX, workingPosY, workingSizeX, workingSizeY);
-}
-
-void DockingTree::DrawNodeRecursive(int nodeIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
-{
-	if (IsLeaf(nodeIndex))
-	{
-		#ifdef DRAW_DEBUG
-			DrawLeafDebug(abs(nodeIndex) - 1, workingPosX, workingPosY, workingSizeX, workingSizeY);
-		#else
-			DrawLeaf(abs(nodeIndex) - 1, workingPosX, workingPosY, workingSizeX, workingSizeY);
-		#endif // DRAW_DEBUG
-
+	if (!pBaseNode)
 		return;
-	}
 
-	const float startSizeX = workingSizeX;
-	const float startSizeY = workingSizeY;
-
-	// Back
-	{
-		// Scale window
-		switch (nodeArray[nodeIndex].direction)
-		{
-		case horizontal:
-			workingSizeY *= nodeArray[nodeIndex].ratio;
-			break;
-
-		case vertical:
-			workingSizeX *= nodeArray[nodeIndex].ratio;
-			break;
-
-		default:
-			break;
-		}
-
-		DrawNodeRecursive(nodeArray[nodeIndex].backIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
-	}
-
-	// Move window
-	switch (nodeArray[nodeIndex].direction)
-	{
-	case horizontal:
-		workingPosY += workingSizeY;
-		break;
-
-	case vertical:
-		workingPosX += workingSizeX;
-		break;
-
-	default:
-		break;
-	}
-
-	// Front
-	{
-		// Inverse scale window
-		switch (nodeArray[nodeIndex].direction)
-		{
-		case horizontal:
-			workingSizeY = startSizeY * (1.0f - nodeArray[nodeIndex].ratio);
-			break;
-
-		case vertical:
-			workingSizeX = startSizeX * (1.0f - nodeArray[nodeIndex].ratio);
-			break;
-
-		default:
-			break;
-		}
-
-		DrawNodeRecursive(nodeArray[nodeIndex].frontIndex, workingPosX, workingPosY, workingSizeX, workingSizeY);
-	}
+	DrawTreeRecursive(pBaseNode);
 }
 
-void DockingTree::DrawLeafDebug(int leafIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
+DockingNode* GetNodeUnderPositionRecursive(DockingNode* pNode, double xPos, double yPos)
 {
-	DockingLeaf& leaf = leafArray[leafIndex];
-
-	float posX, posY;
-	float sizeX, sizeY;
-
-	posX = roundf(workingPosX);
-	posY = roundf(workingPosY);
-
-	sizeX = roundf(workingSizeX);
-	sizeY = roundf(workingSizeY);
-
-	ImGui::SetNextWindowPos(ImVec2(posX, posY));
-	ImGui::SetNextWindowSize(ImVec2(sizeX, sizeY));
-	bool pOpen = true;
-
-	std::string name = std::to_string(leafIndex);
-
-	float R, G, B;
-	RandomHueColor(&R, &G, &B);
-	ImVec4 color = ImVec4(R, G, B, 0.5f);
-	ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, color);
-
-	ImGui::Begin(name.c_str(), &pOpen, window_flags);
-	ImGui::Text(name.c_str());
-	ImGui::Text("Color: %f, %f, %f", R, G, B);
-	ImGui::Text("Position: %d, %d", leaf.absPos[0], leaf.absPos[1]);
-	ImGui::Text("Size: %d, %d", leaf.absSize[0], leaf.absSize[1]);
-	ImGui::End();
-
-	ImGui::PopStyleColor();
-}
-
-void DockingTree::DrawLeaf(int leafIndex, float workingPosX, float workingPosY, float workingSizeX, float workingSizeY)
-{
-	DockingLeaf& leaf = leafArray[leafIndex];
-	
-	if (leaf.window == nullptr)
+	// Stop when we hit a leaf
+	if (pNode->isLeaf)
 	{
-		ImGui::SetNextWindowPos(ImVec2(float(leaf.absPos[0]), float(leaf.absPos[1])));
-		ImGui::SetNextWindowSize(ImVec2(float(leaf.absSize[0]), float(leaf.absSize[1])));
-
-		std::string name = std::to_string(leafIndex);
-
-		ImGui::Begin(name.c_str(), (bool*)0, window_flags);
-		ImGui::End();
-
-		return;
+		return pNode;
 	}
 
-	leaf.window->Draw(leaf, leafIndex);
-}
+	DockingSplit& split = *reinterpret_cast<DockingSplit*>(pNode);
 
-int DockingTree::SelectNodeRecursive(int nodeIndex, float mousePosX, float mousePosY)
-{
-	if (IsLeaf(nodeIndex))
+	int dist = 0;
+
+	switch (split.direction)
 	{
-		return nodeIndex;
-	}
-
-	DockingNode& node = nodeArray[nodeIndex];
-
-	float usedPos;
-
-	switch (node.direction)
-	{
-	case horizontal:
-		usedPos = mousePosY;
+	case SplitDirection::horizontal:
+		dist = static_cast<int>(yPos - split.splitPosition);
 		break;
 
-	case vertical:
-		usedPos = mousePosX;
-		break;
-
-	default:
-		usedPos = 0;
+	case SplitDirection::vertical:
+		dist = static_cast<int>(xPos - split.splitPosition);
 		break;
 	}
 
-	if (abs(usedPos - node.absOffset) <= NODE_MIN_MOUSE_DIST)
+	// Return split when mouse is pretty much on it
+	if (abs(dist) <= splitSelectDistance)
 	{
-		return nodeIndex;
+		return pNode;
 	}
 
-	int nextIndex;
-	if (usedPos > node.absOffset)
+	if (dist > 0)
 	{
-		nextIndex = node.frontIndex;
+		return GetNodeUnderPositionRecursive(split.front, xPos, yPos);
 	}
 	else
 	{
-		nextIndex = node.backIndex;
+		return GetNodeUnderPositionRecursive(split.back, xPos, yPos);
 	}
-
-	return SelectNodeRecursive(nextIndex, mousePosX, mousePosY);
 }
 
-int DockingTree::SelectNode(float mousePosX, float mousePosY)
+DockingNode* DockingTree::GetNodeUnderMouse()
 {
-	return SelectNodeRecursive(rootNode, mousePosX, mousePosY);
+	if (!pBaseNode)
+		return nullptr;
+
+	double xPos, yPos;
+	glfwGetCursorPos(pMainWindow, &xPos, &yPos);
+
+	return GetNodeUnderPositionRecursive(pBaseNode, xPos, yPos);
 }

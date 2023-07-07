@@ -188,8 +188,6 @@ void Init()
 			qh.Algorithm(8, vertices, boxHull);
 		}
 
-		boxHull.Draw(20);
-
 		// Create box 1
 		{
 			Entity entity = em.AddEntity(boxArchetype);

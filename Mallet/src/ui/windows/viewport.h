@@ -4,7 +4,8 @@
 #include <ui/docking/dockingleaf.h>
 #include <memory/entity.h>
 #include <components/cameracomponent.h>
-#include <systems/rendersystem.h>
+#include <rendering/rendersystem.h>
+#include <components/freecamcomponent.h>
 
 enum ViewportMode
 {
@@ -39,18 +40,18 @@ class Viewport : public MalletWindow
 {
 public:
 	Viewport(ViewportMode);
-	~Viewport();
+	~Viewport() {};
 
-	void Draw(DockingLeaf& leaf, int leafIndex) override;
+	void Draw() override;
 	void Draw2DWireframe();
 	void Draw3DShaded();
-	void OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight);
-	void OnSelect(DockingLeaf& leaf);
-	void OnDeselect(DockingLeaf& leaf);
+	void OnResize() override;
+	void OnSelect() override;
+	void OnDeselect() override;
 
-	void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void MouseCallback(GLFWwindow* window, int button, int action, int mods);
-	void MousePosCallback(GLFWwindow* window, double xPos, double yPos);
+	void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) override;
+	void MouseCallback(GLFWwindow* window, int button, int action, int mods) override;
+	void MousePosCallback(GLFWwindow* window, double xPos, double yPos) override;
 
 public:
 	ViewportMode mode;
@@ -59,14 +60,13 @@ private:
 	Entity cameraEntity;
 	FreecamComponent* freeCam;
 	CameraComponent* camera;
-	RenderSystem* renderSystem;
 	GLint viewPosX;
 	GLint viewPosY;
 	GLsizei viewSizeX;
 	GLsizei viewSizeY;
 
 private:
-	void CalculateViewportVars(DockingLeaf&, int, int);
+	void CalculateViewportVars(int, int);
 	void PanButton(int action);
 	void ZoomIn();
 	void ZoomOut();

@@ -97,7 +97,7 @@ void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const 
 	DrawLine(point1, point2, color, time);
 }
 
-void DebugDraw::Update()
+void DebugDraw::Render()
 {
 	glUseProgram(wireframeShaderProgram);
 	glBindVertexArray(vao);
@@ -112,6 +112,25 @@ void DebugDraw::Update()
 
 	glBindVertexArray(0);
 	glUseProgram(0);
+}
+
+void DebugDraw::Update()
+{
+	// Tick timers
+	auto it = lines.begin();
+	while (it != lines.end())
+	{
+		// Remove expired lines
+		if ((*it).timer < 0)
+		{
+			lines.erase(it++);
+		}
+		else
+		{
+			(*it).timer -= timeManager.GetDeltaTime();
+			++it;
+		}
+	}
 }
 
 void DebugDraw::Draw()
@@ -157,14 +176,13 @@ void DebugDraw::DrawLines()
 
 	// Set arrays
 	{
-// Getting weird false positive here
-#pragma warning( push )
-#pragma warning( disable : 6386)
 		int i = 0;
 		auto it = lines.begin();
 		while (it != lines.end())
 		{
-			vertArray[i]     = (*it).pointA.position[0];
+			assert(i + 5 < vertFloatCount);
+
+			vertArray[i] = (*it).pointA.position[0];
 			vertArray[i + 1] = (*it).pointA.position[1];
 			vertArray[i + 2] = (*it).pointA.position[2];
 
@@ -172,7 +190,7 @@ void DebugDraw::DrawLines()
 			vertArray[i + 4] = (*it).pointB.position[1];
 			vertArray[i + 5] = (*it).pointB.position[2];
 
-			colorArray[i]     = (*it).color[0];
+			colorArray[i] = (*it).color[0];
 			colorArray[i + 1] = (*it).color[1];
 			colorArray[i + 2] = (*it).color[2];
 
@@ -181,19 +199,7 @@ void DebugDraw::DrawLines()
 			colorArray[i + 5] = (*it).color[2];
 
 			i += 6;
-
-			// Remove expired lines
-			if ((*it).timer < 0)
-			{
-				lines.erase(it++);
-			}
-			else
-			{
-				(*it).timer -= timeManager.GetDeltaTime();
-				++it;
-			}
 		}
-#pragma warning( pop ) 
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);

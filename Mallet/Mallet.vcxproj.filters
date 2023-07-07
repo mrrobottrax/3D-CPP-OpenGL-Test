@@ -38,19 +38,16 @@
     <ClInclude Include="src\tools\mallettool.h">
       <Filter>tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\docking\dockingdirection.h">
-      <Filter>ui\docking</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui\docking\dockingleaf.h">
       <Filter>ui\docking</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\docking\dockingnode.h">
+    <ClInclude Include="src\ui\docking\dockingsplit.h">
       <Filter>ui\docking</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\docking\dockingtree.h">
       <Filter>ui\docking</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\malletui.h">
+    <ClInclude Include="src\ui\malletuisystem.h">
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\windows\malletwindow.h">
@@ -62,6 +59,7 @@
     <ClInclude Include="src\ui\windows\viewport.h">
       <Filter>ui\windows</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\docking\dockingnode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl\malletglutil.cpp">
@@ -72,13 +70,10 @@
     </ClCompile>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\malletpch.cpp" />
-    <ClCompile Include="src\ui\docking\dockingleaf.cpp">
-      <Filter>ui\docking</Filter>
-    </ClCompile>
     <ClCompile Include="src\ui\docking\dockingtree.cpp">
       <Filter>ui\docking</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\malletui.cpp">
+    <ClCompile Include="src\ui\malletuisystem.cpp">
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\windows\malletwindow.cpp">

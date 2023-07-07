@@ -1,21 +1,14 @@
-#include <malletpch.h>
+#include "malletpch.h"
+#include "malletwindow.h"
 
-#include <ui/windows/malletwindow.h>
+#include <ui/docking/dockingleaf.h>
 
-MalletWindow::MalletWindow() : selected(false)
+void MalletWindow::Draw()
 {
-}
+	ImGui::SetNextWindowPos(ImVec2(float(pLeaf->position[0]), float(pLeaf->position[1])));
+	ImGui::SetNextWindowSize(ImVec2(float(pLeaf->size[0]), float(pLeaf->size[1])));
 
-MalletWindow::~MalletWindow()
-{
-}
-
-void MalletWindow::Draw(DockingLeaf& leaf, int leafIndex)
-{
-	ImGui::SetNextWindowPos(ImVec2(float(leaf.absPos[0]), float(leaf.absPos[1])));
-	ImGui::SetNextWindowSize(ImVec2(float(leaf.absSize[0]), float(leaf.absSize[1])));
-
-	std::string name = std::to_string(leafIndex);
+	std::string name = std::to_string((uintptr_t)pLeaf);
 
 	ImGui::Begin(name.c_str(), (bool*)0, window_flags);
 	ImGui::End();

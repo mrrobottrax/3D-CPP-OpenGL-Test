@@ -2,9 +2,9 @@
 #include <input/malletinputlayer.h>
 
 #include <imgui/imguiutil.h>
-#include <ui/malletui.h>
+#include <ui/malletuisystem.h>
 #include <gl/malletglutil.h>
-#include <input/inputmanager.h>
+#include <input/inputsystem.h>
 
 #include <ui/windows/viewport.h>
 
@@ -27,6 +27,7 @@ void SetupInputCallbacks(GLFWwindow* window)
 //	inputManager->console.AddCommand("+pan", PanDown);
 //	inputManager->console.AddCommand("-pan", PanUp);
 //
+//	// TEMP
 //	inputManager->BindKey('r', "+pan");
 //}
 
@@ -52,19 +53,19 @@ void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 		return;
 	}
 
-	inputManager.KeyCallback(key, scancode, action, mods);
+	inputSystem.KeyCallback(key, scancode, action, mods);
 
-	MalletUi::KeyCallback(window, key, scancode, action, mods);
+	malletUI.KeyCallback(window, key, scancode, action, mods);
 }
 
 void MalletMouseCallback(GLFWwindow* window, int button, int action, int mods)
 {
-	inputManager.MouseCallback(button, action);
+	inputSystem.MouseCallback(button, action);
 
-	MalletUi::MouseCallback(window, button, action, mods);
+	malletUI.MouseCallback(window, button, action, mods);
 }
 
 void MalletMousePosCallback(GLFWwindow* window, double xPos, double yPos)
 {
-	MalletUi::MousePosCallback(window, xPos, yPos);
+	malletUI.MousePosCallback(window, xPos, yPos);
 }

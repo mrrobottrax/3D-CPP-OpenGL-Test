@@ -1,0 +1,155 @@
+#include "malletpch.h"
+#include "malletuisystem.h"
+
+#include <gl/glutil.h>
+
+#include "windows/viewport.h"
+
+void MalletUiSystem::Init()
+{
+	DockingLeaf* leaf =  tree.AddLeaf(new Viewport(perspective), nullptr);
+	leaf = tree.AddLeaf(new Viewport(perspective), leaf, vertical, 0.5f);
+	leaf = tree.AddLeaf(new Viewport(ViewportMode::top), leaf, horizontal, 0.55f);
+	tree.UpdateSize();
+}
+
+void MalletUiSystem::Update()
+{
+	tree.DrawTree();
+}
+
+void MalletUiSystem::DeselectNode()
+{
+	if (!pSelectedNode)
+		return;
+
+	if (pSelectedNode->isLeaf)
+	{
+		DockingLeaf& leaf = *reinterpret_cast<DockingLeaf*>(pSelectedNode);
+		leaf.pWindow->OnDeselect();
+	}
+
+	pSelectedNode = nullptr;
+}
+
+void MalletUiSystem::SelectNodeUnderMouse()
+{
+	DeselectNode();
+	pSelectedNode = tree.GetNodeUnderMouse();
+
+	if (!pSelectedNode)
+		return;
+
+	if (pSelectedNode->isLeaf)
+	{
+		DockingLeaf& leaf = *reinterpret_cast<DockingLeaf*>(pSelectedNode);
+		leaf.pWindow->OnSelect();
+	}
+	else
+	{
+		DockingSplit& split = *reinterpret_cast<DockingSplit*>(pSelectedNode);
+	}
+}
+
+void MalletUiSystem::WindowSizeCallback(GLFWwindow*, int width, int height)
+{
+	tree.UpdateSize();
+}
+
+void MalletUiSystem::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	// Deselect with escape
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		DeselectNode();
+		return;
+	}
+
+	// Select when key pressed
+	if (action == GLFW_PRESS)
+	{
+		if (glfwGetInputMode(pMainWindow, GLFW_CURSOR) != GLFW_CURSOR_DISABLED)
+			SelectNodeUnderMouse();
+	}
+
+	// Send key presses to window
+	if (pSelectedNode && pSelectedNode->isLeaf)
+	{
+		DockingLeaf& leaf = *reinterpret_cast<DockingLeaf*>(pSelectedNode);
+
+		if (leaf.pWindow)
+			leaf.pWindow->KeyboardCallback(window, key, scancode, action, mods);
+	}
+}
+
+void MalletUiSystem::MouseCallback(GLFWwindow* pWindow, int button, int action, int mods)
+{
+	// Select when mouse clicked
+	if (action == GLFW_PRESS)
+	{
+		int mode = glfwGetInputMode(pMainWindow, GLFW_CURSOR);
+		if (mode != GLFW_CURSOR_DISABLED)
+			SelectNodeUnderMouse();
+	}
+
+	// When selecting a split, deselect on release
+	if (action == GLFW_RELEASE && pSelectedNode && !pSelectedNode->isLeaf)
+	{
+		DeselectNode();
+	}
+
+	// Send mouse clicks to window
+	if (pSelectedNode && pSelectedNode->isLeaf)
+	{
+		DockingLeaf& leaf = *reinterpret_cast<DockingLeaf*>(pSelectedNode);
+
+		if (leaf.pWindow)
+			leaf.pWindow->MouseCallback(pWindow, button, action, mods);
+	}
+}
+
+void MalletUiSystem::MousePosCallback(GLFWwindow* pWindow, double xPos, double yPos)
+{
+	// Move split with mouse
+	if (pSelectedNode && !pSelectedNode->isLeaf)
+	{
+		DockingSplit& split = *reinterpret_cast<DockingSplit*>(pSelectedNode);
+
+		switch (split.direction)
+		{
+		case SplitDirection::horizontal:
+		{
+			float ratio = ((float)yPos - split.min) / (split.max - split.min);
+			ratio = clamp<float>(ratio, 0.0f, 1.0f);
+
+			split.splitRatio = ratio;
+
+			break;
+		}
+
+		case SplitDirection::vertical:
+		{
+			float ratio = ((float)xPos - split.min) / (split.max - split.min);
+			ratio = clamp<float>(ratio, 0.0f, 1.0f);
+
+			split.splitRatio = ratio;
+
+			break;
+		}
+
+		default:
+			break;
+		}
+
+		tree.UpdateSize();
+	}
+
+	// Send mouse movement to window
+	if (pSelectedNode && pSelectedNode->isLeaf)
+	{
+		DockingLeaf& leaf = *reinterpret_cast<DockingLeaf*>(pSelectedNode);
+
+		if (leaf.pWindow)
+			leaf.pWindow->MousePosCallback(pWindow, xPos, yPos);
+	}
+}

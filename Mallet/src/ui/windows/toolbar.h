@@ -6,12 +6,12 @@
 class Toolbar : public MalletWindow
 {
 public:
-	Toolbar();
-	~Toolbar();
+	Toolbar() {};
+	~Toolbar() {};
 
 private:
 	//const std::vector<MalletTool> toolArray;
 
 public:
-	void Draw(DockingLeaf& leaf, int leafIndex) override;
+	void Draw() override;
 };

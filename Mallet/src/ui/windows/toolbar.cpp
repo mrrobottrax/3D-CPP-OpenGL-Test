@@ -1,20 +1,14 @@
 #include "malletpch.h"
 #include "toolbar.h"
 
-Toolbar::Toolbar()
-{
-}
+#include <ui/docking/dockingleaf.h>
 
-Toolbar::~Toolbar()
+void Toolbar::Draw()
 {
-}
+	ImGui::SetNextWindowPos(ImVec2(float(pLeaf->position[0]), float(pLeaf->position[1])));
+	ImGui::SetNextWindowSize(ImVec2(float(pLeaf->size[0]), float(pLeaf->size[1])));
 
-void Toolbar::Draw(DockingLeaf& leaf, int leafIndex)
-{
-	ImGui::SetNextWindowPos(ImVec2(float(leaf.absPos[0]), float(leaf.absPos[1])));
-	ImGui::SetNextWindowSize(ImVec2(float(leaf.absSize[0]), float(leaf.absSize[1])));
-
-	std::string name = std::to_string(leafIndex);
+	std::string name = std::to_string((uintptr_t)pLeaf);
 
 	ImGui::Begin(name.c_str(), (bool*)0, window_flags);
 

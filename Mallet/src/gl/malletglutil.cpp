@@ -1,9 +1,9 @@
 #include <malletpch.h>
 
 #include <gl/malletglutil.h>
-#include <ui/malletui.h>
+#include <ui/malletuisystem.h>
 
-void MalletWindowSizeCallback(GLFWwindow* window, int width, int height)
+void MalletWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
 {
-	MalletUi::RecalculateTree();
+	malletUI.WindowSizeCallback(pWindow, width, height);
 }

@@ -18,7 +18,7 @@ EntityArchetype::EntityArchetype(unsigned short componentCount, Component* compo
 	EntityArchetype::entitySize = size;
 }
 
-unsigned short EntityArchetype::GetComponentOffset(Component& component)
+int EntityArchetype::GetComponentOffset(Component& component)
 {
 	// Scan through component list
 	for (int i = 0; i < componentCount; ++i)

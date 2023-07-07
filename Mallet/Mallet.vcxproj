@@ -140,11 +140,11 @@
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\malletpch.h" />
     <ClInclude Include="src\tools\mallettool.h" />
-    <ClInclude Include="src\ui\docking\dockingdirection.h" />
     <ClInclude Include="src\ui\docking\dockingleaf.h" />
     <ClInclude Include="src\ui\docking\dockingnode.h" />
+    <ClInclude Include="src\ui\docking\dockingsplit.h" />
     <ClInclude Include="src\ui\docking\dockingtree.h" />
-    <ClInclude Include="src\ui\malletui.h" />
+    <ClInclude Include="src\ui\malletuisystem.h" />
     <ClInclude Include="src\ui\windows\malletwindow.h" />
     <ClInclude Include="src\ui\windows\toolbar.h" />
     <ClInclude Include="src\ui\windows\viewport.h" />
@@ -156,9 +156,8 @@
     <ClCompile Include="src\malletpch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\ui\docking\dockingleaf.cpp" />
     <ClCompile Include="src\ui\docking\dockingtree.cpp" />
-    <ClCompile Include="src\ui\malletui.cpp" />
+    <ClCompile Include="src\ui\malletuisystem.cpp" />
     <ClCompile Include="src\ui\windows\malletwindow.cpp" />
     <ClCompile Include="src\ui\windows\toolbar.cpp" />
     <ClCompile Include="src\ui\windows\viewport.cpp" />

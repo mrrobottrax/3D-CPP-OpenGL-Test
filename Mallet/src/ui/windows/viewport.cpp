@@ -1,10 +1,10 @@
 #include "malletpch.h"
 #include "viewport.h"
 
-#include <input/inputmanager.h>
+#include <input/inputsystem.h>
 #include <systems/systemmanager.h>
 
-#include <systems/rendersystem.h>
+#include <rendering/rendersystem.h>
 
 #include <components/idcomponent.h>
 #include <components/positioncomponent.h>
@@ -16,6 +16,8 @@
 
 #include <common/matrixstack.h>
 #include <components/meshcomponent.h>
+#include <components/rotationcomponent.h>
+#include <components/unscaledvelocitycomponent.h>
 
 Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), viewSizeX(), viewSizeY(), mode(mode)
 {
@@ -24,14 +26,14 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 	Component components[] = {
 		Component().Init<IdComponent>(),
 		Component().Init<PositionComponent>(),
-		Component().init<VelocityComponent>(),
+		Component().Init<UnscaledVelocityComponent>(),
 		Component().Init<CameraComponent>(),
-		Component().init<RotationComponent>(),
-		Component().init<FreecamComponent>(),
+		Component().Init<RotationComponent>(),
+		Component().Init<FreecamComponent>(),
 	};
 
 	Entity entity = em.AddEntity(EntityArchetype(6, components));
-	em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
+	em.GetComponent<UnscaledVelocityComponent>(entity) = { { 0, 0, 0, 0, 0, 0 } };
 	
 	bool ortho = mode != ViewportMode::perspective;
 	
@@ -81,8 +83,6 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 		RenderSystem::CalcPerspectiveMatrix(cam, w, h);
 	}
 
-	renderSystem = &systemManager.GetSystem<RenderSystem>();
-
 	// Init grid overlay
 	if (!glInit)
 	{
@@ -104,8 +104,8 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 
 		// Grid shader
 		{
-			const char* strVertShader = shaderLoader::loadShader("data/shaders/grid.vert");
-			const char* strFragShader = shaderLoader::loadShader("data/shaders/grid.frag");
+			const char* strVertShader = shaderLoader::LoadShader("data/shaders/grid.vert");
+			const char* strFragShader = shaderLoader::LoadShader("data/shaders/grid.frag");
 			shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
 			shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
 			delete[] strVertShader;
@@ -121,16 +121,12 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 	}
 }
 
-Viewport::~Viewport()
-{
-}
-
-void Viewport::Draw(DockingLeaf& leaf, int leafIndex)
+void Viewport::Draw()
 {
 	glViewport(viewPosX, viewPosY, viewSizeX, viewSizeY);
 
-	renderSystem->mainCamera = camera;
-	renderSystem->mainCameraEntity = cameraEntity;
+	renderSystem.pMainCamera = camera;
+	renderSystem.mainCameraEntity = cameraEntity;
 
 	freeCam->viewPortSize[0] = viewSizeX;
 	freeCam->viewPortSize[1] = viewSizeY;
@@ -157,7 +153,7 @@ void Viewport::Draw(DockingLeaf& leaf, int leafIndex)
 
 void Viewport::Draw2DWireframe()
 {
-	renderSystem->DrawWireframe();
+	renderSystem.DrawWireframe();
 
 	// Grid
 	glUseProgram(gridShaderProgram);
@@ -165,16 +161,16 @@ void Viewport::Draw2DWireframe()
 
 	EntityManager& em = entityManager;
 	MatrixStack mStack;
-	mStack.push();
+	mStack.Push();
 
 	// Get inverse camera matrix
 	glm::vec3 pos = em.GetComponent<PositionComponent>(cameraEntity).value;
 	glm::vec3 newPos = glm::mat4_cast(em.GetComponent<RotationComponent>(cameraEntity).value) * glm::vec4(pos.x, pos.y, pos.z, 1);
-	mStack.applyMatrix(camera->matrix);
-	mStack.translate(-newPos);
-	mStack.invert();
+	mStack.ApplyMatrix(camera->matrix);
+	mStack.Translate(-newPos);
+	mStack.Invert();
 
-	glUniformMatrix4fv(screenToWorldMatrixUnif, 1, GL_FALSE, &mStack.top()[0][0]);
+	glUniformMatrix4fv(screenToWorldMatrixUnif, 1, GL_FALSE, &mStack.Top()[0][0]);
 
 	// Get world distance needed to move 1 pixel
 	glm::vec4 delta = glm::vec4(1 / (float)viewSizeX, 1 / (float)viewSizeY, 0, 1);
@@ -191,30 +187,34 @@ void Viewport::Draw2DWireframe()
 
 void Viewport::Draw3DShaded()
 {
-	renderSystem->DrawShaded();
+	renderSystem.DrawShaded();
 }
 
-void Viewport::CalculateViewportVars(DockingLeaf& leaf, int fullWindowWidth, int fullWindowHeight)
+void Viewport::CalculateViewportVars(int fullWindowWidth, int fullWindowHeight)
 {
-	viewPosX  = (GLint)leaf.absPos[0];
-	viewPosY  = (GLint)(fullWindowHeight - (leaf.absPos[1] + leaf.absSize[1]));
-	viewSizeX = (GLsizei)leaf.absSize[0];
-	viewSizeY = (GLsizei)leaf.absSize[1];
+	viewPosX  = (GLint)pLeaf->position[0];
+	viewPosY  = (GLint)(fullWindowHeight - (pLeaf->position[1] + pLeaf->size[1]));
+	viewSizeX = (GLsizei)pLeaf->size[0];
+	viewSizeY = (GLsizei)pLeaf->size[1];
 }
 
-void Viewport::OnResize(DockingLeaf& leaf, int fullWindowWidth, int fullWindowHeight)
+void Viewport::OnResize()
 {
-	CalculateViewportVars(leaf, fullWindowWidth, fullWindowHeight);
+	int fullWindowWidth, fullWindowHeight;
 
-	RenderSystem::UpdateMatrixAspect(*camera, leaf.absSize[0], leaf.absSize[1]);
+	glfwGetWindowSize(pMainWindow, &fullWindowWidth, &fullWindowHeight);
+
+	CalculateViewportVars(fullWindowWidth, fullWindowHeight);
+
+	RenderSystem::UpdateMatrixAspect(*camera, pLeaf->size[0], pLeaf->size[1]);
 }
 
-void Viewport::OnSelect(DockingLeaf& leaf)
+void Viewport::OnSelect()
 {
 	
 }
 
-void Viewport::OnDeselect(DockingLeaf& leaf)
+void Viewport::OnDeselect()
 {
 	glfwSetInputMode(pMainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
@@ -233,7 +233,7 @@ void Viewport::PanButton(int action)
 		freeCam->panning = true;
 		freeCam->enabled = true;
 
-		inputManager.SetCursorLoop(true);
+		inputSystem.SetCursorLoop(true);
 	}
 	else if (action == GLFW_RELEASE)
 	{
@@ -244,20 +244,20 @@ void Viewport::PanButton(int action)
 			freeCam->enabled = false;
 		}
 
-		inputManager.SetCursorLoop(false);
+		inputSystem.SetCursorLoop(false);
 	}
 }
 
 void Viewport::ZoomIn()
 {
 	camera->frustumScale *= 1.1f;
-	renderSystem->CalcPerspectiveMatrix(*camera, viewSizeX, viewSizeY);
+	renderSystem.CalcPerspectiveMatrix(*camera, viewSizeX, viewSizeY);
 }
 
 void Viewport::ZoomOut()
 {
 	camera->frustumScale /= 1.1f;
-	renderSystem->CalcPerspectiveMatrix(*camera, viewSizeX, viewSizeY);
+	renderSystem.CalcPerspectiveMatrix(*camera, viewSizeX, viewSizeY);
 }
 
 void Viewport::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)

@@ -1,35 +1,41 @@
 #pragma once
 
-#include <ui/docking/dockingleaf.h>
+#include <ui/windows/malletwindow.h>
 #include <ui/docking/dockingnode.h>
+#include <ui/docking/dockingleaf.h>
+#include <ui/docking/dockingsplit.h>
 
-#define MAX_PARTITIONS 20
+constexpr int splitSelectDistance = 5;
 
 class DockingTree
 {
 public:
-	DockingTree();
-	~DockingTree();
+	DockingTree() : pBaseNode()
+	{};
 
-public:
-	int rootNode;
-	DockingNode nodeArray[MAX_PARTITIONS];
-	DockingLeaf leafArray[MAX_PARTITIONS];
-
-public:
-	bool IsLeaf(int);
-	void PrintTree();
-	void DrawTree();
-	int SplitLeaf(int, DockingDirection, float, MalletWindow*);
-	void RecalculateSizes();
-	int SelectNode(float mousePosX, float mousePosY);
+	~DockingTree()
+	{
+		Clear();
+	};
 
 private:
-	int AddNode(int, int, int, DockingDirection, float);
-	int AddLeaf(int, MalletWindow*);
-	void DrawNodeRecursive(int, float, float, float, float);
-	void DrawLeafDebug(int, float, float, float, float);
-	void DrawLeaf(int, float, float, float, float);
-	void GetSizesRecursive(int, int, int, int, int, int&, int&);
-	int SelectNodeRecursive(int nodeIndex, float mousePosX, float mousePosY);
+	DockingNode* pBaseNode;
+
+public:
+	void Clear()
+	{
+		if (pBaseNode)
+			delete pBaseNode;
+
+		pBaseNode = nullptr;
+	};
+
+	DockingLeaf* AddLeaf(MalletWindow* pWindow, DockingLeaf* pLeafToSplit,
+		SplitDirection = vertical, float ratio = 0.5f, bool flip = false);
+	void RemoveNode(DockingNode*);
+
+	void UpdateSize();
+	void DrawTree();
+	
+	DockingNode* GetNodeUnderMouse();
 };

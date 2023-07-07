@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "renderSystem.h"
 
+#include "debugdraw.h"
+
 #include <components/scalecomponent.h>
 #include <components/positioncomponent.h>
 #include <components/rotationcomponent.h>
@@ -71,6 +73,7 @@ void RenderSystem::Update()
 	}
 
 	DrawShaded();
+	debugDraw.Render();
 }
 
 void RenderSystem::DrawShaded()

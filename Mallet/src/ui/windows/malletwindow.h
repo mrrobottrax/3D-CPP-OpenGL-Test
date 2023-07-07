@@ -1,7 +1,6 @@
 #pragma once
 
 #include <imgui/imguiutil.h>
-#include <ui/docking/dockingleaf.h>
 
 const static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration |
 ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
@@ -12,19 +11,30 @@ struct DockingLeaf;
 class MalletWindow
 {
 public:
-	MalletWindow();
-	~MalletWindow();
+	MalletWindow() : selected(false), pLeaf()
+	{};
+
+	virtual ~MalletWindow()
+	{};
+
+protected:
+	DockingLeaf* pLeaf;
 
 public:
 	bool selected;
 
-public:
-	virtual void Draw(DockingLeaf& leaf, int leafIndex);
-	inline virtual void OnSelect(DockingLeaf& leaf) {};
-	inline virtual void OnDeselect(DockingLeaf& leaf) {};
-	inline virtual void OnResize(DockingLeaf& leaf, int windowWidth, int windowHeight) {};
+	void SetLeaf(DockingLeaf* pLeaf)
+	{
+		this->pLeaf = pLeaf;
+	}
 
-	inline virtual void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {};
-	inline virtual void MouseCallback(GLFWwindow* window, int button, int action, int mods) {};
-	inline virtual void MousePosCallback(GLFWwindow* window, double xPos, double yPos) {};
+public:
+	virtual void Draw();
+	virtual void OnSelect() {};
+	virtual void OnDeselect() {};
+	virtual void OnResize() {};
+
+	virtual void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {};
+	virtual void MouseCallback(GLFWwindow* window, int button, int action, int mods) {};
+	virtual void MousePosCallback(GLFWwindow* window, double xPos, double yPos) {};
 };
