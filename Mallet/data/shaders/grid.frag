@@ -9,6 +9,11 @@ out vec4 outputColor;
 
 float grid(vec2 pos, float size)
 {
+	// TODO: Is the early exit here worth it?
+	// Or should we use a mask
+	if (size < onePixelDistance.x * 10)
+		return 0;
+
 	vec2 grid = fract(pos / size);
 
 	// Render grid shifted over 1 pixel
@@ -16,8 +21,10 @@ float grid(vec2 pos, float size)
 	vec2 grid2 = fract(pos / size);
 
 	// Only show grid when cell size is greater than 10 pixels
-	float pass = step(onePixelDistance.x * 10, size);
-	return step(0, grid2.x - grid.x + grid2.y - grid.y) * pass;
+	//float pass = step(onePixelDistance.x * 10, size);
+	//return step(0, grid2.x - grid.x + grid2.y - grid.y) * pass;
+
+	return step(0, grid2.x - grid.x + grid2.y - grid.y);
 }
 
 void main()
