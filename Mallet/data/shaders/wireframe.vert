@@ -10,5 +10,5 @@ smooth out vec4 color;
 void main()
 {
 	gl_Position = perspectiveMatrix * (positionMatrix * vec4(position, 1.0));
-	color = vec4(vertColor, 1);
+	color = abs(vec4(vertColor, 1));
 }

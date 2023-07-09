@@ -8,8 +8,9 @@
 void MalletUiSystem::Init()
 {
 	DockingLeaf* leaf =  tree.AddLeaf(new Viewport(perspective), nullptr);
-	leaf = tree.AddLeaf(new Viewport(perspective), leaf, vertical, 0.5f);
-	leaf = tree.AddLeaf(new Viewport(ViewportMode::top), leaf, horizontal, 0.55f);
+	DockingLeaf* leaf2 = tree.AddLeaf(new Viewport(ViewportMode::top), leaf, vertical, 0.5f);
+	tree.AddLeaf(new Viewport(ViewportMode::side), leaf, horizontal, 0.5f);
+	tree.AddLeaf(new Viewport(ViewportMode::front), leaf2, horizontal, 0.5f);
 	tree.UpdateSize();
 }
 
