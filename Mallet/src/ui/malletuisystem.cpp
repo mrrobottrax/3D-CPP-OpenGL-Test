@@ -90,8 +90,7 @@ void MalletUiSystem::MouseCallback(GLFWwindow* pWindow, int button, int action, 
 	// Select when mouse clicked
 	if (action == GLFW_PRESS)
 	{
-		int mode = glfwGetInputMode(pMainWindow, GLFW_CURSOR);
-		if (mode != GLFW_CURSOR_DISABLED)
+		if (glfwGetInputMode(pMainWindow, GLFW_CURSOR) != GLFW_CURSOR_DISABLED)
 			SelectNodeUnderMouse();
 	}
 
@@ -157,5 +156,23 @@ void MalletUiSystem::MousePosCallback(GLFWwindow* pWindow, double xPos, double y
 
 		if (leaf.pWindow)
 			leaf.pWindow->MousePosCallback(pWindow, xPos, yPos);
+	}
+}
+
+void MalletUiSystem::ScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset)
+{
+	if (yOffset != 0)
+	{
+		if (glfwGetInputMode(pMainWindow, GLFW_CURSOR) != GLFW_CURSOR_DISABLED)
+			SelectNodeUnderMouse();
+	}
+
+	// Send to window
+	if (pSelectedNode && pSelectedNode->isLeaf)
+	{
+		DockingLeaf& leaf = *reinterpret_cast<DockingLeaf*>(pSelectedNode);
+
+		if (leaf.pWindow)
+			leaf.pWindow->ScrollCallback(pWindow, xOffset, yOffset);
 	}
 }

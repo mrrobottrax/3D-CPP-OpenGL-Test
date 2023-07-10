@@ -30,7 +30,7 @@ void InputSystem::Init()
 
 void InputSystem::BindKey(char key, const char* action)
 {
-	memset(keys[key].binding, NULL, MAX_BIND_LENGTH);
+	memset(keys[key].binding, NULL, maxBindLength);
 	strcpy_s(keys[key].binding, action);
 
 	char* keyname = KeycodeToName(key);
@@ -41,19 +41,19 @@ void InputSystem::BindToggleKey(char key, const char* cvar)
 {
 	char* keyname = KeycodeToName(key);
 
-	memset(keys[key].binding, NULL, MAX_BIND_LENGTH);
+	memset(keys[key].binding, NULL, maxBindLength);
 	strcpy_s(keys[key].binding, "toggle ");
 	strcat_s(keys[key].binding, cvar);
 
 	std::cout << "Bound " << keyname << " to toggle " << cvar << "\n";
 }
 
-int InputSystem::KeyboardInputToKeycode(int key)
+KeyCode InputSystem::KeyboardInputToKeycode(int key)
 {
-	if (IsPrintableASCII(key))
+	if (IsUppercase(key))
 	{
 		key = KeycodeToLowercase(key);
-		return key;
+		return static_cast<KeyCode>(key);
 	}
 
 	switch (key)
@@ -71,25 +71,45 @@ int InputSystem::KeyboardInputToKeycode(int key)
 	}
 }
 
-int InputSystem::MouseInputToKeycode(int button)
+KeyCode InputSystem::MouseInputToKeycode(int button)
 {
-	return 0;
+	switch (button)
+	{
+	case GLFW_MOUSE_BUTTON_LEFT:
+		return KEY_MouseLeft;
+	case GLFW_MOUSE_BUTTON_MIDDLE:
+		return KEY_MouseMiddle;
+	case GLFW_MOUSE_BUTTON_RIGHT:
+		return KEY_MouseRight;
+	case GLFW_MOUSE_BUTTON_4:
+		return KEY_Mouse4;
+	case GLFW_MOUSE_BUTTON_5:
+		return KEY_Mouse5;
+	case GLFW_MOUSE_BUTTON_6:
+		return KEY_Mouse6;
+	case GLFW_MOUSE_BUTTON_7:
+		return KEY_Mouse7;
+	case GLFW_MOUSE_BUTTON_8:
+		return KEY_Mouse8;
+	default:
+		return KEY_None;
+	}
 }
 
 char* InputSystem::KeycodeToName(int keycode)
 {
-	if (keycode >= MAX_KEYS)
+	if (keycode >= maxKeys)
 	{
 		return "<KEYCODE OUT OF RANGE>";
 	}
 
-	static char name[MAX_KEYCODE_NAME_LENGTH];
+	static char name[maxKeycodeNameLength];
 
 	// Check for ASCII
 	name[1] = NULL;
 	name[0] = keycode;
 
-	if (IsPrintableASCII(keycode))
+	if (IsPrintableKeycode(keycode))
 	{
 		return name;
 	}
@@ -110,7 +130,7 @@ char* InputSystem::KeycodeToName(int keycode)
 
 int InputSystem::NameToKeycode(const char* name)
 {
-	if (IsPrintableASCII(name[0]))
+	if (IsPrintableKeycode(name[0]))
 	{
 		return name[0];
 	}
@@ -127,7 +147,7 @@ int InputSystem::NameToKeycode(const char* name)
 	return -1;
 }
 
-void InputSystem::ButtonCallback(int keycode, int action)
+void InputSystem::ButtonCallback(KeyCode keycode, int action)
 {
 	if (cursorFree)
 	{
@@ -150,7 +170,7 @@ void InputSystem::ButtonCallback(int keycode, int action)
 
 		if (keys[keycode].binding != nullptr && keys[keycode].binding[0] == '+')
 		{
-			char releaseCommand[MAX_COMMAND_NAME_LENGTH];
+			char releaseCommand[maxCommandNameLength];
 			strcpy_s(releaseCommand, sizeof(releaseCommand), keys[keycode].binding);
 			releaseCommand[sizeof(releaseCommand) - 1];
 
@@ -165,16 +185,35 @@ void InputSystem::ButtonCallback(int keycode, int action)
 
 void InputSystem::KeyCallback(int key, int scancode, int action, int mods)
 {
-	int keycode = KeyboardInputToKeycode(key);
+	KeyCode keycode = KeyboardInputToKeycode(key);
 
 	ButtonCallback(keycode, action);
 }
 
 void InputSystem::MouseCallback(int button, int action)
 {
-	int keycode = MouseInputToKeycode(button);
+	KeyCode keycode = MouseInputToKeycode(button);
 
 	ButtonCallback(keycode, action);
+}
+
+void InputSystem::ScrollCallback(double xOffset, double yOffset)
+{
+	if (yOffset > 0)
+	{
+		ButtonCallback(KEY_ScrollUp, GLFW_PRESS);
+		ButtonCallback(KEY_ScrollDown, GLFW_RELEASE);
+	}
+	else if (yOffset < 0)
+	{
+		ButtonCallback(KEY_ScrollDown, GLFW_PRESS);
+		ButtonCallback(KEY_ScrollUp, GLFW_RELEASE);
+	}
+	else
+	{
+		ButtonCallback(KEY_ScrollDown, GLFW_RELEASE);
+		ButtonCallback(KEY_ScrollUp, GLFW_RELEASE);
+	}
 }
 
 void InputSystem::Update()

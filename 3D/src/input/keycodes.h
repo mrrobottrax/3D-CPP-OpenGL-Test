@@ -1,32 +1,50 @@
 #pragma once
 
-#define MAX_BIND_LENGTH 512
+constexpr auto maxBindLength = 512;
 struct Key
 {
 	bool pressed;
 
-	char binding[MAX_BIND_LENGTH];
+	char binding[maxBindLength];
 };
 
-#define MAX_KEYS 256
+constexpr auto maxKeys = 256;
 enum KeyCode
 {
 	KEY_None = 0,
 
-	KEY_UpArrow = 1,
-	KEY_DownArrow = 2,
-	KEY_LeftArrow = 3,
-	KEY_RightArrow = 4,
+	KEY_UpArrow,
+	KEY_DownArrow,
+	KEY_LeftArrow,
+	KEY_RightArrow,
+
+	KEY_ScrollUp,
+	KEY_ScrollDown,
+
+	KEY_MouseLeft,
+	KEY_MouseMiddle,
+	KEY_MouseRight,
+	KEY_Mouse4,
+	KEY_Mouse5,
+	KEY_Mouse6,
+	KEY_Mouse7,
+	KEY_Mouse8,
 
 	// 48 - 57 : Numbers
+	KEY_NumbersStart = 48,
+	KEY_NumbersEnd = 57,
 
-	// 65 - 90 : Letters
+	// 97 - 122 : Letters
+	KEY_LettersStart = 97,
+	KEY_LettersEnd = 122,
 };
 
 int KeycodeToLowercase(const int keycode);
-bool IsPrintableASCII(const int keycode);
+bool IsLowercase(const int keycode);
+bool IsUppercase(const int keycode);
+bool IsPrintableKeycode(const int keycode);
 
-#define MAX_KEYCODE_NAME_LENGTH 32
+constexpr auto maxKeycodeNameLength = 32;
 struct Keyname
 {
 	const char* name;

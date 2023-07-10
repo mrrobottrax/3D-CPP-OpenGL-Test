@@ -6,6 +6,7 @@ void SetupInputCallbacks(GLFWwindow*);
 void MalletKeyCallback(GLFWwindow*, int, int, int, int);
 void MalletMouseCallback(GLFWwindow*, int, int, int);
 void MalletMousePosCallback(GLFWwindow*, double, double);
+void MalletScrollCallback(GLFWwindow*, double, double);
 
 //// INPUT COMMANDS ~~~~~~~~~~~~~~~~~~~
 //#define MAX_BUTTONS_MALLET 1

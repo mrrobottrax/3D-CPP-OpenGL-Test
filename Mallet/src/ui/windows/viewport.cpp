@@ -245,19 +245,19 @@ void Viewport::PanButton(int action)
 	}
 }
 
-void Viewport::ZoomIn()
+void Viewport::ZoomIn(float multiplier)
 {
-	camera->frustumScale *= 1.1f;
+	camera->frustumScale *= 1.1f * abs(multiplier);
 	renderSystem.CalcPerspectiveMatrix(*camera, viewSizeX, viewSizeY);
 }
 
-void Viewport::ZoomOut()
+void Viewport::ZoomOut(float multiplier)
 {
-	camera->frustumScale /= 1.1f;
+	camera->frustumScale /= 1.1f * abs(multiplier);
 	renderSystem.CalcPerspectiveMatrix(*camera, viewSizeX, viewSizeY);
 }
 
-void Viewport::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Viewport::KeyboardCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
 {
 	// 3D look
 	if (key == GLFW_KEY_Z && action == GLFW_PRESS && mode == ViewportMode::perspective)
@@ -292,7 +292,7 @@ void Viewport::KeyboardCallback(GLFWwindow* window, int key, int scancode, int a
 	}
 }
 
-void Viewport::MouseCallback(GLFWwindow* window, int button, int action, int mods)
+void Viewport::MouseCallback(GLFWwindow* pWindow, int button, int action, int mods)
 {
 	// Panning
 	if (button == GLFW_MOUSE_BUTTON_MIDDLE)
@@ -302,7 +302,15 @@ void Viewport::MouseCallback(GLFWwindow* window, int button, int action, int mod
 	}
 }
 
-void Viewport::MousePosCallback(GLFWwindow* window, double xPos, double yPos)
+void Viewport::MousePosCallback(GLFWwindow* pWindow, double xPos, double yPos)
 {
 	
+}
+
+void Viewport::ScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset)
+{
+	if (yOffset > 0)
+		ZoomIn((float)yOffset);
+	else
+		ZoomOut((float)yOffset);
 }

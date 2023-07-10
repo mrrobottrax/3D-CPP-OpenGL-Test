@@ -11,7 +11,9 @@ enum MalletTool
 class Toolbar : public MalletWindow
 {
 public:
-	Toolbar() {};
+	Toolbar() : tool()
+	{};
+
 	~Toolbar() {};
 
 private:

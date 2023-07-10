@@ -8,6 +8,17 @@ Keyname keynames[] =
 	{"left", KEY_LeftArrow},
 	{"right", KEY_RightArrow},
 
+	{"scrollup", KEY_ScrollUp},
+	{"scrolldown", KEY_ScrollDown},
+	{"mouseleft", KEY_MouseLeft},
+	{"mousemiddle", KEY_MouseMiddle},
+	{"mouseright", KEY_MouseRight},
+	{"mouse4", KEY_Mouse4},
+	{"mouse5", KEY_Mouse5},
+	{"mouse6", KEY_Mouse6},
+	{"mouse7", KEY_Mouse7},
+	{"mouse8", KEY_Mouse8},
+
 	{NULL, 0} // Terminate when looping
 };
 
@@ -31,7 +42,6 @@ bool IsUppercase(int keycode)
 
 int KeycodeToLowercase(int keycode)
 {
-	// 65 - 90 : Uppercase Letters
 	if (IsUppercase(keycode))
 	{
 		return keycode + 32;
@@ -40,7 +50,7 @@ int KeycodeToLowercase(int keycode)
 	return keycode;
 }
 
-bool IsPrintableASCII(int keycode)
+bool IsPrintableKeycode(int keycode)
 {
 	if (IsNumber(keycode))
 		return true;
@@ -48,8 +58,9 @@ bool IsPrintableASCII(int keycode)
 	if (IsLowercase(keycode))
 		return true;
 
-	if (IsUppercase(keycode))
-		return true;
+	// Uppercase is not used for keycodes
+	//if (IsUppercase(keycode))
+	//	return true;
 
 	return false;
 }

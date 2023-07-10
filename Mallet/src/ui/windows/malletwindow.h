@@ -34,7 +34,8 @@ public:
 	virtual void OnDeselect() {};
 	virtual void OnResize() {};
 
-	virtual void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {};
-	virtual void MouseCallback(GLFWwindow* window, int button, int action, int mods) {};
-	virtual void MousePosCallback(GLFWwindow* window, double xPos, double yPos) {};
+	virtual void KeyboardCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods) {};
+	virtual void MouseCallback(GLFWwindow* pWindow, int button, int action, int mods) {};
+	virtual void MousePosCallback(GLFWwindow* pWindow, double xPos, double yPos) {};
+	virtual void ScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset) {};
 };

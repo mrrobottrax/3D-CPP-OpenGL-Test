@@ -20,6 +20,7 @@ void SetupInputCallbacks(GLFWwindow* window)
 	glfwSetKeyCallback(window, MalletKeyCallback);
 	glfwSetMouseButtonCallback(window, MalletMouseCallback);
 	glfwSetCursorPosCallback(window, MalletMousePosCallback);
+	glfwSetScrollCallback(window, MalletScrollCallback);
 }
 
 //void AddInputCommands()
@@ -31,7 +32,7 @@ void SetupInputCallbacks(GLFWwindow* window)
 //	inputManager->BindKey('r', "+pan");
 //}
 
-void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void MalletKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
 {
 	// CTRL + DELETE -> ImGui menu
 	if (key == GLFW_KEY_DELETE && mods & GLFW_MOD_CONTROL && action == GLFW_PRESS)
@@ -55,17 +56,24 @@ void MalletKeyCallback(GLFWwindow* window, int key, int scancode, int action, in
 
 	inputSystem.KeyCallback(key, scancode, action, mods);
 
-	malletUI.KeyCallback(window, key, scancode, action, mods);
+	malletUI.KeyCallback(pWindow, key, scancode, action, mods);
 }
 
-void MalletMouseCallback(GLFWwindow* window, int button, int action, int mods)
+void MalletMouseCallback(GLFWwindow* pWindow, int button, int action, int mods)
 {
 	inputSystem.MouseCallback(button, action);
 
-	malletUI.MouseCallback(window, button, action, mods);
+	malletUI.MouseCallback(pWindow, button, action, mods);
 }
 
-void MalletMousePosCallback(GLFWwindow* window, double xPos, double yPos)
+void MalletMousePosCallback(GLFWwindow* pWindow, double xPos, double yPos)
 {
-	malletUI.MousePosCallback(window, xPos, yPos);
+	malletUI.MousePosCallback(pWindow, xPos, yPos);
+}
+
+void MalletScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset)
+{
+	inputSystem.ScrollCallback(xOffset, yOffset);
+
+	malletUI.ScrollCallback(pWindow, xOffset, yOffset);
 }

@@ -2,9 +2,9 @@
 
 using namespace std;
 
-#define MAX_COMMAND_NAME_LENGTH 32
-#define MAX_COMMAND_ARGS_LENGTH 256
-#define MAX_CONSOLE_INPUT_LENGTH 1024
+constexpr auto maxCommandNameLength = 32;
+constexpr auto maxCommandArgsLength = 256;
+constexpr auto maxConsoleInputLength = 1024;
 
 struct cmp_str
 {
@@ -29,10 +29,10 @@ public:
 private:
 	bool enabled;
 
-	char input[MAX_CONSOLE_INPUT_LENGTH];
+	char input[maxConsoleInputLength];
 	int endIndex = 0;
 
-	char arguments[MAX_COMMAND_ARGS_LENGTH];
+	char arguments[maxCommandArgsLength];
 	int argIndex = 0;
 	char keycode; // Key that called the most recent command, -1 for no key
 
@@ -57,7 +57,7 @@ public:
 	bool CvarExists(const char* name);
 	inline const char* GetArguments() { return arguments; };
 	const char* GetNextArgs();
-	inline void SetArguments(const char* args) { strcpy_s(arguments, MAX_COMMAND_ARGS_LENGTH, args); }
+	inline void SetArguments(const char* args) { strcpy_s(arguments, maxCommandArgsLength, args); }
 	inline char GetKey() { return keycode; };
 	inline void Print(const char* message) { std::cout << message; }
 	inline void Println(const char* message) { std::cout << message << "\n"; }

@@ -49,9 +49,10 @@ public:
 	void OnSelect() override;
 	void OnDeselect() override;
 
-	void KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods) override;
-	void MouseCallback(GLFWwindow* window, int button, int action, int mods) override;
-	void MousePosCallback(GLFWwindow* window, double xPos, double yPos) override;
+	void KeyboardCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods) override;
+	void MouseCallback(GLFWwindow* pWindow, int button, int action, int mods) override;
+	void MousePosCallback(GLFWwindow* pWindow, double xPos, double yPos) override;
+	void ScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset) override;
 
 public:
 	ViewportMode mode;
@@ -68,6 +69,6 @@ private:
 private:
 	void CalculateViewportVars(int, int);
 	void PanButton(int action);
-	void ZoomIn();
-	void ZoomOut();
+	void ZoomIn(float multiplier = 1);
+	void ZoomOut(float multiplier = 1);
 };

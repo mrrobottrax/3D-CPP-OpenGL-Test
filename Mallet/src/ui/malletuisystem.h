@@ -25,8 +25,9 @@ public:
 	void SelectNodeUnderMouse();
 	void DeselectNode();
 
-	void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void MouseCallback(GLFWwindow* window, int button, int action, int mods);
-	void MousePosCallback(GLFWwindow* window, double xPos, double yPos);
+	void KeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods);
+	void MouseCallback(GLFWwindow* pWindow, int button, int action, int mods);
+	void MousePosCallback(GLFWwindow* pWindow, double xPos, double yPos);
+	void ScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset);
 
 }; inline MalletUiSystem malletUI;

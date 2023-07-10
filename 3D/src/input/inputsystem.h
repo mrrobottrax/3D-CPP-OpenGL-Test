@@ -13,7 +13,7 @@ public:
 	{};
 
 private:
-	Key keys[MAX_KEYS];
+	Key keys[maxKeys];
 	Button buttons[MAX_BUTTONS];
 
 	double cursorDeltaX = 0;
@@ -25,7 +25,7 @@ private:
 	bool cursorLoop = false;
 	bool cursorFree = false;
 
-	void ButtonCallback(int, int);
+	void ButtonCallback(KeyCode, int);
 
 public:
 	void Update() override;
@@ -34,13 +34,14 @@ public:
 public:
 	void BindKey(char key, const char*);
 	void BindToggleKey(char key, const char*);
-	int KeyboardInputToKeycode(int key);
-	int MouseInputToKeycode(int button);
+	KeyCode KeyboardInputToKeycode(int key);
+	KeyCode MouseInputToKeycode(int button);
 
 	char* KeycodeToName(int keycode);
 	int NameToKeycode(const char* name);
 	void KeyCallback(int key, int scancode, int action, int mods);
 	void MouseCallback(int, int);
+	void ScrollCallback(double, double);
 
 	void UpdateCursorDelta(double xPos, double yPos);
 	void GetCursorDelta(double* deltaX, double* deltaY);

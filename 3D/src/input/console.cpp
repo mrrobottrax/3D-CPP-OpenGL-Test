@@ -3,7 +3,7 @@
 
 Console::Console() : enabled(false), commands()
 {
-	memset(input, NULL, MAX_CONSOLE_INPUT_LENGTH);
+	memset(input, NULL, maxConsoleInputLength);
 
 	AddCommand("cmd_test", TestCmd);
 	AddCommand("cmd_toggle", ToggleConsoleCommand);
@@ -66,7 +66,7 @@ void Console::RunCommand(const char* name)
 
 void Console::RunCommand(const char* name, const char* args)
 {
-	strcpy_s(arguments, MAX_COMMAND_ARGS_LENGTH, args);
+	strcpy_s(arguments, maxCommandArgsLength, args);
 	argIndex = 0;
 
 	RunCommand(name);
@@ -103,7 +103,7 @@ void Console::AddString(const char* string)
 		return;
 
 	size_t len = strlen(string);
-	strcpy_s(input + endIndex, MAX_CONSOLE_INPUT_LENGTH - endIndex, string);
+	strcpy_s(input + endIndex, maxConsoleInputLength - endIndex, string);
 
 	endIndex += (int)len;
 }
@@ -120,11 +120,11 @@ void Console::ParseInput(char key)
 	bool skippingSpaces = false;
 	bool inQuotes = false;
 
-	char command[MAX_COMMAND_NAME_LENGTH]{};
+	char command[maxCommandNameLength]{};
 
 	int offset = 0;
 
-	for (int i = 0; i < MAX_CONSOLE_INPUT_LENGTH; i++)
+	for (int i = 0; i < maxConsoleInputLength; i++)
 	{
 		if (input[i] == NULL || input[i] == ';' || input[i] == '\n')
 		{
@@ -221,14 +221,14 @@ const char* Console::GetNextArgs()
 {
 	int start = argIndex;
 
-	for (int i = argIndex; i < MAX_COMMAND_ARGS_LENGTH; i++)
+	for (int i = argIndex; i < maxCommandArgsLength; i++)
 	{
 		if (arguments[i] == NULL)
 		{
 			argIndex = i + 1;
-			if (argIndex >= MAX_COMMAND_ARGS_LENGTH)
+			if (argIndex >= maxCommandArgsLength)
 			{
-				argIndex = MAX_COMMAND_ARGS_LENGTH;
+				argIndex = maxCommandArgsLength;
 			}
 			break;
 		}
