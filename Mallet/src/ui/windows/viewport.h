@@ -18,12 +18,12 @@ enum ViewportMode
 const inline int quadVertCount = 6;
 const inline float gridQuadPositionArray[] = {
 	-1, -1, 0.5f,
-	 1, -1, 0.5f,
-	 1,  1, 0.5f,
-
-	-1, -1, 0.5f,
 	 1,  1, 0.5f,
 	-1,  1, 0.5f,
+
+	 1,  1, 0.5f,
+	-1, -1, 0.5f,
+	 1, -1, 0.5f,
 };
 
 inline bool glInit = false;
@@ -31,7 +31,7 @@ inline GLuint gridVao;
 inline GLuint positionBufferObject;
 inline GLuint gridShaderProgram;
 inline GLuint screenToWorldMatrixUnif;
-inline GLuint onePixelDistanceUnif;
+inline GLuint unitScreenSizeUnif;
 inline GLuint baseGridSizeUnif;
 
 inline float baseGridSize = 1;

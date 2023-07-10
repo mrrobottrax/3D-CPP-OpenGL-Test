@@ -4,11 +4,13 @@
 #include <gl/glutil.h>
 
 #include "windows/viewport.h"
+#include "windows/toolbar.h"
 
 void MalletUiSystem::Init()
 {
-	DockingLeaf* leaf =  tree.AddLeaf(new Viewport(perspective), nullptr);
+	DockingLeaf* leaf  = tree.AddLeaf(new Viewport(perspective), nullptr);
 	DockingLeaf* leaf2 = tree.AddLeaf(new Viewport(ViewportMode::top), leaf, vertical, 0.5f);
+	tree.AddLeaf(new Toolbar(), leaf, vertical, 0.1f, true);
 	tree.AddLeaf(new Viewport(ViewportMode::side), leaf, horizontal, 0.5f);
 	tree.AddLeaf(new Viewport(ViewportMode::front), leaf2, horizontal, 0.5f);
 	tree.UpdateSize();

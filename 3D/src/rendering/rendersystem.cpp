@@ -154,18 +154,19 @@ void RenderSystem::DrawBase()
 				mStack.Translate(position.value);
 				mStack.ApplyMatrix(glm::mat4_cast(rotation.value));
 				if (pScale)
-				mStack.Scale(pScale->value);
+					mStack.Scale(pScale->value);
 
 				newNormalMat = glm::mat3_cast(rotation.value) * normalMat;
 
 				// Draw object
+
 				glBindBuffer(GL_ARRAY_BUFFER, mesh.pMesh->positionBufferObject);
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); // in position
 				glBindBuffer(GL_ARRAY_BUFFER, mesh.pMesh->normalBufferObject);
 				glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, 0); // in normal
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.pMesh->elementBufferObject);
 
-				// TODO: Faster to have the cpu do this? Or maybe just give the gpu rotation, position, etc matrices? Need to measure...
+				// TODO: Faster to have the cpu do this? Or maybe just give the gpu rotation, position, etc matrices?
 				glUniformMatrix4fv(sharedPositionMatrixUnif, 1, GL_FALSE, &mStack.Top()[0][0]);
 				glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, &newNormalMat[0][0]);
 				glUniform3f(sunDirUnif, sunDir.x, sunDir.y, sunDir.z);
