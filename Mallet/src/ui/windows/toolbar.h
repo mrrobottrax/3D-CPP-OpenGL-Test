@@ -1,7 +1,12 @@
 #pragma once
 
 #include <ui/windows/malletwindow.h>
-#include <tools/mallettool.h>
+
+enum MalletTool
+{
+	tool_select,
+	tool_box,
+};
 
 class Toolbar : public MalletWindow
 {
@@ -10,8 +15,12 @@ public:
 	~Toolbar() {};
 
 private:
-	//const std::vector<MalletTool> toolArray;
+	MalletTool tool;
 
 public:
 	void Draw() override;
+	void SetActiveTool(MalletTool tool)
+	{
+		this->tool = tool;
+	};
 };

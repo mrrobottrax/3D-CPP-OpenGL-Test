@@ -104,6 +104,7 @@ void FreecamSystem::Update()
 					panVector /= pixelsPerUnit;
 
 					position.value += panVector * glm::fquat(0.70710678118f, 0, 0, 0.70710678118f) * rotation.value;
+					velocity.velocity.linear *= 0;
 
 					continue;
 				}

@@ -139,7 +139,6 @@
     <ClInclude Include="src\input\malletinputlayer.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\malletpch.h" />
-    <ClInclude Include="src\tools\mallettool.h" />
     <ClInclude Include="src\ui\docking\dockingleaf.h" />
     <ClInclude Include="src\ui\docking\dockingnode.h" />
     <ClInclude Include="src\ui\docking\dockingsplit.h" />

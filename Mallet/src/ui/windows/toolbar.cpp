@@ -12,7 +12,11 @@ void Toolbar::Draw()
 
 	ImGui::Begin(name.c_str(), (bool*)0, window_flags);
 
+	if (ImGui::Button("Select"))
+		SetActiveTool(tool_select);
 
+	if (ImGui::Button("Box"))
+		SetActiveTool(tool_box);
 
 	ImGui::End();
 }

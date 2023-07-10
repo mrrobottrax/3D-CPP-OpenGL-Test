@@ -35,9 +35,6 @@
     </ClInclude>
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\malletpch.h" />
-    <ClInclude Include="src\tools\mallettool.h">
-      <Filter>tools</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui\docking\dockingleaf.h">
       <Filter>ui\docking</Filter>
     </ClInclude>

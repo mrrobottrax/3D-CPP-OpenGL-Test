@@ -111,6 +111,7 @@ void MalletUiSystem::MouseCallback(GLFWwindow* pWindow, int button, int action, 
 	}
 }
 
+constexpr int minWindowSize = 30;
 void MalletUiSystem::MousePosCallback(GLFWwindow* pWindow, double xPos, double yPos)
 {
 	// Move split with mouse
@@ -122,7 +123,8 @@ void MalletUiSystem::MousePosCallback(GLFWwindow* pWindow, double xPos, double y
 		{
 		case SplitDirection::horizontal:
 		{
-			float ratio = ((float)yPos - split.min) / (split.max - split.min);
+			float mousePos = clamp((float)yPos, (float)split.min + minWindowSize, (float)split.max - minWindowSize);
+			float ratio = (mousePos - split.min) / (split.max - split.min);
 			ratio = clamp<float>(ratio, 0.0f, 1.0f);
 
 			split.splitRatio = ratio;
@@ -132,7 +134,8 @@ void MalletUiSystem::MousePosCallback(GLFWwindow* pWindow, double xPos, double y
 
 		case SplitDirection::vertical:
 		{
-			float ratio = ((float)xPos - split.min) / (split.max - split.min);
+			float mousePos = clamp((float)xPos, (float)split.min + minWindowSize, (float)split.max - minWindowSize);
+			float ratio = (mousePos - split.min) / (split.max - split.min);
 			ratio = clamp<float>(ratio, 0.0f, 1.0f);
 
 			split.splitRatio = ratio;
