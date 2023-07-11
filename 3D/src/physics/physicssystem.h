@@ -118,7 +118,7 @@ struct Manifold
 constexpr int numIterations = 10;
 constexpr float gravity = -9.81f;
 constexpr float slop = 0.01f;
-constexpr float correctionPercent = 0.2f;
+constexpr float correctionPercent = 0.35f;
 constexpr float sleepTime = 0.5f;
 constexpr float velEpsilonLinear = 0.1f;
 constexpr float velEpsilonAngular = 0.1f;

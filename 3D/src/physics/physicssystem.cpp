@@ -333,7 +333,7 @@ void PhysicsSystem::ResolveManifolds()
 				}
 
 				// Friction
-				// TODO: Only do friction at the center of the manifold
+				// TODO: Only do friction at the centre of the manifold
 				{
 					const float oldImpulse1 = contact.totalImpulseFriction1;
 					const float oldImpulse2 = contact.totalImpulseFriction2;
@@ -348,6 +348,7 @@ void PhysicsSystem::ResolveManifolds()
 
 					// Clamp force
 					// This is a friction pyramid which is slightly innacurate, but it's faster
+					// TODO: Implement friction cone after applying friction at the centre of the manifold
 					const float& frictionC = manifold.frictionCoefficient;
 
 					contact.totalImpulseFriction1 = clamp(contact.totalImpulseFriction1,
