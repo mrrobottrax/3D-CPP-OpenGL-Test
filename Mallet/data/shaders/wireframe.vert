@@ -2,13 +2,12 @@
 layout(location = 0) uniform mat4 positionMatrix;
 layout(location = 1) uniform mat4 perspectiveMatrix;
 
-in vec3 position;
-in vec3 vertColor;
+layout(location = 0) in vec3 position;
 
-smooth out vec4 color;
+smooth out vec3 color;
 
 void main()
 {
 	gl_Position = perspectiveMatrix * (positionMatrix * vec4(position, 1.0));
-	color = abs(vec4(vertColor, 1));
+	color = vec3(0, 0.4, 0.4);
 }

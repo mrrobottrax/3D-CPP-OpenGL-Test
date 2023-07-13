@@ -31,7 +31,7 @@ inline GLuint gridVao;
 inline GLuint positionBufferObject;
 inline GLuint gridShaderProgram;
 inline GLuint screenToWorldMatrixUnif;
-inline GLuint unitScreenSizeUnif;
+inline GLuint pixelsPerUnitUnif;
 inline GLuint baseGridSizeUnif;
 
 inline float baseGridSize = 1;
@@ -53,6 +53,8 @@ public:
 	void MouseCallback(GLFWwindow* pWindow, int button, int action, int mods) override;
 	void MousePosCallback(GLFWwindow* pWindow, double xPos, double yPos) override;
 	void ScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset) override;
+	glm::vec2 GetWorldMousePos2D();
+	float GetPixelsPerUnit();
 
 public:
 	ViewportMode mode;

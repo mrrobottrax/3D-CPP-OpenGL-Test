@@ -35,10 +35,10 @@ void MalletUiSystem::DeselectNode()
 	pSelectedNode = nullptr;
 }
 
-void MalletUiSystem::SelectNodeUnderMouse()
+void MalletUiSystem::SelectNodeUnderMouse(bool selectSplits)
 {
 	DeselectNode();
-	pSelectedNode = tree.GetNodeUnderMouse();
+	pSelectedNode = tree.GetNodeUnderMouse(selectSplits);
 
 	if (!pSelectedNode)
 		return;
@@ -91,7 +91,7 @@ void MalletUiSystem::MouseCallback(GLFWwindow* pWindow, int button, int action, 
 	if (action == GLFW_PRESS)
 	{
 		if (glfwGetInputMode(pMainWindow, GLFW_CURSOR) != GLFW_CURSOR_DISABLED)
-			SelectNodeUnderMouse();
+			SelectNodeUnderMouse(true);
 	}
 
 	// When selecting a split, deselect on release

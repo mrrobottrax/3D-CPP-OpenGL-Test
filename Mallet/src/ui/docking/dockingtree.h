@@ -37,5 +37,5 @@ public:
 	void UpdateSize();
 	void DrawTree();
 	
-	DockingNode* GetNodeUnderMouse();
+	DockingNode* GetNodeUnderMouse(bool selectSplits);
 };

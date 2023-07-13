@@ -148,7 +148,7 @@ void DockingTree::DrawTree()
 	DrawTreeRecursive(pBaseNode);
 }
 
-DockingNode* GetNodeUnderPositionRecursive(DockingNode* pNode, double xPos, double yPos)
+DockingNode* GetNodeUnderPositionRecursive(DockingNode* pNode, double xPos, double yPos, bool selectSplits)
 {
 	// Stop when we hit a leaf
 	if (pNode->isLeaf)
@@ -172,22 +172,22 @@ DockingNode* GetNodeUnderPositionRecursive(DockingNode* pNode, double xPos, doub
 	}
 
 	// Return split when mouse is pretty much on it
-	if (abs(dist) <= splitSelectDistance)
+	if (selectSplits && abs(dist) <= splitSelectDistance)
 	{
 		return pNode;
 	}
 
 	if (dist > 0)
 	{
-		return GetNodeUnderPositionRecursive(split.front, xPos, yPos);
+		return GetNodeUnderPositionRecursive(split.front, xPos, yPos, selectSplits);
 	}
 	else
 	{
-		return GetNodeUnderPositionRecursive(split.back, xPos, yPos);
+		return GetNodeUnderPositionRecursive(split.back, xPos, yPos, selectSplits);
 	}
 }
 
-DockingNode* DockingTree::GetNodeUnderMouse()
+DockingNode* DockingTree::GetNodeUnderMouse(bool selectSplits)
 {
 	if (!pBaseNode)
 		return nullptr;
@@ -195,5 +195,5 @@ DockingNode* DockingTree::GetNodeUnderMouse()
 	double xPos, yPos;
 	glfwGetCursorPos(pMainWindow, &xPos, &yPos);
 
-	return GetNodeUnderPositionRecursive(pBaseNode, xPos, yPos);
+	return GetNodeUnderPositionRecursive(pBaseNode, xPos, yPos, selectSplits);
 }

@@ -99,7 +99,9 @@ void RenderSystem::DrawWireframe()
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDisable(GL_CULL_FACE);
+
 	DrawBase();
+
 	glEnable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

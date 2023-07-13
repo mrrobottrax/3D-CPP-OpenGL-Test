@@ -116,7 +116,7 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 		}
 
 		screenToWorldMatrixUnif = glGetUniformLocation(gridShaderProgram, "screenToWorldMatrix");
-		unitScreenSizeUnif = glGetUniformLocation(gridShaderProgram, "unitScreenSize");
+		pixelsPerUnitUnif = glGetUniformLocation(gridShaderProgram, "pixelsPerUnit");
 		baseGridSizeUnif = glGetUniformLocation(gridShaderProgram, "baseGridSize");
 	}
 }
@@ -174,7 +174,7 @@ void Viewport::Draw2DWireframe()
 	glUniform1f(baseGridSizeUnif, baseGridSize);
 
 	// Get the screen size of 1 unit
-	glUniform1f(unitScreenSizeUnif, camera->frustumScale * viewSizeY);
+	glUniform1f(pixelsPerUnitUnif, GetPixelsPerUnit());
 
 	glDrawArrays(GL_TRIANGLES, 0, quadVertCount);
 
@@ -309,8 +309,98 @@ void Viewport::MousePosCallback(GLFWwindow* pWindow, double xPos, double yPos)
 
 void Viewport::ScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset)
 {
+	if (mode != top && mode != side && mode != front)
+	{
+		if (yOffset > 0)
+			ZoomIn((float)yOffset);
+		else
+			ZoomOut((float)yOffset);
+
+		return;
+	}
+
+	// In 2d modes, zoom into the cursor
+	glm::vec2 delta = GetWorldMousePos2D();
+
 	if (yOffset > 0)
 		ZoomIn((float)yOffset);
 	else
 		ZoomOut((float)yOffset);
+
+	delta -= GetWorldMousePos2D();
+
+	PositionComponent& position = entityManager.GetComponent<PositionComponent>(cameraEntity);
+
+	switch (mode)
+	{
+	case top:
+		position.value.x += delta.x;
+		position.value.z += delta.y;
+		break;
+
+	case side:
+		position.value.z += delta.x;
+		position.value.y += delta.y;
+		break;
+
+	case front:
+		position.value.x += delta.x;
+		position.value.y += delta.y;
+		break;
+	}
+}
+
+glm::vec2 Viewport::GetWorldMousePos2D()
+{
+	float pixelsPerUnit = GetPixelsPerUnit();
+	double cursorX, cursorY;
+	glfwGetCursorPos(pMainWindow, &cursorX, &cursorY);
+	int windowHeight;
+	glfwGetWindowSize(pMainWindow, NULL, &windowHeight);
+	glm::vec2 worldSpace = glm::vec2(cursorX, windowHeight - cursorY);
+	glm::vec2 offset{};
+
+	PositionComponent& position = entityManager.GetComponent<PositionComponent>(cameraEntity);
+
+	switch (mode)
+	{
+	case top:
+		offset.x = position.value.x;
+		offset.y = position.value.z;
+		break;
+
+	case side:
+		offset.x = position.value.z;
+		offset.y = position.value.y;
+		break;
+
+	case front:
+		offset.x = position.value.x;
+		offset.y = position.value.y;
+		break;
+
+	default:
+		return glm::vec2(0);
+	}
+
+	worldSpace.x -= viewPosX;
+	worldSpace.x -= viewSizeX * 0.5f;
+
+	worldSpace.y -= viewPosY;
+	worldSpace.y -= viewSizeY * 0.5f;
+
+	worldSpace /= pixelsPerUnit;
+
+	worldSpace += offset;
+
+	// Because we are using left hand coords, top view up is -Z
+	if (mode == top)
+		worldSpace.y *= -1;
+
+	return worldSpace;
+}
+
+float Viewport::GetPixelsPerUnit()
+{
+	return camera->frustumScale * viewSizeY * 0.5f;
 }

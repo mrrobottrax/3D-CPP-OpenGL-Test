@@ -22,7 +22,7 @@ private:
 	DockingNode* pSelectedNode;
 
 public:
-	void SelectNodeUnderMouse();
+	void SelectNodeUnderMouse(bool selectSplits = false);
 	void DeselectNode();
 
 	void KeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods);

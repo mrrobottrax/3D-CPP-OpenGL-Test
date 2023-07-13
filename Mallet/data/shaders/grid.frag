@@ -1,7 +1,7 @@
 #version 460
 
 uniform float baseGridSize;
-uniform float unitScreenSize;
+uniform float pixelsPerUnit;
 
 smooth in vec2 xy;
 
@@ -11,10 +11,10 @@ float grid(vec2 pos, float size)
 {
 	vec2 grid = abs(fract(pos / size) * 2 - 1);
 	float t = max(grid.x, grid.y);
-	float gridLineThickness = 4 / unitScreenSize / size;
+	float gridLineThickness = 2 / pixelsPerUnit / size;
 
-	// Don't render grids smaller than 10px
-	float mask = step(10, size * unitScreenSize);
+	// Don't render grids smaller than 6px
+	float mask = step(6, size * pixelsPerUnit);
 	return smoothstep(1 - gridLineThickness, 1, t) * mask;
 }
 
