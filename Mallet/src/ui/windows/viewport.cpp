@@ -12,14 +12,15 @@
 #include <gl/glutil.h>
 #include <gl/shaderloader.h>
 
-#include <main.h>
-
 #include <common/matrixstack.h>
 #include <components/meshcomponent.h>
 #include <components/rotationcomponent.h>
 #include <components/unscaledvelocitycomponent.h>
 
-Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), viewSizeX(), viewSizeY(), mode(mode), pPosition()
+#include "toolbar.h"
+
+Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(),
+viewSizeX(), viewSizeY(), mode(mode), pPosition()
 {
 	EntityManager& em = entityManager;
 
@@ -90,11 +91,12 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 	{
 		glInit = true;
 
+		// Grid
 		glGenVertexArrays(1, &gridVao);
 		glBindVertexArray(gridVao);
 
-		glGenBuffers(1, &gridPositionBufferObject);
-		glBindBuffer(GL_ARRAY_BUFFER, gridPositionBufferObject);
+		glGenBuffers(1, &gridPositionBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, gridPositionBuffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(quadArray), quadArray, GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(0);
@@ -117,6 +119,19 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 		gridColorUnif = glGetUniformLocation(gridShaderProgram, "fillColor");
 		gridSizeUnif = glGetUniformLocation(gridShaderProgram, "gridSize");
 		gridOffsetUnif = glGetUniformLocation(gridShaderProgram, "offset");
+
+		// Box being created
+		glGenVertexArrays(1, &boxVao);
+		glBindVertexArray(boxVao);
+
+		glGenBuffers(1, &boxPositionBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, boxPositionBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(BlockTool::blockPreviewTemplate), BlockTool::blockPreviewTemplate, GL_DYNAMIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glBindVertexArray(0);
 	}
 }
 
@@ -173,21 +188,69 @@ void Viewport::Draw2DWireframe()
 	offset.x -= viewPosX + viewSizeX * 0.5f;
 	offset.y -= viewPosY + viewSizeY * 0.5f;
 
-	// Reduce error
-	offset.x = fmodf(offset.x, minVisibleGridSize);
-	offset.y = fmodf(offset.y, minVisibleGridSize);
-
 	glUniform2f(gridOffsetUnif, offset.x, offset.y);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glBindVertexArray(0);
 	glUseProgram(0);
+
+	DrawBoxTool();
 }
 
 void Viewport::Draw3DShaded()
 {
 	renderSystem.DrawShaded();
+
+	DrawBoxTool();
+}
+
+void Viewport::DrawBoxTool()
+{
+	if (Toolbar::activeTool != tool_block)
+		return;
+
+	// Box being created
+	glUseProgram(solidShaderProgram);
+	glBindVertexArray(boxVao);
+
+	// Set uniforms
+	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &pCamera->matrix[0][0]);
+	MatrixStack mStack;
+	mStack.Push();
+	mStack.ApplyMatrix(glm::mat4_cast(entityManager.GetComponent<RotationComponent>(cameraEntity).value));
+	mStack.Translate(-entityManager.GetComponent<PositionComponent>(cameraEntity).value);
+	glUniformMatrix4fv(sharedPositionMatrixUnif, 1, GL_FALSE, &mStack.Top()[0][0]);
+
+	// Set vertex data
+	for (int i = 0; i < sizeof(BlockTool::blockPreviewTemplate) / sizeof(float); ++i)
+	{
+		bool start = BlockTool::blockPreviewTemplate[i] < 0;
+
+		if (i % 3 == 0)
+		{
+			BlockTool::blockPreview[i] = start ? BlockTool::blockStart.x : BlockTool::blockEnd.x;
+		}
+		else if (i % 3 == 1)
+		{
+			BlockTool::blockPreview[i] = start ? BlockTool::blockStart.y : BlockTool::blockEnd.y;
+		}
+		else if (i % 3 == 2)
+		{
+			BlockTool::blockPreview[i] = start ? BlockTool::blockStart.z : BlockTool::blockEnd.z;
+		}
+	}
+
+	glNamedBufferSubData(boxPositionBuffer, 0, sizeof(BlockTool::blockPreview), BlockTool::blockPreview);
+
+	glDisable(GL_DEPTH_TEST);
+
+	glUniform3f(solidColorUnif, 1, 1, 0);
+	glDrawArrays(GL_LINES, 0, 24);
+
+	glEnable(GL_DEPTH_TEST);
+	glBindVertexArray(0);
+	glUseProgram(0);
 }
 
 void Viewport::CalculateViewportVars(int fullWindowWidth, int fullWindowHeight)
@@ -248,6 +311,47 @@ void Viewport::PanButton(int action)
 	}
 }
 
+void Viewport::BlockTool(int action)
+{
+	if (action == GLFW_PRESS)
+	{
+		glm::vec2 pos = GetGridMousePos2D();
+
+		switch (mode)
+		{
+		case top:
+			BlockTool::blockStart.x = pos.x;
+			BlockTool::blockStart.z = pos.y;
+
+			BlockTool::blockEnd.x = pos.x;
+			BlockTool::blockEnd.z = pos.y;
+			break;
+		case side:
+			BlockTool::blockStart.z = pos.x;
+			BlockTool::blockStart.y = pos.y;
+
+			BlockTool::blockEnd.z = pos.x;
+			BlockTool::blockEnd.y = pos.y;
+			break;
+		case front:
+			BlockTool::blockStart.x = pos.x;
+			BlockTool::blockStart.y = pos.y;
+
+			BlockTool::blockEnd.x = pos.x;
+			BlockTool::blockEnd.y = pos.y;
+			break;
+		default:
+			break;
+		}
+
+		BlockTool::creatingBlock = true;
+	}
+	else if (action == GLFW_RELEASE)
+	{
+		BlockTool::creatingBlock = false;
+	}
+}
+
 void Viewport::ZoomIn(float multiplier)
 {
 	pCamera->frustumScale *= 1.1f * abs(multiplier);
@@ -303,11 +407,39 @@ void Viewport::MouseCallback(GLFWwindow* pWindow, int button, int action, int mo
 		PanButton(action);
 		return;
 	}
+
+	// Block tool
+	if (Toolbar::activeTool == tool_block && button == GLFW_MOUSE_BUTTON_LEFT)
+	{
+		BlockTool(action);
+		return;
+	}
 }
 
 void Viewport::MousePosCallback(GLFWwindow* pWindow, double xPos, double yPos)
 {
-	
+	if (Toolbar::activeTool == tool_block && BlockTool::creatingBlock)
+	{
+		glm::vec2 pos = GetGridMousePos2D();
+
+		switch (mode)
+		{
+		case top:
+			BlockTool::blockEnd.x = pos.x;
+			BlockTool::blockEnd.z = pos.y;
+			break;
+		case side:
+			BlockTool::blockEnd.z = pos.x;
+			BlockTool::blockEnd.y = pos.y;
+			break;
+		case front:
+			BlockTool::blockEnd.x = pos.x;
+			BlockTool::blockEnd.y = pos.y;
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 void Viewport::ScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset)
@@ -429,6 +561,15 @@ glm::vec2 Viewport::GetWorldMousePos2D()
 	glfwGetWindowSize(pMainWindow, NULL, &windowHeight);
 	
 	return ScreenToWorld2D((float)cursorX, windowHeight - (float)cursorY);
+}
+
+glm::vec2 Viewport::GetGridMousePos2D()
+{
+	glm::vec2 pos = GetWorldMousePos2D();
+	pos.x = floorf(pos.x / baseGridSize + 0.5f) * baseGridSize;
+	pos.y = floorf(pos.y / baseGridSize + 0.5f) * baseGridSize;
+
+	return pos;
 }
 
 float Viewport::GetPixelsPerUnit()

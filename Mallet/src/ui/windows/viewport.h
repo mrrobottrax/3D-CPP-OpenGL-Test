@@ -7,6 +7,7 @@
 #include <rendering/rendersystem.h>
 #include <components/freecamcomponent.h>
 #include <components/positioncomponent.h>
+#include <ui/tools/blocktool.h>
 
 enum ViewportMode
 {
@@ -18,16 +19,6 @@ enum ViewportMode
 
 constexpr inline float maxGridSize = 65536.0f;
 constexpr inline float minGridSize = 0.0000152587890625f;
-
-inline float baseGridSize = 1;
-
-inline bool glInit = false;
-inline GLuint gridVao;
-inline GLuint gridShaderProgram;
-inline GLuint gridPositionBufferObject;
-inline GLuint gridColorUnif;
-inline GLuint gridSizeUnif;
-inline GLuint gridOffsetUnif;
 
 const inline float quadArray[] = {
 	-1, -1, 1,
@@ -48,6 +39,7 @@ public:
 	void Draw() override;
 	void Draw2DWireframe();
 	void Draw3DShaded();
+	void DrawBoxTool();
 	void OnResize() override;
 	void OnSelect() override;
 	void OnDeselect() override;
@@ -60,10 +52,24 @@ public:
 	void Set2DPosition(glm::vec2 position);
 	glm::vec2 ScreenToWorld2D(float x, float y);
 	glm::vec2 GetWorldMousePos2D();
+	glm::vec2 GetGridMousePos2D();
 	float GetPixelsPerUnit();
 
 public:
 	ViewportMode mode;
+	static inline float baseGridSize = 1;
+
+private:
+	static inline bool glInit = false;
+	static inline GLuint gridVao;
+	static inline GLuint gridShaderProgram;
+	static inline GLuint gridPositionBuffer;
+	static inline GLuint gridColorUnif;
+	static inline GLuint gridSizeUnif;
+	static inline GLuint gridOffsetUnif;
+
+	static inline GLuint boxVao;
+	static inline GLuint boxPositionBuffer;
 
 private:
 	Entity cameraEntity;
@@ -78,6 +84,7 @@ private:
 private:
 	void CalculateViewportVars(int, int);
 	void PanButton(int action);
+	void BlockTool(int action);
 	void ZoomIn(float multiplier = 1);
 	void ZoomOut(float multiplier = 1);
 };

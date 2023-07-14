@@ -16,7 +16,7 @@ void Toolbar::Draw()
 		SetActiveTool(tool_select);
 
 	if (ImGui::Button("Box"))
-		SetActiveTool(tool_box);
+		SetActiveTool(tool_block);
 
 	ImGui::End();
 }

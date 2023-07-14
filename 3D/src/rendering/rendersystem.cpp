@@ -103,7 +103,7 @@ void RenderSystem::DrawWireframe()
 	DrawBase();
 
 	glEnable(GL_CULL_FACE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_FRONT, GL_FILL);
 
 	glBindVertexArray(0);
 	glUseProgram(0);
@@ -118,10 +118,8 @@ void RenderSystem::DrawBase()
 		return;
 
 	MatrixStack mStack;
-	glm::mat3 normalMat;
 
 	mStack.Push();
-	normalMat = mStack.Top();
 	mStack.ApplyMatrix(glm::mat4_cast(em.GetComponent<RotationComponent>(mainCameraEntity).value));
 	mStack.Translate(-em.GetComponent<PositionComponent>(mainCameraEntity).value);
 
@@ -135,7 +133,7 @@ void RenderSystem::DrawBase()
 	glUniform1f(sunIntensityUnif, sunIntensity);
 	glUniform1f(ambientIntensityUnif, ambientIntensity);
 
-	glm::mat3 newNormalMat;
+	glm::mat3 normalMat;
 
 	// For each archetype
 	for (auto chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
@@ -158,7 +156,7 @@ void RenderSystem::DrawBase()
 				if (pScale)
 					mStack.Scale(pScale->value);
 
-				newNormalMat = glm::mat3_cast(rotation.value) * normalMat;
+				normalMat = glm::mat3_cast(rotation.value);
 
 				// Draw object
 
@@ -170,7 +168,7 @@ void RenderSystem::DrawBase()
 
 				// TODO: Faster to have the cpu do this? Or maybe just give the gpu rotation, position, etc matrices?
 				glUniformMatrix4fv(sharedPositionMatrixUnif, 1, GL_FALSE, &mStack.Top()[0][0]);
-				glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, &newNormalMat[0][0]);
+				glUniformMatrix3fv(normalMatrix, 1, GL_FALSE, &normalMat[0][0]);
 				glUniform3f(sunDirUnif, sunDir.x, sunDir.y, sunDir.z);
 				glUniform4f(colorUnif, 1, 1, 1, 1);
 

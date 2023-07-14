@@ -139,6 +139,7 @@
     <ClInclude Include="src\input\malletinputlayer.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\malletpch.h" />
+    <ClInclude Include="src\ui\tools\blocktool.h" />
     <ClInclude Include="src\ui\docking\dockingleaf.h" />
     <ClInclude Include="src\ui\docking\dockingnode.h" />
     <ClInclude Include="src\ui\docking\dockingsplit.h" />
@@ -157,6 +158,7 @@
     </ClCompile>
     <ClCompile Include="src\ui\docking\dockingtree.cpp" />
     <ClCompile Include="src\ui\malletuisystem.cpp" />
+    <ClCompile Include="src\ui\tools\blocktool.cpp" />
     <ClCompile Include="src\ui\windows\malletwindow.cpp" />
     <ClCompile Include="src\ui\windows\toolbar.cpp" />
     <ClCompile Include="src\ui\windows\viewport.cpp" />

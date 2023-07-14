@@ -5,24 +5,24 @@
 enum MalletTool
 {
 	tool_select,
-	tool_box,
+	tool_block,
 };
 
 class Toolbar : public MalletWindow
 {
 public:
-	Toolbar() : tool()
+	Toolbar()
 	{};
 
 	~Toolbar() {};
 
-private:
-	MalletTool tool;
+public:
+	static inline MalletTool activeTool = tool_select;
 
 public:
 	void Draw() override;
 	void SetActiveTool(MalletTool tool)
 	{
-		this->tool = tool;
+		activeTool = tool;
 	};
 };
