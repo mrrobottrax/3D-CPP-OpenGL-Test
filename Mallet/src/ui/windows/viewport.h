@@ -15,26 +15,24 @@ enum ViewportMode
 	front
 };
 
-const inline int quadVertCount = 6;
-const inline float gridQuadPositionArray[] = {
-	-1, -1, 0.5f,
-	 1,  1, 0.5f,
-	-1,  1, 0.5f,
-
-	 1,  1, 0.5f,
-	-1, -1, 0.5f,
-	 1, -1, 0.5f,
-};
-
-inline bool glInit = false;
-inline GLuint gridVao;
-inline GLuint positionBufferObject;
-inline GLuint gridShaderProgram;
-inline GLuint screenToWorldMatrixUnif;
-inline GLuint pixelsPerUnitUnif;
-inline GLuint baseGridSizeUnif;
+constexpr inline float maxGridSize = 65536.0f;
+constexpr inline float minGridSize = 0.0000152587890625f;
 
 inline float baseGridSize = 1;
+
+inline bool glInit = false;
+inline GLuint bgVao;
+inline GLuint bgPositionBufferObject;
+
+constexpr inline float quadArray[] = {
+	-1, -1, 1,
+	 1,  1, 1,
+	-1,  1, 1,
+
+	 1,  1, 1,
+	-1, -1, 1,
+	 1, -1, 1,
+};
 
 class Viewport : public MalletWindow
 {

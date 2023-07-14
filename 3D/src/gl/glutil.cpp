@@ -6,22 +6,6 @@
 #include <input/inputsystem.h>
 #include <rendering/rendersystem.h>
 
-GLFWwindow* pMainWindow;
-
-GLuint vao;
-
-GLuint sharedPositionMatrixUnif;
-GLuint sharedPerspectiveMatrixUnif;
-
-GLuint standardShaderProgram;
-GLuint normalMatrix;
-GLuint sunDirUnif;
-GLuint sunIntensityUnif;
-GLuint ambientIntensityUnif;
-GLuint colorUnif;
-
-GLuint wireframeShaderProgram;
-
 void ErrorCallback(int error, const char* description)
 {
 	fprintf(stderr, "Error: %s\n", description);
@@ -38,8 +22,6 @@ void DefaultWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
 	RenderSystem& rs = renderSystem;
 	rs.UpdateMatrixAspect(*rs.pMainCamera, width, height);
 }
-
-const char* glsl_version = "#version 460";
 
 // Create a window and initialize GLEW
 void InitializeWindow()
@@ -148,6 +130,21 @@ void InitializeOpenGL()
 		wireframeShaderProgram = CreateProgram(shaderList);
 		std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
 	}
+
+	// Solid color shader
+	{
+		const char* strVertShader = shaderLoader::LoadShader("data/shaders/solid.vert");
+		const char* strFragShader = shaderLoader::LoadShader("data/shaders/solid.frag");
+		shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
+		shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
+		delete[] strVertShader;
+		delete[] strFragShader;
+
+		solidShaderProgram = CreateProgram(shaderList);
+		std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
+	}
+
+	solidColorUnif = glGetUniformLocation(solidShaderProgram, "fillColor");
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);

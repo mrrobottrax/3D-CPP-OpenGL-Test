@@ -44,13 +44,15 @@ void MalletKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, i
 	// [ or ] -> increase / decrease grid size
 	if (key == GLFW_KEY_LEFT_BRACKET && action == GLFW_PRESS)
 	{
-		baseGridSize /= 2;
+		if (baseGridSize > minGridSize)
+			baseGridSize /= 2;
 		return;
 	}
 
 	if (key == GLFW_KEY_RIGHT_BRACKET && action == GLFW_PRESS)
 	{
-		baseGridSize *= 2;
+		if (baseGridSize < maxGridSize)
+			baseGridSize *= 2;
 		return;
 	}
 

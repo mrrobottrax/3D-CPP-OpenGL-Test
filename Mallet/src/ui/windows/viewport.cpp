@@ -88,12 +88,12 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 	{
 		glInit = true;
 
-		glGenVertexArrays(1, &gridVao);
-		glBindVertexArray(gridVao);
+		glGenVertexArrays(1, &bgVao);
+		glBindVertexArray(bgVao);
 
-		glGenBuffers(1, &positionBufferObject);
-		glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(gridQuadPositionArray), gridQuadPositionArray, GL_STATIC_DRAW);
+		glGenBuffers(1, &bgPositionBufferObject);
+		glBindBuffer(GL_ARRAY_BUFFER, bgPositionBufferObject);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadArray), quadArray, GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -101,23 +101,6 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 		glBindVertexArray(0);
 
 		std::vector<GLuint> shaderList;
-
-		// Grid shader
-		{
-			const char* strVertShader = shaderLoader::LoadShader("data/shaders/grid.vert");
-			const char* strFragShader = shaderLoader::LoadShader("data/shaders/grid.frag");
-			shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
-			shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
-			delete[] strVertShader;
-			delete[] strFragShader;
-
-			gridShaderProgram = CreateProgram(shaderList);
-			std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
-		}
-
-		screenToWorldMatrixUnif = glGetUniformLocation(gridShaderProgram, "screenToWorldMatrix");
-		pixelsPerUnitUnif = glGetUniformLocation(gridShaderProgram, "pixelsPerUnit");
-		baseGridSizeUnif = glGetUniformLocation(gridShaderProgram, "baseGridSize");
 	}
 }
 
@@ -155,28 +138,12 @@ void Viewport::Draw2DWireframe()
 {
 	renderSystem.DrawWireframe();
 
-	// Grid
-	glUseProgram(gridShaderProgram);
-	glBindVertexArray(gridVao);
+	// Background
+	glUseProgram(solidShaderProgram);
+	glBindVertexArray(bgVao);
 
-	EntityManager& em = entityManager;
-	MatrixStack mStack;
-	mStack.Push();
-
-	// Get inverse camera matrix
-	glm::vec3 pos = em.GetComponent<PositionComponent>(cameraEntity).value;
-	glm::vec3 newPos = glm::mat4_cast(em.GetComponent<RotationComponent>(cameraEntity).value) * glm::vec4(pos.x, pos.y, pos.z, 1);
-	mStack.ApplyMatrix(camera->matrix);
-	mStack.Translate(-newPos);
-	mStack.Invert();
-
-	glUniformMatrix4fv(screenToWorldMatrixUnif, 1, GL_FALSE, &mStack.Top()[0][0]);
-	glUniform1f(baseGridSizeUnif, baseGridSize);
-
-	// Get the screen size of 1 unit
-	glUniform1f(pixelsPerUnitUnif, GetPixelsPerUnit());
-
-	glDrawArrays(GL_TRIANGLES, 0, quadVertCount);
+	glUniform3f(solidColorUnif, 0, 0, 0);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glBindVertexArray(0);
 	glUseProgram(0);

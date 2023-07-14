@@ -223,7 +223,7 @@ void InputSystem::Update()
 	UpdateCursorDelta(xPos, yPos);
 }
 
-const GLsizei loopMargin = 10;
+constexpr int loopMargin = 5;
 void InputSystem::UpdateCursorDelta(double xPos, double yPos)
 {
 	if (lastCursorPosX == 0 && lastCursorPosY == 0)
@@ -242,7 +242,7 @@ void InputSystem::UpdateCursorDelta(double xPos, double yPos)
 	// Loop cursor TODO: This should probably be in mallet code
 	if (cursorLoop)
 	{
-		GLsizei windowSize[2]{};
+		int windowSize[2]{};
 		glfwGetWindowSize(pMainWindow, &windowSize[0], &windowSize[1]);
 
 		double cursorPos[2]{};
@@ -255,13 +255,13 @@ void InputSystem::UpdateCursorDelta(double xPos, double yPos)
 		{
 			while (cursorPos[i] < loopMargin)
 			{
-				cursorPos[i] += (windowSize[i] - GLsizei(loopMargin * 2));
+				cursorPos[i] += (windowSize[i] - loopMargin * 2);
 				looped = true;
 			}
 
 			while (cursorPos[i] > (windowSize[i] - loopMargin))
 			{
-				cursorPos[i] -= (windowSize[i] - GLsizei(loopMargin * 2));
+				cursorPos[i] -= (windowSize[i] - loopMargin * 2);
 				looped = true;
 			}
 		}
@@ -270,8 +270,8 @@ void InputSystem::UpdateCursorDelta(double xPos, double yPos)
 
 		if (looped)
 		{
-			lastCursorPosX = cursorPos[0] - cursorDeltaX;
-			lastCursorPosY = cursorPos[1] - cursorDeltaY;
+			lastCursorPosX = cursorPos[0];
+			lastCursorPosY = cursorPos[1];
 		}
 	}
 }
