@@ -21,6 +21,7 @@ namespace modelLoader {
 		if (f.fail())
 		{
 			std::cout << "Failed to load model  " << path << "\n";
+			// TODO: Add default error model
 			return;
 		}
 

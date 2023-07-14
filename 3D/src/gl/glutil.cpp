@@ -99,8 +99,8 @@ void InitializeOpenGL()
 
 	// Standard shader
 	{
-		const char* strVertShader = shaderLoader::LoadShader("data/shaders/normal.vert");
-		const char* strFragShader = shaderLoader::LoadShader("data/shaders/normal.frag");
+		const char* strVertShader = shaderLoader::LoadShader("../data/shaders/normal.vert");
+		const char* strFragShader = shaderLoader::LoadShader("../data/shaders/normal.frag");
 		shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
 		shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
 		delete[] strVertShader;
@@ -120,8 +120,8 @@ void InitializeOpenGL()
 
 	// Wireframe shader
 	{
-		const char* strVertShader = shaderLoader::LoadShader("data/shaders/wireframe.vert");
-		const char* strFragShader = shaderLoader::LoadShader("data/shaders/wireframe.frag");
+		const char* strVertShader = shaderLoader::LoadShader("../data/shaders/wireframe.vert");
+		const char* strFragShader = shaderLoader::LoadShader("../data/shaders/wireframe.frag");
 		shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
 		shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
 		delete[] strVertShader;
@@ -133,8 +133,8 @@ void InitializeOpenGL()
 
 	// Solid color shader
 	{
-		const char* strVertShader = shaderLoader::LoadShader("data/shaders/solid.vert");
-		const char* strFragShader = shaderLoader::LoadShader("data/shaders/solid.frag");
+		const char* strVertShader = shaderLoader::LoadShader("../data/shaders/solid.vert");
+		const char* strFragShader = shaderLoader::LoadShader("../data/shaders/solid.frag");
 		shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
 		shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
 		delete[] strVertShader;

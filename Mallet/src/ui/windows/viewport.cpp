@@ -104,8 +104,8 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 
 		std::vector<GLuint> shaderList;
 
-		const char* strVertShader = shaderLoader::LoadShader("data/shaders/grid.vert");
-		const char* strFragShader = shaderLoader::LoadShader("data/shaders/grid.frag");
+		const char* strVertShader = shaderLoader::LoadShader("../data/shaders/grid.vert");
+		const char* strFragShader = shaderLoader::LoadShader("../data/shaders/grid.frag");
 		shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
 		shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
 		delete[] strVertShader;

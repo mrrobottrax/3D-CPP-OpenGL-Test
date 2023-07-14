@@ -120,7 +120,7 @@ void Init()
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 3.14f / 4.0f, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
-		const char* path = "data/models/monkey.glb";
+		const char* path = "../data/models/monkey.glb";
 		modelLoader::LoadModel(monkeyMesh, path);
 		em.GetComponent<MeshComponent>(entity) = { &monkeyMesh };
 	}
@@ -137,7 +137,7 @@ void Init()
 		em.GetComponent<PositionComponent>(entity) = { 0, 0, -4 };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
-		modelLoader::LoadModel(testMap, "data/models/test_map.glb");
+		modelLoader::LoadModel(testMap, "../data/models/test_map.glb");
 		em.GetComponent<MeshComponent>(entity) = { &testMap };
 	}*/
 	// Create teapot
@@ -155,11 +155,11 @@ void Init()
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, -0.1f, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
 
-		modelLoader::LoadModel(testMesh, "data/models/teapot.glb");
+		modelLoader::LoadModel(testMesh, "../data/models/teapot.glb");
 		em.GetComponent<MeshComponent>(entity) = { &testMesh };
 	}
 	{
-		modelLoader::LoadModel(boxMesh, "data/models/box.glb");
+		modelLoader::LoadModel(boxMesh, "../data/models/box.glb");
 		Component components[] = {
 		Component().Init<IdComponent>(),
 		Component().Init<PositionComponent>(),
