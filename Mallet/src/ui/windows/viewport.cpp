@@ -19,7 +19,7 @@
 #include <components/rotationcomponent.h>
 #include <components/unscaledvelocitycomponent.h>
 
-Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), viewSizeX(), viewSizeY(), mode(mode)
+Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), viewSizeX(), viewSizeY(), mode(mode), pPosition()
 {
 	EntityManager& em = entityManager;
 
@@ -38,16 +38,17 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 	bool ortho = mode != ViewportMode::perspective;
 	
 	FreecamComponent& fc = em.GetComponent<FreecamComponent>(entity) = { 6, 40, 20, false, ortho };
-	freeCam = &fc;
+	pFreeCam = &fc;
 
 	if (!ortho)
 	{
-		em.GetComponent<PositionComponent>(entity) = { 0, 2, 0 };
+		PositionComponent& pos = em.GetComponent<PositionComponent>(entity) = { 0, 2, 0 };
+		pPosition = &pos;
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
 		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = CameraComponent(0.03f, 1000.0f);
 		cameraEntity = entity;
-		camera = &cam;
+		pCamera = &cam;
 
 		int w, h;
 		glfwGetWindowSize(pMainWindow, &w, &h);
@@ -56,7 +57,8 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 	}
 	else
 	{
-		em.GetComponent<PositionComponent>(entity) = { 0, 0, 0 };
+		PositionComponent& pos = em.GetComponent<PositionComponent>(entity) = { 0, 0, 0 };
+		pPosition = &pos;
 
 		switch (mode)
 		{
@@ -76,7 +78,7 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 
 		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = CameraComponent(0.03f, 1000.0f, true, 1 / 10.0f);
 		cameraEntity = entity;
-		camera = &cam;
+		pCamera = &cam;
 
 		int w, h;
 		glfwGetWindowSize(pMainWindow, &w, &h);
@@ -88,11 +90,11 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 	{
 		glInit = true;
 
-		glGenVertexArrays(1, &bgVao);
-		glBindVertexArray(bgVao);
+		glGenVertexArrays(1, &gridVao);
+		glBindVertexArray(gridVao);
 
-		glGenBuffers(1, &bgPositionBufferObject);
-		glBindBuffer(GL_ARRAY_BUFFER, bgPositionBufferObject);
+		glGenBuffers(1, &gridPositionBufferObject);
+		glBindBuffer(GL_ARRAY_BUFFER, gridPositionBufferObject);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(quadArray), quadArray, GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(0);
@@ -101,6 +103,20 @@ Viewport::Viewport(ViewportMode mode) : cameraEntity(), viewPosX(), viewPosY(), 
 		glBindVertexArray(0);
 
 		std::vector<GLuint> shaderList;
+
+		const char* strVertShader = shaderLoader::LoadShader("data/shaders/grid.vert");
+		const char* strFragShader = shaderLoader::LoadShader("data/shaders/grid.frag");
+		shaderList.push_back(CreateShader(GL_VERTEX_SHADER, strVertShader));
+		shaderList.push_back(CreateShader(GL_FRAGMENT_SHADER, strFragShader));
+		delete[] strVertShader;
+		delete[] strFragShader;
+
+		gridShaderProgram = CreateProgram(shaderList);
+		std::for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
+
+		gridColorUnif = glGetUniformLocation(gridShaderProgram, "fillColor");
+		gridSizeUnif = glGetUniformLocation(gridShaderProgram, "gridSize");
+		gridOffsetUnif = glGetUniformLocation(gridShaderProgram, "offset");
 	}
 }
 
@@ -108,11 +124,11 @@ void Viewport::Draw()
 {
 	glViewport(viewPosX, viewPosY, viewSizeX, viewSizeY);
 
-	renderSystem.pMainCamera = camera;
+	renderSystem.pMainCamera = pCamera;
 	renderSystem.mainCameraEntity = cameraEntity;
 
-	freeCam->viewPortSize[0] = viewSizeX;
-	freeCam->viewPortSize[1] = viewSizeY;
+	pFreeCam->viewPortSize[0] = viewSizeX;
+	pFreeCam->viewPortSize[1] = viewSizeY;
 
 	switch (mode)
 	{
@@ -138,11 +154,31 @@ void Viewport::Draw2DWireframe()
 {
 	renderSystem.DrawWireframe();
 
-	// Background
-	glUseProgram(solidShaderProgram);
-	glBindVertexArray(bgVao);
+	// Grid
+	glUseProgram(gridShaderProgram);
+	glBindVertexArray(gridVao);
 
-	glUniform3f(solidColorUnif, 0, 0, 0);
+	// Keep grid size at least 8px, but also a power of 2
+	float minVisibleGridSize = GetPixelsPerUnit() * baseGridSize;
+	while (minVisibleGridSize < 8)
+	{
+		minVisibleGridSize *= 2;
+	}
+
+	glUniform3f(gridColorUnif, 0.15f, 0.15f, 0.15f);
+	glUniform1f(gridSizeUnif, minVisibleGridSize);
+
+	glm::vec2 offset = Get2DPosition();
+	offset *= GetPixelsPerUnit();
+	offset.x -= viewPosX + viewSizeX * 0.5f;
+	offset.y -= viewPosY + viewSizeY * 0.5f;
+
+	// Reduce error
+	offset.x = fmodf(offset.x, minVisibleGridSize);
+	offset.y = fmodf(offset.y, minVisibleGridSize);
+
+	glUniform2f(gridOffsetUnif, offset.x, offset.y);
+
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glBindVertexArray(0);
@@ -170,7 +206,7 @@ void Viewport::OnResize()
 
 	CalculateViewportVars(fullWindowWidth, fullWindowHeight);
 
-	RenderSystem::UpdateMatrixAspect(*camera, pLeaf->size[0], pLeaf->size[1]);
+	RenderSystem::UpdateMatrixAspect(*pCamera, pLeaf->size[0], pLeaf->size[1]);
 }
 
 void Viewport::OnSelect()
@@ -182,7 +218,7 @@ void Viewport::OnDeselect()
 {
 	glfwSetInputMode(pMainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-	freeCam->enabled = false;
+	pFreeCam->enabled = false;
 }
 
 bool cameraWasEnabledBeforePanning = false;
@@ -192,20 +228,20 @@ void Viewport::PanButton(int action)
 
 	if (action == GLFW_PRESS)
 	{
-		cameraWasEnabledBeforePanning = freeCam->enabled;
+		cameraWasEnabledBeforePanning = pFreeCam->enabled;
 
-		freeCam->panning = true;
-		freeCam->enabled = true;
+		pFreeCam->panning = true;
+		pFreeCam->enabled = true;
 
 		inputSystem.SetCursorLoop(true);
 	}
 	else if (action == GLFW_RELEASE)
 	{
-		freeCam->panning = false;
+		pFreeCam->panning = false;
 
 		if (!cameraWasEnabledBeforePanning)
 		{
-			freeCam->enabled = false;
+			pFreeCam->enabled = false;
 		}
 
 		inputSystem.SetCursorLoop(false);
@@ -214,14 +250,14 @@ void Viewport::PanButton(int action)
 
 void Viewport::ZoomIn(float multiplier)
 {
-	camera->frustumScale *= 1.1f * abs(multiplier);
-	renderSystem.CalcPerspectiveMatrix(*camera, viewSizeX, viewSizeY);
+	pCamera->frustumScale *= 1.1f * abs(multiplier);
+	renderSystem.CalcPerspectiveMatrix(*pCamera, viewSizeX, viewSizeY);
 }
 
 void Viewport::ZoomOut(float multiplier)
 {
-	camera->frustumScale /= 1.1f * abs(multiplier);
-	renderSystem.CalcPerspectiveMatrix(*camera, viewSizeX, viewSizeY);
+	pCamera->frustumScale /= 1.1f * abs(multiplier);
+	renderSystem.CalcPerspectiveMatrix(*pCamera, viewSizeX, viewSizeY);
 }
 
 void Viewport::KeyboardCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
@@ -296,59 +332,68 @@ void Viewport::ScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffse
 
 	delta -= GetWorldMousePos2D();
 
-	PositionComponent& position = entityManager.GetComponent<PositionComponent>(cameraEntity);
+	// Left handed coords
+	if (mode == top)
+		delta.y *= -1;
 
-	switch (mode)
-	{
-	case top:
-		position.value.x += delta.x;
-		position.value.z += delta.y;
-		break;
-
-	case side:
-		position.value.z += delta.x;
-		position.value.y += delta.y;
-		break;
-
-	case front:
-		position.value.x += delta.x;
-		position.value.y += delta.y;
-		break;
-	}
+	Set2DPosition(Get2DPosition() + delta);
 }
 
-glm::vec2 Viewport::GetWorldMousePos2D()
+glm::vec2 Viewport::Get2DPosition()
 {
-	float pixelsPerUnit = GetPixelsPerUnit();
-	double cursorX, cursorY;
-	glfwGetCursorPos(pMainWindow, &cursorX, &cursorY);
-	int windowHeight;
-	glfwGetWindowSize(pMainWindow, NULL, &windowHeight);
-	glm::vec2 worldSpace = glm::vec2(cursorX, windowHeight - cursorY);
-	glm::vec2 offset{};
-
-	PositionComponent& position = entityManager.GetComponent<PositionComponent>(cameraEntity);
+	glm::vec2 pos{};
 
 	switch (mode)
 	{
 	case top:
-		offset.x = position.value.x;
-		offset.y = position.value.z;
+		pos.x = pPosition->value.x;
+		pos.y = -pPosition->value.z;
 		break;
 
 	case side:
-		offset.x = position.value.z;
-		offset.y = position.value.y;
+		pos.x = pPosition->value.z;
+		pos.y = pPosition->value.y;
 		break;
 
 	case front:
-		offset.x = position.value.x;
-		offset.y = position.value.y;
+		pos.x = pPosition->value.x;
+		pos.y = pPosition->value.y;
 		break;
 
 	default:
 		return glm::vec2(0);
 	}
+
+	return pos;
+}
+
+void Viewport::Set2DPosition(glm::vec2 position)
+{
+	switch (mode)
+	{
+	case top:
+		pPosition->value.x = position.x;
+		pPosition->value.z = -position.y;
+		break;
+
+	case side:
+		pPosition->value.z = position.x;
+		pPosition->value.y = position.y;
+		break;
+
+	case front:
+		pPosition->value.x = position.x;
+		pPosition->value.y = position.y;
+		break;
+	}
+}
+
+glm::vec2 Viewport::ScreenToWorld2D(float x, float y)
+{
+	float pixelsPerUnit = GetPixelsPerUnit();
+
+	glm::vec2 worldSpace = glm::vec2(x, y);
+	glm::vec2 offset = Get2DPosition();
 
 	worldSpace.x -= viewPosX;
 	worldSpace.x -= viewSizeX * 0.5f;
@@ -358,16 +403,35 @@ glm::vec2 Viewport::GetWorldMousePos2D()
 
 	worldSpace /= pixelsPerUnit;
 
-	worldSpace += offset;
+
 
 	// Because we are using left hand coords, top view up is -Z
 	if (mode == top)
+	{
+		offset.y *= -1;
+		worldSpace += offset;
 		worldSpace.y *= -1;
+
+	}
+	else
+	{
+		worldSpace += offset;
+	}
 
 	return worldSpace;
 }
 
+glm::vec2 Viewport::GetWorldMousePos2D()
+{
+	double cursorX, cursorY;
+	glfwGetCursorPos(pMainWindow, &cursorX, &cursorY);
+	int windowHeight;
+	glfwGetWindowSize(pMainWindow, NULL, &windowHeight);
+	
+	return ScreenToWorld2D((float)cursorX, windowHeight - (float)cursorY);
+}
+
 float Viewport::GetPixelsPerUnit()
 {
-	return camera->frustumScale * viewSizeY * 0.5f;
+	return pCamera->frustumScale * viewSizeY * 0.5f;
 }

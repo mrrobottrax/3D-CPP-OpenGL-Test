@@ -140,6 +140,8 @@ namespace detail
 #		endif
 	{}
 
+#pragma warning( push )
+#pragma warning( disable : 26495 )
 	template <typename T, qualifier Q>
 #	ifdef GLM_FORCE_QUAT_DATA_XYZW
 	GLM_FUNC_QUALIFIER GLM_CONSTEXPR qua<T, Q>::qua(T _x, T _y, T _z, T _w)
@@ -149,6 +151,7 @@ namespace detail
 			: w(_w), x(_x), y(_y), z(_z)
 #	endif
 	{}
+#pragma warning( pop )
 
 	// -- Conversion constructors --
 

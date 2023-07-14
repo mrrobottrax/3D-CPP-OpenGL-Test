@@ -6,6 +6,7 @@
 #include <components/cameracomponent.h>
 #include <rendering/rendersystem.h>
 #include <components/freecamcomponent.h>
+#include <components/positioncomponent.h>
 
 enum ViewportMode
 {
@@ -21,10 +22,14 @@ constexpr inline float minGridSize = 0.0000152587890625f;
 inline float baseGridSize = 1;
 
 inline bool glInit = false;
-inline GLuint bgVao;
-inline GLuint bgPositionBufferObject;
+inline GLuint gridVao;
+inline GLuint gridShaderProgram;
+inline GLuint gridPositionBufferObject;
+inline GLuint gridColorUnif;
+inline GLuint gridSizeUnif;
+inline GLuint gridOffsetUnif;
 
-constexpr inline float quadArray[] = {
+const inline float quadArray[] = {
 	-1, -1, 1,
 	 1,  1, 1,
 	-1,  1, 1,
@@ -51,6 +56,9 @@ public:
 	void MouseCallback(GLFWwindow* pWindow, int button, int action, int mods) override;
 	void MousePosCallback(GLFWwindow* pWindow, double xPos, double yPos) override;
 	void ScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset) override;
+	glm::vec2 Get2DPosition();
+	void Set2DPosition(glm::vec2 position);
+	glm::vec2 ScreenToWorld2D(float x, float y);
 	glm::vec2 GetWorldMousePos2D();
 	float GetPixelsPerUnit();
 
@@ -59,8 +67,9 @@ public:
 
 private:
 	Entity cameraEntity;
-	FreecamComponent* freeCam;
-	CameraComponent* camera;
+	FreecamComponent* pFreeCam;
+	CameraComponent* pCamera;
+	PositionComponent* pPosition;
 	GLint viewPosX;
 	GLint viewPosY;
 	GLsizei viewSizeX;
