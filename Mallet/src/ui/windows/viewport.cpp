@@ -535,20 +535,11 @@ glm::vec2 Viewport::ScreenToWorld2D(float x, float y)
 
 	worldSpace /= pixelsPerUnit;
 
-
+	worldSpace += offset;
 
 	// Because we are using left hand coords, top view up is -Z
 	if (mode == top)
-	{
-		offset.y *= -1;
-		worldSpace += offset;
 		worldSpace.y *= -1;
-
-	}
-	else
-	{
-		worldSpace += offset;
-	}
 
 	return worldSpace;
 }
