@@ -452,13 +452,13 @@ void PhysicsSystem::Update()
 
 	std::vector<CollisionPair> pairs;
 
-	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().Init<RigidBodyComponent>());
+	std::vector<ChunkArchetypeElement*> archetypes = em.FindChunkArchetypesWithComponent(Component().Init<RigidBodyComponent>());
 
-	if (archetypes == nullptr)
+	if (archetypes.size() == 0)
 		return;
 
 	// For each archetype
-	for (std::vector<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
+	for (std::vector<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes.begin(); chunkArchetypeIt != archetypes.end(); ++chunkArchetypeIt)
 	{
 		// For each chunk
 		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
@@ -479,7 +479,7 @@ void PhysicsSystem::Update()
 	// Broad phase ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	// For each archetype
-	for (std::vector<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
+	for (std::vector<ChunkArchetypeElement*>::iterator chunkArchetypeIt = archetypes.begin(); chunkArchetypeIt != archetypes.end(); ++chunkArchetypeIt)
 	{
 		// For each chunk
 		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
@@ -503,7 +503,7 @@ void PhysicsSystem::Update()
 				{
 					++chunkArchetypeIt2;
 
-					if (chunkArchetypeIt2 == archetypes->end())
+					if (chunkArchetypeIt2 == archetypes.end())
 					{
 						break;
 					}
@@ -519,7 +519,7 @@ void PhysicsSystem::Update()
 				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(entity);
 
 				// For each archetype
-				while (chunkArchetypeIt2 != archetypes->end())
+				while (chunkArchetypeIt2 != archetypes.end())
 				{
 					// For each chunk
 					while (pChunk2 != nullptr)
@@ -563,8 +563,6 @@ void PhysicsSystem::Update()
 			}
 		}
 	}
-
-	delete archetypes;
 
 	// Narrow phase  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

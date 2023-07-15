@@ -8,15 +8,15 @@
 
 #include <common/math.h>
 
-void VelocitySystem::UpdatePositions(const std::vector<ChunkArchetypeElement*>* archetypes, const float& deltaTime, bool scaled = true)
+void VelocitySystem::UpdatePositions(const std::vector<ChunkArchetypeElement*>& archetypes, const float& deltaTime, bool scaled = true)
 {
-	if (archetypes == nullptr)
+	if (archetypes.size() == 0)
 		return;
 
 	const EntityManager& em = entityManager;
 
 	// For each archetype
-	for (auto chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
+	for (auto chunkArchetypeIt = archetypes.begin(); chunkArchetypeIt != archetypes.end(); ++chunkArchetypeIt)
 	{
 		// For each chunk
 		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
@@ -54,7 +54,6 @@ void VelocitySystem::Update()
 {
 	EntityManager& em = entityManager;
 
-	const std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().Init<VelocityComponent>());
+	const std::vector<ChunkArchetypeElement*> archetypes = em.FindChunkArchetypesWithComponent(Component().Init<VelocityComponent>());
 	UpdatePositions(archetypes, timeManager.GetFixedDeltaTime());
-	delete archetypes;
 }

@@ -12,5 +12,5 @@ public:
 
 	void Update() override;
 
-	static void UpdatePositions(const std::vector<ChunkArchetypeElement*>* archetypes, const float& deltaTime, bool scaled);
+	static void UpdatePositions(const std::vector<ChunkArchetypeElement*>& archetypes, const float& deltaTime, bool scaled);
 }; inline VelocitySystem velocitySystem;

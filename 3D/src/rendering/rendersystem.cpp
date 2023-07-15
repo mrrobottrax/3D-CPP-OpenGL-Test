@@ -113,8 +113,8 @@ void RenderSystem::DrawBase()
 {
 	EntityManager& em = entityManager;
 
-	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().Init<MeshComponent>());
-	if (archetypes == nullptr)
+	std::vector<ChunkArchetypeElement*> archetypes = em.FindChunkArchetypesWithComponent(Component().Init<MeshComponent>());
+	if (archetypes.size() == 0)
 		return;
 
 	MatrixStack mStack;
@@ -136,7 +136,7 @@ void RenderSystem::DrawBase()
 	glm::mat3 normalMat;
 
 	// For each archetype
-	for (auto chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
+	for (auto chunkArchetypeIt = archetypes.begin(); chunkArchetypeIt != archetypes.end(); ++chunkArchetypeIt)
 	{
 		// For each chunk
 		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
@@ -180,6 +180,4 @@ void RenderSystem::DrawBase()
 	}
 
 	mStack.Pop();
-
-	delete archetypes;
 }

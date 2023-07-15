@@ -70,13 +70,13 @@ void FreecamSystem::Update()
 
 	EntityManager& em = entityManager;
 
-	std::vector<ChunkArchetypeElement*>* archetypes = em.FindChunkArchetypesWithComponent(Component().Init<FreecamComponent>());
+	std::vector<ChunkArchetypeElement*> archetypes = em.FindChunkArchetypesWithComponent(Component().Init<FreecamComponent>());
 
-	if (archetypes == nullptr)
+	if (archetypes.size() == 0)
 		return;
 
 	// For each archetype
-	for (auto chunkArchetypeIt = archetypes->begin(); chunkArchetypeIt != archetypes->end(); ++chunkArchetypeIt)
+	for (auto chunkArchetypeIt = archetypes.begin(); chunkArchetypeIt != archetypes.end(); ++chunkArchetypeIt)
 	{
 		// For each chunk
 		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
@@ -149,6 +149,4 @@ void FreecamSystem::Update()
 			}
 		}
 	}
-
-	delete archetypes;
 }

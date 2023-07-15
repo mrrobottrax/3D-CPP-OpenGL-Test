@@ -178,10 +178,10 @@ ChunkArchetypeElement* EntityManager::FindChunkArchetype(EntityArchetype& archet
 	return nullptr;
 }
 
-std::vector<ChunkArchetypeElement*>* EntityManager::FindChunkArchetypesWithComponent(Component& component)
+std::vector<ChunkArchetypeElement*> EntityManager::FindChunkArchetypesWithComponent(Component& component)
 {
 	// Create vector of pointers
-	std::vector<ChunkArchetypeElement*>* returnList = new std::vector<ChunkArchetypeElement*>();
+	std::vector<ChunkArchetypeElement*> returnList = std::vector<ChunkArchetypeElement*>();
 
 	// Scan through entire linked list
 	bool foundArchetype = false;
@@ -194,7 +194,7 @@ std::vector<ChunkArchetypeElement*>* EntityManager::FindChunkArchetypesWithCompo
 			if (pChunkArchetype->archetype.components[i] == component)
 			{
 				foundArchetype = true;
-				returnList->push_back(pChunkArchetype);
+				returnList.push_back(pChunkArchetype);
 				break;
 			}
 		}
@@ -202,13 +202,7 @@ std::vector<ChunkArchetypeElement*>* EntityManager::FindChunkArchetypesWithCompo
 		pChunkArchetype = pChunkArchetype->pNext;
 	}
 
-	if (foundArchetype)
-	{
-		return returnList;
-	}
-
-	delete returnList;
-	return nullptr;
+	return returnList;
 }
 
 void EntityManager::DeleteAllEntities()
