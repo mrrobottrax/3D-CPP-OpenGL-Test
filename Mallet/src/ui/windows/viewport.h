@@ -1,13 +1,12 @@
 #pragma once
 
-#include <ui/windows/malletwindow.h>
-#include <ui/docking/dockingleaf.h>
 #include <memory/entity.h>
-#include <components/cameracomponent.h>
-#include <rendering/rendersystem.h>
-#include <components/freecamcomponent.h>
+
 #include <components/positioncomponent.h>
-#include <ui/tools/blocktool.h>
+#include <components/freecamcomponent.h>
+#include <components/cameracomponent.h>
+
+#include <ui/docking/dockingleaf.h>
 
 enum ViewportMode
 {
@@ -39,7 +38,6 @@ public:
 	void Draw() override;
 	void Draw2DWireframe();
 	void Draw3DShaded();
-	void DrawBoxTool();
 	void OnResize() override;
 	void OnSelect() override;
 	void OnDeselect() override;
@@ -68,10 +66,7 @@ private:
 	static inline GLuint gridSizeUnif;
 	static inline GLuint gridOffsetUnif;
 
-	static inline GLuint boxVao;
-	static inline GLuint boxPositionBuffer;
-
-private:
+public:
 	Entity cameraEntity;
 	FreecamComponent* pFreeCam;
 	CameraComponent* pCamera;
@@ -84,7 +79,6 @@ private:
 private:
 	void CalculateViewportVars(int, int);
 	void PanButton(int action);
-	void BlockTool(int action);
 	void ZoomIn(float multiplier = 1);
 	void ZoomOut(float multiplier = 1);
 };

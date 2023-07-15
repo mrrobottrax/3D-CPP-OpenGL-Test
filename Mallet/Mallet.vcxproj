@@ -145,6 +145,7 @@
     <ClInclude Include="src\ui\docking\dockingsplit.h" />
     <ClInclude Include="src\ui\docking\dockingtree.h" />
     <ClInclude Include="src\ui\malletuisystem.h" />
+    <ClInclude Include="src\ui\tools\mallettool.h" />
     <ClInclude Include="src\ui\windows\malletwindow.h" />
     <ClInclude Include="src\ui\windows\toolbar.h" />
     <ClInclude Include="src\ui\windows\viewport.h" />

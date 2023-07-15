@@ -1,6 +1,9 @@
 #pragma once
 
-class BlockTool
+#include "mallettool.h"
+#include <ui/windows/viewport.h>
+
+class BlockTool : public MalletTool
 {
 public:
 	static inline bool creatingBlock = false;
@@ -41,4 +44,11 @@ public:
 	};
 
 	static inline float blockPreview[sizeof(blockPreviewTemplate) / sizeof(float)];
+
+	static inline GLuint boxVao;
+	static inline GLuint boxPositionBuffer;
+
+	void Draw(Viewport*) override;
+	void MouseCallback(Viewport*, GLFWwindow* pWindow, int button, int action, int mods) override;
+	void MousePosCallback(Viewport*, GLFWwindow* pWindow, double xPos, double yPos) override;
 };
