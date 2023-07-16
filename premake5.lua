@@ -1,13 +1,26 @@
 workspace "3D"
-	architecture "x64"
 	startproject "Game"
 
 	configurations
 	{
 		"Debug",
 		"Test",
-		"Dist"
+		"Release",
 	}
+
+	platforms
+	{
+		"Win32",
+		"Win64",
+	}
+
+	filter "platforms:Win32"
+		system "Windows"
+		architecture "x86"
+
+	filter "platforms:Win64"
+		system "Windows"
+		architecture "x86_64"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 

@@ -62,13 +62,13 @@ void Manifold::UpdateContacts(const Manifold& manifold)
 {
 	ContactPoint mergedContacts[4];
 
-	for (int i = 0; i < manifold.numContacts; ++i)
+	for (gSize_t i = 0; i < manifold.numContacts; ++i)
 	{
 		const ContactPoint& newContact = manifold.contacts[i];
 
 		// Find matching contact
 		int k = -1;
-		for (int j = 0; j < numContacts; ++j)
+		for (gSize_t j = 0; j < numContacts; ++j)
 		{
 			const ContactPoint& oldContact = contacts[j];
 
@@ -104,7 +104,7 @@ void Manifold::UpdateContacts(const Manifold& manifold)
 
 	*this = manifold;
 
-	for (int i = 0; i < manifold.numContacts; ++i)
+	for (gSize_t i = 0; i < manifold.numContacts; ++i)
 		contacts[i] = mergedContacts[i];
 
 	numContacts = manifold.numContacts;
@@ -189,7 +189,7 @@ void Manifold::PreStep(const CollisionPair& pair)
 		frictionCoefficient = std::sqrtf(rbA.frictionCoefficient * rbB.frictionCoefficient);
 	}
 
-	for (int i = 0; i < numContacts; ++i)
+	for (gSize_t i = 0; i < numContacts; ++i)
 	{
 		ContactPoint& contact = contacts[i];
 
@@ -299,7 +299,7 @@ void PhysicsSystem::ResolveManifolds()
 			const glm::vec3& wA = velocityA.angular;
 			const glm::vec3& wB = velocityB.angular;
 
-			for (int i = 0; i < manifold.numContacts; ++i)
+			for (gSize_t i = 0; i < manifold.numContacts; ++i)
 			{
 				ContactPoint& contact = manifold.contacts[i];
 
@@ -642,7 +642,7 @@ float GetSeperationDepth(gmath::Plane testPlane, const HalfEdgeMesh& hull, const
 	float minSeperation = FLT_MAX;
 
 	// TODO: Find support point by walking up mesh
-	for (int v = 0; v < hull.vertCount; ++v)
+	for (gSize_t v = 0; v < hull.vertCount; ++v)
 	{
 		glm::vec3 point = hull.verts[v].position;
 
@@ -702,7 +702,7 @@ FaceQuery SatFaceTest(const HullCollider& hullA, const glm::vec3& positionA, con
 	FaceQuery query = FaceQuery();
 	query.seperation = -FLT_MAX;
 
-	for (int f = 0; f < hullA.pHull->faceCount; ++f)
+	for (gSize_t f = 0; f < hullA.pHull->faceCount; ++f)
 	{
 		const float& seperation = GetSingleFaceSeperation(hullA.pHull->faces[f], positionA, rotationA, scaleA,
 			hullB, positionB, rotationB, scaleB);
@@ -758,7 +758,7 @@ EdgeQuery SatEdgeTest(const HullCollider& hullA, const glm::vec3& positionA, con
 	query.seperation = -FLT_MAX;
 
 	// Check edge combinations
-	for (int edgeAIndex = 0; edgeAIndex < hullA.pHull->edgeCount; ++edgeAIndex)
+	for (gSize_t edgeAIndex = 0; edgeAIndex < hullA.pHull->edgeCount; ++edgeAIndex)
 	{
 		glm::vec3 edgeATail = hullA.pHull->edges[edgeAIndex].pHalfA->pTail->position;
 		glm::vec3 edgeADir = hullA.pHull->edges[edgeAIndex].pHalfB->pTail->position - edgeATail;
@@ -766,7 +766,7 @@ EdgeQuery SatEdgeTest(const HullCollider& hullA, const glm::vec3& positionA, con
 		edgeATail = rotationA * (edgeATail * scaleA) + positionA;
 		edgeADir = rotationA * (edgeADir * scaleA);
 
-		for (int edgeBIndex = 0; edgeBIndex < hullB.pHull->edgeCount; ++edgeBIndex)
+		for (gSize_t edgeBIndex = 0; edgeBIndex < hullB.pHull->edgeCount; ++edgeBIndex)
 		{
 			glm::vec3 edgeBTail = hullB.pHull->edges[edgeBIndex].pHalfA->pTail->position;
 			glm::vec3 edgeBDir = hullB.pHull->edges[edgeBIndex].pHalfB->pTail->position - edgeBTail;
@@ -921,7 +921,7 @@ heFace& FindIncidentFace(const glm::vec3& normal, const HalfEdgeMesh& hull)
 	heFace* pFace = nullptr;
 	float bestDot = FLT_MAX;
 
-	for (int i = 0; i < hull.faceCount; ++i)
+	for (gSize_t i = 0; i < hull.faceCount; ++i)
 	{
 		const heFace& face = hull.faces[i];
 
@@ -1006,7 +1006,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 #endif // CONTACT_DEBUG
 
 			// Keep vertices behind plane
-			for (int i = 0; i < inBuffer.size(); ++i)
+			for (gSize_t i = 0; i < inBuffer.size(); ++i)
 			{
 				const glm::vec3& point = inBuffer[i].pos;
 				const float dist = glm::dot(point, clipPlane.normal) - clipPlane.dist;
@@ -1064,7 +1064,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	{
 		auto& inBuffer = swapBuffers ? out : in;
 		auto& outBuffer = !swapBuffers ? out : in;
-		for (int i = 0; i < inBuffer.size(); ++i)
+		for (gSize_t i = 0; i < inBuffer.size(); ++i)
 		{
 			SimpleContact& contact = inBuffer[i];
 			const glm::vec3& point = inBuffer[i].pos;
@@ -1086,7 +1086,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	{
 		auto& inBuffer = swapBuffers ? out : in;
 
-		for (int i = 0; i < inBuffer.size(); ++i)
+		for (gSize_t i = 0; i < inBuffer.size(); ++i)
 		{
 			glm::vec3& point = inBuffer[i].pos;
 			const float dist = glm::dot(relativeReferencePlane.normal, point) - relativeReferencePlane.dist;
@@ -1109,7 +1109,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 				const glm::vec3 direction = glm::vec3(1, 1, 1);
 
 				float bestDot = -FLT_MAX;
-				for (int i = 1; i < inBuffer.size(); ++i)
+				for (gSize_t i = 1; i < inBuffer.size(); ++i)
 				{
 					const glm::vec3& point = inBuffer[i].pos;
 					const float dot = glm::dot(point, direction);
@@ -1126,7 +1126,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			int secondPoint = -1;
 			{
 				float bestDist = -FLT_MAX;
-				for (int i = 0; i < inBuffer.size(); ++i)
+				for (gSize_t i = 0; i < inBuffer.size(); ++i)
 				{
 					const glm::vec3& pPoint = inBuffer[i].pos;
 
@@ -1157,7 +1157,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			bool thirdSign = 0;
 			{
 				float bestArea = 0;
-				for (int i = 0; i < inBuffer.size(); ++i)
+				for (gSize_t i = 0; i < inBuffer.size(); ++i)
 				{
 					const glm::vec3& pPoint = inBuffer[i].pos;
 
@@ -1185,7 +1185,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			bool fourthSign = 0;
 			{
 				float bestArea = 0;
-				for (int i = 0; i < inBuffer.size(); ++i)
+				for (gSize_t i = 0; i < inBuffer.size(); ++i)
 				{
 					const glm::vec3& pPoint = inBuffer[i].pos;
 
@@ -1231,8 +1231,8 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	{
 		const auto& inBuffer = swapBuffers ? out : in;
 		{
-			manifold.numContacts = (int)inBuffer.size();
-			for (int i = 0; i < inBuffer.size(); ++i)
+			manifold.numContacts = (gSize_t)inBuffer.size();
+			for (gSize_t i = 0; i < inBuffer.size(); ++i)
 			{
 				manifold.contacts[i].position =	rotationB * inBuffer[i].pos + positionB;
 				manifold.contacts[i].featurePair = inBuffer[i].featurePair;

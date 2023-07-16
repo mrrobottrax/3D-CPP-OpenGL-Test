@@ -78,7 +78,7 @@ struct Manifold
 {
 	float frictionCoefficient = 0;
 
-	unsigned short numContacts = 0;
+	gSize_t numContacts = 0;
 	ContactPoint contacts[4];
 
 	float seperation = 0;

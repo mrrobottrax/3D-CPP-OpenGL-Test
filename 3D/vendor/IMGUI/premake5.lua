@@ -36,12 +36,17 @@ project "IMGUI"
 	}
 
 	filter "system:windows"
-        staticruntime "On"
+        	staticruntime "On"
 		systemversion "latest"
 
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"
+
+	filter "configurations:Test"
+		runtime "Debug"
+		symbols "on"
+		optimize "on"
 
 	filter "configurations:Release"
 		runtime "Release"

@@ -22,6 +22,9 @@
     <Filter Include="physics">
       <UniqueIdentifier>{A823A1AC-1403-2048-1D1B-AB1E897986A9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="rendering">
+      <UniqueIdentifier>{03CFAD0B-6F39-6282-B877-1328242140D7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="systems">
       <UniqueIdentifier>{3D76CBBA-A955-4A56-B26D-D52C1ECCB0B7}</UniqueIdentifier>
     </Filter>
@@ -84,6 +87,9 @@
     <ClInclude Include="src\gl\shaderloader.h">
       <Filter>gl</Filter>
     </ClInclude>
+    <ClInclude Include="src\imgui\imguiload.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
     <ClInclude Include="src\imgui\imguiutil.h">
       <Filter>imgui</Filter>
     </ClInclude>
@@ -136,12 +142,12 @@
       <Filter>physics</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\debugdraw.h">
-      <Filter>systems</Filter>
-    </ClInclude>
-    <ClInclude Include="src\systems\freecamsystem.h">
-      <Filter>systems</Filter>
+      <Filter>rendering</Filter>
     </ClInclude>
     <ClInclude Include="src\rendering\rendersystem.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\systems\freecamsystem.h">
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\systems\system.h">
@@ -151,7 +157,6 @@
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\timemanager.h" />
-    <ClInclude Include="src\imgui\imguiload.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\math.cpp">
@@ -212,12 +217,12 @@
       <Filter>physics</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\debugdraw.cpp">
-      <Filter>systems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\systems\freecamsystem.cpp">
-      <Filter>systems</Filter>
+      <Filter>rendering</Filter>
     </ClCompile>
     <ClCompile Include="src\rendering\rendersystem.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\systems\freecamsystem.cpp">
       <Filter>systems</Filter>
     </ClCompile>
     <ClCompile Include="src\systems\systemmanager.cpp">

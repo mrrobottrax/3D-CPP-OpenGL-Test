@@ -174,7 +174,7 @@ void QuickHull::RePartitionVertices(std::unordered_set<qhFace*> visibleFaces, st
 		const qhFace& face = **it;
 
 		// Parition vertices
-		for (int p = 0; p < face.conflictList.size(); ++p)
+		for (gSize_t p = 0; p < face.conflictList.size(); ++p)
 		{
 			const glm::vec3& point = face.conflictList[p];
 
@@ -187,7 +187,7 @@ void QuickHull::RePartitionVertices(std::unordered_set<qhFace*> visibleFaces, st
 			// Find closest plane
 			float bestDist = FLT_MAX;
 			qhFace* pBestFace = nullptr;
-			for (int i = 0; i < newFaces.size(); ++i)
+			for (gSize_t i = 0; i < newFaces.size(); ++i)
 			{
 				qhFace& conflictFace = *newFaces[i];
 				float dist = SignedDistFromPlane(conflictFace.plane, point);
@@ -240,7 +240,7 @@ bool QuickHull::IsCoplanar(qhFace& a, qhFace& b)
 
 void QuickHull::MergeCoplanar(const std::vector<qhHalfEdge*>& horizon, std::unordered_set<qhFace*>& unvisitedFaces)
 {
-	for (int i = 0; i < horizon.size(); ++i)
+	for (gSize_t i = 0; i < horizon.size(); ++i)
 	{
 		qhHalfEdge* pEdge = horizon[i];
 		qhFace& face1 = *pEdge->pTwin->pFace;
@@ -253,7 +253,7 @@ void QuickHull::MergeCoplanar(const std::vector<qhHalfEdge*>& horizon, std::unor
 
 		// Absorb conflict points
 		// face 1 absorbs face 2 so that continuous face merging works
-		for (int i = 0; i < face2.conflictList.size(); ++i)
+		for (gSize_t i = 0; i < face2.conflictList.size(); ++i)
 			face1.conflictList.push_back(face2.conflictList[i]);
 
 		// Set face references in edges
@@ -655,7 +655,7 @@ void QuickHull::Algorithm(const int vertCount, const glm::vec3* verticesArray, H
 		glm::vec3* pEye = nullptr;
 		{
 			float bestDist = 0;
-			for (int p = 0; p < face.conflictList.size(); ++p)
+			for (gSize_t p = 0; p < face.conflictList.size(); ++p)
 			{
 				glm::vec3& point = face.conflictList[p];
 
@@ -792,7 +792,7 @@ void QuickHull::Algorithm(const int vertCount, const glm::vec3* verticesArray, H
 
 qhHalfEdge* QuickHull::AddEdge()
 {
-	for (int i = 0; i < halfEdgeCount; ++i)
+	for (gSize_t i = 0; i < halfEdgeCount; ++i)
 	{
 		if (halfEdges[i] == qhHalfEdge())
 		{
@@ -805,7 +805,7 @@ qhHalfEdge* QuickHull::AddEdge()
 
 qhVertex* QuickHull::AddVertex()
 {
-	for (int i = 0; i < vertCount; ++i)
+	for (gSize_t i = 0; i < vertCount; ++i)
 	{
 		if (verts[i] == qhVertex())
 		{
@@ -818,7 +818,7 @@ qhVertex* QuickHull::AddVertex()
 
 qhFace* QuickHull::AddFace()
 {
-	for (int i = 0; i < faceCount; ++i)
+	for (gSize_t i = 0; i < faceCount; ++i)
 	{
 		if (faces[i] == qhFace())
 		{
@@ -857,19 +857,19 @@ void QuickHull::AllocateMemory(const int pointCount)
 	this->faceCount *= 2;
 
 	this->halfEdges = new qhHalfEdge[this->halfEdgeCount];
-	for (int i = 0; i < halfEdgeCount; ++i)
+	for (gSize_t i = 0; i < halfEdgeCount; ++i)
 	{
 		this->halfEdges[i] = qhHalfEdge();
 	}
 
 	this->verts = new qhVertex[this->vertCount];
-	for (int i = 0; i < vertCount; ++i)
+	for (gSize_t i = 0; i < vertCount; ++i)
 	{
 		this->verts[i] = qhVertex();
 	}
 
 	this->faces = new qhFace[this->faceCount];
-	for (int i = 0; i < faceCount; ++i)
+	for (gSize_t i = 0; i < faceCount; ++i)
 	{
 		this->faces[i] = qhFace();
 	}
@@ -919,7 +919,7 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 
 	// Move all verts
 	{
-		int i = 0;
+		gSize_t i = 0;
 
 		for (auto it = visitedVertices.begin(); it != visitedVertices.end(); ++it)
 		{
@@ -934,7 +934,7 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 
 	// Move all edges
 	{
-		int i = 0;
+		gSize_t i = 0;
 
 		for (auto it = visitedEdges.begin(); it != visitedEdges.end(); ++it)
 		{
@@ -953,7 +953,7 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 
 	// Move all faces
 	{
-		int i = 0;
+		gSize_t i = 0;
 
 		for (auto it = visitedFaces.begin(); it != visitedFaces.end(); ++it)
 		{
@@ -969,7 +969,7 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 
 	// Update pointers to verts
 	{
-		int i = 0;
+		gSize_t i = 0;
 
 		for (auto it = visitedVertices.begin(); it != visitedVertices.end(); ++it)
 		{
@@ -987,7 +987,7 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 			};
 
 			// Update all pointers to this vert in edges
-			for (int j = 0; j < halfEdgeCount; ++j)
+			for (gSize_t j = 0; j < halfEdgeCount; ++j)
 			{
 				heHalfEdge& edge = edgeArray[j];
 
@@ -1000,7 +1000,7 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 
 	// Update pointers to edges
 	{
-		int i = 0;
+		gSize_t i = 0;
 
 		for (auto it = visitedEdges.begin(); it != visitedEdges.end(); ++it)
 		{
@@ -1018,7 +1018,7 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 			};
 
 			// Update all pointers to this edge in edges
-			for (int j = 0; j < halfEdgeCount; ++j)
+			for (gSize_t j = 0; j < halfEdgeCount; ++j)
 			{
 				heHalfEdge& edge = edgeArray[j];
 
@@ -1028,7 +1028,7 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 			}
 
 			// Update all pointers to this edge in faces
-			for (int j = 0; j < faceCount; ++j)
+			for (gSize_t j = 0; j < faceCount; ++j)
 			{
 				heFace& face = faceArray[j];
 
@@ -1041,7 +1041,7 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 
 	// Update pointers to faces
 	{
-		int i = 0;
+		gSize_t i = 0;
 
 		for (auto it = visitedFaces.begin(); it != visitedFaces.end(); ++it)
 		{
@@ -1059,7 +1059,7 @@ void QuickHull::CopyToMesh(qhFace& startFace, HalfEdgeMesh& dest)
 			};
 
 			// Update all pointers to this face in edges
-			for (int j = 0; j < halfEdgeCount; ++j)
+			for (gSize_t j = 0; j < halfEdgeCount; ++j)
 			{
 				heHalfEdge& edge = edgeArray[j];
 

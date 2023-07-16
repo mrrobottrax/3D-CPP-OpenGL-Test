@@ -8,6 +8,7 @@
 
 #include <common/matrixstack.h>
 #include <gl/glutil.h>
+#include <common/types.h>
 
 void DebugDraw::DrawLine(const float start[3], const float end[3], glm::vec3 color, float time)
 {
@@ -176,7 +177,7 @@ void DebugDraw::DrawLines()
 
 	// Set arrays
 	{
-		int i = 0;
+		gSize_t i = 0;
 		auto it = lines.begin();
 		while (it != lines.end())
 		{

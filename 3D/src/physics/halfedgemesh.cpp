@@ -9,16 +9,16 @@ void HalfEdgeMesh::CreateEdges()
 
 	edges = new heEdge[edgeCount];
 
-	for (int i = 0; i < edgeCount; ++i)
+	for (gSize_t i = 0; i < edgeCount; ++i)
 	{
 		// Get next unused half edge
-		for (int j = 0; j < halfEdgeCount; ++j)
+		for (gSize_t j = 0; j < halfEdgeCount; ++j)
 		{
 			heHalfEdge* pHalfEdge = &halfEdges[j];
 
 			// Check if this half edge has already been added
 			bool used = false;
-			for (int k = 0; k < edgeCount; ++k)
+			for (gSize_t k = 0; k < edgeCount; ++k)
 			{
 				const heEdge& edge = edges[k];
 
@@ -48,7 +48,7 @@ void HalfEdgeMesh::CreateEdges()
 
 void HalfEdgeMesh::Draw(const float& time, const glm::vec3& position, const glm::fquat& rotation, const glm::vec3& scale)
 {
-	for (int i = 0; i < edgeCount; ++i)
+	for (gSize_t i = 0; i < edgeCount; ++i)
 	{
 		const heEdge& edge = edges[i];
 

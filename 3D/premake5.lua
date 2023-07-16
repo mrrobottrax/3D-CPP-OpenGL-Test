@@ -54,10 +54,11 @@ project "3D"
 
 	filter "configurations:Test"
 		defines "DEBUG"
+		symbols "On"
 		optimize "On"
 
 	filter "configurations:Release"
-		defines ""
+		defines "RELEASE"
 		optimize "On"
 
 	filter { "system:windows", "configurations:Debug" }

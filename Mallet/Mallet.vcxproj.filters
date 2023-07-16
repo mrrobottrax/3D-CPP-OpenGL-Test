@@ -10,14 +10,14 @@
     <Filter Include="input">
       <UniqueIdentifier>{B54AA90F-215F-D1C0-EAE0-742056B4CDF1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="tools">
-      <UniqueIdentifier>{36DF7010-A2F3-98C1-6B75-3C21D74895F2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ui">
       <UniqueIdentifier>{C3795900-AF05-880B-18B4-880B045F880B}</UniqueIdentifier>
     </Filter>
     <Filter Include="ui\docking">
       <UniqueIdentifier>{F1EE8A51-DDA6-CC9E-46AE-A5FA3285678F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\tools">
+      <UniqueIdentifier>{A3D4807E-8FA1-DB89-B8BA-C931A4E61018}</UniqueIdentifier>
     </Filter>
     <Filter Include="ui\windows">
       <UniqueIdentifier>{1DCFE1FA-0987-2348-728E-FCA35E65BE38}</UniqueIdentifier>
@@ -38,6 +38,9 @@
     <ClInclude Include="src\ui\docking\dockingleaf.h">
       <Filter>ui\docking</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\docking\dockingnode.h">
+      <Filter>ui\docking</Filter>
+    </ClInclude>
     <ClInclude Include="src\ui\docking\dockingsplit.h">
       <Filter>ui\docking</Filter>
     </ClInclude>
@@ -46,6 +49,12 @@
     </ClInclude>
     <ClInclude Include="src\ui\malletuisystem.h">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\tools\blocktool.h">
+      <Filter>ui\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\tools\mallettool.h">
+      <Filter>ui\tools</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\windows\malletwindow.h">
       <Filter>ui\windows</Filter>
@@ -56,9 +65,6 @@
     <ClInclude Include="src\ui\windows\viewport.h">
       <Filter>ui\windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\docking\dockingnode.h" />
-    <ClInclude Include="src\ui\tools\blocktool.h" />
-    <ClInclude Include="src\ui\tools\mallettool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl\malletglutil.cpp">
@@ -75,6 +81,9 @@
     <ClCompile Include="src\ui\malletuisystem.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\tools\blocktool.cpp">
+      <Filter>ui\tools</Filter>
+    </ClCompile>
     <ClCompile Include="src\ui\windows\malletwindow.cpp">
       <Filter>ui\windows</Filter>
     </ClCompile>
@@ -84,6 +93,5 @@
     <ClCompile Include="src\ui\windows\viewport.cpp">
       <Filter>ui\windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\tools\blocktool.cpp" />
   </ItemGroup>
 </Project>

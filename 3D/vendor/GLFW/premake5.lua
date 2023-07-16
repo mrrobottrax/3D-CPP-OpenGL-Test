@@ -69,6 +69,11 @@ project "GLFW"
 		runtime "Debug"
 		symbols "on"
 
+	filter "configurations:Test"
+		runtime "Debug"
+		symbols "on"
+		optimize "on"
+
 	filter "configurations:Release"
 		runtime "Release"
 		optimize "on"
