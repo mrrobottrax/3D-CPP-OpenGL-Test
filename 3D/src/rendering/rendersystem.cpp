@@ -113,7 +113,7 @@ void RenderSystem::DrawBase()
 {
 	EntityManager& em = entityManager;
 
-	std::vector<ChunkArchetypeElement*> archetypes = em.FindChunkArchetypesWithComponent(Component().Init<MeshComponent>());
+	const std::vector<ChunkArchetypeElement*> archetypes = em.FindChunkArchetypesWithComponent(Component().Init<MeshComponent>());
 	if (archetypes.size() == 0)
 		return;
 

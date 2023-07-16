@@ -70,7 +70,7 @@ void FreecamSystem::Update()
 
 	EntityManager& em = entityManager;
 
-	std::vector<ChunkArchetypeElement*> archetypes = em.FindChunkArchetypesWithComponent(Component().Init<FreecamComponent>());
+	const std::vector<ChunkArchetypeElement*> archetypes = em.FindChunkArchetypesWithComponent(Component().Init<FreecamComponent>());
 
 	if (archetypes.size() == 0)
 		return;
