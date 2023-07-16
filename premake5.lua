@@ -10,8 +10,8 @@ workspace "3D"
 
 	platforms
 	{
-		"Win32",
 		"Win64",
+		"Win32",
 	}
 
 	filter "platforms:Win32"
