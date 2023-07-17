@@ -3,20 +3,9 @@
 
 #include <components/idcomponent.h>
 
-EntityManager::EntityManager()
-{
-	nextEntityIndex = 0;
-	chunkArchetypeList = nullptr;
-}
-
-EntityManager::~EntityManager()
-{
-	
-}
-
 Entity EntityManager::AddEntity(EntityArchetype& archetype)
 {
-	unsigned short index = 0;
+	gChunkIndex_t indexInChunk = 0;
 
 	// Check if the chunk archetype exists
 	ChunkArchetypeElement* pChunkArchetype = FindChunkArchetype(archetype);
@@ -40,7 +29,7 @@ Entity EntityManager::AddEntity(EntityArchetype& archetype)
 			if (pChunk->numberOfEntities < pChunk->maxEntities)
 			{
 				foundFreeChunk = true;
-				index = pChunk->numberOfEntities;
+				indexInChunk = pChunk->numberOfEntities;
 				break;
 			}
 
@@ -53,22 +42,54 @@ Entity EntityManager::AddEntity(EntityArchetype& archetype)
 		}
 	}
 
-	pChunk->numberOfEntities++;
+	// Get next free index
+	gEntityIndex_t index;
+	const gEntityIndex_t numIndices = static_cast<gEntityIndex_t>(entityIndices.size());
+	if (numberOfEntities >= numIndices)
+	{
+		entityIndices.push_back(numIndices);
+		index = numIndices;
+	}
+	else
+	{
+		index = entityIndices[numberOfEntities];
+	}
 
-	Entity entity(pChunkArchetype->archetype, *pChunk, index);
+	++pChunk->numberOfEntities;
+	++numberOfEntities;
 
-	GetComponent<IdComponent>(entity).index = nextEntityIndex;
-	nextEntityIndex++;
+	// Add pointer to pointer array
+	if (index >= entityPointers.size())
+	{
+		entityPointers.push_back({
+			pChunk,
+			indexInChunk,
+			});
+	}
+	else
+	{
+		entityPointers[index] = {
+			pChunk,
+			indexInChunk,
+		};
+	}
 
-	return entity;
+	EntityPointer p(pChunk, indexInChunk);
+
+	// Set id
+	IdComponent& id = entityManager.GetComponent<IdComponent>(p);
+	id.index = index;
+	++id.version;
+
+	return Entity(index, id.version);
 }
 
 ChunkArchetypeElement* EntityManager::CreateChunkArchetype(EntityArchetype& archetype)
 {
-	unsigned short sizeOfChunkArchetype = sizeof(ChunkArchetypeElement);
+	gSize_t sizeOfChunkArchetype = sizeof(ChunkArchetypeElement);
 
 	// Allocate space for archetype
-	unsigned short arraySize = archetype.componentCount * sizeof(Component);
+	gSize_t arraySize = archetype.componentCount * sizeof(Component);
 
 	if (arraySize <= 0)
 	{
@@ -76,7 +97,7 @@ ChunkArchetypeElement* EntityManager::CreateChunkArchetype(EntityArchetype& arch
 		return nullptr;
 	}
 
-	unsigned short size = sizeOfChunkArchetype + arraySize;
+	gSize_t size = sizeOfChunkArchetype + arraySize;
 	ChunkArchetypeElement* pElement = (ChunkArchetypeElement*)(malloc(size));
 
 	if (pElement == nullptr)
@@ -124,16 +145,18 @@ Chunk* EntityManager::CreateChunk(ChunkArchetypeElement& chunkArchetype)
 {
 	Chunk* pChunk = (Chunk*)(malloc(chunkSize));
 
+	assert(("Failed to allocate chunk.", pChunk != nullptr));
+
 	if (pChunk == nullptr)
-	{
-		std::cout << "Failed to allocate chunk.";
 		return nullptr;
-	}
+
+	memset(pChunk, 0, chunkSize);
 
 	pChunk->numberOfEntities = 0;
 	pChunk->pNext = nullptr;
+	pChunk->pChunkArchetype = &chunkArchetype;
 
-	const unsigned short freeSpace = chunkSize - sizeof(*pChunk);
+	constexpr gSize_t freeSpace = chunkSize - sizeof(*pChunk);
 	pChunk->maxEntities = freeSpace / chunkArchetype.archetype.entitySize;
 
 	// First chunk in archetype
@@ -189,7 +212,7 @@ std::vector<ChunkArchetypeElement*> EntityManager::FindChunkArchetypesWithCompon
 	while (pChunkArchetype != nullptr)
 	{
 		// Check if this archetype contains this component
-		for (int i = 0; i < pChunkArchetype->archetype.componentCount; i++)
+		for (gSize_t i = 0; i < pChunkArchetype->archetype.componentCount; i++)
 		{
 			if (pChunkArchetype->archetype.components[i] == component)
 			{
@@ -217,7 +240,7 @@ void EntityManager::DeleteAllEntities()
 	{
 #ifdef DEBUG
 		std::cout << "Deleting chunk archetype of: ";
-		for (int i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
+		for (gSize_t i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
 		{
 			std::cout << (i != 0 ? ", " : "") << chunkArchetypeList->archetype.components[i].name;
 		}

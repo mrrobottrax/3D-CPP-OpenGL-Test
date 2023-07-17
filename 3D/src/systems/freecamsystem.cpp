@@ -82,14 +82,14 @@ void FreecamSystem::Update()
 		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
 		{
 			// For each entity
-			for (unsigned short i = 0; i < pChunk->numberOfEntities; i++)
+			for (gSize_t i = 0; i < pChunk->numberOfEntities; i++)
 			{
-				Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
-				FreecamComponent&			freeCam	 = em.GetComponent<FreecamComponent>(entity);
-				CameraComponent&			cam		 = em.GetComponent<CameraComponent>(entity);
-				UnscaledVelocityComponent&	velocity = em.GetComponent<UnscaledVelocityComponent>(entity);
-				RotationComponent&			rotation = em.GetComponent<RotationComponent>(entity);
-				PositionComponent&			position = em.GetComponent<PositionComponent>(entity);
+				EntityPointer p = EntityPointer(pChunk, i);
+				FreecamComponent&			freeCam	 = em.GetComponent<FreecamComponent>(p);
+				CameraComponent&			cam		 = em.GetComponent<CameraComponent>(p);
+				UnscaledVelocityComponent&	velocity = em.GetComponent<UnscaledVelocityComponent>(p);
+				RotationComponent&			rotation = em.GetComponent<RotationComponent>(p);
+				PositionComponent&			position = em.GetComponent<PositionComponent>(p);
 
 				if (!freeCam.enabled)
 				{

@@ -22,20 +22,20 @@ void VelocitySystem::UpdatePositions(const std::vector<ChunkArchetypeElement*>& 
 		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
 		{
 			// For each entity
-			for (unsigned short i = 0; i < pChunk->numberOfEntities; i++)
+			for (gSize_t i = 0; i < pChunk->numberOfEntities; i++)
 			{
-				Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
-				PositionComponent& position = em.GetComponent<PositionComponent>(entity);
-				RotationComponent& rotation = em.GetComponent<RotationComponent>(entity);
+				const EntityPointer p(pChunk, i);
+				PositionComponent& position = em.GetComponent<PositionComponent>(p);
+				RotationComponent& rotation = em.GetComponent<RotationComponent>(p);
 
 				VelocityComponent* pVelocity;
 				if (scaled)
 				{
-					pVelocity = em.GetComponentP<VelocityComponent>(entity);
+					pVelocity = em.GetComponentP<VelocityComponent>(p);
 				}
 				else
 				{
-					pVelocity = &em.GetComponentP<UnscaledVelocityComponent>(entity)->velocity;
+					pVelocity = &em.GetComponentP<UnscaledVelocityComponent>(p)->velocity;
 				}
 
 				VelocityComponent& velocity = *pVelocity;

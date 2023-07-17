@@ -464,13 +464,13 @@ void PhysicsSystem::Update()
 		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
 		{
 			// For each entity
-			for (unsigned int i = 0; i < pChunk->numberOfEntities; i++)
+			for (gSize_t i = 0; i < pChunk->numberOfEntities; i++)
 			{
-				const Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
+				const EntityPointer p = EntityPointer(pChunk, i);
 
 				// Gravity
-				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(entity);
-				VelocityComponent& vel = em.GetComponent<VelocityComponent>(entity);
+				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(p);
+				VelocityComponent& vel = em.GetComponent<VelocityComponent>(p);
 				vel.linear.y += rb.gravityScale * gravity * timeManager.GetFixedDeltaTime();
 			}
 		}
@@ -485,7 +485,7 @@ void PhysicsSystem::Update()
 		for (Chunk* pChunk = (*chunkArchetypeIt)->pFirstChunk; pChunk != nullptr; pChunk = pChunk->pNext)
 		{
 			// For each entity
-			for (unsigned int i = 0; i < pChunk->numberOfEntities; i++)
+			for (gSize_t i = 0; i < pChunk->numberOfEntities; i++)
 			{
 				// Check broad phase collision with all entities after this one
 
@@ -515,8 +515,11 @@ void PhysicsSystem::Update()
 					pChunk2 = chunkComplete ? pChunk->pNext : pChunk;
 				}
 
-				const Entity entity((*chunkArchetypeIt)->archetype, *pChunk, i);
-				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(entity);
+				const EntityPointer p = EntityPointer(pChunk, i);
+
+				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(p);
+				const IdComponent& id = em.GetComponent<IdComponent>(p);
+				const MassComponent& massA = em.GetComponent<MassComponent>(p);
 
 				// For each archetype
 				while (chunkArchetypeIt2 != archetypes.end())
@@ -525,16 +528,13 @@ void PhysicsSystem::Update()
 					while (pChunk2 != nullptr)
 					{
 						// For each entity
-						for (unsigned short i2 = archetypeComplete || chunkComplete ? 0 : i + 1; i2 < pChunk2->numberOfEntities; i2++)
+						for (gSize_t i2 = archetypeComplete || chunkComplete ? 0 : i + 1; i2 < pChunk2->numberOfEntities; i2++)
 						{
-							const Entity entity2((*chunkArchetypeIt2)->archetype, *pChunk2, i2);
-							RigidBodyComponent& rb2 = em.GetComponent<RigidBodyComponent>(entity2);
+							const EntityPointer p2 = EntityPointer(pChunk2, i2);
 
-							IdComponent& id = em.GetComponent<IdComponent>(entity);
-							IdComponent& id2 = em.GetComponent<IdComponent>(entity2);
-
-							const MassComponent& massA = em.GetComponent<MassComponent>(entity);
-							const MassComponent& massB = em.GetComponent<MassComponent>(entity2);
+							RigidBodyComponent& rb2 = em.GetComponent<RigidBodyComponent>(p2);
+							const IdComponent& id2 = em.GetComponent<IdComponent>(p2);
+							const MassComponent& massB = em.GetComponent<MassComponent>(p2);
 
 							// No need to check for collisions when both are static
 							if ((rb.isStatic || rb.sleepTimer <= 0) && (rb2.isStatic || rb2.sleepTimer <= 0))
@@ -551,7 +551,7 @@ void PhysicsSystem::Update()
 
 							// TODO: Test against AABB tree
 
-							CollisionPair pair(entity, entity2);
+							CollisionPair pair(Entity(id.index, id.version), Entity(id2.index, id2.version));
 							pairs.push_back(pair);
 						}
 

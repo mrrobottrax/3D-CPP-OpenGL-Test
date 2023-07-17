@@ -189,9 +189,6 @@
     <ClCompile Include="src\memory\component.cpp">
       <Filter>memory</Filter>
     </ClCompile>
-    <ClCompile Include="src\memory\entity.cpp">
-      <Filter>memory</Filter>
-    </ClCompile>
     <ClCompile Include="src\memory\entityarchetype.cpp">
       <Filter>memory</Filter>
     </ClCompile>

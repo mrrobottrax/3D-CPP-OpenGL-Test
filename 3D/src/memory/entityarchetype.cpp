@@ -1,27 +1,26 @@
 #include "pch.h"
 #include "entityArchetype.h"
 
-EntityArchetype::EntityArchetype(unsigned short componentCount, Component* components)
+EntityArchetype::EntityArchetype(gSize_t componentCount, Component* components)
 {
-	EntityArchetype::componentCount = componentCount;
-	EntityArchetype::components = components;
+	this->componentCount = componentCount;
+	this->components = components;
 
 	// Calculate size
-	unsigned short size = 0;
-	unsigned short offset = 0;
-	for (int i = 0; i < componentCount; ++i)
+	gSize_t offset = 0;
+	for (gSize_t i = 0; i < componentCount; ++i)
 	{
-		components[i].offset = size;
-		size += components[i].size;
+		components[i].offset = offset;
+		offset += components[i].size;
 	}
 
-	EntityArchetype::entitySize = size;
+	this->entitySize = offset;
 }
 
 int EntityArchetype::GetComponentOffset(Component& component)
 {
 	// Scan through component list
-	for (int i = 0; i < componentCount; ++i)
+	for (gSize_t i = 0; i < componentCount; ++i)
 	{
 		if (components[i] == component)
 		{

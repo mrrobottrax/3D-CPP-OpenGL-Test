@@ -2,29 +2,34 @@
 #include "chunk.h"
 #include "entityarchetype.h"
 
+typedef unsigned short gEntityIndex_t;
+
 struct Entity
 {
-	EntityArchetype* pArchetype;
-	Chunk* pChunk;
-	unsigned short index;
+	gEntityIndex_t index;
+	gEntityIndex_t version;
 
-	Entity(EntityArchetype& archetype, Chunk& chunk, unsigned short index);
-	Entity();
+	Entity(const gEntityIndex_t& index, const gEntityIndex_t& version)
+		: index(index), version(version)
+	{};
 
-	inline bool operator < (const Entity& other) const
+	Entity() : index(), version()
+	{};
+
+	inline bool constexpr operator < (const Entity& other) const
 	{
-		if (pChunk < other.pChunk)
+		if (index < other.index)
 			return true;
 
-		if (pChunk == other.pChunk && index < other.index)
+		if (index == other.index && version < other.version)
 			return true;
 
 		return false;
 	}
 
-	inline bool operator == (const Entity& other) const
+	inline bool constexpr operator == (const Entity& other) const
 	{
-		if (pChunk == other.pChunk && index == other.index)
+		if (index == other.index && version == other.version)
 			return true;
 
 		return false;

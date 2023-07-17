@@ -1,5 +1,7 @@
 #pragma once
 
+#include <common/types.h>
+
 struct Component
 {
 	Component();
@@ -7,8 +9,8 @@ struct Component
 	template <class T>
 	Component& Init();
 
-	unsigned short size;
-	unsigned short offset;
+	gSize_t size;
+	gSize_t offset;
 	size_t hash;
 
 #ifdef DEBUG

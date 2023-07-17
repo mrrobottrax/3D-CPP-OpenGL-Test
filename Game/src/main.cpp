@@ -155,6 +155,7 @@ void Init()
 		modelLoader::LoadModel(testMesh, "../data/models/teapot.glb");
 		em.GetComponent<MeshComponent>(entity) = { &testMesh };
 	}
+	// Create boxes
 	{
 		modelLoader::LoadModel(boxMesh, "../data/models/box.glb");
 		Component components[] = {
@@ -188,7 +189,7 @@ void Init()
 			qh.Algorithm(8, vertices, boxHull);
 		}
 
-		// Create box 1
+		// Create floor box
 		{
 			Entity entity = em.AddEntity(boxArchetype);
 			em.GetComponent<PositionComponent>(entity) = { 0, -10, -5 };
@@ -203,7 +204,7 @@ void Init()
 			PhysicsSystem::ComputeInertia(entity);
 			em.GetComponent<MassComponent>(entity).SetMass(INFINITY);
 		}
-		// Create box 2
+		// Create stack boxes
 		for (int i = 0; i < 6; ++i)
 		{
 			Entity entity = em.AddEntity(boxArchetype);
@@ -219,6 +220,7 @@ void Init()
 			PhysicsSystem::ComputeInertia(entity);
 			em.GetComponent<MassComponent>(entity).SetMass(1);
 		}
+		// Create throw box
 		{
 			Entity entity = em.AddEntity(boxArchetype);
 			em.GetComponent<PositionComponent>(entity) = { 1, 1, -5 };
