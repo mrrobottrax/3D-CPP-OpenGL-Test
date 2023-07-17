@@ -6,8 +6,8 @@ class ChunkArchetypeElement;
 
 struct Chunk
 {
+	Chunk* pPrev;
 	Chunk* pNext;
 	ChunkArchetypeElement* pChunkArchetype;
 	gSize_t numberOfEntities;
-	gSize_t maxEntities;
 };

@@ -115,11 +115,11 @@ struct Manifold
 #endif // PHYS_DEBUG
 #endif // DEBUG
 
-constexpr int numIterations = 10;
+constexpr int numIterations = 6;
 constexpr float gravity = -9.81f;
 constexpr float slop = 0.01f;
 constexpr float correctionPercent = 0.35f;
-constexpr float sleepTime = 0.5f;
+constexpr float sleepTime = 0.1f;
 constexpr float velEpsilonLinear = 0.1f;
 constexpr float velEpsilonAngular = 0.1f;
 

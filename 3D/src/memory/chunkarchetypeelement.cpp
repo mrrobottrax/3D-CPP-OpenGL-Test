@@ -1,31 +1,31 @@
 #include "pch.h"
 #include "chunkarchetypeelement.h"
 
-ChunkArchetypeElement::ChunkArchetypeElement()
-{
-	pNext = nullptr;
-	pFirstChunk = nullptr;
-}
-
 ChunkArchetypeElement::~ChunkArchetypeElement()
 {
 	if (pFirstChunk == nullptr)
 		return;
 
-	Chunk* pChunk = pFirstChunk;
-
 	// Delete all chunks
-	Chunk* pNextChunk = pChunk->pNext;
-	while (pChunk != nullptr)
+	while (pFirstChunk)
 	{
-		pNextChunk = pChunk->pNext;
+		DeleteChunk(pFirstChunk);
+	}
+}
 
+void ChunkArchetypeElement::DeleteChunk(Chunk* pChunk)
+{
 #ifdef DEBUG
-		std::cout << "	Deleting chunk.		Entities: " << pChunk->numberOfEntities << "\n";
+	std::cout << "	Deleting chunk.		Entities: " << pChunk->numberOfEntities << "\n";
 #endif //DEBUG
 
-		free(pChunk);
+	if (pChunk->pPrev)
+		pChunk->pPrev->pNext = pChunk->pNext;
+	else
+		pFirstChunk = pChunk->pNext;
 
-		pChunk = pNextChunk;
-	}
+	if (pChunk->pNext)
+		pChunk->pNext->pPrev = pChunk->pPrev;
+
+	free(pChunk);
 }

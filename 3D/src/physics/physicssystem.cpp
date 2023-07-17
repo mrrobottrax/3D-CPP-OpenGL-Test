@@ -569,11 +569,11 @@ void PhysicsSystem::Update()
 	// For each collision pair
 	for (auto pairsIt = pairs.begin(); pairsIt != pairs.end(); ++pairsIt)
 	{
-		Entity entityA = (*pairsIt).entityA;
-		Entity entityB = (*pairsIt).entityB;
+		const Entity entityA = (*pairsIt).entityA;
+		const Entity entityB = (*pairsIt).entityB;
 
-		RigidBodyComponent& rbA = entityManager.GetComponent<RigidBodyComponent>(entityA);
-		RigidBodyComponent& rbB = entityManager.GetComponent<RigidBodyComponent>(entityB);
+		const RigidBodyComponent& rbA = entityManager.GetComponent<RigidBodyComponent>(entityA);
+		const RigidBodyComponent& rbB = entityManager.GetComponent<RigidBodyComponent>(entityB);
 
 		Manifold manifold;
 

@@ -6,11 +6,17 @@
 class ChunkArchetypeElement
 {
 public:
-	ChunkArchetypeElement();
+	ChunkArchetypeElement() : pPrev(), pNext(), pFirstChunk(), maxEntities()
+	{};
+
 	~ChunkArchetypeElement();
 
+	ChunkArchetypeElement* pPrev;
 	ChunkArchetypeElement* pNext;
 	Chunk* pFirstChunk;
+	gSize_t maxEntities;
 
 	EntityArchetype archetype;
+
+	void DeleteChunk(Chunk* pChunk);
 };

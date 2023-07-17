@@ -59,13 +59,20 @@ public:
 	ChunkArchetypeElement* FindChunkArchetype(EntityArchetype&);
 	std::vector<ChunkArchetypeElement*> FindChunkArchetypesWithComponent(Component&);
 
-	inline const EntityPointer& GetPointerAtIndex(gEntityIndex_t index) const
+	inline const bool EntityExists(const Entity& entity) const
 	{
-		assert(("Tried to get pointer to non-existant entity", index < entityTable.size()));
-		return entityTable[index].p;
+		return (entity.index < entityTable.size()
+			&& entity.version == entityTable[entity.index].version);
+	};
+
+	inline const EntityPointer GetEntityPointer(const Entity& entity) const
+	{
+		assert(("Tried to get pointer to non-existant entity", EntityExists(entity)));
+		return entityTable[entity.index].p;
 	};
 
 	void DeleteEntity(const Entity&);
+	void DeleteChunkArchetype(ChunkArchetypeElement*);
 	void DeleteAllEntities();
 
 private:
@@ -83,7 +90,7 @@ inline T* EntityManager::GetComponentP(const EntityPointer& p) const
 	if (offset < 0)
 		return nullptr;
 
-	T* pTComponentStream = (T*)(pComponentStream + static_cast<size_t>(p.pChunk->maxEntities) * offset);
+	T* pTComponentStream = (T*)(pComponentStream + static_cast<size_t>(p.pChunk->pChunkArchetype->maxEntities) * offset);
 	T* pT = (pTComponentStream + p.indexInChunk);
 	return pT;
 }
@@ -97,7 +104,7 @@ inline T& EntityManager::GetComponent(const EntityPointer& p) const
 
 	assert(("Tried to get reference to component not attached to entity!", offset >= 0));
 
-	T* pTComponentStream = (T*)(pComponentStream + static_cast<size_t>(p.pChunk->maxEntities) * offset);
+	T* pTComponentStream = (T*)(pComponentStream + static_cast<size_t>(p.pChunk->pChunkArchetype->maxEntities) * offset);
 	T& r = *(pTComponentStream + p.indexInChunk);
 	return r;
 }
@@ -105,7 +112,7 @@ inline T& EntityManager::GetComponent(const EntityPointer& p) const
 template <class T>
 inline T* EntityManager::GetComponentP(const Entity& entity) const
 {
-	const EntityPointer& p = entityManager.GetPointerAtIndex(entity.index);
+	const EntityPointer p = entityManager.GetEntityPointer(entity);
 
 	// Get pointer to component stream
 	char* pComponentStream = (char*)(p.pChunk + 1);
@@ -114,7 +121,7 @@ inline T* EntityManager::GetComponentP(const Entity& entity) const
 	if (offset < 0)
 		return nullptr;
 
-	T* pTComponentStream = (T*)(pComponentStream + static_cast<size_t>(p.pChunk->maxEntities) * offset);
+	T* pTComponentStream = (T*)(pComponentStream + static_cast<size_t>(p.pChunk->pChunkArchetype->maxEntities) * offset);
 	T* pT = (pTComponentStream + p.indexInChunk);
 	return pT;
 }
@@ -122,7 +129,7 @@ inline T* EntityManager::GetComponentP(const Entity& entity) const
 template <class T>
 inline T& EntityManager::GetComponent(const Entity& entity) const
 {
-	const EntityPointer& p = entityManager.GetPointerAtIndex(entity.index);
+	const EntityPointer p = entityManager.GetEntityPointer(entity);
 
 	// Get pointer to component stream
 	char* pComponentStream = (char*)(p.pChunk + 1);
@@ -130,7 +137,7 @@ inline T& EntityManager::GetComponent(const Entity& entity) const
 
 	assert(("Tried to get reference to component not attached to entity!", offset >= 0));
 
-	T* pTComponentStream = (T*)(pComponentStream + static_cast<size_t>(p.pChunk->maxEntities) * offset);
+	T* pTComponentStream = (T*)(pComponentStream + static_cast<size_t>(p.pChunk->pChunkArchetype->maxEntities) * offset);
 	T& r = *(pTComponentStream + p.indexInChunk);
 	return r;
 }

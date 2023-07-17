@@ -26,7 +26,7 @@ Entity EntityManager::AddEntity(EntityArchetype& archetype)
 		bool foundFreeChunk = false;
 		while (pChunk != nullptr)
 		{
-			if (pChunk->numberOfEntities < pChunk->maxEntities)
+			if (pChunk->numberOfEntities < pChunk->pChunkArchetype->maxEntities)
 			{
 				foundFreeChunk = true;
 				indexInChunk = pChunk->numberOfEntities;
@@ -80,10 +80,10 @@ Entity EntityManager::AddEntity(EntityArchetype& archetype)
 
 ChunkArchetypeElement* EntityManager::CreateChunkArchetype(EntityArchetype& archetype)
 {
-	gSize_t sizeOfChunkArchetype = sizeof(ChunkArchetypeElement);
+	const gSize_t sizeOfChunkArchetype = sizeof(ChunkArchetypeElement);
 
 	// Allocate space for archetype
-	gSize_t arraySize = archetype.componentCount * sizeof(Component);
+	const gSize_t arraySize = archetype.componentCount * sizeof(Component);
 
 	if (arraySize <= 0)
 	{
@@ -91,15 +91,17 @@ ChunkArchetypeElement* EntityManager::CreateChunkArchetype(EntityArchetype& arch
 		return nullptr;
 	}
 
-	gSize_t size = sizeOfChunkArchetype + arraySize;
+	const gSize_t size = sizeOfChunkArchetype + arraySize;
 	ChunkArchetypeElement* pElement = (ChunkArchetypeElement*)(malloc(size));
 
 	if (pElement == nullptr)
 		return nullptr;
 
-	pElement->pNext = nullptr;
 	pElement->pFirstChunk = nullptr;
 	pElement->archetype = archetype;
+
+	constexpr gSize_t freeSpace = chunkSize - sizeof(Chunk);
+	pElement->maxEntities = freeSpace / archetype.entitySize;
 
 	// Get memory location of the archetype components array
 	Component* componentsArray = (Component*)(pElement + 1);
@@ -107,15 +109,12 @@ ChunkArchetypeElement* EntityManager::CreateChunkArchetype(EntityArchetype& arch
 
 	pElement->archetype.components = componentsArray;
 
-	// First element in list
-	if (chunkArchetypeList == nullptr)
-	{
-		chunkArchetypeList = pElement;
-		return pElement;
-	}
-
-	// Get last element
+	// Add to front
+	pElement->pPrev = nullptr;
 	pElement->pNext = chunkArchetypeList;
+	if (pElement->pNext)
+		pElement->pNext->pPrev = pElement;
+
 	chunkArchetypeList = pElement;
 
 	return pElement;
@@ -144,23 +143,17 @@ Chunk* EntityManager::CreateChunk(ChunkArchetypeElement& chunkArchetype)
 	if (pChunk == nullptr)
 		return nullptr;
 
-	memset(pChunk, 0, chunkSize);
+	//memset(pChunk, 0, chunkSize);
 
 	pChunk->numberOfEntities = 0;
-	pChunk->pNext = nullptr;
 	pChunk->pChunkArchetype = &chunkArchetype;
 
-	constexpr gSize_t freeSpace = chunkSize - sizeof(*pChunk);
-	pChunk->maxEntities = freeSpace / chunkArchetype.archetype.entitySize;
-
-	// First chunk in archetype
-	if (chunkArchetype.pFirstChunk == nullptr)
-	{
-		chunkArchetype.pFirstChunk = pChunk;
-		return pChunk;
-	}
-
+	// Add to front of list
+	pChunk->pPrev = nullptr;
 	pChunk->pNext = chunkArchetype.pFirstChunk;
+	if (pChunk->pNext)
+		pChunk->pNext->pPrev = pChunk;
+
 	chunkArchetype.pFirstChunk = pChunk;
 
 	return pChunk;
@@ -222,13 +215,23 @@ std::vector<ChunkArchetypeElement*> EntityManager::FindChunkArchetypesWithCompon
 	return returnList;
 }
 
-void EntityManager::DeleteEntity(const Entity&)
+void EntityManager::DeleteEntity(const Entity& entity)
 {
 	// Check if only entity in chunk
 		// Delete chunk
 		// Check if only chunk in chunk archetype, if so delete archetype
 	// else
 		// Copy last entity in the chunk to old position
+
+	EntityPointer p = GetEntityPointer(entity);
+	if (p.pChunk->numberOfEntities <= 1)
+	{
+		
+	}
+	else
+	{
+
+	}
 
 	// Check if index value == entityPointers.size() + 1
 		// entityPointers.pop_back();
@@ -239,28 +242,37 @@ void EntityManager::DeleteEntity(const Entity&)
 		// Swap last index (defined by numberOfEntities) with old position
 }
 
+void EntityManager::DeleteChunkArchetype(ChunkArchetypeElement* pArchetype)
+{
+#ifdef DEBUG
+	std::cout << "Deleting chunk archetype of: ";
+	for (gSize_t i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
+	{
+		std::cout << (i != 0 ? ", " : "") << chunkArchetypeList->archetype.components[i].name;
+	}
+	std::cout << "\n";
+#endif // DEBUG
+
+	// Link around deleted element
+	if (pArchetype->pPrev)
+		pArchetype->pPrev->pNext = pArchetype->pNext;
+	else
+		chunkArchetypeList = pArchetype->pNext;
+
+	if (pArchetype->pNext)
+		pArchetype->pNext->pPrev = pArchetype->pPrev;
+
+	delete pArchetype;
+}
+
 void EntityManager::DeleteAllEntities()
 {
-	// Empty list
 	if (chunkArchetypeList == nullptr)
 		return;
 
 	// Delete each chunk archetype element
-	ChunkArchetypeElement* pElementToDelete;
 	while (chunkArchetypeList != nullptr)
 	{
-#ifdef DEBUG
-		std::cout << "Deleting chunk archetype of: ";
-		for (gSize_t i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
-		{
-			std::cout << (i != 0 ? ", " : "") << chunkArchetypeList->archetype.components[i].name;
-		}
-		std::cout << "\n";
-#endif // DEBUG
-
-		pElementToDelete = chunkArchetypeList;
-		chunkArchetypeList = chunkArchetypeList->pNext;
-
-		delete pElementToDelete;
+		DeleteChunkArchetype(chunkArchetypeList);
 	}
 }
