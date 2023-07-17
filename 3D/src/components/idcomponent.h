@@ -2,6 +2,6 @@
 
 struct IdComponent
 {
-	unsigned int index;
-	unsigned int version;
+	gEntityIndex_t index;
+	gEntityIndex_t version;
 };

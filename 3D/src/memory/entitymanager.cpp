@@ -59,19 +59,13 @@ Entity EntityManager::AddEntity(EntityArchetype& archetype)
 	++numberOfEntities;
 
 	// Add pointer to pointer array
-	if (index >= entityPointers.size())
+	if (index >= entityTable.size())
 	{
-		entityPointers.push_back({
-			pChunk,
-			indexInChunk,
-			});
+		entityTable.push_back(TableEntry(EntityPointer(pChunk, indexInChunk)));
 	}
 	else
 	{
-		entityPointers[index] = {
-			pChunk,
-			indexInChunk,
-		};
+		entityTable[index] = EntityPointer(pChunk, indexInChunk);
 	}
 
 	EntityPointer p(pChunk, indexInChunk);
@@ -79,7 +73,7 @@ Entity EntityManager::AddEntity(EntityArchetype& archetype)
 	// Set id
 	IdComponent& id = entityManager.GetComponent<IdComponent>(p);
 	id.index = index;
-	++id.version;
+	id.version = ++entityTable[index].version;
 
 	return Entity(index, id.version);
 }
@@ -226,6 +220,23 @@ std::vector<ChunkArchetypeElement*> EntityManager::FindChunkArchetypesWithCompon
 	}
 
 	return returnList;
+}
+
+void EntityManager::DeleteEntity(const Entity&)
+{
+	// Check if only entity in chunk
+		// Delete chunk
+		// Check if only chunk in chunk archetype, if so delete archetype
+	// else
+		// Copy last entity in the chunk to old position
+
+	// Check if index value == entityPointers.size() + 1
+		// entityPointers.pop_back();
+
+	// Check if index is last (defined by numberOfEntities)
+		// entityIndices.pop_back();
+	// else
+		// Swap last index (defined by numberOfEntities) with old position
 }
 
 void EntityManager::DeleteAllEntities()

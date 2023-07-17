@@ -18,13 +18,20 @@ struct EntityPointer
 	gEntityIndex_t indexInChunk;
 };
 
+struct TableEntry
+{
+	TableEntry(const EntityPointer& p)
+		: p(p), version(0)
+	{};
+
+	EntityPointer p;
+	gEntityIndex_t version;
+};
+
 class EntityManager
 {
-private:
-	static std::mutex mutex;
-
 public:
-	EntityManager() : entityIndices(), entityPointers(), numberOfEntities(),
+	EntityManager() : entityIndices(), entityTable(), numberOfEntities(),
 		chunkArchetypeList()
 	{};
 
@@ -33,7 +40,7 @@ public:
 
 	gEntityIndex_t numberOfEntities;
 	std::vector<gEntityIndex_t> entityIndices;
-	std::vector<EntityPointer> entityPointers;
+	std::vector<TableEntry> entityTable;
 
 	template <class T>
 	T* GetComponentP(const EntityPointer&) const;
@@ -54,14 +61,16 @@ public:
 
 	inline const EntityPointer& GetPointerAtIndex(gEntityIndex_t index) const
 	{
-		assert(("Tried to get pointer to non-existant entity", index < entityPointers.size()));
-		return entityPointers[index];
+		assert(("Tried to get pointer to non-existant entity", index < entityTable.size()));
+		return entityTable[index].p;
 	};
 
+	void DeleteEntity(const Entity&);
 	void DeleteAllEntities();
 
 private:
 	ChunkArchetypeElement* chunkArchetypeList;
+
 }; inline EntityManager entityManager;
 
 template <class T>
