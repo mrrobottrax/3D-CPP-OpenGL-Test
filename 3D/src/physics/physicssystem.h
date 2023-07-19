@@ -103,12 +103,12 @@ struct Manifold
 
 #ifdef DEBUG
 
-#define PHYS_DEBUG
+//#define PHYS_DEBUG
 
 #ifdef PHYS_DEBUG
 
 //#define SAT_DEBUG
-#define CONTACT_DEBUG
+//#define CONTACT_DEBUG
 //#define CONTACT_GEN_DEBUG
 //#define FRICTION_DEBUG
 //#define WARMSTART_DEBUG
