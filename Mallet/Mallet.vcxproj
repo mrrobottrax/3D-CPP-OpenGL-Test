@@ -297,6 +297,7 @@
     <ClInclude Include="src\gl\malletglutil.h" />
     <ClInclude Include="src\input\malletinputlayer.h" />
     <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\malletarchetypes.h" />
     <ClInclude Include="src\malletpch.h" />
     <ClInclude Include="src\ui\docking\dockingleaf.h" />
     <ClInclude Include="src\ui\docking\dockingnode.h" />

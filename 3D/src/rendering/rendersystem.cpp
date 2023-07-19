@@ -150,6 +150,9 @@ void RenderSystem::DrawBase()
 				const RotationComponent& rotation = em.GetComponent<RotationComponent>(p);
 				const ScaleComponent* pScale = em.GetComponentP<ScaleComponent>(p);
 
+				if (!mesh.pMesh)
+					continue;
+
 				mStack.PushCpy();
 				mStack.Translate(position.value);
 				mStack.ApplyMatrix(glm::mat4_cast(rotation.value));

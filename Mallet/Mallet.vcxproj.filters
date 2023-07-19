@@ -65,6 +65,7 @@
     <ClInclude Include="src\ui\windows\viewport.h">
       <Filter>ui\windows</Filter>
     </ClInclude>
+    <ClInclude Include="src\malletarchetypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl\malletglutil.cpp">

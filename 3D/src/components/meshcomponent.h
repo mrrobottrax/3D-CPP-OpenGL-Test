@@ -1,6 +1,6 @@
 #pragma once
 
-#include <meshObject.h>
+#include <meshobject.h>
 
 struct MeshComponent
 {

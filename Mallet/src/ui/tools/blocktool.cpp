@@ -7,6 +7,8 @@
 #include <components/rotationcomponent.h>
 #include <components/positioncomponent.h>
 
+#include <malletarchetypes.h>
+
 void BlockTool::Draw(Viewport* pViewport)
 {
 	if (!creatingBlock)
@@ -154,5 +156,8 @@ void BlockTool::CreateBlock()
 {
 	creatingBlock = false;
 
-	std::cout << "Create block\n";
+	const Entity e = entityManager.AddEntity(malletMesh);
+
+	const EntityManager& em = entityManager;
+	em.GetComponent<MeshComponent>(e).pMesh = nullptr;
 }
