@@ -51,4 +51,7 @@ public:
 	void Draw(Viewport*) override;
 	void MouseCallback(Viewport*, GLFWwindow* pWindow, int button, int action, int mods) override;
 	void MousePosCallback(Viewport*, GLFWwindow* pWindow, double xPos, double yPos) override;
+	void KeyboardCallback(Viewport*, GLFWwindow* pWindow, int key, int scancode, int action, int mods) override;
+
+	void CreateBlock();
 };

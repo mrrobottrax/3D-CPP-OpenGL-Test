@@ -294,6 +294,9 @@ void Viewport::KeyboardCallback(GLFWwindow* pWindow, int key, int scancode, int 
 		ZoomOut();
 		return;
 	}
+
+	// Tool
+	Toolbar::KeyboardCallback(this, pWindow, key, scancode, action, mods);
 }
 
 void Viewport::MouseCallback(GLFWwindow* pWindow, int button, int action, int mods)

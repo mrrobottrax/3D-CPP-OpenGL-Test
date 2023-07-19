@@ -9,6 +9,9 @@
 
 void BlockTool::Draw(Viewport* pViewport)
 {
+	if (!creatingBlock)
+		return;
+
 	if (!glInit)
 	{
 		glGenVertexArrays(1, &boxVao);
@@ -106,16 +109,12 @@ void BlockTool::MouseCallback(Viewport* pViewport, GLFWwindow* pWindow, int butt
 
 			creatingBlock = true;
 		}
-		else if (action == GLFW_RELEASE)
-		{
-			creatingBlock = false;
-		}
 	}
 }
 
 void BlockTool::MousePosCallback(Viewport* pViewport, GLFWwindow* pWindow, double xPos, double yPos)
 {
-	if (!creatingBlock)
+	if (glfwGetMouseButton(pWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
 		return;
 
 	glm::vec2 pos = pViewport->GetGridMousePos2D();
@@ -137,4 +136,23 @@ void BlockTool::MousePosCallback(Viewport* pViewport, GLFWwindow* pWindow, doubl
 	default:
 		break;
 	}
+}
+
+void BlockTool::KeyboardCallback(Viewport* pViewport, GLFWwindow* pWindow, int key, int scancode, int action, int mods)
+{
+	// Finish block
+	if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+	{
+		if (creatingBlock)
+		{
+			CreateBlock();
+		}
+	}
+}
+
+void BlockTool::CreateBlock()
+{
+	creatingBlock = false;
+
+	std::cout << "Create block\n";
 }
