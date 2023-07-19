@@ -87,7 +87,7 @@ struct Manifold
 	glm::vec3 friction1 = glm::vec3(0);
 	glm::vec3 friction2 = glm::vec3(0);
 
-	bool isValid = false;
+	bool recycled = false;
 	bool axisIsFace = false;
 	bool faceIsPolyA = false;
 	void* featureA = nullptr;

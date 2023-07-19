@@ -111,7 +111,7 @@ void Manifold::UpdateContacts(const Manifold& manifold)
 
 void Manifold::UpdateCollisionData(const Manifold& oldManifold)
 {
-	isValid = true;
+	recycled = true;
 	seperation = oldManifold.seperation;
 	axisIsFace = oldManifold.axisIsFace;
 	featureA = oldManifold.featureA;
@@ -194,12 +194,16 @@ void Manifold::PreStep(const CollisionPair& pair)
 
 		contact.bias = -correctionPercent / timeManager.GetFixedDeltaTime() * std::fminf(0.0f, contact.seperation + slop);
 
-		contact.crossANormal = glm::cross(contact.position - positionA.value, normal);
-		contact.crossBNormal = glm::cross(contact.position - positionB.value, normal);
-		contact.crossAFriction1 = glm::cross(contact.position - positionA.value, friction1);
-		contact.crossBFriction1 = glm::cross(contact.position - positionB.value, friction1);
-		contact.crossAFriction2 = glm::cross(contact.position - positionA.value, friction2);
-		contact.crossBFriction2 = glm::cross(contact.position - positionB.value, friction2);
+		// TODO: Is this okay?
+		if (!recycled)
+		{
+			contact.crossANormal = glm::cross(contact.position - positionA.value, normal);
+			contact.crossBNormal = glm::cross(contact.position - positionB.value, normal);
+			contact.crossAFriction1 = glm::cross(contact.position - positionA.value, friction1);
+			contact.crossBFriction1 = glm::cross(contact.position - positionB.value, friction1);
+			contact.crossAFriction2 = glm::cross(contact.position - positionA.value, friction2);
+			contact.crossBFriction2 = glm::cross(contact.position - positionB.value, friction2);
+		}
 
 		// Calculate relative mass
 		{
@@ -1316,7 +1320,7 @@ bool PhysicsSystem::HullVsHull(const Entity& entityA, const Entity& entityB, Man
 #endif // PHYS_DEBUG
 
 	// Temporal coherence
-	if (manifold.isValid)
+	if (manifold.recycled)
 	{
 		bool wasColliding = manifold.seperation <= 0;
 		bool isColliding = false;
