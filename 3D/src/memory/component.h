@@ -4,8 +4,6 @@
 
 struct Component
 {
-	Component();
-
 	template <class T>
 	Component& Init();
 

@@ -22,13 +22,34 @@ private:
 public:
 	void Update();
 
-	float GetFixedDeltaTime();
-	double GetFixedDeltaTimeDouble();
+	float GetFixedDeltaTime()
+	{
+		return fixedDeltaTime;
+	}
 
-	float GetDeltaTime();
-	double GetDeltaTimeDouble();
+	double GetFixedDeltaTimeDouble()
+	{
+		return dFixedDeltaTime;
+	}
 
-	float GetUnscaledDeltaTime();
-	double GetUnscaledDeltaTimeDouble();
+	float GetDeltaTime()
+	{
+		return deltaTime;
+	}
+
+	float GetUnscaledDeltaTime()
+	{
+		return unscaledDeltaTime;
+	}
+
+	double GetDeltaTimeDouble()
+	{
+		return dDeltaTime;
+	}
+
+	double GetUnscaledDeltaTimeDouble()
+	{
+		return dUnscaledDeltaTime;
+	}
 
 }; inline TimeManager timeManager;

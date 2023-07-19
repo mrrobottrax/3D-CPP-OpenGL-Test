@@ -17,6 +17,4 @@ public:
 	gSize_t maxEntities;
 
 	EntityArchetype archetype;
-
-	void DeleteChunk(Chunk* pChunk);
 };

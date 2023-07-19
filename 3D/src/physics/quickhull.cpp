@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "quickhull.h"
 
-using namespace gmath;
+using namespace gMath;
 
 #ifdef QHULL_DEBUG
 
@@ -593,7 +593,7 @@ void QuickHull::AddPoint(qhHalfEdge** horizon, const int horizonSize, glm::vec3&
 
 bool FaceIsVisible(const qhFace& face, const glm::vec3 eye)
 {
-	return gmath::SignedDistFromPlane(face.plane, eye) > 0;
+	return gMath::SignedDistFromPlane(face.plane, eye) > 0;
 }
 
 void QuickHull::Algorithm(const int vertCount, const glm::vec3* verticesArray, HalfEdgeMesh& dest)
@@ -659,7 +659,7 @@ void QuickHull::Algorithm(const int vertCount, const glm::vec3* verticesArray, H
 			{
 				glm::vec3& point = face.conflictList[p];
 
-				float dist = gmath::SignedDistFromPlane(face.plane, point);
+				float dist = gMath::SignedDistFromPlane(face.plane, point);
 				if (dist >= bestDist)
 				{
 					bestDist = dist;

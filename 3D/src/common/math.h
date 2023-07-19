@@ -1,6 +1,6 @@
 #pragma once
 
-namespace gmath
+namespace gMath
 {
 	struct Plane
 	{
@@ -38,50 +38,8 @@ namespace gmath
 	glm::vec3 LineAndPlane(const Line&, const Plane&);
 	void ScalePlane(Plane&, const glm::vec3&);
 
-	// TODO: Make these const references
-	glm::vec3 Lerp(glm::vec3 x, glm::vec3 y, float t);
-	glm::vec3 Lerp(Line, float t);
+	glm::vec3 Lerp(const glm::vec3& x, const glm::vec3& y, float t);
+	glm::vec3 Lerp(const Line&, float t);
 
 	glm::fquat EulerToQuaternion(const glm::vec3&);
-
-	struct Matrix
-	{
-	private:
-		float* m = nullptr;
-		int rows, columns = 0;
-
-	public:
-		Matrix(const int& rows, const int& columns);
-		Matrix(const Matrix& matrix);
-		inline Matrix() : m(), rows(), columns() { };
-		inline ~Matrix()
-		{
-			if (m)
-				delete[] m;
-		};
-
-	public:
-		void Initialize(int rows, int columns);
-
-		inline const int GetRows() const
-		{
-			return rows;
-		};
-
-		inline const int GetColumns() const
-		{
-			return columns;
-		};
-
-		void Transform();
-
-		inline constexpr float* operator[] (int i) const
-		{
-			return &(m[i * columns]);
-		};
-
-		Matrix& operator= (const Matrix& matrix);
-	};
-
-	void MatrixMultiply(const Matrix& left, const Matrix& right, Matrix& result);
 }

@@ -103,12 +103,13 @@ struct Manifold
 
 #ifdef DEBUG
 
-//#define PHYS_DEBUG
+#define PHYS_DEBUG
 
 #ifdef PHYS_DEBUG
 
 //#define SAT_DEBUG
-//#define CONTACT_DEBUG
+#define CONTACT_DEBUG
+//#define CONTACT_GEN_DEBUG
 //#define FRICTION_DEBUG
 //#define WARMSTART_DEBUG
 
@@ -119,7 +120,7 @@ constexpr int numIterations = 6;
 constexpr float gravity = -9.81f;
 constexpr float slop = 0.01f;
 constexpr float correctionPercent = 0.35f;
-constexpr float sleepTime = 0.1f;
+constexpr float sleepTime = 1.0f;
 constexpr float velEpsilonLinear = 0.1f;
 constexpr float velEpsilonAngular = 0.1f;
 

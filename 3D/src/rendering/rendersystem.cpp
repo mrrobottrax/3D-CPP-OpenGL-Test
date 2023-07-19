@@ -126,8 +126,8 @@ void RenderSystem::DrawBase()
 	glm::vec3 sunDir(1, 2, .2f);
 	sunDir = glm::normalize(sunDir);
 
-	float sunIntensity = 1.3f;
-	float ambientIntensity = 0.1f;
+	constexpr float sunIntensity = 1.3f;
+	constexpr float ambientIntensity = 0.1f;
 
 	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &pMainCamera->matrix[0][0]);
 	glUniform1f(sunIntensityUnif, sunIntensity);

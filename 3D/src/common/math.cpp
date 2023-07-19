@@ -3,7 +3,7 @@
 
 #include <glm.hpp>
 
-namespace gmath
+namespace gMath
 {
 	float SqrMagnitude(const glm::vec3& vec)
 	{
@@ -84,12 +84,12 @@ namespace gmath
 		plane.dist = glm::dot(scaledPoint, plane.normal);
 	}
 
-	glm::vec3 Lerp(glm::vec3 x, glm::vec3 y, float t)
+	glm::vec3 Lerp(const glm::vec3& x, const glm::vec3& y, float t)
 	{
 		return x * (1.0f - t) + y * t;
 	}
 
-	glm::vec3 Lerp(Line l, float t)
+	glm::vec3 Lerp(const Line& l, float t)
 	{
 		return Lerp(l.pointA, l.pointB, t);
 	}
@@ -106,108 +106,5 @@ namespace gmath
 		glm::fquat quat(length * cos, euler.x * sin, euler.y * sin, euler.z * sin);
 
 		return glm::normalize(quat);
-	}
-
-	Matrix::Matrix(const int& rows, const int& columns)
-	{
-		Initialize(rows, columns);
-	}
-
-	Matrix::Matrix(const Matrix& matrix) : Matrix(matrix.rows, matrix.columns)
-	{
-		// For each row
-		for (int i = 0; i < rows; ++i)
-		{
-			// For each column
-			for (int j = 0; j < columns; ++j)
-			{
-				(*this)[i][j] = matrix[i][j];
-			}
-		}
-	}
-
-	void Matrix::Initialize(int rows, int columns)
-	{
-		this->rows = rows;
-		this->columns = columns;
-
-		m = new float[rows * columns];
-	}
-
-	void Matrix::Transform()
-	{
-		Matrix m = *this;
-
-		rows = m.columns;
-		columns = m.rows;
-
-		// For each row
-		for (int i = 0; i < rows; ++i)
-		{
-			// For each column
-			for (int j = 0; j < columns; ++j)
-			{
-				(*this)[i][j] = m[j][columns - i - 1];
-			}
-		}
-	}
-
-	Matrix& Matrix::operator=(const Matrix& matrix)
-	{
-		// Only allocate new memory when the number of rows and columns is different
-		if (this->rows != matrix.rows || this->columns != matrix.columns)
-		{
-			bool sameSize = this->rows * this->columns == matrix.rows * matrix.columns;
-
-			this->rows = matrix.rows;
-			this->columns = matrix.columns;
-
-			if (!sameSize)
-			{
-				if (this->m)
-					delete[] this->m;
-
-				this->m = new float[rows * columns];
-			}
-		}
-
-		// For each row
-		for (int i = 0; i < rows; ++i)
-		{
-			// For each column
-			for (int j = 0; j < columns; ++j)
-			{
-				(*this)[i][j] = matrix[i][j];
-			}
-		}
-
-		return *this;
-	}
-
-	// Multiply two arbitrarily sized matrices
-	void MatrixMultiply(const Matrix& left, const Matrix& right, Matrix& result)
-	{
-		const int rows = left.GetRows();
-		const int columns = right.GetColumns();
-
-		assert(left.GetColumns() == right.GetRows());
-
-		result.Initialize(rows, columns);
-
-		// For each row
-		for (int i = 0; i < rows; ++i)
-		{
-			// For each column
-			for (int j = 0; j < columns; ++j)
-			{
-				float sum = 0;
-				for (int k = 0; k < left.GetColumns(); ++k)
-				{
-					sum += left[i][k] * right[k][j];
-				}
-
-				result[i][j] = sum;
-			}
-		}
 	}
 }

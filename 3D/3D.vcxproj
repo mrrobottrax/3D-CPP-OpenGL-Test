@@ -355,7 +355,6 @@
     <ClCompile Include="src\input\inputsystem.cpp" />
     <ClCompile Include="src\input\keycodes.cpp" />
     <ClCompile Include="src\memory\chunkarchetypeelement.cpp" />
-    <ClCompile Include="src\memory\component.cpp" />
     <ClCompile Include="src\memory\entityarchetype.cpp" />
     <ClCompile Include="src\memory\entitymanager.cpp" />
     <ClCompile Include="src\meshobject.cpp" />

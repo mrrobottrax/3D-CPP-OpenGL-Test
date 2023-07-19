@@ -47,7 +47,7 @@ void DebugDraw::DrawPlane(const glm::vec3 offset, const glm::vec3 normal, const 
 	DrawPlane(offset, normal, glm::vec3(0, 1, 0), dist, width, height, color, time);
 }
 
-void DebugDraw::DrawPlane(const glm::vec3 offset, const gmath::Plane plane, const float width, const float height, const glm::vec3 color, float time)
+void DebugDraw::DrawPlane(const glm::vec3 offset, const gMath::Plane plane, const float width, const float height, const glm::vec3 color, float time)
 {
 	DrawPlane(offset, plane.normal, plane.dist, width, height, color, time);
 }
@@ -168,12 +168,9 @@ void DebugDraw::DrawLines()
 
 	size_t vertCount = lines.size() * 2;
 	size_t vertFloatCount = vertCount * 3;
-	size_t colorFloatCount = vertCount * 3;
 
 	float* vertArray = new float[vertFloatCount];
-	float* colorArray = new float[colorFloatCount];
 	GLsizei vertByteSize = (GLsizei)(sizeof(float) * vertFloatCount);
-	GLsizei colortByteSize = (GLsizei)(sizeof(float) * colorFloatCount);
 
 	// Set arrays
 	{
@@ -191,15 +188,8 @@ void DebugDraw::DrawLines()
 			vertArray[i + 4] = (*it).pointB.position[1];
 			vertArray[i + 5] = (*it).pointB.position[2];
 
-			colorArray[i] = (*it).color[0];
-			colorArray[i + 1] = (*it).color[1];
-			colorArray[i + 2] = (*it).color[2];
-
-			colorArray[i + 3] = (*it).color[0];
-			colorArray[i + 4] = (*it).color[1];
-			colorArray[i + 5] = (*it).color[2];
-
 			i += 6;
+			++it;
 		}
 	}
 
@@ -207,14 +197,9 @@ void DebugDraw::DrawLines()
 	glBufferData(GL_ARRAY_BUFFER, vertByteSize, vertArray, GL_DYNAMIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-	glBufferData(GL_ARRAY_BUFFER, colortByteSize, colorArray, GL_DYNAMIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
 	glDrawArrays(GL_LINES, 0, (GLsizei)vertCount);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	delete[] vertArray;
-	delete[] colorArray;
 }

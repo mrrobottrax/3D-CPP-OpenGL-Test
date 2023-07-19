@@ -55,17 +55,14 @@ Entity EntityManager::AddEntity(EntityArchetype& archetype)
 		index = entityIndices[numberOfEntities];
 	}
 
-	++pChunk->numberOfEntities;
-	++numberOfEntities;
-
 	// Add pointer to pointer array
 	if (index >= entityTable.size())
 	{
-		entityTable.push_back(TableEntry(EntityPointer(pChunk, indexInChunk)));
+		entityTable.push_back(TableEntry(EntityPointer(pChunk, indexInChunk), numberOfEntities, 0));
 	}
 	else
 	{
-		entityTable[index] = EntityPointer(pChunk, indexInChunk);
+		entityTable[index] = TableEntry(EntityPointer(pChunk, indexInChunk), numberOfEntities, entityTable[index].version + 1);
 	}
 
 	EntityPointer p(pChunk, indexInChunk);
@@ -73,7 +70,10 @@ Entity EntityManager::AddEntity(EntityArchetype& archetype)
 	// Set id
 	IdComponent& id = entityManager.GetComponent<IdComponent>(p);
 	id.index = index;
-	id.version = ++entityTable[index].version;
+	id.version = entityTable[index].version;
+
+	++pChunk->numberOfEntities;
+	++numberOfEntities;
 
 	return Entity(index, id.version);
 }
@@ -217,29 +217,89 @@ std::vector<ChunkArchetypeElement*> EntityManager::FindChunkArchetypesWithCompon
 
 void EntityManager::DeleteEntity(const Entity& entity)
 {
-	// Check if only entity in chunk
-		// Delete chunk
-		// Check if only chunk in chunk archetype, if so delete archetype
-	// else
-		// Copy last entity in the chunk to old position
+	const EntityPointer p = GetEntityPointer(entity);
 
-	EntityPointer p = GetEntityPointer(entity);
+	// Check if only entity in chunk
 	if (p.pChunk->numberOfEntities <= 1)
 	{
-		
+		// Check if only chunk in archetype
+		if (!p.pChunk->pNext && !p.pChunk->pPrev)
+			DeleteChunkArchetype(p.pChunk->pChunkArchetype);
+		else
+			DeleteChunk(p.pChunk);
 	}
 	else
 	{
+		// Check if not last entity in chunk
+		if (p.indexInChunk < p.pChunk->numberOfEntities - 1)
+		{
+			// Copy last entity in the chunk to old position
+			const EntityPointer pLast(p.pChunk, p.pChunk->numberOfEntities - 1);
+			const EntityArchetype& archetype = p.pChunk->pChunkArchetype->archetype;
+			char* pComponentStream = reinterpret_cast<char*>(p.pChunk + 1);
 
+			for (gSize_t i = 0; i < archetype.componentCount; ++i)
+			{
+				const gSize_t& offset = archetype.components[i].offset;
+				const gSize_t& size = archetype.components[i].size;
+
+				char* thisComponentStream = pComponentStream + p.pChunk->pChunkArchetype->maxEntities * offset;
+
+				const void* source = thisComponentStream + (size * pLast.indexInChunk);
+				void* dest = thisComponentStream + (size * p.indexInChunk);
+
+				memcpy(dest, source, size);
+			}
+
+			// Change indexInChunk for newly moved last object
+			IdComponent& id = GetComponent<IdComponent>(p);
+			entityTable[id.index].p.indexInChunk = p.indexInChunk;
+		}
+
+		--p.pChunk->numberOfEntities;
 	}
 
-	// Check if index value == entityPointers.size() + 1
-		// entityPointers.pop_back();
+	const gEntityIndex_t indexInIndices = entityTable[entity.index].indexInIndices;
 
-	// Check if index is last (defined by numberOfEntities)
-		// entityIndices.pop_back();
-	// else
-		// Swap last index (defined by numberOfEntities) with old position
+	// Check if last index in index array and index in natural position
+	gSize_t trueLastIndex = static_cast<gSize_t>(entityIndices.size()) - 1;
+	gSize_t lastIndex = numberOfEntities - 1;
+
+	if (lastIndex != indexInIndices)
+	{
+		// Swap last index in indices array
+		const gEntityIndex_t temp = entityIndices[lastIndex];
+
+		entityIndices[lastIndex] = entityIndices[indexInIndices];
+		entityIndices[indexInIndices] = temp;
+
+		entityTable[entity.index].indexInIndices = lastIndex;
+		entityTable[temp].indexInIndices = indexInIndices;
+	}
+
+	if (entityIndices[trueLastIndex] == trueLastIndex)
+	{
+		//entityIndices.pop_back();
+	}
+
+	--numberOfEntities;
+}
+
+void EntityManager::DeleteChunk(Chunk* pChunk)
+{
+#ifdef DEBUG
+	std::cout << "	Deleting chunk.		Entities: " << pChunk->numberOfEntities << "\n";
+#endif //DEBUG
+
+	if (pChunk->pPrev)
+		pChunk->pPrev->pNext = pChunk->pNext;
+	else
+		pChunk->pChunkArchetype->pFirstChunk = pChunk->pNext;
+
+	if (pChunk->pNext)
+		pChunk->pNext->pPrev = pChunk->pPrev;
+
+	free(pChunk);
 }
 
 void EntityManager::DeleteChunkArchetype(ChunkArchetypeElement* pArchetype)

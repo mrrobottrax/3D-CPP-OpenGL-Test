@@ -20,33 +20,3 @@ void TimeManager::Update()
 	deltaTime *= timescale.value;
 	dDeltaTime *= timescale.value;
 }
-
-float TimeManager::GetFixedDeltaTime()
-{
-	return fixedDeltaTime;
-}
-
-double TimeManager::GetFixedDeltaTimeDouble()
-{
-	return dFixedDeltaTime;
-}
-
-float TimeManager::GetDeltaTime()
-{
-	return deltaTime;
-}
-
-float TimeManager::GetUnscaledDeltaTime()
-{
-	return unscaledDeltaTime;
-}
-
-double TimeManager::GetDeltaTimeDouble()
-{
-	return dDeltaTime;
-}
-
-double TimeManager::GetUnscaledDeltaTimeDouble()
-{
-	return dUnscaledDeltaTime;
-}

@@ -12,7 +12,9 @@
 
 #include <common/math.h>
 
-using namespace gmath;
+#include <rendering/debugdraw.h>
+
+using namespace gMath;
 
 void PhysicsSystem::ComputeInertia(const Entity& entity)
 {
@@ -43,10 +45,7 @@ void PhysicsSystem::ComputeInertia(const Entity& entity)
 
 CollisionPair::CollisionPair(const Entity& entityA, const Entity& entityB)
 {
-	const IdComponent& idA = entityManager.GetComponent<IdComponent>(entityA);
-	const IdComponent& idB = entityManager.GetComponent<IdComponent>(entityB);
-
-	if (idA.index < idB.index)
+	if (entityA.index < entityB.index)
 	{
 		this->entityA = entityA;
 		this->entityB = entityB;
@@ -255,7 +254,6 @@ void PhysicsSystem::ResolveManifolds()
 	{
 		Manifold& manifold = manifoldIter->second;
 		const CollisionPair& pair = manifoldIter->first;
-
 		manifold.PreStep(pair);
 	}
 
@@ -266,18 +264,18 @@ void PhysicsSystem::ResolveManifolds()
 			Manifold& manifold = manifoldIter->second;
 			const CollisionPair& pair = manifoldIter->first;
 
-#ifdef CONTACT_DEBUG
-			for (int i = 0; i < manifold.numContacts; ++i)
-			{
-				debugDraw.DrawLine(manifold.contacts[i].position, manifold.contacts[i].position + manifold.normal * 0.2f, { 1, 0, 1 }, timeManager.GetFixedDeltaTime());
-			}
-#endif // CONTACT_DEBUG
-
 			const Entity& entityA = pair.entityA;
 			const Entity& entityB = pair.entityB;
 
 			const RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(entityA);
 			const RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(entityB);
+
+#ifdef CONTACT_DEBUG
+			for (gSize_t i = 0; i < manifold.numContacts; ++i)
+			{
+				debugDraw.DrawLine(manifold.contacts[i].position, manifold.contacts[i].position + manifold.normal * 0.2f, { 1, 0, 1 }, timeManager.GetFixedDeltaTime());
+			}
+#endif // CONTACT_DEBUG
 
 			PositionComponent& positionA = em.GetComponent<PositionComponent>(entityA);
 			PositionComponent& positionB = em.GetComponent<PositionComponent>(entityB);
@@ -352,10 +350,12 @@ void PhysicsSystem::ResolveManifolds()
 					const float& frictionC = manifold.frictionCoefficient;
 
 					contact.totalImpulseFriction1 = clamp(contact.totalImpulseFriction1,
-						-contact.totalImpulseNormal * frictionC, contact.totalImpulseNormal * frictionC);
+						-contact.totalImpulseNormal * frictionC,
+						contact.totalImpulseNormal * frictionC);
 
 					contact.totalImpulseFriction2 = clamp(contact.totalImpulseFriction2,
-						-contact.totalImpulseNormal * frictionC, contact.totalImpulseNormal * frictionC);
+						-contact.totalImpulseNormal * frictionC,
+						contact.totalImpulseNormal * frictionC);
 
 					const float deltaImpulse1 = contact.totalImpulseFriction1 - oldImpulse1;
 					const float deltaImpulse2 = contact.totalImpulseFriction2 - oldImpulse2;
@@ -397,52 +397,73 @@ void PhysicsSystem::ResolveManifolds()
 	}
 
 	// Sleep bodies with low velocity
-	for (auto manifoldIter = manifolds.begin(); manifoldIter != manifolds.end(); ++manifoldIter)
 	{
-		Manifold& manifold = manifoldIter->second;
-		const CollisionPair& pair = manifoldIter->first;
-
-		const Entity& entityA = pair.entityA;
-		const Entity& entityB = pair.entityB;
-
-		VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
-		VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
-
-		RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(entityA);
-		RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(entityB);
-
-		glm::vec3& velLinearA = velocityA.linear;
-		glm::vec3& velAngularA = velocityA.angular;
-		glm::vec3& velLinearB = velocityB.linear;
-		glm::vec3& velAngularB = velocityB.angular;
-
-		RigidBodyComponent* rbs[2] = { &rbA, &rbB };
-		glm::vec3* linearVels[2] = { &velLinearA, &velLinearB };
-		glm::vec3* angularVels[2] = { &velAngularA, &velAngularB };
-
-		for (int i = 0; i < 2; ++i)
+		auto manifoldIter = manifolds.begin();
+		while (manifoldIter != manifolds.end())
 		{
-			glm::vec3& linearVel = *linearVels[i];
-			glm::vec3& angularVel = *angularVels[i];
+			Manifold& manifold = manifoldIter->second;
+			const CollisionPair& pair = manifoldIter->first;
 
-			if (glm::dot(linearVel, linearVel) <= velEpsilonLinear &&
-				glm::dot(angularVel, angularVel) <= velEpsilonAngular)
+			const Entity& entityA = pair.entityA;
+			const Entity& entityB = pair.entityB;
+
+			VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
+			VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
+
+			RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(entityA);
+			RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(entityB);
+
+			glm::vec3& velLinearA = velocityA.linear;
+			glm::vec3& velAngularA = velocityA.angular;
+			glm::vec3& velLinearB = velocityB.linear;
+			glm::vec3& velAngularB = velocityB.angular;
+
+			RigidBodyComponent* rbs[2] = { &rbA, &rbB };
+			glm::vec3* linearVels[2] = { &velLinearA, &velLinearB };
+			glm::vec3* angularVels[2] = { &velAngularA, &velAngularB };
+
+			bool sleep[2]{ false, false };
+{}			for (int i = 0; i < 2; ++i)
 			{
-				if (rbs[i]->sleepTimer <= 0)
+				glm::vec3& linearVel = *linearVels[i];
+				glm::vec3& angularVel = *angularVels[i];
+
+				if (glm::dot(linearVel, linearVel) <= velEpsilonLinear &&
+					glm::dot(angularVel, angularVel) <= velEpsilonAngular)
 				{
-					linearVel = glm::vec3(0);
-					angularVel = glm::vec3(0);
+					if (rbs[i]->IsSleeping())
+					{
+						linearVel = glm::vec3(0);
+						angularVel = glm::vec3(0);
+						sleep[i] = true;
+					}
+					else
+					{
+						rbs[i]->sleepTimer -= timeManager.GetFixedDeltaTime();
+					}
 				}
 				else
 				{
-					rbs[i]->sleepTimer -= timeManager.GetDeltaTime();
+					rbs[i]->sleepTimer = sleepTime;
 				}
 			}
-			else
-			{
-				rbs[i]->sleepTimer = sleepTime;
-			}
+
+			++manifoldIter;
 		}
+	}
+}
+
+void UnsleepEntities(const CollisionPair& pair)
+{
+	if (entityManager.EntityExists(pair.entityA))
+	{
+		RigidBodyComponent& rb = entityManager.GetComponent<RigidBodyComponent>(pair.entityA);
+		rb.sleepTimer = sleepTime;
+	}
+	if (entityManager.EntityExists(pair.entityB))
+	{
+		RigidBodyComponent& rb = entityManager.GetComponent<RigidBodyComponent>(pair.entityB);
+		rb.sleepTimer = sleepTime;
 	}
 }
 
@@ -471,7 +492,9 @@ void PhysicsSystem::Update()
 				// Gravity
 				RigidBodyComponent& rb = em.GetComponent<RigidBodyComponent>(p);
 				VelocityComponent& vel = em.GetComponent<VelocityComponent>(p);
-				vel.linear.y += rb.gravityScale * gravity * timeManager.GetFixedDeltaTime();
+
+				if (!rb.IsSleeping())
+					vel.linear.y += rb.gravityScale * gravity * timeManager.GetFixedDeltaTime();
 			}
 		}
 	}
@@ -537,7 +560,7 @@ void PhysicsSystem::Update()
 							const MassComponent& massB = em.GetComponent<MassComponent>(p2);
 
 							// No need to check for collisions when both are static
-							if ((rb.isStatic || rb.sleepTimer <= 0) && (rb2.isStatic || rb2.sleepTimer <= 0))
+							if ((rb.isStatic || rb.IsSleeping()) && (rb2.isStatic || rb2.IsSleeping()))
 								continue;
 
 							// Unstoppable force vs immovable object
@@ -625,12 +648,32 @@ void PhysicsSystem::Update()
 		}
 	}
 
+	// Remove manifolds that reference deleted entities,
+	{
+		auto iter = manifolds.begin();
+		while (iter != manifolds.end())
+		{
+			const CollisionPair& pair = iter->first;
+
+			const std::map<CollisionPair, Manifold>::iterator oldIter = iter;
+			++iter;
+
+			if (!entityManager.EntityExists(pair.entityA)
+				|| !entityManager.EntityExists(pair.entityB))
+			{
+				UnsleepEntities(pair);
+
+				manifolds.erase(oldIter);
+			}
+		}
+	}
+
 	ResolveManifolds();
 }
 
 // Find vertex with most penetration
 // Plane MUST be in hull space
-float GetSeperationDepth(gmath::Plane testPlane, const HalfEdgeMesh& hull, const glm::vec3& scale)
+float GetSeperationDepth(gMath::Plane testPlane, const HalfEdgeMesh& hull, const glm::vec3& scale)
 {
 
 #ifdef SAT_DEBUG
@@ -679,7 +722,7 @@ void PlaneToSpace(Plane& plane, const glm::vec3& spacePosition, const glm::fquat
 float GetSingleFaceSeperation(const heFace& face, const glm::vec3& positionA, const glm::fquat& rotationA, const glm::vec3& scaleA,
 	const HullCollider& hullB, const glm::vec3& positionB, const glm::fquat& rotationB, const glm::vec3& scaleB)
 {
-	gmath::Plane testPlane = face.plane;
+	gMath::Plane testPlane = face.plane;
 
 	ScalePlane(testPlane, scaleA);
 	PlaneToWorld(testPlane, positionA, rotationA);
@@ -780,7 +823,7 @@ EdgeQuery SatEdgeTest(const HullCollider& hullA, const glm::vec3& positionA, con
 				continue;
 			}
 
-			gmath::Plane testPlane;
+			gMath::Plane testPlane;
 			testPlane.normal = glm::normalize(glm::cross(edgeADir, edgeBDir));
 
 			// Check if the normal is facing the right direction
@@ -821,7 +864,7 @@ EdgeQuery SatEdgeTest(const HullCollider& hullA, const glm::vec3& positionA, con
 	return query;
 }
 
-float ProjectPointToLine(const glm::vec3& point, const gmath::Line& line)
+float ProjectPointToLine(const glm::vec3& point, const gMath::Line& line)
 {
 	glm::vec3 lineBProjDir = line.pointB - line.pointA;
 	float interp = glm::dot(point - line.pointA, lineBProjDir) / glm::dot(lineBProjDir, lineBProjDir);
@@ -829,13 +872,13 @@ float ProjectPointToLine(const glm::vec3& point, const gmath::Line& line)
 	return interp;
 }
 
-glm::vec3 GetClosestPointOnLine(const gmath::Line& lineA, const gmath::Line& lineB)
+glm::vec3 GetClosestPointOnLine(const gMath::Line& lineA, const gMath::Line& lineB)
 {
 	// Project line B onto the plane of line A
 	glm::vec3 normal = lineA.pointB - lineA.pointA;
 	normal = glm::normalize(normal);
 
-	gmath::Line lineBProj = lineB;
+	gMath::Line lineBProj = lineB;
 	{
 		float pointADot = glm::dot(lineB.pointA, normal);
 		float pointBDot = glm::dot(lineB.pointB, normal);
@@ -846,7 +889,7 @@ glm::vec3 GetClosestPointOnLine(const gmath::Line& lineA, const gmath::Line& lin
 
 	// Project the first point of line A onto the projected line B
 	float t = ProjectPointToLine(lineA.pointA, lineBProj);
-	glm::vec3 point = gmath::Lerp(lineB.pointA, lineB.pointB, t);
+	glm::vec3 point = gMath::Lerp(lineB.pointA, lineB.pointB, t);
 
 	if (t < 0 || t > 1)
 	{
@@ -859,7 +902,7 @@ glm::vec3 GetClosestPointOnLine(const gmath::Line& lineA, const gmath::Line& lin
 void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, const glm::fquat& rotationA, const glm::vec3& scaleA,
 	const glm::vec3& positionB, const glm::fquat& rotationB, const glm::vec3& scaleB, Manifold& manifold)
 {
-	gmath::Line lineA = {
+	gMath::Line lineA = {
 		query.pEdgeA->pHalfA->pTail->position * scaleA,
 		query.pEdgeA->pHalfB->pTail->position * scaleA,
 	};
@@ -867,7 +910,7 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	lineA.pointA = rotationA * lineA.pointA + positionA;
 	lineA.pointB = rotationA * lineA.pointB + positionA;
 
-	gmath::Line lineB = {
+	gMath::Line lineB = {
 		query.pEdgeB->pHalfA->pTail->position * scaleB,
 		query.pEdgeB->pHalfB->pTail->position * scaleB,
 	};
@@ -891,11 +934,6 @@ void CreateEdgeContacts(const EdgeQuery& query, const glm::vec3& positionA, cons
 	manifold.friction2 = glm::cross(dirA, manifold.normal);
 	manifold.friction1 = glm::normalize(manifold.friction1);
 	manifold.friction2 = glm::normalize(manifold.friction2);
-
-#ifdef CONTACT_DEBUG
-	debugDraw.DrawLine(lineA.pointA, lineA.pointB, { 1, 1, 0 }, timeManager.GetFixedDeltaTime());
-	debugDraw.DrawLine(lineB.pointA, lineB.pointB, { 1, 1, 0 }, timeManager.GetFixedDeltaTime());
-#endif // CONTACT_DEBUG
 
 	glm::vec3 average = (pointA - pointB) / 2.0f + pointB;
 
@@ -978,6 +1016,13 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 				{ pEdge, nullptr }
 				});
 
+#ifdef CONTACT_GEN_DEBUG
+			const glm::vec3 pos = positionB + rotationB * (pEdge->pTail->position * scaleB);
+			debugDraw.DrawLine(pos, pos + glm::vec3(0, 0.1f, 0),
+				{ 1, 1, 0 }, timeManager.GetFixedDeltaTime());
+#endif // CONTACT_GEN_DEBUG
+
+
 			pEdge = pEdge->pNext;
 		} while (pEdge != startEdge);
 	}
@@ -999,22 +1044,11 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			PlaneToWorld(clipPlane, positionA, rotationA);
 			PlaneToSpace(clipPlane, positionB, rotationB);
 
-#ifdef CONTACT_DEBUG
-			Plane drawPlane = clipPlane;
-			PlaneToWorld(drawPlane, glm::vec3(0), rotationB);
-			debugDraw.DrawPlane(positionB, drawPlane, 1.5f, 1.5f, { 1, 1, 1 }, timeManager.GetFixedDeltaTime());
-#endif // CONTACT_DEBUG
-
 			// Keep vertices behind plane
 			for (gSize_t i = 0; i < inBuffer.size(); ++i)
 			{
 				const glm::vec3& point = inBuffer[i].pos;
 				const float dist = glm::dot(point, clipPlane.normal) - clipPlane.dist;
-
-#ifdef CONTACT_DEBUG
-				glm::vec3 drawPoint = rotationB * point + positionB;
-				debugDraw.DrawLine(drawPoint, drawPoint + manifold.normal * 0.2f, { 0, 0.2f, 0 }, timeManager.GetFixedDeltaTime());
-#endif // CONTACT_DEBUG
 
 				const bool pointBehindPlane = dist <= 0;
 
@@ -1035,16 +1069,6 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 						point,
 						{ inBuffer[i].featurePair.pFeatureA, &clipFace }
 						});
-
-#ifdef CONTACT_DEBUG
-					debugDraw.DrawPlane(glm::vec3(0), clipPlane, 1.5f, 1.5f, {1, 1, 0}, timeManager.GetFixedDeltaTime());
-					debugDraw.DrawLine(line.pointA, line.pointB, { 1, 1, 1 }, timeManager.GetFixedDeltaTime());
-
-					glm::vec3 drawPoint = point;
-					drawPoint = rotationB * drawPoint + positionB;
-					debugDraw.DrawLine(drawPoint, drawPoint + glm::vec3(0, 0.2f, 0), { 1, 1, 1 }, timeManager.GetFixedDeltaTime());
-#endif // CONTACT_DEBUG
-
 				}
 				
 				if (pointBehindPlane)
@@ -1070,7 +1094,6 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 			const glm::vec3& point = inBuffer[i].pos;
 			const float dist = glm::dot(relativeReferencePlane.normal, point) - relativeReferencePlane.dist;
 
-			// Keep contacts for warm starting even when slightly apart
 			if (dist <= 0)
 			{
 				contact.seperation = dist;
@@ -1270,12 +1293,12 @@ bool PhysicsSystem::HullVsHull(const Entity& entityA, const Entity& entityB, Man
 
 #ifdef PHYS_DEBUG
 
-	auto DrawHull = [](const ConvexHull* pHull, const glm::vec3& position,
+	auto DrawHull = [](const HalfEdgeMesh* pHull, const glm::vec3& position,
 		const glm::fquat& rotation, const glm::vec3& scale, const glm::vec3& color)
 	{
-		for (int i = 0; i < pHull->edgeCount; ++i)
+		for (gSize_t i = 0; i < pHull->edgeCount; ++i)
 		{
-			const qhEdge& edge = pHull->edges[i];
+			const heEdge& edge = pHull->edges[i];
 
 			glm::vec3 start = edge.pHalfA->pTail->position * scale;
 			glm::vec3 end = edge.pHalfB->pTail->position * scale;
@@ -1287,8 +1310,8 @@ bool PhysicsSystem::HullVsHull(const Entity& entityA, const Entity& entityB, Man
 		}
 	};
 
-	DrawHull(hullA.pHull, positionA.value, rotationA.value, scaleA, {1, 0, 0});
-	DrawHull(hullB.pHull, positionB.value, rotationB.value, scaleB, {0, 0, 1});
+	//DrawHull(hullA.pHull, positionA.value, rotationA.value, scaleA, { 1, 0, 0 });
+	//DrawHull(hullB.pHull, positionB.value, rotationB.value, scaleB, { 0, 0, 1 });
 
 #endif // PHYS_DEBUG
 
@@ -1337,7 +1360,7 @@ bool PhysicsSystem::HullVsHull(const Entity& entityA, const Entity& entityB, Man
 			if (EdgesBuildMinkowskiFace(edgeA, edgeADir, rotationA.value,
 				edgeB, edgeBDir, rotationB.value))
 			{
-				gmath::Plane testPlane;
+				gMath::Plane testPlane;
 				testPlane.normal = glm::normalize(glm::cross(edgeADir, edgeBDir));
 
 				// Check if the normal is facing the right direction

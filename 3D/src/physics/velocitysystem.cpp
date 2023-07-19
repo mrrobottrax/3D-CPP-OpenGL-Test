@@ -43,7 +43,7 @@ void VelocitySystem::UpdatePositions(const std::vector<ChunkArchetypeElement*>& 
 				position.value += velocity.linear * deltaTime;
 
 				const glm::vec3& deltaVec = velocity.angular * deltaTime;
-				const glm::fquat& deltaRot = gmath::EulerToQuaternion(deltaVec);
+				const glm::fquat& deltaRot = gMath::EulerToQuaternion(deltaVec);
 				rotation.value = deltaRot * rotation.value;
 			}
 		}

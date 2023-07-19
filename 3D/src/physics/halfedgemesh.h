@@ -49,7 +49,7 @@ struct heFace
 {
 	heHalfEdge* pEdge;
 
-	gmath::Plane plane;
+	gMath::Plane plane;
 
 	heFace() : pEdge(), plane() {};
 

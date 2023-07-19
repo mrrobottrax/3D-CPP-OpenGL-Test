@@ -21,4 +21,9 @@ struct RigidBodyComponent
 	FrictionCombine frictionCombine = Average;
 
 	float sleepTimer = 0.2f;
+
+	inline const bool IsSleeping() const
+	{
+		return sleepTimer <= 0;
+	};
 };
