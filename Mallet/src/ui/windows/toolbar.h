@@ -1,7 +1,7 @@
 #pragma once
 #include "malletwindow.h"
-#include <ui/tools/mallettool.h>
-#include <ui/tools/blocktool.h>
+#include <tools/mallettool.h>
+#include <tools/blocktool.h>
 
 class Toolbar : public MalletWindow
 {
@@ -9,7 +9,8 @@ public:
 	Toolbar()
 	{};
 
-	~Toolbar() {};
+	~Toolbar()
+	{};
 
 public:
 	static inline MalletTool* pActiveTool;

@@ -117,8 +117,7 @@ void Init()
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 3.14f / 4.0f, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
-		const char* path = "../data/models/monkey.glb";
-		modelLoader::LoadModel(monkeyMesh, path);
+		modelLoader::LoadModel(monkeyMesh, "../data/models/monkey.glb");
 		em.GetComponent<MeshComponent>(entity) = { &monkeyMesh };
 	}
 	// Create map

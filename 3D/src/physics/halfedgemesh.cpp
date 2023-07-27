@@ -2,6 +2,7 @@
 #include "halfedgemesh.h"
 
 #include <rendering/debugdraw.h>
+#include <glm.hpp>
 
 void HalfEdgeMesh::CreateEdges()
 {

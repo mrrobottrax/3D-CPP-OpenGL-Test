@@ -150,7 +150,7 @@ void BlockTool::KeyboardCallback(Viewport* pViewport, GLFWwindow* pWindow, int k
 			CreateBlock();
 		}
 	}
-}
+} 
 
 void BlockTool::CreateBlock()
 {
@@ -160,4 +160,46 @@ void BlockTool::CreateBlock()
 
 	const EntityManager& em = entityManager;
 	em.GetComponent<MeshComponent>(e).pMesh = nullptr;
+	MalletMesh& mesh = em.GetComponent<MalletMeshComponent>(e).mesh;
+
+	const glm::vec3 min = glm::min(blockStart, blockEnd);
+	const glm::vec3 max = glm::max(blockStart, blockEnd);
+
+	// Create box
+	// -X Face
+	{
+		mmFace* pFace = new mmFace();
+
+		mesh.pFirstEdge = new mmHalfEdge();
+		mmHalfEdge& firstEdge = *mesh.pFirstEdge;
+		firstEdge.pTail = new mmVertex();
+		firstEdge.pTail->pPosition = new glm::vec3(min);
+		firstEdge.pFace = pFace;
+
+		firstEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& secondEdge = *firstEdge.pNext;
+		secondEdge.pPrev = &firstEdge;
+		secondEdge.pTail = new mmVertex();
+		secondEdge.pTail->pPosition = new glm::vec3(min.x, min.y, max.z);
+		secondEdge.pFace = pFace;
+
+		secondEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& thirdEdge = *secondEdge.pNext;
+		thirdEdge.pPrev = &secondEdge;
+		thirdEdge.pTail = new mmVertex();
+		thirdEdge.pTail->pPosition = new glm::vec3(min.x, max.y, max.z);
+		thirdEdge.pFace = pFace;
+
+		thirdEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& fourthEdge = *thirdEdge.pNext;
+		fourthEdge.pPrev = &thirdEdge;
+		fourthEdge.pTail = new mmVertex();
+		fourthEdge.pTail->pPosition = new glm::vec3(min.x, max.y, min.z);
+		fourthEdge.pFace = pFace;
+
+		fourthEdge.pNext = &firstEdge;
+		firstEdge.pPrev = &fourthEdge;
+	}
+
+	mesh.UpdateRenderMesh(e);
 }

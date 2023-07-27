@@ -19,8 +19,17 @@ void MeshObject::GenBuffers()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+void MeshObject::ClearBuffers()
+{
+	glDeleteBuffers(1, &positionBufferObject);
+	glDeleteBuffers(1, &normalBufferObject);
+	glDeleteBuffers(1, &elementBufferObject);
+}
+
 MeshObject::~MeshObject()
 {
+	ClearBuffers();
+
 	delete[] indices;
 	delete[] verts;
 	delete[] normals;

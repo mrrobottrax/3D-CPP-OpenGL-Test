@@ -332,6 +332,7 @@
     <ClInclude Include="src\meshobject.h" />
     <ClInclude Include="src\modelloader.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\components\aabb.h" />
     <ClInclude Include="src\physics\aabbtree.h" />
     <ClInclude Include="src\physics\halfedgemesh.h" />
     <ClInclude Include="src\physics\physicssystem.h" />

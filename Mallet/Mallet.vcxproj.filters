@@ -50,10 +50,10 @@
     <ClInclude Include="src\ui\malletuisystem.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\tools\blocktool.h">
+    <ClInclude Include="src\tools\blocktool.h">
       <Filter>ui\tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\tools\mallettool.h">
+    <ClInclude Include="src\tools\mallettool.h">
       <Filter>ui\tools</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\windows\malletwindow.h">
@@ -66,6 +66,8 @@
       <Filter>ui\windows</Filter>
     </ClInclude>
     <ClInclude Include="src\malletarchetypes.h" />
+    <ClInclude Include="src\meshwork\malletmesh.h" />
+    <ClInclude Include="src\meshwork\malletmeshcomponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl\malletglutil.cpp">
@@ -82,7 +84,7 @@
     <ClCompile Include="src\ui\malletuisystem.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\tools\blocktool.cpp">
+    <ClCompile Include="src\tools\blocktool.cpp">
       <Filter>ui\tools</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\windows\malletwindow.cpp">
@@ -94,5 +96,6 @@
     <ClCompile Include="src\ui\windows\viewport.cpp">
       <Filter>ui\windows</Filter>
     </ClCompile>
+    <ClCompile Include="src\meshwork\malletmesh.cpp" />
   </ItemGroup>
 </Project>

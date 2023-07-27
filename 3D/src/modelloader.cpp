@@ -30,7 +30,7 @@ namespace modelLoader {
 
 		uint32_t json_length = ParseUInt32(f);
 		
-		char* str_json = new char[json_length + 1];
+		char* str_json = new char[(size_t)json_length + 1];
 		f.seekg(20, std::ios::beg);
 		f.read(str_json, json_length);
 		str_json[json_length] = NULL;
