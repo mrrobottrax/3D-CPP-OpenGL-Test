@@ -25,4 +25,5 @@ struct MeshObject
 
 	void GenBuffers();
 	void ClearBuffers();
+	void ClearArrays();
 };

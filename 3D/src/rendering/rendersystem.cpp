@@ -164,6 +164,7 @@ void RenderSystem::DrawBase()
 
 				// Draw object
 
+				// TODO: Use VAOs and glVertexAttribFormat and glBindVertexBuffer
 				glBindBuffer(GL_ARRAY_BUFFER, mesh.pMesh->positionBufferObject);
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); // in position
 				glBindBuffer(GL_ARRAY_BUFFER, mesh.pMesh->normalBufferObject);

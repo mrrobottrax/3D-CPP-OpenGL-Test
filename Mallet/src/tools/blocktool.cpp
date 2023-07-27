@@ -199,6 +199,9 @@ void BlockTool::CreateBlock()
 
 		fourthEdge.pNext = &firstEdge;
 		firstEdge.pPrev = &fourthEdge;
+
+		pFace->pEdge = &firstEdge;
+		pFace->normal = glm::vec3(-1, 0, 0);
 	}
 
 	mesh.UpdateRenderMesh(e);

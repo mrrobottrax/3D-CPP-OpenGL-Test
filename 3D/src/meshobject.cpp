@@ -19,6 +19,18 @@ void MeshObject::GenBuffers()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+void MeshObject::ClearArrays()
+{
+	if (indices)
+		delete[] indices;
+
+	if (verts)
+		delete[] verts;
+
+	if (normals)
+		delete[] normals;
+}
+
 void MeshObject::ClearBuffers()
 {
 	glDeleteBuffers(1, &positionBufferObject);
@@ -29,8 +41,5 @@ void MeshObject::ClearBuffers()
 MeshObject::~MeshObject()
 {
 	ClearBuffers();
-
-	delete[] indices;
-	delete[] verts;
-	delete[] normals;
+	ClearArrays();
 }

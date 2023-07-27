@@ -26,6 +26,7 @@ struct mmHalfEdge
 struct mmFace
 {
 	mmHalfEdge* pEdge = nullptr;
+	glm::vec3 normal = glm::vec3(0);
 };
 
 class MalletMesh
@@ -33,9 +34,11 @@ class MalletMesh
 public:
 	mmHalfEdge* pFirstEdge = nullptr;
 
+	void CollectVectors(std::unordered_set<glm::vec3*>& positions, std::unordered_set<mmVertex*>& vertices,
+		std::unordered_set<mmHalfEdge*>& edges, std::unordered_set<mmFace*>& faces);
 	void DeleteMesh();
+	void UpdateRenderMesh(const Entity& entity);
 
 	static void DeleteAllMeshes();
-	static void UpdateRenderMesh(const Entity& entity);
 	static void CalculateBounds(const Entity& entity);
 };
