@@ -181,16 +181,18 @@ void BlockTool::CreateBlock()
 	mmHalfEdge* pNegXLeft;
 	mmHalfEdge* pNegXRight;
 	{
+		const glm::vec3 normal(-1, 0, 0);
+
 		// First tri
 		mmFace* pFace1 = new mmFace();
 
-		mesh.pFirstEdge = new mmHalfEdge();
-		mmHalfEdge& firstEdge = *mesh.pFirstEdge;
+		mmHalfEdge& firstEdge = *new mmHalfEdge();
 		firstEdge.pTail = new mmVertex();
 		firstEdge.pTail->pPosition = new glm::vec3(min.x, min.y, min.z);
 		firstEdge.pFace = pFace1;
 
-		pNegXBottom = mesh.pFirstEdge;
+		mesh.pFirstEdge = &firstEdge;;
+		pNegXBottom = &firstEdge;
 
 		firstEdge.pNext = new mmHalfEdge();
 		mmHalfEdge& secondEdge = *firstEdge.pNext;
@@ -208,17 +210,18 @@ void BlockTool::CreateBlock()
 		thirdEdge.pTail->pPosition = new glm::vec3(min.x, max.y, max.z);
 		thirdEdge.pFace = pFace1;
 
-		thirdEdge.pNext = mesh.pFirstEdge;
+		thirdEdge.pNext = &firstEdge;
 		firstEdge.pPrev = &thirdEdge;
 
 		pFace1->pEdge = &firstEdge;
-		pFace1->normal = glm::vec3(-1, 0, 0);
+		pFace1->normal = normal;
 
 		// Second tri
 		mmFace* pFace2 = new mmFace();
 
 		thirdEdge.pTwin = new mmHalfEdge();
 		mmHalfEdge& fourthEdge = *thirdEdge.pTwin;
+		fourthEdge.pTwin = &thirdEdge;
 		fourthEdge.pTail = new mmVertex();
 		fourthEdge.pTail->pPosition = firstEdge.pTail->pPosition;
 		fourthEdge.pFace = pFace2;
@@ -245,8 +248,407 @@ void BlockTool::CreateBlock()
 		fourthEdge.pPrev = &sixthEdge;
 
 		pFace2->pEdge = &fourthEdge;
-		pFace2->normal = glm::vec3(-1, 0, 0);
+		pFace2->normal = normal;
 	}
+
+	// +Y Face
+	mmHalfEdge* pPosYTop;
+	mmHalfEdge* pPosYBottom;
+	mmHalfEdge* pPosYLeft;
+	mmHalfEdge* pPosYRight;
+	{
+		const glm::vec3 normal(0, 1, 0);
+
+		// First tri
+		mmFace* pFace1 = new mmFace();
+
+		mmHalfEdge& firstEdge = *new mmHalfEdge();
+		firstEdge.pTail = new mmVertex();
+		firstEdge.pTail->pPosition = pNegXTop->pTail->pPosition;
+		firstEdge.pFace = pFace1;
+
+		pPosYBottom = &firstEdge;
+
+		firstEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& secondEdge = *firstEdge.pNext;
+		secondEdge.pPrev = &firstEdge;
+		secondEdge.pTail = new mmVertex();
+		secondEdge.pTail->pPosition = new glm::vec3(max.x, max.y, max.z);
+		secondEdge.pFace = pFace1;
+
+		pPosYRight = &secondEdge;
+
+		secondEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& thirdEdge = *secondEdge.pNext;
+		thirdEdge.pPrev = &secondEdge;
+		thirdEdge.pTail = new mmVertex();
+		thirdEdge.pTail->pPosition = new glm::vec3(max.x, max.y, min.z);
+		thirdEdge.pFace = pFace1;
+
+		thirdEdge.pNext = &firstEdge;
+		firstEdge.pPrev = &thirdEdge;
+
+		pFace1->pEdge = &firstEdge;
+		pFace1->normal = normal;
+
+		// Second tri
+		mmFace* pFace2 = new mmFace();
+
+		thirdEdge.pTwin = new mmHalfEdge();
+		mmHalfEdge& fourthEdge = *thirdEdge.pTwin;
+		fourthEdge.pTwin = &thirdEdge;
+		fourthEdge.pTail = new mmVertex();
+		fourthEdge.pTail->pPosition = firstEdge.pTail->pPosition;
+		fourthEdge.pFace = pFace2;
+
+		fourthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& fifthEdge = *fourthEdge.pNext;
+		fifthEdge.pPrev = &fourthEdge;
+		fifthEdge.pTail = new mmVertex();
+		fifthEdge.pTail->pPosition = thirdEdge.pTail->pPosition;
+		fifthEdge.pFace = pFace2;
+
+		pPosYTop = &fifthEdge;
+
+		fifthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& sixthEdge = *fifthEdge.pNext;
+		sixthEdge.pPrev = &fifthEdge;
+		sixthEdge.pTail = new mmVertex();
+		sixthEdge.pTail->pPosition = pNegXLeft->pTail->pPosition;
+		sixthEdge.pFace = pFace2;
+
+		pPosYLeft = &sixthEdge;
+
+		sixthEdge.pNext = &fourthEdge;
+		fourthEdge.pPrev = &sixthEdge;
+
+		pFace2->pEdge = &fourthEdge;
+		pFace2->normal = normal;
+	}
+	pNegXTop->pTwin = pPosYLeft;
+	pPosYLeft->pTwin = pNegXTop;
+
+	// +X Face
+	mmHalfEdge* pPosXTop;
+	mmHalfEdge* pPosXBottom;
+	mmHalfEdge* pPosXLeft;
+	mmHalfEdge* pPosXRight;
+	{
+		const glm::vec3 normal(1, 0, 0);
+
+		// First tri
+		mmFace* pFace1 = new mmFace();
+
+		mmHalfEdge& firstEdge = *new mmHalfEdge();
+		firstEdge.pTail = new mmVertex();
+		firstEdge.pTail->pPosition = new glm::vec3(max.x, min.y, max.z);
+		firstEdge.pFace = pFace1;
+
+		pPosXBottom = &firstEdge;
+
+		firstEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& secondEdge = *firstEdge.pNext;
+		secondEdge.pPrev = &firstEdge;
+		secondEdge.pTail = new mmVertex();
+		secondEdge.pTail->pPosition = new glm::vec3(max.x, min.y, min.z);
+		secondEdge.pFace = pFace1;
+
+		pPosXRight = &secondEdge;
+
+		secondEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& thirdEdge = *secondEdge.pNext;
+		thirdEdge.pPrev = &secondEdge;
+		thirdEdge.pTail = new mmVertex();
+		thirdEdge.pTail->pPosition = pPosYTop->pTail->pPosition;
+		thirdEdge.pFace = pFace1;
+
+		thirdEdge.pNext = &firstEdge;
+		firstEdge.pPrev = &thirdEdge;
+
+		pFace1->pEdge = &firstEdge;
+		pFace1->normal = normal;
+
+		// Second tri
+		mmFace* pFace2 = new mmFace();
+
+		thirdEdge.pTwin = new mmHalfEdge();
+		mmHalfEdge& fourthEdge = *thirdEdge.pTwin;
+		fourthEdge.pTwin = &thirdEdge;
+		fourthEdge.pTail = new mmVertex();
+		fourthEdge.pTail->pPosition = firstEdge.pTail->pPosition;
+		fourthEdge.pFace = pFace2;
+
+		fourthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& fifthEdge = *fourthEdge.pNext;
+		fifthEdge.pPrev = &fourthEdge;
+		fifthEdge.pTail = new mmVertex();
+		fifthEdge.pTail->pPosition = thirdEdge.pTail->pPosition;
+		fifthEdge.pFace = pFace2;
+
+		pPosXTop = &fifthEdge;
+
+		fifthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& sixthEdge = *fifthEdge.pNext;
+		sixthEdge.pPrev = &fifthEdge;
+		sixthEdge.pTail = new mmVertex();
+		sixthEdge.pTail->pPosition = pPosYRight->pTail->pPosition;
+		sixthEdge.pFace = pFace2;
+
+		pPosXLeft = &sixthEdge;
+
+		sixthEdge.pNext = &fourthEdge;
+		fourthEdge.pPrev = &sixthEdge;
+
+		pFace2->pEdge = &fourthEdge;
+		pFace2->normal = normal;
+	}
+	pPosXTop->pTwin = pPosYRight;
+	pPosYRight->pTwin = pPosXTop;
+
+	// -Y Face
+	mmHalfEdge* pNegYTop;
+	mmHalfEdge* pNegYBottom;
+	mmHalfEdge* pNegYLeft;
+	mmHalfEdge* pNegYRight;
+	{
+		const glm::vec3 normal(0, -1, 0);
+
+		// First tri
+		mmFace* pFace1 = new mmFace();
+
+		mmHalfEdge& firstEdge = *new mmHalfEdge();
+		firstEdge.pTail = new mmVertex();
+		firstEdge.pTail->pPosition = pPosXBottom->pTail->pPosition;
+		firstEdge.pFace = pFace1;
+
+		pNegYBottom = &firstEdge;
+
+		firstEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& secondEdge = *firstEdge.pNext;
+		secondEdge.pPrev = &firstEdge;
+		secondEdge.pTail = new mmVertex();
+		secondEdge.pTail->pPosition = pNegXRight->pTail->pPosition;
+		secondEdge.pFace = pFace1;
+
+		pNegYRight = &secondEdge;
+
+		secondEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& thirdEdge = *secondEdge.pNext;
+		thirdEdge.pPrev = &secondEdge;
+		thirdEdge.pTail = new mmVertex();
+		thirdEdge.pTail->pPosition = pNegXBottom->pTail->pPosition;
+		thirdEdge.pFace = pFace1;
+
+		thirdEdge.pNext = &firstEdge;
+		firstEdge.pPrev = &thirdEdge;
+
+		pFace1->pEdge = &firstEdge;
+		pFace1->normal = normal;
+
+		// Second tri
+		mmFace* pFace2 = new mmFace();
+
+		thirdEdge.pTwin = new mmHalfEdge();
+		mmHalfEdge& fourthEdge = *thirdEdge.pTwin;
+		fourthEdge.pTwin = &thirdEdge;
+		fourthEdge.pTail = new mmVertex();
+		fourthEdge.pTail->pPosition = firstEdge.pTail->pPosition;
+		fourthEdge.pFace = pFace2;
+
+		fourthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& fifthEdge = *fourthEdge.pNext;
+		fifthEdge.pPrev = &fourthEdge;
+		fifthEdge.pTail = new mmVertex();
+		fifthEdge.pTail->pPosition = thirdEdge.pTail->pPosition;
+		fifthEdge.pFace = pFace2;
+
+		pNegYTop = &fifthEdge;
+
+		fifthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& sixthEdge = *fifthEdge.pNext;
+		sixthEdge.pPrev = &fifthEdge;
+		sixthEdge.pTail = new mmVertex();
+		sixthEdge.pTail->pPosition = pPosXRight->pTail->pPosition;
+		sixthEdge.pFace = pFace2;
+
+		pNegYLeft = &sixthEdge;
+
+		sixthEdge.pNext = &fourthEdge;
+		fourthEdge.pPrev = &sixthEdge;
+
+		pFace2->pEdge = &fourthEdge;
+		pFace2->normal = normal;
+	}
+	pNegYRight->pTwin = pNegXBottom;
+	pNegXBottom->pTwin = pNegYRight;
+	pNegYLeft->pTwin = pPosXBottom;
+	pPosXBottom->pTwin = pNegYLeft;
+
+	// +Z Face
+	mmHalfEdge* pPosZTop;
+	mmHalfEdge* pPosZBottom;
+	mmHalfEdge* pPosZLeft;
+	mmHalfEdge* pPosZRight;
+	{
+		const glm::vec3 normal(0, 0, 1);
+
+		// First tri
+		mmFace* pFace1 = new mmFace();
+
+		mmHalfEdge& firstEdge = *new mmHalfEdge();
+		firstEdge.pTail = new mmVertex();
+		firstEdge.pTail->pPosition = pNegXRight->pTail->pPosition;
+		firstEdge.pFace = pFace1;
+
+		pPosZBottom = &firstEdge;
+
+		firstEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& secondEdge = *firstEdge.pNext;
+		secondEdge.pPrev = &firstEdge;
+		secondEdge.pTail = new mmVertex();
+		secondEdge.pTail->pPosition = pPosXBottom->pTail->pPosition;
+		secondEdge.pFace = pFace1;
+
+		pPosZRight = &secondEdge;
+
+		secondEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& thirdEdge = *secondEdge.pNext;
+		thirdEdge.pPrev = &secondEdge;
+		thirdEdge.pTail = new mmVertex();
+		thirdEdge.pTail->pPosition = pPosXLeft->pTail->pPosition;
+		thirdEdge.pFace = pFace1;
+
+		thirdEdge.pNext = &firstEdge;
+		firstEdge.pPrev = &thirdEdge;
+
+		pFace1->pEdge = &firstEdge;
+		pFace1->normal = normal;
+
+		// Second tri
+		mmFace* pFace2 = new mmFace();
+
+		thirdEdge.pTwin = new mmHalfEdge();
+		mmHalfEdge& fourthEdge = *thirdEdge.pTwin;
+		fourthEdge.pTwin = &thirdEdge;
+		fourthEdge.pTail = new mmVertex();
+		fourthEdge.pTail->pPosition = firstEdge.pTail->pPosition;
+		fourthEdge.pFace = pFace2;
+
+		fourthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& fifthEdge = *fourthEdge.pNext;
+		fifthEdge.pPrev = &fourthEdge;
+		fifthEdge.pTail = new mmVertex();
+		fifthEdge.pTail->pPosition = thirdEdge.pTail->pPosition;
+		fifthEdge.pFace = pFace2;
+
+		pPosZTop = &fifthEdge;
+
+		fifthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& sixthEdge = *fifthEdge.pNext;
+		sixthEdge.pPrev = &fifthEdge;
+		sixthEdge.pTail = new mmVertex();
+		sixthEdge.pTail->pPosition = pNegXTop->pTail->pPosition;
+		sixthEdge.pFace = pFace2;
+
+		pPosZLeft = &sixthEdge;
+
+		sixthEdge.pNext = &fourthEdge;
+		fourthEdge.pPrev = &sixthEdge;
+
+		pFace2->pEdge = &fourthEdge;
+		pFace2->normal = normal;
+	}
+	pPosZLeft->pTwin = pNegXRight;
+	pNegXRight->pTwin = pPosZLeft;
+	pPosZBottom->pTwin = pNegYBottom;
+	pNegYBottom->pTwin = pPosZBottom;
+	pPosZRight->pTwin = pPosXLeft;
+	pPosXLeft->pTwin = pPosZRight;
+	pPosZTop->pTwin = pPosYBottom;
+	pPosYBottom->pTwin = pPosZTop;
+
+	// -Z Face
+	mmHalfEdge* pNegZTop;
+	mmHalfEdge* pNegZBottom;
+	mmHalfEdge* pNegZLeft;
+	mmHalfEdge* pNegZRight;
+	{
+		const glm::vec3 normal(0, 0, -1);
+
+		// First tri
+		mmFace* pFace1 = new mmFace();
+
+		mmHalfEdge& firstEdge = *new mmHalfEdge();
+		firstEdge.pTail = new mmVertex();
+		firstEdge.pTail->pPosition = pNegYLeft->pTail->pPosition;
+		firstEdge.pFace = pFace1;
+
+		pNegZBottom = &firstEdge;
+
+		firstEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& secondEdge = *firstEdge.pNext;
+		secondEdge.pPrev = &firstEdge;
+		secondEdge.pTail = new mmVertex();
+		secondEdge.pTail->pPosition = pNegYTop->pTail->pPosition;
+		secondEdge.pFace = pFace1;
+
+		pNegZRight = &secondEdge;
+
+		secondEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& thirdEdge = *secondEdge.pNext;
+		thirdEdge.pPrev = &secondEdge;
+		thirdEdge.pTail = new mmVertex();
+		thirdEdge.pTail->pPosition = pNegXLeft->pTail->pPosition;
+		thirdEdge.pFace = pFace1;
+
+		thirdEdge.pNext = &firstEdge;
+		firstEdge.pPrev = &thirdEdge;
+
+		pFace1->pEdge = &firstEdge;
+		pFace1->normal = normal;
+
+		// Second tri
+		mmFace* pFace2 = new mmFace();
+
+		thirdEdge.pTwin = new mmHalfEdge();
+		mmHalfEdge& fourthEdge = *thirdEdge.pTwin;
+		fourthEdge.pTwin = &thirdEdge;
+		fourthEdge.pTail = new mmVertex();
+		fourthEdge.pTail->pPosition = firstEdge.pTail->pPosition;
+		fourthEdge.pFace = pFace2;
+
+		fourthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& fifthEdge = *fourthEdge.pNext;
+		fifthEdge.pPrev = &fourthEdge;
+		fifthEdge.pTail = new mmVertex();
+		fifthEdge.pTail->pPosition = thirdEdge.pTail->pPosition;
+		fifthEdge.pFace = pFace2;
+
+		pNegZTop = &fifthEdge;
+
+		fifthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& sixthEdge = *fifthEdge.pNext;
+		sixthEdge.pPrev = &fifthEdge;
+		sixthEdge.pTail = new mmVertex();
+		sixthEdge.pTail->pPosition = pPosXTop->pTail->pPosition;
+		sixthEdge.pFace = pFace2;
+
+		pNegZLeft = &sixthEdge;
+
+		sixthEdge.pNext = &fourthEdge;
+		fourthEdge.pPrev = &sixthEdge;
+
+		pFace2->pEdge = &fourthEdge;
+		pFace2->normal = normal;
+	}
+	pNegZLeft->pTwin = pPosXRight;
+	pPosXRight->pTwin = pNegZLeft;
+	pNegZBottom->pTwin = pNegYTop;
+	pNegYTop->pTwin = pNegZBottom;
+	pNegZRight->pTwin = pNegXLeft;
+	pNegXLeft->pTwin = pNegZRight;
+	pNegZTop->pTwin = pPosYTop;
+	pPosYTop->pTwin = pNegZTop;
 
 	mesh.UpdateRenderMesh(e);
 }
