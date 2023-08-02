@@ -162,29 +162,79 @@ void MalletMesh::UpdateRenderMesh(const Entity& entity)
 		} while (pEdge != pFirstEdge);
 	}
 
-	//std::cout << "VERTS: " << mesh.vertCount << std::endl;
-	//for (int i = 0; i < mesh.vertCount; i += 3)
-	//{
-	//	std::cout << mesh.verts[i] << ", ";
-	//	std::cout << mesh.verts[i + 1] << ", ";
-	//	std::cout << mesh.verts[i + 2] << "\n";
-	//}
+	/*std::cout << "POSITIONS: " << positions.size() << std::endl;
+	for (auto it = positions.begin(); it != positions.end(); ++it)
+	{
+		std::cout << (*it)->x << ", " << (*it)->y << ", " << (*it)->z << std::endl;
+	}*/
 
-	//std::cout << "NORMALS: " << mesh.normalCount << std::endl;
-	//for (int i = 0; i < mesh.normalCount; i += 3)
-	//{
-	//	std::cout << mesh.normals[i] << ", ";
-	//	std::cout << mesh.normals[i + 1] << ", ";
-	//	std::cout << mesh.normals[i + 2] << "\n";
-	//}
+	/*std::cout << "VERTS: " << mesh.vertCount << std::endl;
+	for (int i = 0; i < mesh.vertCount; i += 3)
+	{
+		std::cout << mesh.verts[i] << ", ";
+		std::cout << mesh.verts[i + 1] << ", ";
+		std::cout << mesh.verts[i + 2] << "\n";
+	}
 
-	//std::cout << "INDICES: " << mesh.indicesCount << std::endl;
-	//for (int i = 0; i < mesh.indicesCount; ++i)
-	//{
-	//	std::cout << mesh.indices[i] << "\n";
-	//}
+	std::cout << "NORMALS: " << mesh.normalCount << std::endl;
+	for (int i = 0; i < mesh.normalCount; i += 3)
+	{
+		std::cout << mesh.normals[i] << ", ";
+		std::cout << mesh.normals[i + 1] << ", ";
+		std::cout << mesh.normals[i + 2] << "\n";
+	}
+
+	std::cout << "INDICES: " << mesh.indicesCount << std::endl;
+	for (int i = 0; i < mesh.indicesCount; ++i)
+	{
+		std::cout << mesh.indices[i] << "\n";
+	}*/
 
 	mesh.GenBuffers();
+}
+
+void MalletMesh::Validate()
+{
+	std::unordered_set<glm::vec3*> positions;
+	std::unordered_set<mmVertex*> vertices;
+	std::unordered_set<mmHalfEdge*> edges;
+	std::unordered_set<mmFace*> faces;
+
+	CollectVectors(positions, vertices, edges, faces);
+
+	for (auto it = positions.begin(); it != positions.end(); ++it)
+	{
+		const glm::vec3& vec = **it;
+		assert(!glm::any(glm::isnan(vec)));
+	}
+
+	for (auto it = vertices.begin(); it != vertices.end(); ++it)
+	{
+		const mmVertex& vert = **it;
+		assert(!glm::any(glm::isnan(vert.uv)));
+		assert(vert.pPosition);
+	}
+
+	for (auto it = edges.begin(); it != edges.end(); ++it)
+	{
+		const mmHalfEdge& edge = **it;
+		assert(edge.pFace);
+		assert(edge.pNext);
+		assert(edge.pNext->pPrev == &edge);
+		assert(edge.pPrev);
+		assert(edge.pPrev->pNext == &edge);
+		assert(edge.pTwin);
+		assert(edge.pTwin->pTwin == &edge);
+		assert(edge.pTail);
+	}
+
+	for (auto it = faces.begin(); it != faces.end(); ++it)
+	{
+		const mmFace& face = **it;
+		assert(!glm::any(glm::isnan(face.normal)));
+		assert(face.pEdge);
+		assert(face.pEdge->pFace == &face);
+	}
 }
 
 void MalletMesh::CalculateBounds(const Entity& entity)

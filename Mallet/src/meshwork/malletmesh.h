@@ -38,6 +38,7 @@ public:
 		std::unordered_set<mmHalfEdge*>& edges, std::unordered_set<mmFace*>& faces);
 	void DeleteMesh();
 	void UpdateRenderMesh(const Entity& entity);
+	void Validate();
 
 	static void DeleteAllMeshes();
 	static void CalculateBounds(const Entity& entity);

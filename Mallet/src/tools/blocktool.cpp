@@ -650,5 +650,6 @@ void BlockTool::CreateBlock()
 	pNegZTop->pTwin = pPosYTop;
 	pPosYTop->pTwin = pNegZTop;
 
+	mesh.Validate();
 	mesh.UpdateRenderMesh(e);
 }
