@@ -5,6 +5,9 @@
 #include <components/meshcomponent.h>
 #include <memory/entitymanager.h>
 #include "malletmeshcomponent.h"
+#include <components/positioncomponent.h>
+#include <components/rotationcomponent.h>
+#include <components/scalecomponent.h>
 
 void CollectVectorsRecursive(mmHalfEdge* pEdge,
 	std::unordered_set<glm::vec3*>& positions, std::unordered_set<mmVertex*>& vertices,
@@ -124,7 +127,6 @@ void MalletMesh::UpdateRenderMesh(const Entity& entity)
 	mesh.normals = new float[mesh.normalCount];
 	mesh.indices = new meshIndex_t[mesh.indicesCount]{};
 
-	// TODO: Triangularize
 	int i = 0;
 	for (auto it = faces.begin(); it != faces.end(); ++it)
 	{
@@ -160,24 +162,27 @@ void MalletMesh::UpdateRenderMesh(const Entity& entity)
 		} while (pEdge != pFirstEdge);
 	}
 
-	for (int i = 0; i < mesh.vertCount; i += 3)
-	{
-		std::cout << mesh.verts[i] << ", ";
-		std::cout << mesh.verts[i + 1] << ", ";
-		std::cout << mesh.verts[i + 2] << "\n";
-	}
+	//std::cout << "VERTS: " << mesh.vertCount << std::endl;
+	//for (int i = 0; i < mesh.vertCount; i += 3)
+	//{
+	//	std::cout << mesh.verts[i] << ", ";
+	//	std::cout << mesh.verts[i + 1] << ", ";
+	//	std::cout << mesh.verts[i + 2] << "\n";
+	//}
 
-	for (int i = 0; i < mesh.normalCount; i += 3)
-	{
-		std::cout << mesh.normals[i] << ", ";
-		std::cout << mesh.normals[i + 1] << ", ";
-		std::cout << mesh.normals[i + 2] << "\n";
-	}
+	//std::cout << "NORMALS: " << mesh.normalCount << std::endl;
+	//for (int i = 0; i < mesh.normalCount; i += 3)
+	//{
+	//	std::cout << mesh.normals[i] << ", ";
+	//	std::cout << mesh.normals[i + 1] << ", ";
+	//	std::cout << mesh.normals[i + 2] << "\n";
+	//}
 
-	for (int i = 0; i < mesh.indicesCount; ++i)
-	{
-		std::cout << mesh.indices[i] << "\n";
-	}
+	//std::cout << "INDICES: " << mesh.indicesCount << std::endl;
+	//for (int i = 0; i < mesh.indicesCount; ++i)
+	//{
+	//	std::cout << mesh.indices[i] << "\n";
+	//}
 
 	mesh.GenBuffers();
 }

@@ -162,46 +162,90 @@ void BlockTool::CreateBlock()
 	em.GetComponent<MeshComponent>(e).pMesh = nullptr;
 	MalletMesh& mesh = em.GetComponent<MalletMeshComponent>(e).mesh;
 
-	const glm::vec3 min = glm::min(blockStart, blockEnd);
-	const glm::vec3 max = glm::max(blockStart, blockEnd);
+	glm::vec3 min = glm::min(blockStart, blockEnd);
+	glm::vec3 max = glm::max(blockStart, blockEnd);
+
+	const glm::vec3 center = ((max - min) / 2.0f) + min;
+
+	min -= center;
+	max -= center;
+
+	entityManager.GetComponent<PositionComponent>(e).value = center;
+	entityManager.GetComponent<RotationComponent>(e).value = glm::identity<glm::fquat>();
+	entityManager.GetComponent<ScaleComponent>(e).value = glm::vec3(1);
 
 	// Create box
 	// -X Face
+	mmHalfEdge* pNegXTop;
+	mmHalfEdge* pNegXBottom;
+	mmHalfEdge* pNegXLeft;
+	mmHalfEdge* pNegXRight;
 	{
-		mmFace* pFace = new mmFace();
+		// First tri
+		mmFace* pFace1 = new mmFace();
 
 		mesh.pFirstEdge = new mmHalfEdge();
 		mmHalfEdge& firstEdge = *mesh.pFirstEdge;
 		firstEdge.pTail = new mmVertex();
-		firstEdge.pTail->pPosition = new glm::vec3(min);
-		firstEdge.pFace = pFace;
+		firstEdge.pTail->pPosition = new glm::vec3(min.x, min.y, min.z);
+		firstEdge.pFace = pFace1;
+
+		pNegXBottom = mesh.pFirstEdge;
 
 		firstEdge.pNext = new mmHalfEdge();
 		mmHalfEdge& secondEdge = *firstEdge.pNext;
 		secondEdge.pPrev = &firstEdge;
 		secondEdge.pTail = new mmVertex();
 		secondEdge.pTail->pPosition = new glm::vec3(min.x, min.y, max.z);
-		secondEdge.pFace = pFace;
+		secondEdge.pFace = pFace1;
+
+		pNegXRight = &secondEdge;
 
 		secondEdge.pNext = new mmHalfEdge();
 		mmHalfEdge& thirdEdge = *secondEdge.pNext;
 		thirdEdge.pPrev = &secondEdge;
 		thirdEdge.pTail = new mmVertex();
 		thirdEdge.pTail->pPosition = new glm::vec3(min.x, max.y, max.z);
-		thirdEdge.pFace = pFace;
+		thirdEdge.pFace = pFace1;
 
-		thirdEdge.pNext = new mmHalfEdge();
-		mmHalfEdge& fourthEdge = *thirdEdge.pNext;
-		fourthEdge.pPrev = &thirdEdge;
+		thirdEdge.pNext = mesh.pFirstEdge;
+		firstEdge.pPrev = &thirdEdge;
+
+		pFace1->pEdge = &firstEdge;
+		pFace1->normal = glm::vec3(-1, 0, 0);
+
+		// Second tri
+		mmFace* pFace2 = new mmFace();
+
+		thirdEdge.pTwin = new mmHalfEdge();
+		mmHalfEdge& fourthEdge = *thirdEdge.pTwin;
 		fourthEdge.pTail = new mmVertex();
-		fourthEdge.pTail->pPosition = new glm::vec3(min.x, max.y, min.z);
-		fourthEdge.pFace = pFace;
+		fourthEdge.pTail->pPosition = firstEdge.pTail->pPosition;
+		fourthEdge.pFace = pFace2;
 
-		fourthEdge.pNext = &firstEdge;
-		firstEdge.pPrev = &fourthEdge;
+		fourthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& fifthEdge = *fourthEdge.pNext;
+		fifthEdge.pPrev = &fourthEdge;
+		fifthEdge.pTail = new mmVertex();
+		fifthEdge.pTail->pPosition = thirdEdge.pTail->pPosition;
+		fifthEdge.pFace = pFace2;
+		
+		pNegXTop = &fifthEdge;
 
-		pFace->pEdge = &firstEdge;
-		pFace->normal = glm::vec3(-1, 0, 0);
+		fifthEdge.pNext = new mmHalfEdge();
+		mmHalfEdge& sixthEdge = *fifthEdge.pNext;
+		sixthEdge.pPrev = &fifthEdge;
+		sixthEdge.pTail = new mmVertex();
+		sixthEdge.pTail->pPosition = new glm::vec3(min.x, max.y, min.z);
+		sixthEdge.pFace = pFace2;
+
+		pNegXLeft = &sixthEdge;
+
+		sixthEdge.pNext = &fourthEdge;
+		fourthEdge.pPrev = &sixthEdge;
+
+		pFace2->pEdge = &fourthEdge;
+		pFace2->normal = glm::vec3(-1, 0, 0);
 	}
 
 	mesh.UpdateRenderMesh(e);
