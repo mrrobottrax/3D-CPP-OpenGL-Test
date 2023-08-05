@@ -19,7 +19,6 @@ void MalletUiSystem::Init()
 void MalletUiSystem::Update()
 {
 	tree.DrawTree();
-	menuBar.Draw();
 }
 
 void MalletUiSystem::DeselectNode()

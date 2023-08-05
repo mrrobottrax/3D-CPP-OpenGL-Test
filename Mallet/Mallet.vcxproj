@@ -308,7 +308,6 @@
     <ClInclude Include="src\ui\malletuisystem.h" />
     <ClInclude Include="src\tools\blocktool.h" />
     <ClInclude Include="src\tools\mallettool.h" />
-    <ClInclude Include="src\ui\menubar.h" />
     <ClInclude Include="src\ui\windows\malletwindow.h" />
     <ClInclude Include="src\ui\windows\toolbar.h" />
     <ClInclude Include="src\ui\windows\viewport.h" />
@@ -324,7 +323,6 @@
     <ClCompile Include="src\ui\docking\dockingtree.cpp" />
     <ClCompile Include="src\ui\malletuisystem.cpp" />
     <ClCompile Include="src\tools\blocktool.cpp" />
-    <ClCompile Include="src\ui\menubar.cpp" />
     <ClCompile Include="src\ui\windows\malletwindow.cpp" />
     <ClCompile Include="src\ui\windows\toolbar.cpp" />
     <ClCompile Include="src\ui\windows\viewport.cpp" />

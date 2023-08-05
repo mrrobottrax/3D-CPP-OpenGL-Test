@@ -2,7 +2,7 @@
 
 #include <imgui/imguiutil.h>
 
-constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration |
+const static ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration |
 ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
 ImGuiWindowFlags_NoMove;
 
