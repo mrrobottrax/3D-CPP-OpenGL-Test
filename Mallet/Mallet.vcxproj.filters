@@ -68,6 +68,7 @@
     <ClInclude Include="src\malletarchetypes.h" />
     <ClInclude Include="src\meshwork\malletmesh.h" />
     <ClInclude Include="src\meshwork\malletmeshcomponent.h" />
+    <ClInclude Include="src\ui\menubar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl\malletglutil.cpp">
@@ -97,5 +98,6 @@
       <Filter>ui\windows</Filter>
     </ClCompile>
     <ClCompile Include="src\meshwork\malletmesh.cpp" />
+    <ClCompile Include="src\ui\menubar.cpp" />
   </ItemGroup>
 </Project>

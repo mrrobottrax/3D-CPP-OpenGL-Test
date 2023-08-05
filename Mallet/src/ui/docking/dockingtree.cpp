@@ -2,6 +2,7 @@
 #include "dockingtree.h"
 
 #include <gl/glutil.h>
+#include <ui/menubar.h>
 
 DockingLeaf* DockingTree::AddLeaf(MalletWindow* pWindow, DockingLeaf* pLeafToSplit, SplitDirection direction,
 	float ratio, bool flip)
@@ -120,7 +121,7 @@ void DockingTree::UpdateSize()
 	int width, height;
 	glfwGetWindowSize(pMainWindow, &width, &height);
 
-	UpdateSizeRecursive(pBaseNode, width, height, 0, 0);
+	UpdateSizeRecursive(pBaseNode, width, height - menuBarSize, 0, menuBarSize);
 }
 
 void DrawTreeRecursive(DockingNode* pNode)

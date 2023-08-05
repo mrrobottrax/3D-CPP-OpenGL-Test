@@ -2,6 +2,7 @@
 
 #include <systems/system.h>
 #include <ui/docking/dockingtree.h>
+#include "menubar.h"
 
 class MalletUiSystem : public System
 {
@@ -18,6 +19,7 @@ public:
 	void WindowSizeCallback(GLFWwindow*, int width, int height);
 
 private:
+	MenuBar menuBar;
 	DockingTree tree;
 	DockingNode* pSelectedNode;
 
