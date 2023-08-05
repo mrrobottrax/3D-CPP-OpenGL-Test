@@ -499,7 +499,6 @@ void BlockTool::CreateBlock()
 	pPZTopEdge->pTwin = pPYBottomEdge;
 	pPYBottomEdge->pTwin = pPZTopEdge;
 
-	// TODO:
 	mesh.Validate(false);
 	mesh.UpdateRenderMesh(e);
 }
