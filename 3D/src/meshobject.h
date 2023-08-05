@@ -11,15 +11,15 @@ struct MeshObject
 	GLuint normalBufferObject;
 	GLuint elementBufferObject;
 
-	meshSize_t vertCount;
-	meshSize_t normalCount;
+	meshSize_t vertsSize;
+	meshSize_t normalsSize;
 	meshSize_t indicesCount;
 	float* verts;
 	float* normals;
 	meshIndex_t* indices;
 
 	~MeshObject();
-	MeshObject() : vertCount(0), normalCount(0), indicesCount(0),
+	MeshObject() : vertsSize(0), normalsSize(0), indicesCount(0),
 		verts(nullptr), indices(nullptr), normals(nullptr),
 		positionBufferObject(0), normalBufferObject(0), elementBufferObject(0) {};
 

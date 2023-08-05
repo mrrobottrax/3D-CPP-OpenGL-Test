@@ -119,29 +119,37 @@ void MalletMesh::UpdateRenderMesh(const Entity& entity)
 
 	CollectVectors(positions, vertices, edges, faces);
 
-	mesh.vertCount = meshSize_t(vertices.size() * 3);
-	mesh.normalCount = meshSize_t(vertices.size() * 3);
-	mesh.indicesCount = meshSize_t(vertices.size());
+	mesh.vertsSize = meshSize_t(vertices.size() * 3);
+	mesh.normalsSize = meshSize_t(vertices.size() * 3);
 
-	mesh.verts = new float[mesh.vertCount];
-	mesh.normals = new float[mesh.normalCount];
-	mesh.indices = new meshIndex_t[mesh.indicesCount]{};
+	mesh.verts = new float[mesh.vertsSize];
+	mesh.normals = new float[mesh.normalsSize];
 
-	int i = 0;
+	std::vector<meshIndex_t> indices;
+
 	for (auto it = faces.begin(); it != faces.end(); ++it)
 	{
 		mmHalfEdge* const pFirstEdge = (*it)->pEdge;
 		mmHalfEdge* pEdge = pFirstEdge;
+		int vertCounter = 0;
+		meshIndex_t startIndex;
+		meshIndex_t prevIndex = 0;
 		do {
-			assert(i < mesh.indicesCount);
-
 			auto vertIt = vertices.find(pEdge->pTail);
 
 			// Create in index so that verts can be reused
-			const int index = (int)std::distance(vertices.begin(), vertIt);
-			const int vertIndex = index * 3;
-			assert(vertIndex + 2 < mesh.normalCount);
-			assert(vertIndex + 2 < mesh.vertCount);
+			const meshIndex_t index = (int)std::distance(vertices.begin(), vertIt);
+			const meshSize_t vertIndex = index * 3;
+
+			// Keep track of the index of the first edge
+			// for triangularization
+			if (vertCounter == 0)
+			{
+				startIndex = index;
+			}
+
+			assert(vertIndex + 2 < mesh.normalsSize);
+			assert(vertIndex + 2 < mesh.vertsSize);
 
 			const glm::vec3& tail = *pEdge->pTail->pPosition;
 
@@ -155,45 +163,57 @@ void MalletMesh::UpdateRenderMesh(const Entity& entity)
 			mesh.normals[vertIndex + 1] = normal.y;
 			mesh.normals[vertIndex + 2] = normal.z;
 
-			mesh.indices[i] = index;
+			// Triangle
+			if (vertCounter >= 3)
+			{
+				indices.push_back(startIndex);
+				indices.push_back(prevIndex);
+			}
+
+			indices.push_back(index);
 
 			pEdge = pEdge->pNext;
-			++i;
+			++vertCounter;
+			prevIndex = index;
 		} while (pEdge != pFirstEdge);
 	}
 
-	/*std::cout << "POSITIONS: " << positions.size() << std::endl;
-	for (auto it = positions.begin(); it != positions.end(); ++it)
-	{
-		std::cout << (*it)->x << ", " << (*it)->y << ", " << (*it)->z << std::endl;
-	}*/
-
-	/*std::cout << "VERTS: " << mesh.vertCount << std::endl;
-	for (int i = 0; i < mesh.vertCount; i += 3)
-	{
-		std::cout << mesh.verts[i] << ", ";
-		std::cout << mesh.verts[i + 1] << ", ";
-		std::cout << mesh.verts[i + 2] << "\n";
-	}
-
-	std::cout << "NORMALS: " << mesh.normalCount << std::endl;
-	for (int i = 0; i < mesh.normalCount; i += 3)
-	{
-		std::cout << mesh.normals[i] << ", ";
-		std::cout << mesh.normals[i + 1] << ", ";
-		std::cout << mesh.normals[i + 2] << "\n";
-	}
-
-	std::cout << "INDICES: " << mesh.indicesCount << std::endl;
-	for (int i = 0; i < mesh.indicesCount; ++i)
-	{
-		std::cout << mesh.indices[i] << "\n";
-	}*/
+	mesh.indicesCount = (meshSize_t)indices.size();
+	mesh.indices = new meshIndex_t[mesh.indicesCount];
+	std::copy(indices.begin(), indices.end(), mesh.indices);
 
 	mesh.GenBuffers();
+
+	//std::cout << "POSITIONS: " << positions.size() << std::endl;
+	//for (auto it = positions.begin(); it != positions.end(); ++it)
+	//{
+	//	std::cout << (*it)->x << ", " << (*it)->y << ", " << (*it)->z << std::endl;
+	//}
+
+	//std::cout << "VERTS: " << mesh.vertsSize << std::endl;
+	//for (int i = 0; i < mesh.vertsSize; i += 3)
+	//{
+	//	std::cout << mesh.verts[i] << ", ";
+	//	std::cout << mesh.verts[i + 1] << ", ";
+	//	std::cout << mesh.verts[i + 2] << "\n";
+	//}
+
+	//std::cout << "NORMALS: " << mesh.normalsSize << std::endl;
+	//for (int i = 0; i < mesh.normalsSize; i += 3)
+	//{
+	//	std::cout << mesh.normals[i] << ", ";
+	//	std::cout << mesh.normals[i + 1] << ", ";
+	//	std::cout << mesh.normals[i + 2] << "\n";
+	//}
+
+	//std::cout << "INDICES: " << mesh.indicesCount << std::endl;
+	//for (int i = 0; i < mesh.indicesCount; ++i)
+	//{
+	//	std::cout << mesh.indices[i] << "\n";
+	//}
 }
 
-void MalletMesh::Validate()
+void MalletMesh::Validate(bool allowHoles)
 {
 	std::unordered_set<glm::vec3*> positions;
 	std::unordered_set<mmVertex*> vertices;
@@ -223,9 +243,13 @@ void MalletMesh::Validate()
 		assert(edge.pNext->pPrev == &edge);
 		assert(edge.pPrev);
 		assert(edge.pPrev->pNext == &edge);
-		assert(edge.pTwin);
-		assert(edge.pTwin->pTwin == &edge);
 		assert(edge.pTail);
+
+		if (!allowHoles || edge.pTwin)
+		{
+			assert(edge.pTwin);
+			assert(edge.pTwin->pTwin == &edge);
+		}
 	}
 
 	for (auto it = faces.begin(); it != faces.end(); ++it)

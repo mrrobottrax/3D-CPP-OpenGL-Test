@@ -52,10 +52,10 @@ namespace modelLoader {
 
 		// Positions
 		Buffer b_positions(data, data["meshes"][0]["primitives"][0]["attributes"]["POSITION"]);
-		mesh.vertCount = b_positions.count * 3;
+		mesh.vertsSize = b_positions.count * 3;
 		f.seekg(static_cast<std::basic_istream<char, std::char_traits<char>>::off_type>(bufferStart) + b_positions.bufferOffset, std::ios::beg);
-		float* positions = new float[mesh.vertCount];
-		for (int i = 0; i < mesh.vertCount; ++i)
+		float* positions = new float[mesh.vertsSize];
+		for (int i = 0; i < mesh.vertsSize; ++i)
 		{
 			positions[i] = ParseFloat(f);
 		}
@@ -63,10 +63,10 @@ namespace modelLoader {
 
 		// Normals
 		Buffer b_normals(data, data["meshes"][0]["primitives"][0]["attributes"]["NORMAL"]);
-		mesh.normalCount = b_normals.count * 3;
+		mesh.normalsSize = b_normals.count * 3;
 		f.seekg(static_cast<std::basic_istream<char, std::char_traits<char>>::off_type>(bufferStart) + b_normals.bufferOffset, std::ios::beg);
-		float* normals = new float[mesh.normalCount];
-		for (int i = 0; i < mesh.normalCount; ++i)
+		float* normals = new float[mesh.normalsSize];
+		for (int i = 0; i < mesh.normalsSize; ++i)
 		{
 			normals[i] = ParseFloat(f);
 		}
