@@ -5,6 +5,7 @@
 void FileMenu()
 {
 	ImGui::MenuItem("Save As", "Ctrl+S");
+	ImGui::MenuItem("Export", "F9");
 }
 
 void MenuBar::Draw()
