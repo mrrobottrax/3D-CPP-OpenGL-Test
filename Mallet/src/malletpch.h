@@ -16,5 +16,6 @@
 #include <vector>
 #include <string>
 #include <stack>
+#include <nfd.h>
 
 #include <pch.h>

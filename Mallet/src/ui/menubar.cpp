@@ -1,10 +1,13 @@
 #include "malletpch.h"
 #include "menubar.h"
 #include <gl/glutil.h>
+#include <filemanagement/filemanager.h>
 
 void FileMenu()
 {
-	ImGui::MenuItem("Save As", "Ctrl+S");
+	if (ImGui::MenuItem("Save As", "Ctrl+S"))
+		fileManager.SaveAsDialog();
+
 	ImGui::MenuItem("Export", "F9");
 }
 

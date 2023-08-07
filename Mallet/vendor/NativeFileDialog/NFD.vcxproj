@@ -51,10 +51,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1C715900-08FD-870B-71AB-880B5D56880B}</ProjectGuid>
+    <ProjectGuid>{FD07880B-6911-887C-F28C-9E7C5E95937C}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>3D</RootNamespace>
+    <RootNamespace>NFD</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,13 +72,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test Win64|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
+    <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
+    <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
@@ -117,52 +117,50 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Win64|x64'">
-    <OutDir>..\bin\Debug-windows-x86_64\3D\</OutDir>
-    <IntDir>..\obj\Debug-windows-x86_64\3D\</IntDir>
-    <TargetName>3D</TargetName>
+    <OutDir>bin\Debug-windows-x86_64\NFD\</OutDir>
+    <IntDir>obj\Debug-windows-x86_64\NFD\</IntDir>
+    <TargetName>NFD</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\bin\Debug-windows-x86\3D\</OutDir>
-    <IntDir>..\obj\Debug-windows-x86\3D\</IntDir>
-    <TargetName>3D</TargetName>
+    <OutDir>bin\Debug-windows-x86\NFD\</OutDir>
+    <IntDir>obj\Debug-windows-x86\NFD\</IntDir>
+    <TargetName>NFD</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test Win64|x64'">
-    <OutDir>..\bin\Test-windows-x86_64\3D\</OutDir>
-    <IntDir>..\obj\Test-windows-x86_64\3D\</IntDir>
-    <TargetName>3D</TargetName>
+    <OutDir>bin\Test-windows-x86_64\NFD\</OutDir>
+    <IntDir>obj\Test-windows-x86_64\NFD\</IntDir>
+    <TargetName>NFD</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">
-    <OutDir>..\bin\Test-windows-x86\3D\</OutDir>
-    <IntDir>..\obj\Test-windows-x86\3D\</IntDir>
-    <TargetName>3D</TargetName>
+    <OutDir>bin\Test-windows-x86\NFD\</OutDir>
+    <IntDir>obj\Test-windows-x86\NFD\</IntDir>
+    <TargetName>NFD</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Win64|x64'">
-    <OutDir>..\bin\Release-windows-x86_64\3D\</OutDir>
-    <IntDir>..\obj\Release-windows-x86_64\3D\</IntDir>
-    <TargetName>3D</TargetName>
+    <OutDir>bin\Release-windows-x86_64\NFD\</OutDir>
+    <IntDir>obj\Release-windows-x86_64\NFD\</IntDir>
+    <TargetName>NFD</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\bin\Release-windows-x86\3D\</OutDir>
-    <IntDir>..\obj\Release-windows-x86\3D\</IntDir>
-    <TargetName>3D</TargetName>
+    <OutDir>bin\Release-windows-x86\NFD\</OutDir>
+    <IntDir>obj\Release-windows-x86\NFD\</IntDir>
+    <TargetName>NFD</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Win64|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_GLFW_WIN32;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -170,20 +168,18 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_GLFW_WIN32;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -191,24 +187,23 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test Win64|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_GLFW_WIN32;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -218,24 +213,23 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_GLFW_WIN32;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -245,23 +239,21 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Win64|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_GLFW_WIN32;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -270,23 +262,21 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_GLFW_WIN32;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>vendor\src;src;vendor\Glad\include;vendor\GLFW\include;vendor\IMGUI;vendor\JSON;vendor\GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <LanguageStandard>stdcpp17</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -295,95 +285,17 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\common\math.h" />
-    <ClInclude Include="src\common\matrixstack.h" />
-    <ClInclude Include="src\common\types.h" />
-    <ClInclude Include="src\components\aabb.h" />
-    <ClInclude Include="src\components\cameracomponent.h" />
-    <ClInclude Include="src\components\freecamcomponent.h" />
-    <ClInclude Include="src\components\hullcollider.h" />
-    <ClInclude Include="src\components\idcomponent.h" />
-    <ClInclude Include="src\components\masscomponent.h" />
-    <ClInclude Include="src\components\meshcollider.h" />
-    <ClInclude Include="src\components\meshcomponent.h" />
-    <ClInclude Include="src\components\positioncomponent.h" />
-    <ClInclude Include="src\components\rigidbodycomponent.h" />
-    <ClInclude Include="src\components\rotationcomponent.h" />
-    <ClInclude Include="src\components\scalecomponent.h" />
-    <ClInclude Include="src\components\unscaledvelocitycomponent.h" />
-    <ClInclude Include="src\components\velocitycomponent.h" />
-    <ClInclude Include="src\gl\glload.h" />
-    <ClInclude Include="src\gl\glutil.h" />
-    <ClInclude Include="src\gl\shaderloader.h" />
-    <ClInclude Include="src\imgui\imguiload.h" />
-    <ClInclude Include="src\imgui\imguiutil.h" />
-    <ClInclude Include="src\input\console.h" />
-    <ClInclude Include="src\input\inputsystem.h" />
-    <ClInclude Include="src\input\keycodes.h" />
-    <ClInclude Include="src\memory\chunk.h" />
-    <ClInclude Include="src\memory\chunkarchetypeelement.h" />
-    <ClInclude Include="src\memory\component.h" />
-    <ClInclude Include="src\memory\entity.h" />
-    <ClInclude Include="src\memory\entityarchetype.h" />
-    <ClInclude Include="src\memory\entitymanager.h" />
-    <ClInclude Include="src\meshobject.h" />
-    <ClInclude Include="src\modelloader.h" />
-    <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\physics\aabbtree.h" />
-    <ClInclude Include="src\physics\halfedgemesh.h" />
-    <ClInclude Include="src\physics\physicssystem.h" />
-    <ClInclude Include="src\physics\quickhull.h" />
-    <ClInclude Include="src\physics\unscaledvelocitysystem.h" />
-    <ClInclude Include="src\physics\velocitysystem.h" />
-    <ClInclude Include="src\rendering\debugdraw.h" />
-    <ClInclude Include="src\rendering\rendersystem.h" />
-    <ClInclude Include="src\systems\freecamsystem.h" />
-    <ClInclude Include="src\systems\system.h" />
-    <ClInclude Include="src\systems\systemmanager.h" />
-    <ClInclude Include="src\timemanager.h" />
+    <ClInclude Include="common.h" />
+    <ClInclude Include="include\nfd.h" />
+    <ClInclude Include="nfd_common.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\common\math.cpp" />
-    <ClCompile Include="src\common\matrixstack.cpp" />
-    <ClCompile Include="src\gl\glutil.cpp" />
-    <ClCompile Include="src\gl\shaderloader.cpp" />
-    <ClCompile Include="src\imgui\imguiutil.cpp" />
-    <ClCompile Include="src\input\console.cpp" />
-    <ClCompile Include="src\input\inputsystem.cpp" />
-    <ClCompile Include="src\input\keycodes.cpp" />
-    <ClCompile Include="src\memory\chunkarchetypeelement.cpp" />
-    <ClCompile Include="src\memory\entityarchetype.cpp" />
-    <ClCompile Include="src\memory\entitymanager.cpp" />
-    <ClCompile Include="src\meshobject.cpp" />
-    <ClCompile Include="src\modelloader.cpp" />
-    <ClCompile Include="src\pch.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\physics\halfedgemesh.cpp" />
-    <ClCompile Include="src\physics\physicssystem.cpp" />
-    <ClCompile Include="src\physics\quickhull.cpp" />
-    <ClCompile Include="src\physics\unscaledvelocitysystem.cpp" />
-    <ClCompile Include="src\physics\velocitysystem.cpp" />
-    <ClCompile Include="src\rendering\debugdraw.cpp" />
-    <ClCompile Include="src\rendering\rendersystem.cpp" />
-    <ClCompile Include="src\systems\freecamsystem.cpp" />
-    <ClCompile Include="src\systems\systemmanager.cpp" />
-    <ClCompile Include="src\timemanager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="vendor\Glad\Glad.vcxproj">
-      <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">
-      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
-    </ProjectReference>
-    <ProjectReference Include="vendor\IMGUI\IMGUI.vcxproj">
-      <Project>{606F530D-CC83-7BBE-9505-1F1E01D977EF}</Project>
-    </ProjectReference>
+    <ClCompile Include="nfd_common.c" />
+    <ClCompile Include="nfd_win.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

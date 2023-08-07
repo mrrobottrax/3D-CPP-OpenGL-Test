@@ -23,6 +23,7 @@ project "Mallet"
 		"%{IncludeDir.JSON}",
 		"%{IncludeDir.GLM}",
 		"%{IncludeDir.Engine}",
+		"%{IncludeDir.NFD}",
 	}
 
 	libdirs
@@ -37,6 +38,7 @@ project "Mallet"
 		"GLFW",
 		"IMGUI",
 		"3D",
+		"NFD",
 	}
 
 	filter "system:windows"

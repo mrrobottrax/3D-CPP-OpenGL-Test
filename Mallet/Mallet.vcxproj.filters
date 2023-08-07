@@ -4,20 +4,26 @@
     <Filter Include="debugtools">
       <UniqueIdentifier>{BD9F2D57-A957-6FA4-125F-4800FE350A95}</UniqueIdentifier>
     </Filter>
+    <Filter Include="filemanagement">
+      <UniqueIdentifier>{E25C9CFC-CE2A-9002-B7BE-0029A32B6C67}</UniqueIdentifier>
+    </Filter>
     <Filter Include="gl">
       <UniqueIdentifier>{F8775900-E403-880B-4DB2-880B395D880B}</UniqueIdentifier>
     </Filter>
     <Filter Include="input">
       <UniqueIdentifier>{B54AA90F-215F-D1C0-EAE0-742056B4CDF1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="meshwork">
+      <UniqueIdentifier>{15435386-0110-AE91-2A29-9C391655E31F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tools">
+      <UniqueIdentifier>{36DF7010-A2F3-98C1-6B75-3C21D74895F2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ui">
       <UniqueIdentifier>{C3795900-AF05-880B-18B4-880B045F880B}</UniqueIdentifier>
     </Filter>
     <Filter Include="ui\docking">
       <UniqueIdentifier>{F1EE8A51-DDA6-CC9E-46AE-A5FA3285678F}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ui\tools">
-      <UniqueIdentifier>{A3D4807E-8FA1-DB89-B8BA-C931A4E61018}</UniqueIdentifier>
     </Filter>
     <Filter Include="ui\windows">
       <UniqueIdentifier>{1DCFE1FA-0987-2348-728E-FCA35E65BE38}</UniqueIdentifier>
@@ -27,6 +33,9 @@
     <ClInclude Include="src\debugtools\debugcolorcycle.h">
       <Filter>debugtools</Filter>
     </ClInclude>
+    <ClInclude Include="src\filemanagement\filemanager.h">
+      <Filter>filemanagement</Filter>
+    </ClInclude>
     <ClInclude Include="src\gl\malletglutil.h">
       <Filter>gl</Filter>
     </ClInclude>
@@ -34,7 +43,20 @@
       <Filter>input</Filter>
     </ClInclude>
     <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\malletarchetypes.h" />
     <ClInclude Include="src\malletpch.h" />
+    <ClInclude Include="src\meshwork\malletmesh.h">
+      <Filter>meshwork</Filter>
+    </ClInclude>
+    <ClInclude Include="src\meshwork\malletmeshcomponent.h">
+      <Filter>meshwork</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\blocktool.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\mallettool.h">
+      <Filter>tools</Filter>
+    </ClInclude>
     <ClInclude Include="src\ui\docking\dockingleaf.h">
       <Filter>ui\docking</Filter>
     </ClInclude>
@@ -50,11 +72,8 @@
     <ClInclude Include="src\ui\malletuisystem.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\tools\blocktool.h">
-      <Filter>ui\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tools\mallettool.h">
-      <Filter>ui\tools</Filter>
+    <ClInclude Include="src\ui\menubar.h">
+      <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\windows\malletwindow.h">
       <Filter>ui\windows</Filter>
@@ -65,12 +84,11 @@
     <ClInclude Include="src\ui\windows\viewport.h">
       <Filter>ui\windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\malletarchetypes.h" />
-    <ClInclude Include="src\meshwork\malletmesh.h" />
-    <ClInclude Include="src\meshwork\malletmeshcomponent.h" />
-    <ClInclude Include="src\ui\menubar.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\filemanagement\filemanager.cpp">
+      <Filter>filemanagement</Filter>
+    </ClCompile>
     <ClCompile Include="src\gl\malletglutil.cpp">
       <Filter>gl</Filter>
     </ClCompile>
@@ -79,14 +97,20 @@
     </ClCompile>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\malletpch.cpp" />
+    <ClCompile Include="src\meshwork\malletmesh.cpp">
+      <Filter>meshwork</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tools\blocktool.cpp">
+      <Filter>tools</Filter>
+    </ClCompile>
     <ClCompile Include="src\ui\docking\dockingtree.cpp">
       <Filter>ui\docking</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\malletuisystem.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="src\tools\blocktool.cpp">
-      <Filter>ui\tools</Filter>
+    <ClCompile Include="src\ui\menubar.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\windows\malletwindow.cpp">
       <Filter>ui\windows</Filter>
@@ -97,7 +121,5 @@
     <ClCompile Include="src\ui\windows\viewport.cpp">
       <Filter>ui\windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\meshwork\malletmesh.cpp" />
-    <ClCompile Include="src\ui\menubar.cpp" />
   </ItemGroup>
 </Project>

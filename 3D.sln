@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IMGUI", "3D\vendor\IMGUI\IM
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mallet", "Mallet\Mallet.vcxproj", "{E49794C2-D039-BF98-B9F4-D2ECA53546E9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NFD", "Mallet\vendor\NativeFileDialog\NFD.vcxproj", "{FD07880B-6911-887C-F28C-9E7C5E95937C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -95,6 +97,18 @@ Global
 		{E49794C2-D039-BF98-B9F4-D2ECA53546E9}.Test|Win32.Build.0 = Test|Win32
 		{E49794C2-D039-BF98-B9F4-D2ECA53546E9}.Test|Win64.ActiveCfg = Test Win64|x64
 		{E49794C2-D039-BF98-B9F4-D2ECA53546E9}.Test|Win64.Build.0 = Test Win64|x64
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Debug|Win32.Build.0 = Debug|Win32
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Debug|Win64.ActiveCfg = Debug Win64|x64
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Debug|Win64.Build.0 = Debug Win64|x64
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Release|Win32.ActiveCfg = Release|Win32
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Release|Win32.Build.0 = Release|Win32
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Release|Win64.ActiveCfg = Release Win64|x64
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Release|Win64.Build.0 = Release Win64|x64
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Test|Win32.ActiveCfg = Test|Win32
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Test|Win32.Build.0 = Test|Win32
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Test|Win64.ActiveCfg = Test Win64|x64
+		{FD07880B-6911-887C-F28C-9E7C5E95937C}.Test|Win64.Build.0 = Test Win64|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
