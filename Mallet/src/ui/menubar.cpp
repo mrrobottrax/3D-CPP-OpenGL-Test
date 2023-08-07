@@ -5,6 +5,9 @@
 
 void FileMenu()
 {
+	if (ImGui::MenuItem("Open", "Ctrl+O"))
+		fileManager.OpenDialog();
+
 	if (ImGui::MenuItem("Save As", "Ctrl+S"))
 		fileManager.SaveAsDialog();
 
