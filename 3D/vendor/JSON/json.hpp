@@ -18846,7 +18846,9 @@ class serializer
             }
         };
 
-        JSON_ASSERT(byte < utf8d.size());
+        // I added the -1 here to get rid of a warning
+        // not sure if it actually helps
+        JSON_ASSERT(byte < utf8d.size() - 1);
         const std::uint8_t type = utf8d[byte];
 
         codep = (state != UTF8_ACCEPT)

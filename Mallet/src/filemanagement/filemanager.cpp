@@ -1,5 +1,6 @@
 #include "malletpch.h"
 #include "filemanager.h"
+#include "rawmap.h"
 
 void FileManager::SaveAsDialog()
 {
@@ -56,38 +57,12 @@ void FileManager::SaveToPath(const char* path)
 	}
 	std::cout << "Saving map as: " << fullPath << std::endl;
 
-	std::ofstream writer;
-	writer.open(fullPath, std::ios::binary);
-	
-	writer << fileSignature;
-	Write(writer, rmapVersion);
-
-	writer.close();
+	rawMap.SaveMap(fullPath.c_str());
 }
 
 void FileManager::OpenPath(const char* path)
 {
-	std::string fullPath = path;
-	std::cout << "Loading map: " << fullPath << std::endl;
+	std::cout << "Loading map: " << path << std::endl;
 
-	std::ifstream reader;
-	reader.open(fullPath, std::ios::binary);
-
-	// Check if signature is correct (no null byte)
-	const size_t bytes = sizeof(rawMapExtension) - 1;
-	char sig[bytes];
-	reader.read(sig, bytes);
-
-	if (std::strncmp(sig, fileSignature, bytes))
-	{
-		std::cout << "ERROR: This is not a raw map file!\n";
-		return;
-	}
-
-	version_t version = ReadVersion(reader);
-	if (version != rmapVersion)
-	{
-		std::cout << "ERROR: This map file is version " << version;
-		std::cout << " but this program reads version " << rmapVersion << "!\n";
-	}
+	rawMap.LoadMap(path);
 }

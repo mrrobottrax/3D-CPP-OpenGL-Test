@@ -295,6 +295,7 @@
   <ItemGroup>
     <ClInclude Include="src\debugtools\debugcolorcycle.h" />
     <ClInclude Include="src\filemanagement\filemanager.h" />
+    <ClInclude Include="src\filemanagement\rawmap.h" />
     <ClInclude Include="src\gl\malletglutil.h" />
     <ClInclude Include="src\input\malletinputlayer.h" />
     <ClInclude Include="src\main.h" />
@@ -316,6 +317,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\filemanagement\filemanager.cpp" />
+    <ClCompile Include="src\filemanagement\rawmap.cpp" />
     <ClCompile Include="src\gl\malletglutil.cpp" />
     <ClCompile Include="src\input\malletinputlayer.cpp" />
     <ClCompile Include="src\main.cpp" />
