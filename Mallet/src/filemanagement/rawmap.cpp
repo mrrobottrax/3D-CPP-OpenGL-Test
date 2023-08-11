@@ -11,12 +11,12 @@ void WriteSectionStart(ofstream& writer, const char*& name)
 	writer << ":" << name << ":\n\n";
 }
 
-void SkipWhitespace(ifstream& reader)
+void SkipWhitespace(ifstream& reader, bool includeNL = false)
 {
 	char c;
 
 	reader.read(&c, 1);
-	while (reader.good() && (c == '\n' || c == ' ' || c == '	'))
+	while (reader.good() && ((c == '\n' && includeNL) || c == ' ' || c == '	'))
 	{
 		reader.read(&c, 1);
 	}
@@ -28,7 +28,7 @@ void SkipWhitespace(ifstream& reader)
 MapSection ReadSection(ifstream& reader)
 {
 	// Skip whitespace
-	SkipWhitespace(reader);
+	SkipWhitespace(reader, true);
 	auto start = reader.tellg();
 
 	char c;
@@ -122,7 +122,7 @@ GameObject ReadObject(ifstream& reader)
 {
 	GameObject go;
 
-	SkipWhitespace(reader);
+	SkipWhitespace(reader, true);
 
 	char c;
 	reader.read(&c, 1);
@@ -142,7 +142,7 @@ GameObject ReadObject(ifstream& reader)
 
 	while (reader.good())
 	{
-		SkipWhitespace(reader);
+		SkipWhitespace(reader, true);
 
 		reader.read(&c, 1);
 		if (c == closeObject)
@@ -157,7 +157,7 @@ GameObject ReadObject(ifstream& reader)
 		}
 		key.push_back(NULL);
 
-		SkipWhitespace(reader);
+		SkipWhitespace(reader, false);
 		reader.read(&c, 1);
 
 		// Get value
@@ -234,17 +234,95 @@ void ReadWorldInfo(GameObject& object)
 	::worldInfo.comment = object.kv[comment];
 }
 
-namespace meshStrings
+namespace meshSectionNs
 {
-	const char positionSection[4] = { 'p', 'o', 's', ' ' };
-	const char vertexSection[4] = { 'v', 'e', 'r', 't'};
-	const char edgeSection[4] = { 'e', 'd', 'g', 'e' };
-	const char faceSection[4] = { 'f', 'a', 'c', 'e' };
+	constexpr int numChars = 4;
+	constexpr int numSections = 5;
+	const char dataSection[numChars] = { 'd', 'a', 't', 'a' };
+	const char positionSection[numChars] = { 'p', 'o', 's', ' ' };
+	const char vertexSection[numChars] = { 'v', 'e', 'r', 't'};
+	const char edgeSection[numChars] = { 'e', 'd', 'g', 'e' };
+	const char faceSection[numChars] = { 'f', 'a', 'c', 'e' };
+
+	struct SavedData
+	{
+		float posX;
+		float posY;
+		float posZ;
+
+		SavedData(const glm::vec3& position) : posX(position.x),
+			posY(position.y), posZ(position.z)
+		{};
+
+		SavedData() : posX(0), posY(0), posZ(0)
+		{};
+	};
+
+	struct SavedPos
+	{
+		float x;
+		float y;
+		float z;
+
+		SavedPos(const glm::vec3& vec) : x(vec.x), y(vec.y), z(vec.z)
+		{};
+
+		SavedPos() : x(0), y(0), z(0)
+		{};
+	};
+
+	struct SavedVert
+	{
+		gSize_t positionIndex;
+		float u;
+		float v;
+
+		SavedVert(const gSize_t positionIndex, const glm::vec2& uv) :
+			positionIndex(positionIndex), u(uv.x), v(uv.y)
+		{};
+
+		SavedVert() : positionIndex(0), u(0), v(0)
+		{};
+	};
+
+	struct SavedEdge
+	{
+		gSize_t faceIndex;
+		gSize_t nextIndex;
+		gSize_t prevIndex;
+		gSize_t twinIndex;
+		gSize_t tailIndex;
+
+		SavedEdge(const gSize_t faceIndex, const gSize_t nextIndex,
+			const gSize_t prevIndex, const gSize_t twinIndex, const gSize_t tailIndex) :
+			faceIndex(faceIndex), nextIndex(nextIndex), prevIndex(prevIndex),
+			twinIndex(twinIndex), tailIndex(tailIndex)
+		{};
+
+		SavedEdge() : faceIndex(0), nextIndex(0), prevIndex(0),
+			twinIndex(0), tailIndex(0)
+		{};
+	};
+
+	struct SavedFace
+	{
+		gSize_t edgeIndex;
+		float normalX;
+		float normalY;
+		float normalZ;
+
+		SavedFace(const gSize_t edgeIndex, const glm::vec3& normal) :
+			edgeIndex(edgeIndex), normalX(normal.x), normalY(normal.y), normalZ(normal.z)
+		{};
+
+		SavedFace() : edgeIndex(0), normalX(0), normalY(0), normalZ(0)
+		{};
+	};
 }
 
 void WriteMeshData(ofstream& writer)
 {
-	using namespace meshStrings;
+	using namespace meshSectionNs;
 
 	// Iterate through all mesh entities
 	ChunkArchetypeElement* pChunkArchetype = entityManager.FindChunkArchetype(malletMesh);
@@ -259,7 +337,8 @@ void WriteMeshData(ofstream& writer)
 	{
 		for (gSize_t i = 0; i < pChunk->numberOfEntities; ++i)
 		{
-			MalletMesh& mesh = entityManager.GetComponent<MalletMeshComponent>(EntityPointer(pChunk, i)).mesh;
+			EntityPointer e(pChunk, i);
+			MalletMesh& mesh = entityManager.GetComponent<MalletMeshComponent>(e).mesh;
 
 			// Add mesh sets to vector
 			unordered_set<glm::vec3*> positions;
@@ -269,54 +348,54 @@ void WriteMeshData(ofstream& writer)
 
 			mesh.CollectSets(positions, vertices, edges, faces);
 
-			writer.write(positionSection, 4);
+			writer.write(dataSection, numChars);
+			{
+				PositionComponent& position = entityManager.GetComponent<PositionComponent>(e);
+				SavedData saved(position.value);
+				writer.write(reinterpret_cast<char*>(&saved), sizeof(saved));
+			}
+
+			writer.write(positionSection, numChars);
 			WriteGsize(writer, positions.size());
 			for (auto it = positions.begin(); it != positions.end(); ++it)
 			{
 				glm::vec3& vec = **it;
-				WriteFloat(writer, vec.x);
-				WriteFloat(writer, vec.y);
-				WriteFloat(writer, vec.z);
+				SavedPos saved(vec);
+				writer.write(reinterpret_cast<char*>(&saved), sizeof(saved));
 			}
 
-			writer.write(vertexSection, 4);
+			writer.write(vertexSection, numChars);
 			WriteGsize(writer, vertices.size());
 			for (auto it = vertices.begin(); it != vertices.end(); ++it)
 			{
 				mmVertex& vert = **it;
-				ptrdiff_t positionIndex = std::distance(positions.begin(), positions.find(vert.pPosition));
-				WriteGsize(writer, positionIndex);
-				WriteFloat(writer, vert.uv.x);
-				WriteFloat(writer, vert.uv.y);
+				gSize_t positionIndex = static_cast<gSize_t>(std::distance(positions.begin(), positions.find(vert.pPosition)));
+				SavedVert saved(positionIndex, vert.uv);
+				writer.write(reinterpret_cast<char*>(&saved), sizeof(saved));
 			}
 
-			writer.write(edgeSection, 4);
+			writer.write(edgeSection, numChars);
 			WriteGsize(writer, edges.size());
 			for (auto it = edges.begin(); it != edges.end(); ++it)
 			{
 				mmHalfEdge& edge = **it;
-				ptrdiff_t faceIndex = std::distance(faces.begin(), faces.find(edge.pFace));
-				ptrdiff_t nextIndex = std::distance(edges.begin(), edges.find(edge.pNext));
-				ptrdiff_t prevIndex = std::distance(edges.begin(), edges.find(edge.pPrev));
-				ptrdiff_t twinIndex = std::distance(edges.begin(), edges.find(edge.pTwin));
-				ptrdiff_t tailIndex = std::distance(vertices.begin(), vertices.find(edge.pTail));
-				WriteGsize(writer, faceIndex);
-				WriteGsize(writer, nextIndex);
-				WriteGsize(writer, prevIndex);
-				WriteGsize(writer, twinIndex);
-				WriteGsize(writer, tailIndex);
+				gSize_t faceIndex = static_cast<gSize_t>(std::distance(faces.begin(), faces.find(edge.pFace)));
+				gSize_t nextIndex = static_cast<gSize_t>(std::distance(edges.begin(), edges.find(edge.pNext)));
+				gSize_t prevIndex = static_cast<gSize_t>(std::distance(edges.begin(), edges.find(edge.pPrev)));
+				gSize_t twinIndex = static_cast<gSize_t>(std::distance(edges.begin(), edges.find(edge.pTwin)));
+				gSize_t tailIndex = static_cast<gSize_t>(std::distance(vertices.begin(), vertices.find(edge.pTail)));
+				SavedEdge saved(faceIndex, nextIndex, prevIndex, twinIndex, tailIndex);
+				writer.write(reinterpret_cast<char*>(&saved), sizeof(saved));
 			}
 
-			writer.write(faceSection, 4);
+			writer.write(faceSection, numChars);
 			WriteGsize(writer, faces.size());
 			for (auto it = faces.begin(); it != faces.end(); ++it)
 			{
 				mmFace& face = **it;
-				ptrdiff_t edgeIndex = std::distance(edges.begin(), edges.find(face.pEdge));
-				WriteGsize(writer, edgeIndex);
-				WriteFloat(writer, face.normal.x);
-				WriteFloat(writer, face.normal.y);
-				WriteFloat(writer, face.normal.z);
+				gSize_t edgeIndex = static_cast<gSize_t>(std::distance(edges.begin(), edges.find(face.pEdge)));
+				SavedFace saved(edgeIndex, face.normal);
+				writer.write(reinterpret_cast<char*>(&saved), sizeof(saved));
 			}
 
 			writer.write("\n", 1);
@@ -364,81 +443,142 @@ bool InfoSection(ifstream& reader)
 
 bool MeshSection(ifstream& reader)
 {
-	using namespace meshStrings;
+	using namespace meshSectionNs;
 
-	SkipWhitespace(reader);
+	SkipWhitespace(reader, true);
 
 	// Load to memory
-	char sectionName[4];
-	void* pPosSection = nullptr;
-	void* pVertSection = nullptr;
-	void* pEdgeSection = nullptr;
-	void* pFaceSection = nullptr;
-	for (int i = 0; i < 4; ++i)
-	{
-		reader.read(sectionName, 4);
-		gSize_t count = ReadGsize(reader);
-		size_t memSize = 0;
+	char sectionName[numChars];
+	SavedPos* savedPositions = nullptr;
+	gSize_t posCount = 0;
+	SavedVert* savedVerts = nullptr;
+	gSize_t vertCount = 0;
+	SavedEdge* savedEdges = nullptr;
+	gSize_t edgeCount = 0;
+	SavedFace* savedFaces = nullptr;
+	gSize_t faceCount = 0;
 
-		if (!strcmp(sectionName, positionSection))
+	SavedData data;
+	for (int i = 0; i < numSections; ++i)
+	{
+		reader.read(sectionName, numChars);
+
+		if (!strncmp(sectionName, dataSection, numChars))
 		{
-			memSize = sizeof(float) * 3;
-			memSize *= count;
-			pPosSection = malloc(memSize);
-			reader.read(reinterpret_cast<char*>(pPosSection), memSize);
+			reader.read(reinterpret_cast<char*>(&data), sizeof(SavedData));
 		}
-		else if (!strcmp(sectionName, vertexSection))
+		else if (!strncmp(sectionName, positionSection, numChars))
 		{
-			memSize = sizeof(gSize_t) + sizeof(float) * 2;
-			memSize *= count;
-			pVertSection = malloc(memSize);
-			reader.read(reinterpret_cast<char*>(pVertSection), memSize);
+			gSize_t count = ReadGsize(reader);
+			savedPositions = new SavedPos[count];
+			posCount = count;
+			reader.read(reinterpret_cast<char*>(savedPositions), sizeof(SavedPos) * count);
 		}
-		else if (!strcmp(sectionName, edgeSection))
+		else if (!strncmp(sectionName, vertexSection, numChars))
 		{
-			memSize = sizeof(gSize_t) * 5;
-			memSize *= count;
-			pEdgeSection = malloc(memSize);
-			reader.read(reinterpret_cast<char*>(pEdgeSection), memSize);
+			gSize_t count = ReadGsize(reader);
+			savedVerts = new SavedVert[count];
+			vertCount = count;
+			reader.read(reinterpret_cast<char*>(savedVerts), sizeof(SavedVert) * count);
 		}
-		else if (!strcmp(sectionName, faceSection))
+		else if (!strncmp(sectionName, edgeSection, numChars))
 		{
-			memSize = sizeof(gSize_t) + sizeof(float) * 3;
-			memSize *= count;
-			pFaceSection = malloc(memSize);
-			reader.read(reinterpret_cast<char*>(pFaceSection), memSize);
+			gSize_t count = ReadGsize(reader);
+			savedEdges = new SavedEdge[count];
+			edgeCount = count;
+			reader.read(reinterpret_cast<char*>(savedEdges), sizeof(SavedEdge) * count);
+		}
+		else if (!strncmp(sectionName, faceSection, numChars))
+		{
+			gSize_t count = ReadGsize(reader);
+			savedFaces = new SavedFace[count];
+			faceCount = count;
+			reader.read(reinterpret_cast<char*>(savedFaces), sizeof(SavedFace) * count);
 		}
 		else
 		{
 			std::cout << "Error reading mesh!\n";
-			if (pPosSection)
-				free(pPosSection);
-			if (pVertSection)
-				free(pVertSection);
-			if (pEdgeSection)
-				free(pEdgeSection);
-			if (pFaceSection)
-				free(pFaceSection);
+			std::cout << "Location: " << reader.tellg() << endl;
+			if (savedPositions)
+				delete[] savedPositions;
+			if (savedVerts)
+				delete[] savedVerts;
+			if (savedEdges)
+				delete[] savedEdges;
+			if (savedFaces)
+				delete[] savedFaces;
 			return false;
 		}
 	}
 
-	assert(pPosSection);
-	assert(pVertSection);
-	assert(pEdgeSection);
-	assert(pFaceSection);
+	assert(savedPositions);
+	assert(savedVerts);
+	assert(savedEdges);
+	assert(savedFaces);
 
+	glm::vec3** pPositions = new glm::vec3*[posCount];
+	mmVertex** pVertices = new mmVertex*[vertCount];
+	mmHalfEdge** pEdges = new mmHalfEdge*[edgeCount];
+	mmFace** pFaces = new mmFace*[faceCount];
+
+	for (gSize_t i = 0; i < posCount; ++i)
+	{
+		pPositions[i] = new glm::vec3;
+		pPositions[i]->x = savedPositions[i].x;
+		pPositions[i]->y = savedPositions[i].y;
+		pPositions[i]->z = savedPositions[i].z;
+	}
+	for (gSize_t i = 0; i < vertCount; ++i)
+	{
+		pVertices[i] = new mmVertex();
+		pVertices[i]->pPosition = pPositions[savedVerts[i].positionIndex];
+		pVertices[i]->uv.x = savedVerts[i].u;
+		pVertices[i]->uv.y = savedVerts[i].v;
+	}
+	for (gSize_t i = 0; i < edgeCount; ++i)
+	{
+		pEdges[i] = new mmHalfEdge();
+	}
+	for (gSize_t i = 0; i < faceCount; ++i)
+	{
+		pFaces[i] = new mmFace();
+		pFaces[i]->normal.x = savedFaces[i].normalX;
+		pFaces[i]->normal.y = savedFaces[i].normalY;
+		pFaces[i]->normal.z = savedFaces[i].normalZ;
+		pFaces[i]->pEdge = pEdges[savedFaces[i].edgeIndex];
+	}
+	for (gSize_t i = 0; i < edgeCount; ++i)
+	{
+		pEdges[i]->pFace = pFaces[savedEdges[i].faceIndex];
+		pEdges[i]->pNext = pEdges[savedEdges[i].nextIndex];
+		pEdges[i]->pPrev = pEdges[savedEdges[i].prevIndex];
+		pEdges[i]->pTwin = pEdges[savedEdges[i].twinIndex];
+		pEdges[i]->pTail = pVertices[savedEdges[i].tailIndex];
+	}
+	
 	EntityManager& em = entityManager;
 	Entity e = em.AddEntity(malletMesh);
 	EntityPointer ep = em.GetEntityPointer(e);
 
+	em.GetComponent<MeshComponent>(ep).pMesh = nullptr;
 	MalletMesh& mesh = em.GetComponent<MalletMeshComponent>(ep).mesh;
-	
 
-	free(pPosSection);
-	free(pVertSection);
-	free(pEdgeSection);
-	free(pFaceSection);
+	em.GetComponent<PositionComponent>(ep).value = { data.posX, data.posY, data.posZ };
+	em.GetComponent<RotationComponent>(ep).value = glm::identity<glm::fquat>();
+	em.GetComponent<ScaleComponent>(ep).value = glm::vec3(1);
+
+	mesh.pFirstEdge = pEdges[0];
+	mesh.Validate(false);
+	mesh.UpdateRenderMesh(ep);
+
+	delete[] savedPositions;
+	delete[] savedVerts;
+	delete[] savedEdges;
+	delete[] savedFaces;
+	delete[] pPositions;
+	delete[] pVertices;
+	delete[] pEdges;
+	delete[] pFaces;
 
 	return true;
 }
@@ -466,7 +606,7 @@ bool LoadMapInternal(ifstream& reader)
 		// Check if right at end of file
 		{
 			auto lastPos = reader.tellg();
-			SkipWhitespace(reader);
+			SkipWhitespace(reader, true);
 			char temp;
 			reader.read(&temp, 1);
 			if (!reader.good())
