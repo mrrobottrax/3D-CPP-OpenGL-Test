@@ -34,7 +34,7 @@ class MalletMesh
 public:
 	mmHalfEdge* pFirstEdge = nullptr;
 
-	void CollectVectors(std::unordered_set<glm::vec3*>& positions, std::unordered_set<mmVertex*>& vertices,
+	void CollectSets(std::unordered_set<glm::vec3*>& positions, std::unordered_set<mmVertex*>& vertices,
 		std::unordered_set<mmHalfEdge*>& edges, std::unordered_set<mmFace*>& faces);
 	void DeleteMesh();
 	void UpdateRenderMesh(const Entity& entity);

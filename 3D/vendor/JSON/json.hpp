@@ -18846,10 +18846,11 @@ class serializer
             }
         };
 
-        // I added the -1 here to get rid of a warning
-        // not sure if it actually helps
-        JSON_ASSERT(byte < utf8d.size() - 1);
+#pragma warning( push )
+#pragma warning( disable : 28020 )
+        JSON_ASSERT(byte < utf8d.size());
         const std::uint8_t type = utf8d[byte];
+#pragma warning( pop )
 
         codep = (state != UTF8_ACCEPT)
                 ? (byte & 0x3fu) | (codep << 6u)

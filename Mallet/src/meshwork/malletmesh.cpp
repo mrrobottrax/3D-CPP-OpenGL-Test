@@ -41,7 +41,7 @@ void CollectVectorsRecursive(mmHalfEdge* pEdge,
 	CollectVectorsRecursive(pEdge->pPrev, positions, vertices, edges, faces);
 }
 
-void MalletMesh::CollectVectors(std::unordered_set<glm::vec3*>& positions, std::unordered_set<mmVertex*>& vertices,
+void MalletMesh::CollectSets(std::unordered_set<glm::vec3*>& positions, std::unordered_set<mmVertex*>& vertices,
 	std::unordered_set<mmHalfEdge*>& edges, std::unordered_set<mmFace*>& faces)
 {
 	CollectVectorsRecursive(pFirstEdge, positions, vertices, edges, faces);
@@ -54,7 +54,7 @@ void MalletMesh::DeleteMesh()
 	std::unordered_set<mmHalfEdge*> edges;
 	std::unordered_set<mmFace*> faces;
 
-	CollectVectors(positions, vertices, edges, faces);
+	CollectSets(positions, vertices, edges, faces);
 
 	for (auto it = positions.begin(); it != positions.end(); ++it)
 	{
@@ -117,7 +117,7 @@ void MalletMesh::UpdateRenderMesh(const Entity& entity)
 	std::unordered_set<mmHalfEdge*> edges;
 	std::unordered_set<mmFace*> faces;
 
-	CollectVectors(positions, vertices, edges, faces);
+	CollectSets(positions, vertices, edges, faces);
 
 	mesh.vertsSize = meshSize_t(vertices.size() * 3);
 	mesh.normalsSize = meshSize_t(vertices.size() * 3);
@@ -138,7 +138,7 @@ void MalletMesh::UpdateRenderMesh(const Entity& entity)
 			auto vertIt = vertices.find(pEdge->pTail);
 
 			// Create in index so that verts can be reused
-			const meshIndex_t index = (int)std::distance(vertices.begin(), vertIt);
+			const meshIndex_t index = static_cast<meshIndex_t>(std::distance(vertices.begin(), vertIt));
 			const meshSize_t vertIndex = index * 3;
 
 			// Keep track of the index of the first edge
@@ -220,7 +220,7 @@ void MalletMesh::Validate(bool allowHoles)
 	std::unordered_set<mmHalfEdge*> edges;
 	std::unordered_set<mmFace*> faces;
 
-	CollectVectors(positions, vertices, edges, faces);
+	CollectSets(positions, vertices, edges, faces);
 
 	for (auto it = positions.begin(); it != positions.end(); ++it)
 	{

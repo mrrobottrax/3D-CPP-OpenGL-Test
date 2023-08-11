@@ -36,6 +36,9 @@
     <ClInclude Include="src\filemanagement\filemanager.h">
       <Filter>filemanagement</Filter>
     </ClInclude>
+    <ClInclude Include="src\filemanagement\rawmap.h">
+      <Filter>filemanagement</Filter>
+    </ClInclude>
     <ClInclude Include="src\gl\malletglutil.h">
       <Filter>gl</Filter>
     </ClInclude>
@@ -84,10 +87,12 @@
     <ClInclude Include="src\ui\windows\viewport.h">
       <Filter>ui\windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\filemanagement\rawmap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\filemanagement\filemanager.cpp">
+      <Filter>filemanagement</Filter>
+    </ClCompile>
+    <ClCompile Include="src\filemanagement\rawmap.cpp">
       <Filter>filemanagement</Filter>
     </ClCompile>
     <ClCompile Include="src\gl\malletglutil.cpp">
@@ -122,6 +127,5 @@
     <ClCompile Include="src\ui\windows\viewport.cpp">
       <Filter>ui\windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\filemanagement\rawmap.cpp" />
   </ItemGroup>
 </Project>

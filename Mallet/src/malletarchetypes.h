@@ -8,7 +8,7 @@
 #include <components/aabb.h>
 #include <components/meshcomponent.h>
 
-Component malletMeshComponents[] = {
+inline Component malletMeshComponents[] = {
 	Component().Init<IdComponent>(),
 	Component().Init<PositionComponent>(),
 	Component().Init<RotationComponent>(),
