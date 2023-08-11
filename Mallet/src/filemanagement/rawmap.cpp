@@ -367,7 +367,11 @@ void RawMap::LoadMap(const char* path)
 
 	reader.open(path, ios::binary | ios::in);
 
-	if (!LoadMapInternal(reader))
+	if (LoadMapInternal(reader))
+	{
+		std::cout << "Successfully loaded map\n";
+	}
+	else
 	{
 		std::cout << "Could not load map!\n";
 	}
