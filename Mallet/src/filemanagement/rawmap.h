@@ -59,3 +59,15 @@ inline void WriteGsize(std::ofstream& writer, const ptrdiff_t& value)
 {
 	WriteGsize(writer, static_cast<gSize_t>(value));
 }
+
+inline void WriteGsize(std::ofstream& writer, const size_t& value)
+{
+	WriteGsize(writer, static_cast<gSize_t>(value));
+}
+
+inline gSize_t ReadGsize(std::ifstream& reader)
+{
+	gSize_t value = 0;;
+	reader.read(reinterpret_cast<char*>(&value), sizeof(gSize_t));
+	return value;
+}

@@ -140,7 +140,7 @@ private:
 
 public:
 	void Update() override;
-	bool HullVsHull(const Entity& entityA, const Entity& entityB, Manifold& manifold);
+	bool HullVsHull(const EntityPointer& entityA, const EntityPointer& entityB, Manifold& manifold);
 
-	static void ComputeInertia(const Entity& entity);
+	static void ComputeInertia(const EntityPointer& entity);
 }; inline PhysicsSystem physicsSystem;

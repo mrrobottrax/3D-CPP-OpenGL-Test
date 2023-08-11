@@ -330,6 +330,7 @@
     <ClInclude Include="src\memory\entity.h" />
     <ClInclude Include="src\memory\entityarchetype.h" />
     <ClInclude Include="src\memory\entitymanager.h" />
+    <ClInclude Include="src\memory\entitypointer.h" />
     <ClInclude Include="src\meshobject.h" />
     <ClInclude Include="src\modelloader.h" />
     <ClInclude Include="src\pch.h" />

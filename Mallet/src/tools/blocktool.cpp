@@ -38,9 +38,10 @@ void BlockTool::Draw(Viewport* pViewport)
 	// Set uniforms
 	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &pViewport->pCamera->matrix[0][0]);
 	MatrixStack mStack;
+	EntityPointer cameraEntity = entityManager.GetEntityPointer(pViewport->cameraEntity);
 	mStack.Push();
-	mStack.ApplyMatrix(glm::mat4_cast(entityManager.GetComponent<RotationComponent>(pViewport->cameraEntity).value));
-	mStack.Translate(-entityManager.GetComponent<PositionComponent>(pViewport->cameraEntity).value);
+	mStack.ApplyMatrix(glm::mat4_cast(entityManager.GetComponent<RotationComponent>(cameraEntity).value));
+	mStack.Translate(-entityManager.GetComponent<PositionComponent>(cameraEntity).value);
 	glUniformMatrix4fv(sharedPositionMatrixUnif, 1, GL_FALSE, &mStack.Top()[0][0]);
 
 	// Set vertex data
@@ -156,9 +157,9 @@ void BlockTool::CreateBlock()
 {
 	creatingBlock = false;
 
-	const Entity e = entityManager.AddEntity(malletMesh);
+	EntityManager& em = entityManager;
+	const EntityPointer e = em.GetEntityPointer(em.AddEntity(malletMesh));
 
-	const EntityManager& em = entityManager;
 	em.GetComponent<MeshComponent>(e).pMesh = nullptr;
 	MalletMesh& mesh = em.GetComponent<MalletMeshComponent>(e).mesh;
 

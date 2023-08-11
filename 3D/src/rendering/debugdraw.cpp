@@ -146,12 +146,13 @@ void DebugDraw::Draw()
 	// Camera
 	MatrixStack mStack;
 
-	Entity& mainCameraEntity = renderSystem.mainCameraEntity;
+	EntityPointer mainCameraEntity = em.GetEntityPointer(renderSystem.mainCameraEntity);
 	mStack.Push();
 	mStack.ApplyMatrix(glm::mat4_cast(em.GetComponent<RotationComponent>(mainCameraEntity).value));
 	mStack.Translate(-em.GetComponent<PositionComponent>(mainCameraEntity).value);
 
-	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &renderSystem.pMainCamera->matrix[0][0]);
+	CameraComponent& mainCamera = em.GetComponent<CameraComponent>(mainCameraEntity);
+	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &mainCamera.matrix[0][0]);
 	glUniformMatrix4fv(sharedPositionMatrixUnif, 1, GL_FALSE, &mStack.Top()[0][0]);
 
 	DrawLines();

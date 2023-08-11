@@ -16,7 +16,7 @@
 
 using namespace gMath;
 
-void PhysicsSystem::ComputeInertia(const Entity& entity)
+void PhysicsSystem::ComputeInertia(const EntityPointer& entity)
 {
 	const EntityManager& em = entityManager;
 
@@ -144,8 +144,8 @@ void Manifold::PreStep(const CollisionPair& pair)
 {
 	const EntityManager& em = entityManager;
 
-	const Entity& entityA = pair.entityA;
-	const Entity& entityB = pair.entityB;
+	const EntityPointer entityA = em.GetEntityPointer(pair.entityA);
+	const EntityPointer entityB = em.GetEntityPointer(pair.entityB);
 
 	const RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(entityA);
 	const RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(entityB);
@@ -268,8 +268,8 @@ void PhysicsSystem::ResolveManifolds()
 			Manifold& manifold = manifoldIter->second;
 			const CollisionPair& pair = manifoldIter->first;
 
-			const Entity& entityA = pair.entityA;
-			const Entity& entityB = pair.entityB;
+			const EntityPointer& entityA = em.GetEntityPointer(pair.entityA);
+			const EntityPointer& entityB = em.GetEntityPointer(pair.entityB);
 
 			const RigidBodyComponent& rbA = em.GetComponent<RigidBodyComponent>(entityA);
 			const RigidBodyComponent& rbB = em.GetComponent<RigidBodyComponent>(entityB);
@@ -408,8 +408,8 @@ void PhysicsSystem::ResolveManifolds()
 			Manifold& manifold = manifoldIter->second;
 			const CollisionPair& pair = manifoldIter->first;
 
-			const Entity& entityA = pair.entityA;
-			const Entity& entityB = pair.entityB;
+			const EntityPointer& entityA = em.GetEntityPointer(pair.entityA);
+			const EntityPointer& entityB = em.GetEntityPointer(pair.entityB);
 
 			VelocityComponent& velocityA = em.GetComponent<VelocityComponent>(entityA);
 			VelocityComponent& velocityB = em.GetComponent<VelocityComponent>(entityB);
@@ -459,14 +459,18 @@ void PhysicsSystem::ResolveManifolds()
 
 void UnsleepEntities(const CollisionPair& pair)
 {
+	EntityPointer p;
+
 	if (entityManager.EntityExists(pair.entityA))
 	{
-		RigidBodyComponent& rb = entityManager.GetComponent<RigidBodyComponent>(pair.entityA);
+		p = entityManager.GetEntityPointer(pair.entityA);
+		RigidBodyComponent& rb = entityManager.GetComponent<RigidBodyComponent>(p);
 		rb.sleepTimer = sleepTime;
 	}
 	if (entityManager.EntityExists(pair.entityB))
 	{
-		RigidBodyComponent& rb = entityManager.GetComponent<RigidBodyComponent>(pair.entityB);
+		p = entityManager.GetEntityPointer(pair.entityB);
+		RigidBodyComponent& rb = entityManager.GetComponent<RigidBodyComponent>(p);
 		rb.sleepTimer = sleepTime;
 	}
 }
@@ -596,8 +600,8 @@ void PhysicsSystem::Update()
 	// For each collision pair
 	for (auto pairsIt = pairs.begin(); pairsIt != pairs.end(); ++pairsIt)
 	{
-		const Entity entityA = (*pairsIt).entityA;
-		const Entity entityB = (*pairsIt).entityB;
+		const EntityPointer entityA = em.GetEntityPointer((*pairsIt).entityA);
+		const EntityPointer entityB = em.GetEntityPointer((*pairsIt).entityB);
 
 		const RigidBodyComponent& rbA = entityManager.GetComponent<RigidBodyComponent>(entityA);
 		const RigidBodyComponent& rbB = entityManager.GetComponent<RigidBodyComponent>(entityB);
@@ -1269,7 +1273,7 @@ void CreateFaceContacts(const FaceQuery& queryA, const glm::vec3& positionA, con
 	}
 }
 
-bool PhysicsSystem::HullVsHull(const Entity& entityA, const Entity& entityB, Manifold& manifold)
+bool PhysicsSystem::HullVsHull(const EntityPointer& entityA, const EntityPointer& entityB, Manifold& manifold)
 {
 	// Seperating Axis Theorum
 

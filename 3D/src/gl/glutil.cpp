@@ -20,7 +20,9 @@ void DefaultWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
 {
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 	RenderSystem& rs = renderSystem;
-	rs.UpdateMatrixAspect(*rs.pMainCamera, width, height);
+	CameraComponent& camera = entityManager.GetComponent<CameraComponent>(
+		entityManager.GetEntityPointer(rs.mainCameraEntity));
+	rs.UpdateMatrixAspect(camera, width, height);
 }
 
 // Create a window and initialize GLEW

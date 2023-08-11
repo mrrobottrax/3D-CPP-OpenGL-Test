@@ -238,8 +238,8 @@ namespace meshStrings
 {
 	const char positionSection[4] = { 'p', 'o', 's', ' ' };
 	const char vertexSection[4] = { 'v', 'e', 'r', 't'};
-	const char edgesSection[4] = { 'e', 'd', 'g', 'e' };
-	const char facesSection[4] = { 'f', 'a', 'c', 'e' };
+	const char edgeSection[4] = { 'e', 'd', 'g', 'e' };
+	const char faceSection[4] = { 'f', 'a', 'c', 'e' };
 }
 
 void WriteMeshData(ofstream& writer)
@@ -269,9 +269,8 @@ void WriteMeshData(ofstream& writer)
 
 			mesh.CollectSets(positions, vertices, edges, faces);
 
-			auto startPos = writer.tellp();
 			writer.write(positionSection, 4);
-			WriteUint32(writer, positions.size());
+			WriteGsize(writer, positions.size());
 			for (auto it = positions.begin(); it != positions.end(); ++it)
 			{
 				glm::vec3& vec = **it;
@@ -280,16 +279,8 @@ void WriteMeshData(ofstream& writer)
 				WriteFloat(writer, vec.z);
 			}
 
-			// Align to 4 bytes
-			auto newPos = writer.tellp();
-			auto dist = ((newPos - startPos) % 4) % 4;
-			for (auto i = 0; i < dist; ++i)
-			{
-				writer.write('\0', 1);
-			}
-
 			writer.write(vertexSection, 4);
-			WriteUint32(writer, vertices.size());
+			WriteGsize(writer, vertices.size());
 			for (auto it = vertices.begin(); it != vertices.end(); ++it)
 			{
 				mmVertex& vert = **it;
@@ -299,16 +290,8 @@ void WriteMeshData(ofstream& writer)
 				WriteFloat(writer, vert.uv.y);
 			}
 
-			// Align to 4 bytes
-			newPos = writer.tellp();
-			dist = ((newPos - startPos) % 4) % 4;
-			for (auto i = 0; i < dist; ++i)
-			{
-				writer.write('\0', 1);
-			}
-
-			writer.write(edgesSection, 4);
-			WriteUint32(writer, edges.size());
+			writer.write(edgeSection, 4);
+			WriteGsize(writer, edges.size());
 			for (auto it = edges.begin(); it != edges.end(); ++it)
 			{
 				mmHalfEdge& edge = **it;
@@ -324,16 +307,8 @@ void WriteMeshData(ofstream& writer)
 				WriteGsize(writer, tailIndex);
 			}
 
-			// Align to 4 bytes
-			newPos = writer.tellp();
-			dist = ((newPos - startPos) % 4) % 4;
-			for (auto i = 0; i < dist; ++i)
-			{
-				writer.write('\0', 1);
-			}
-
-			writer.write(facesSection, 4);
-			WriteUint32(writer, faces.size());
+			writer.write(faceSection, 4);
+			WriteGsize(writer, faces.size());
 			for (auto it = faces.begin(); it != faces.end(); ++it)
 			{
 				mmFace& face = **it;
@@ -387,11 +362,84 @@ bool InfoSection(ifstream& reader)
 	return true;
 }
 
-void MeshSection(ifstream& reader)
+bool MeshSection(ifstream& reader)
 {
+	using namespace meshStrings;
+
 	SkipWhitespace(reader);
 
+	// Load to memory
+	char sectionName[4];
+	void* pPosSection = nullptr;
+	void* pVertSection = nullptr;
+	void* pEdgeSection = nullptr;
+	void* pFaceSection = nullptr;
+	for (int i = 0; i < 4; ++i)
+	{
+		reader.read(sectionName, 4);
+		gSize_t count = ReadGsize(reader);
+		size_t memSize = 0;
 
+		if (!strcmp(sectionName, positionSection))
+		{
+			memSize = sizeof(float) * 3;
+			memSize *= count;
+			pPosSection = malloc(memSize);
+			reader.read(reinterpret_cast<char*>(pPosSection), memSize);
+		}
+		else if (!strcmp(sectionName, vertexSection))
+		{
+			memSize = sizeof(gSize_t) + sizeof(float) * 2;
+			memSize *= count;
+			pVertSection = malloc(memSize);
+			reader.read(reinterpret_cast<char*>(pVertSection), memSize);
+		}
+		else if (!strcmp(sectionName, edgeSection))
+		{
+			memSize = sizeof(gSize_t) * 5;
+			memSize *= count;
+			pEdgeSection = malloc(memSize);
+			reader.read(reinterpret_cast<char*>(pEdgeSection), memSize);
+		}
+		else if (!strcmp(sectionName, faceSection))
+		{
+			memSize = sizeof(gSize_t) + sizeof(float) * 3;
+			memSize *= count;
+			pFaceSection = malloc(memSize);
+			reader.read(reinterpret_cast<char*>(pFaceSection), memSize);
+		}
+		else
+		{
+			std::cout << "Error reading mesh!\n";
+			if (pPosSection)
+				free(pPosSection);
+			if (pVertSection)
+				free(pVertSection);
+			if (pEdgeSection)
+				free(pEdgeSection);
+			if (pFaceSection)
+				free(pFaceSection);
+			return false;
+		}
+	}
+
+	assert(pPosSection);
+	assert(pVertSection);
+	assert(pEdgeSection);
+	assert(pFaceSection);
+
+	EntityManager& em = entityManager;
+	Entity e = em.AddEntity(malletMesh);
+	EntityPointer ep = em.GetEntityPointer(e);
+
+	MalletMesh& mesh = em.GetComponent<MalletMeshComponent>(ep).mesh;
+
+	free(pPosSection);
+	free(pVertSection);
+	free(pEdgeSection);
+	free(pFaceSection);
+
+	return true;
 }
 
 void EntitySection(ifstream& reader)
@@ -436,7 +484,8 @@ bool LoadMapInternal(ifstream& reader)
 			EntitySection(reader);
 			break;
 		case MapSection::mesh:
-			MeshSection(reader);
+			if (!MeshSection(reader))
+				return false;
 			break;
 		default:
 			break;

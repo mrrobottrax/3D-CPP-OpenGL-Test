@@ -32,7 +32,8 @@ viewSizeX(), viewSizeY(), mode(mode), pPosition()
 		Component().Init<FreecamComponent>(),
 	};
 
-	Entity entity = em.AddEntity(EntityArchetype(6, components));
+	Entity e = em.AddEntity(EntityArchetype(6, components));
+	EntityPointer entity = em.GetEntityPointer(e);
 	em.GetComponent<UnscaledVelocityComponent>(entity) = { { 0, 0, 0, 0, 0, 0 } };
 	
 	bool ortho = mode != ViewportMode::perspective;
@@ -47,7 +48,7 @@ viewSizeX(), viewSizeY(), mode(mode), pPosition()
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
 		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = CameraComponent(0.03f, 1000.0f);
-		cameraEntity = entity;
+		cameraEntity = e;
 		pCamera = &cam;
 
 		int w, h;
@@ -77,7 +78,7 @@ viewSizeX(), viewSizeY(), mode(mode), pPosition()
 		};
 
 		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = CameraComponent(0.03f, 1000.0f, true, 1 / 10.0f);
-		cameraEntity = entity;
+		cameraEntity = e;
 		pCamera = &cam;
 
 		int w, h;
@@ -125,7 +126,6 @@ void Viewport::Draw()
 {
 	glViewport(viewPosX, viewPosY, viewSizeX, viewSizeY);
 
-	renderSystem.pMainCamera = pCamera;
 	renderSystem.mainCameraEntity = cameraEntity;
 
 	pFreeCam->viewPortSize[0] = viewSizeX;
@@ -267,7 +267,7 @@ void Viewport::KeyboardCallback(GLFWwindow* pWindow, int key, int scancode, int 
 	if (key == GLFW_KEY_Z && action == GLFW_PRESS && mode == ViewportMode::perspective)
 	{
 		EntityManager& em = entityManager;
-		FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(cameraEntity);
+		FreecamComponent& freeCam = em.GetComponent<FreecamComponent>(em.GetEntityPointer(cameraEntity));
 
 		freeCam.enabled = !freeCam.enabled;
 

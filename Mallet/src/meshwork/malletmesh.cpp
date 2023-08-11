@@ -102,7 +102,7 @@ void MalletMesh::DeleteAllMeshes()
 	}
 }
 
-void MalletMesh::UpdateRenderMesh(const Entity& entity)
+void MalletMesh::UpdateRenderMesh(const EntityPointer& entity)
 {
 	MeshComponent& meshComponent = entityManager.GetComponent<MeshComponent>(entity);
 
@@ -259,8 +259,4 @@ void MalletMesh::Validate(bool allowHoles)
 		assert(face.pEdge);
 		assert(face.pEdge->pFace == &face);
 	}
-}
-
-void MalletMesh::CalculateBounds(const Entity& entity)
-{
 }

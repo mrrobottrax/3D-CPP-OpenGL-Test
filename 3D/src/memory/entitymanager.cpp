@@ -3,7 +3,7 @@
 
 #include <components/idcomponent.h>
 
-Entity EntityManager::AddEntity(EntityArchetype& archetype)
+const Entity EntityManager::AddEntity(EntityArchetype& archetype)
 {
 	gChunkIndex_t indexInChunk = 0;
 

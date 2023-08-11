@@ -92,11 +92,12 @@ void Init()
 		};
 
 		Entity entity = em.AddEntity(EntityArchetype(6, components));
-		em.GetComponent<PositionComponent>(entity) = { 0, 2, 0 };
-		em.GetComponent<UnscaledVelocityComponent>(entity) = { { 0, 0, 0, 0, 0, 0 } };
-		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = { 0.03f, 1000.0f };
-		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
-		em.GetComponent<FreecamComponent>(entity) = { 6, 40, 20 };
+		EntityPointer p = em.GetEntityPointer(entity);
+		em.GetComponent<PositionComponent>(p) = { 0, 2, 0 };
+		em.GetComponent<UnscaledVelocityComponent>(p) = { { 0, 0, 0, 0, 0, 0 } };
+		CameraComponent& cam = em.GetComponent<CameraComponent>(p) = { 0.03f, 1000.0f };
+		em.GetComponent<RotationComponent>(p) = { 1, 0, 0, 0 };
+		em.GetComponent<FreecamComponent>(p) = { 6, 40, 20 };
 
 		int w, h;
 		glfwGetWindowSize(pMainWindow, &w, &h);
@@ -117,13 +118,14 @@ void Init()
 		};
 
 		Entity entity = em.AddEntity(EntityArchetype(5, components));
-		em.GetComponent<PositionComponent>(entity) = { 0, 2, -8 };
-		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 3.14f / 4.0f, 0 };
-		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
+		EntityPointer p = em.GetEntityPointer(entity);
+		em.GetComponent<PositionComponent>(p) = { 0, 2, -8 };
+		em.GetComponent<VelocityComponent>(p) = { 0, 0, 0, 0, 3.14f / 4.0f, 0 };
+		em.GetComponent<RotationComponent>(p) = { 1, 0, 0, 0 };
 
 		const char* path = "../data/models/monkey.glb";
 		modelLoader::LoadModel(monkeyMesh, path);
-		em.GetComponent<MeshComponent>(entity) = { &monkeyMesh };
+		em.GetComponent<MeshComponent>(p) = { &monkeyMesh };
 	}
 	// Create map
 	/*{
@@ -152,12 +154,13 @@ void Init()
 		};
 
 		Entity entity = em.AddEntity(EntityArchetype(5, components));
-		em.GetComponent<PositionComponent>(entity) = { -6, 0, 0 };
-		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, -0.1f, 0 };
-		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
+		EntityPointer p = em.GetEntityPointer(entity);
+		em.GetComponent<PositionComponent>(p) = { -6, 0, 0 };
+		em.GetComponent<VelocityComponent>(p) = { 0, 0, 0, 0, -0.1f, 0 };
+		em.GetComponent<RotationComponent>(p) = { 0.7071068f, 0, 0.7071068f, 0 };
 
 		modelLoader::LoadModel(testMesh, "../data/models/teapot.glb");
-		em.GetComponent<MeshComponent>(entity) = { &testMesh };
+		em.GetComponent<MeshComponent>(p) = { &testMesh };
 	}
 	{
 		modelLoader::LoadModel(boxMesh, "../data/models/box.glb");
@@ -195,47 +198,50 @@ void Init()
 		// Create box 1
 		{
 			Entity entity = em.AddEntity(boxArchetype);
-			em.GetComponent<PositionComponent>(entity) = { 0, -10, -5 };
-			em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
-			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
-			em.GetComponent<ScaleComponent>(entity) = { 200, 20, 200 };
+			EntityPointer p = em.GetEntityPointer(entity);
+			em.GetComponent<PositionComponent>(p) = { 0, -10, -5 };
+			em.GetComponent<VelocityComponent>(p) = { 0, 0, 0, 0, 0, 0 };
+			em.GetComponent<RotationComponent>(p) = { 0.7071068f, 0, 0.7071068f, 0 };
+			em.GetComponent<ScaleComponent>(p) = { 200, 20, 200 };
 
-			em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+			em.GetComponent<MeshComponent>(p) = { &boxMesh };
 
-			em.GetComponent<HullCollider>(entity) = { &boxHull };
-			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 0, 0.6f, Average };
-			PhysicsSystem::ComputeInertia(entity);
-			em.GetComponent<MassComponent>(entity).SetMass(INFINITY);
+			em.GetComponent<HullCollider>(p) = { &boxHull };
+			em.GetComponent<RigidBodyComponent>(p) = { false, ColliderType::Hull, 0, 0.6f, Average };
+			PhysicsSystem::ComputeInertia(p);
+			em.GetComponent<MassComponent>(p).SetMass(INFINITY);
 		}
 		// Create box 2
 		for (int i = 0; i < 6; ++i)
 		{
 			Entity entity = em.AddEntity(boxArchetype);
-			em.GetComponent<PositionComponent>(entity) = { 0, i * 0.6f + 0.5f, -5 };
-			em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
-			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
-			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
+			EntityPointer p = em.GetEntityPointer(entity);
+			em.GetComponent<PositionComponent>(p) = { 0, i * 0.6f + 0.5f, -5 };
+			em.GetComponent<VelocityComponent>(p) = { 0, 0, 0, 0, 0, 0 };
+			em.GetComponent<RotationComponent>(p) = { 0.7071068f, 0, 0.7071068f, 0 };
+			em.GetComponent<ScaleComponent>(p) = { 0.5f, 0.5f, 0.5f };
 
-			em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+			em.GetComponent<MeshComponent>(p) = { &boxMesh };
 
-			em.GetComponent<HullCollider>(entity) = { &boxHull };
-			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1, 0.6f, Average };
-			PhysicsSystem::ComputeInertia(entity);
-			em.GetComponent<MassComponent>(entity).SetMass(1);
+			em.GetComponent<HullCollider>(p) = { &boxHull };
+			em.GetComponent<RigidBodyComponent>(p) = { false, ColliderType::Hull, 1, 0.6f, Average };
+			PhysicsSystem::ComputeInertia(p);
+			em.GetComponent<MassComponent>(p).SetMass(1);
 		}
 		{
 			Entity entity = em.AddEntity(boxArchetype);
-			em.GetComponent<PositionComponent>(entity) = { 1, 1, -5 };
-			em.GetComponent<VelocityComponent>(entity) = { 0, 10, 0, 5, 5, 0 };
-			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
-			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
+			EntityPointer p = em.GetEntityPointer(entity);
+			em.GetComponent<PositionComponent>(p) = { 1, 1, -5 };
+			em.GetComponent<VelocityComponent>(p) = { 0, 10, 0, 5, 5, 0 };
+			em.GetComponent<RotationComponent>(p) = { 0.7071068f, 0, 0.7071068f, 0 };
+			em.GetComponent<ScaleComponent>(p) = { 0.5f, 0.5f, 0.5f };
 
-			em.GetComponent<MeshComponent>(entity) = { &boxMesh };
+			em.GetComponent<MeshComponent>(p) = { &boxMesh };
 
-			em.GetComponent<HullCollider>(entity) = { &boxHull };
-			em.GetComponent<RigidBodyComponent>(entity) = { false, ColliderType::Hull, 1, 0.6f, Average };
-			PhysicsSystem::ComputeInertia(entity);
-			em.GetComponent<MassComponent>(entity).SetMass(1);
+			em.GetComponent<HullCollider>(p) = { &boxHull };
+			em.GetComponent<RigidBodyComponent>(p) = { false, ColliderType::Hull, 1, 0.6f, Average };
+			PhysicsSystem::ComputeInertia(p);
+			em.GetComponent<MassComponent>(p).SetMass(1);
 		}
 	}
 }

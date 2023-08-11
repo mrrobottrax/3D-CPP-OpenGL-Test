@@ -1,22 +1,13 @@
 #pragma once
 #include "chunkarchetypeelement.h"
 #include "entity.h"
+#include "entitypointer.h"
 #include <common/types.h>
 
 // Each chunk is 16kB
 constexpr gSize_t chunkSize = 16384;
 
 typedef unsigned short gChunkIndex_t;
-
-struct EntityPointer
-{
-	EntityPointer(Chunk* pChunk, const gEntityIndex_t& indexInChunk)
-		: pChunk(pChunk), indexInChunk(indexInChunk)
-	{};
-
-	Chunk* pChunk;
-	gEntityIndex_t indexInChunk;
-};
 
 struct TableEntry
 {
@@ -48,12 +39,12 @@ public:
 	template <class T>
 	T& GetComponent(const EntityPointer&) const;
 
-	template <class T>
+	/*template <class T>
 	T* GetComponentP(const Entity&) const;
 	template <class T>
-	T& GetComponent(const Entity&) const;
+	T& GetComponent(const Entity&) const;*/
 
-	Entity AddEntity(EntityArchetype&);
+	const Entity AddEntity(EntityArchetype&);
 	Chunk* CreateChunk(EntityArchetype&);
 	Chunk* CreateChunk(ChunkArchetypeElement&);
 	ChunkArchetypeElement* CreateChunkArchetype(EntityArchetype&);
@@ -65,7 +56,7 @@ public:
 		return (entity.index < entityTable.size() && entityTable[entity.index].indexInIndices < numberOfEntities);
 	};
 
-	inline EntityPointer& GetEntityPointer(const Entity& entity)
+	inline const EntityPointer GetEntityPointer(const Entity& entity) const
 	{
 		assert(("Tried to get pointer to non-existant entity", EntityExists(entity)));
 		return entityTable[entity.index].p;
@@ -110,35 +101,35 @@ inline T& EntityManager::GetComponent(const EntityPointer& p) const
 	return r;
 }
 
-template <class T>
-inline T* EntityManager::GetComponentP(const Entity& entity) const
-{
-	const EntityPointer p = entityManager.GetEntityPointer(entity);
-
-	// Get pointer to component stream
-	const char* pComponentStream = reinterpret_cast<char*>(p.pChunk + 1);
-	const int offset = p.pChunk->pChunkArchetype->archetype.GetComponentOffset(Component().Init<T>());
-
-	if (offset < 0)
-		return nullptr;
-
-	T* pTComponentStream = (T*)(pComponentStream + static_cast<intptr_t>(p.pChunk->pChunkArchetype->maxEntities) * offset);
-	T* pT = (pTComponentStream + p.indexInChunk);
-	return pT;
-}
-
-template <class T>
-inline T& EntityManager::GetComponent(const Entity& entity) const
-{
-	const EntityPointer p = entityManager.GetEntityPointer(entity);
-
-	// Get pointer to component stream
-	const char* pComponentStream = reinterpret_cast<char*>(p.pChunk + 1);
-	const int offset = p.pChunk->pChunkArchetype->archetype.GetComponentOffset(Component().Init<T>());
-
-	assert(("Tried to get reference to component not attached to entity!", offset >= 0));
-
-	T* pTComponentStream = (T*)(pComponentStream + static_cast<intptr_t>(p.pChunk->pChunkArchetype->maxEntities) * offset);
-	T& r = *(pTComponentStream + p.indexInChunk);
-	return r;
-}
+//template <class T>
+//inline T* EntityManager::GetComponentP(const Entity& entity) const
+//{
+//	const EntityPointer p = entityManager.GetEntityPointer(entity);
+//
+//	// Get pointer to component stream
+//	const char* pComponentStream = reinterpret_cast<char*>(p.pChunk + 1);
+//	const int offset = p.pChunk->pChunkArchetype->archetype.GetComponentOffset(Component().Init<T>());
+//
+//	if (offset < 0)
+//		return nullptr;
+//
+//	T* pTComponentStream = (T*)(pComponentStream + static_cast<intptr_t>(p.pChunk->pChunkArchetype->maxEntities) * offset);
+//	T* pT = (pTComponentStream + p.indexInChunk);
+//	return pT;
+//}
+//
+//template <class T>
+//inline T& EntityManager::GetComponent(const Entity& entity) const
+//{
+//	const EntityPointer p = entityManager.GetEntityPointer(entity);
+//
+//	// Get pointer to component stream
+//	const char* pComponentStream = reinterpret_cast<char*>(p.pChunk + 1);
+//	const int offset = p.pChunk->pChunkArchetype->archetype.GetComponentOffset(Component().Init<T>());
+//
+//	assert(("Tried to get reference to component not attached to entity!", offset >= 0));
+//
+//	T* pTComponentStream = (T*)(pComponentStream + static_cast<intptr_t>(p.pChunk->pChunkArchetype->maxEntities) * offset);
+//	T& r = *(pTComponentStream + p.indexInChunk);
+//	return r;
+//}

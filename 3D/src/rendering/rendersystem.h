@@ -8,7 +8,7 @@ extern Cvar r_draw;
 class RenderSystem : public System
 {
 public:
-	RenderSystem() : pMainCamera(), autoDraw(true)
+	RenderSystem() : autoDraw(true)
 	{};
 
 	~RenderSystem()
@@ -22,7 +22,6 @@ public:
 
 	bool autoDraw;
 
-	CameraComponent* pMainCamera;
 	Entity mainCameraEntity;
 
 	void SetMainCameraEntity(Entity&);

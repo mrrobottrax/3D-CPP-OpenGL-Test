@@ -15,7 +15,6 @@ Cvar r_draw = { "r_draw", 1 };
 
 void RenderSystem::SetMainCameraEntity(Entity& entity)
 {
-	RenderSystem::pMainCamera = &entityManager.GetComponent<CameraComponent>(entity);
 	RenderSystem::mainCameraEntity = entity;
 }
 
@@ -67,7 +66,7 @@ void RenderSystem::Update()
 		return;
 	}
 
-	if (pMainCamera == nullptr)
+	if (!entityManager.EntityExists(mainCameraEntity))
 	{
 		return;
 	}
@@ -118,10 +117,11 @@ void RenderSystem::DrawBase()
 		return;
 
 	MatrixStack mStack;
+	const EntityPointer mainCameraEntityP = em.GetEntityPointer(mainCameraEntity);
 
 	mStack.Push();
-	mStack.ApplyMatrix(glm::mat4_cast(em.GetComponent<RotationComponent>(mainCameraEntity).value));
-	mStack.Translate(-em.GetComponent<PositionComponent>(mainCameraEntity).value);
+	mStack.ApplyMatrix(glm::mat4_cast(em.GetComponent<RotationComponent>(mainCameraEntityP).value));
+	mStack.Translate(-em.GetComponent<PositionComponent>(mainCameraEntityP).value);
 
 	glm::vec3 sunDir(1, 2, .2f);
 	sunDir = glm::normalize(sunDir);
@@ -129,7 +129,8 @@ void RenderSystem::DrawBase()
 	constexpr float sunIntensity = 1.3f;
 	constexpr float ambientIntensity = 0.1f;
 
-	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &pMainCamera->matrix[0][0]);
+	CameraComponent& mainCamera = em.GetComponent<CameraComponent>(mainCameraEntityP);
+	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &mainCamera.matrix[0][0]);
 	glUniform1f(sunIntensityUnif, sunIntensity);
 	glUniform1f(ambientIntensityUnif, ambientIntensity);
 
