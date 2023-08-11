@@ -87,7 +87,8 @@ void Init()
 			Component().Init<FreecamComponent>(),
 		};
 
-		Entity entity = em.AddEntity(EntityArchetype(6, components));
+		Entity e = em.AddEntity(EntityArchetype(6, components));
+		EntityPointer entity = em.GetEntityPointer(e);
 		em.GetComponent<PositionComponent>(entity) = { 0, 2, 0 };
 		em.GetComponent<UnscaledVelocityComponent>(entity) = { { 0, 0, 0, 0, 0, 0 } };
 		CameraComponent& cam = em.GetComponent<CameraComponent>(entity) = { 0.03f, 1000.0f };
@@ -98,7 +99,7 @@ void Init()
 		glfwGetWindowSize(pMainWindow, &w, &h);
 
 		RenderSystem& rs = renderSystem;
-		rs.SetMainCameraEntity(entity);
+		rs.SetMainCameraEntity(e);
 		rs.CalcFrustumScale(cam, 80);
 		rs.CalcPerspectiveMatrix(cam, w, h);
 	}
@@ -112,7 +113,8 @@ void Init()
 			Component().Init<RotationComponent>(),
 		};
 
-		Entity entity = em.AddEntity(EntityArchetype(5, components));
+		Entity e = em.AddEntity(EntityArchetype(5, components));
+		EntityPointer entity = em.GetEntityPointer(e);
 		em.GetComponent<PositionComponent>(entity) = { 0, 2, -8 };
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 3.14f / 4.0f, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
@@ -146,7 +148,8 @@ void Init()
 			Component().Init<RotationComponent>(),
 		};
 
-		Entity entity = em.AddEntity(EntityArchetype(5, components));
+		Entity e = em.AddEntity(EntityArchetype(5, components));
+		EntityPointer entity = em.GetEntityPointer(e);
 		em.GetComponent<PositionComponent>(entity) = { -6, 0, 0 };
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, -0.1f, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
@@ -190,7 +193,8 @@ void Init()
 
 		// Create floor box
 		{
-			Entity entity = em.AddEntity(boxArchetype);
+			Entity e = em.AddEntity(boxArchetype);
+			EntityPointer entity = em.GetEntityPointer(e);
 			em.GetComponent<PositionComponent>(entity) = { 0, -10, -5 };
 			em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
@@ -206,7 +210,8 @@ void Init()
 		// Create stack boxes
 		for (int i = 0; i < 6; ++i)
 		{
-			Entity entity = em.AddEntity(boxArchetype);
+			Entity e = em.AddEntity(boxArchetype);
+			EntityPointer entity = em.GetEntityPointer(e);
 			em.GetComponent<PositionComponent>(entity) = { 0, i * 0.6f + 0.5f, -5 };
 			em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 0, 0 };
 			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
@@ -221,7 +226,8 @@ void Init()
 		}
 		// Create throw box
 		{
-			Entity entity = em.AddEntity(boxArchetype);
+			Entity e = em.AddEntity(boxArchetype);
+			EntityPointer entity = em.GetEntityPointer(e);
 			em.GetComponent<PositionComponent>(entity) = { 1, 0.25f, -5 };
 			em.GetComponent<VelocityComponent>(entity) = { 10, 0, 0, 0, 0, 0 };
 			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
