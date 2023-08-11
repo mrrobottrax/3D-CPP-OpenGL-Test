@@ -433,6 +433,7 @@ bool MeshSection(ifstream& reader)
 	EntityPointer ep = em.GetEntityPointer(e);
 
 	MalletMesh& mesh = em.GetComponent<MalletMeshComponent>(ep).mesh;
+	
 
 	free(pPosSection);
 	free(pVertSection);
