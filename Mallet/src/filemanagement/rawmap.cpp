@@ -2,6 +2,7 @@
 #include "rawmap.h"
 #include <memory/entitymanager.h>
 #include <malletarchetypes.h>
+#include <worldinfo.h>
 
 using namespace std;
 
@@ -192,86 +193,6 @@ void WriteVersionInfo(ofstream& writer)
 	WriteObjectEnd(writer);
 }
 
-//namespace worldStrings
-//{
-//	const char* world = "world";
-//	const char* meshes = "meshes";
-//	const char* meshCount = "meshcount";
-//
-//	const char* positions = "positions";
-//	const char* positionIndex = "positionIndex";
-//
-//	const char* vertices = "vertices";
-//	const char* vertexIndex = "vI";
-//
-//	const char* edges = "edges";
-//	const char* edgeIndex = "eI";
-//
-//	const char* faces = "faces";
-//	const char* faceIndex = "fI";
-//
-//	const char* uv = "uv";
-//};
-
-//struct MeshSetsHolder
-//{
-//	unordered_set<glm::vec3*> positions;
-//	unordered_set<mmVertex*> vertices;
-//	unordered_set<mmHalfEdge*> edges;
-//	unordered_set<mmFace*> faces;
-//};
-
-//void WriteWorldInfo(json& data)
-//{
-//	using namespace worldStrings;
-//
-//	char* pData = nullptr;
-//
-//	// Iterate through all mesh entities
-//	ChunkArchetypeElement* pChunkArchetype = entityManager.FindChunkArchetype(malletMesh);
-//
-//	// No meshes
-//	if (!pChunkArchetype)
-//		return;
-//
-//	vector<MeshSetsHolder> meshesVector;
-//
-//	// Add each mesh to JSON
-//	gSize_t meshIndex = 0;
-//	for (Chunk* pChunk = pChunkArchetype->pFirstChunk; pChunk; pChunk = pChunk->pNext)
-//	{
-//		for (gSize_t i = 0; i < pChunk->numberOfEntities; ++i)
-//		{
-//			MalletMesh& mesh = entityManager.GetComponent<MalletMeshComponent>(EntityPointer(pChunk, i)).mesh;
-//
-//			// Add mesh sets to vector
-//			meshesVector.push_back(MeshSetsHolder());
-//			MeshSetsHolder& meshSets = meshesVector.back();
-//			mesh.CollectSets(meshSets.positions, meshSets.vertices,
-//				meshSets.edges, meshSets.faces);
-//
-//			++meshIndex;
-//		}
-//	}
-//
-//	data[world][meshCount] = meshIndex;
-//}
-
-/*--------------------------------------*/
-
-void RawMap::SaveMap(const char* path)
-{
-	ofstream writer;
-	writer.open(path, ios::binary | ios::out | ios::trunc);
-	
-	WriteSectionStart(writer, infoSection);
-
-	WriteVersionInfo(writer);
-	//WriteWorldInfo(writer);
-
-	writer.close();
-}
-
 version_t ParseVersion(std::string s)
 {
 	return std::stoul(s);
@@ -291,6 +212,165 @@ bool VerifyVersionInfo(GameObject object)
 	return true;
 }
 
+namespace worldInfoStrings
+{
+	const char* worldInfo = "world_info";
+	const char* comment = "comment";
+};
+
+void WriteWorldInfo(ofstream& writer)
+{
+	using namespace worldInfoStrings;
+	WriteObjectStart(writer, worldInfoStrings::worldInfo);
+
+	WriteProperty(writer, comment, ::worldInfo.comment.c_str());
+
+	WriteObjectEnd(writer);
+}
+
+void ReadWorldInfo(GameObject& object)
+{
+	using namespace worldInfoStrings;
+	::worldInfo.comment = object.kv[comment];
+}
+
+namespace meshStrings
+{
+	const char positionSection[4] = { 'p', 'o', 's', ' ' };
+	const char vertexSection[4] = { 'v', 'e', 'r', 't'};
+	const char edgesSection[4] = { 'e', 'd', 'g', 'e' };
+	const char facesSection[4] = { 'f', 'a', 'c', 'e' };
+}
+
+void WriteMeshData(ofstream& writer)
+{
+	using namespace meshStrings;
+
+	// Iterate through all mesh entities
+	ChunkArchetypeElement* pChunkArchetype = entityManager.FindChunkArchetype(malletMesh);
+
+	// No meshes
+	if (!pChunkArchetype)
+		return;
+
+	// Write each mesh
+	gSize_t meshIndex = 0;
+	for (Chunk* pChunk = pChunkArchetype->pFirstChunk; pChunk; pChunk = pChunk->pNext)
+	{
+		for (gSize_t i = 0; i < pChunk->numberOfEntities; ++i)
+		{
+			MalletMesh& mesh = entityManager.GetComponent<MalletMeshComponent>(EntityPointer(pChunk, i)).mesh;
+
+			// Add mesh sets to vector
+			unordered_set<glm::vec3*> positions;
+			unordered_set<mmVertex*> vertices;
+			unordered_set<mmHalfEdge*> edges;
+			unordered_set<mmFace*> faces;
+
+			mesh.CollectSets(positions, vertices, edges, faces);
+
+			auto startPos = writer.tellp();
+			writer.write(positionSection, 4);
+			WriteUint32(writer, positions.size());
+			for (auto it = positions.begin(); it != positions.end(); ++it)
+			{
+				glm::vec3& vec = **it;
+				WriteFloat(writer, vec.x);
+				WriteFloat(writer, vec.y);
+				WriteFloat(writer, vec.z);
+			}
+
+			// Align to 4 bytes
+			auto newPos = writer.tellp();
+			auto dist = ((newPos - startPos) % 4) % 4;
+			for (auto i = 0; i < dist; ++i)
+			{
+				writer.write('\0', 1);
+			}
+
+			writer.write(vertexSection, 4);
+			WriteUint32(writer, vertices.size());
+			for (auto it = vertices.begin(); it != vertices.end(); ++it)
+			{
+				mmVertex& vert = **it;
+				ptrdiff_t positionIndex = std::distance(positions.begin(), positions.find(vert.pPosition));
+				WriteGsize(writer, positionIndex);
+				WriteFloat(writer, vert.uv.x);
+				WriteFloat(writer, vert.uv.y);
+			}
+
+			// Align to 4 bytes
+			newPos = writer.tellp();
+			dist = ((newPos - startPos) % 4) % 4;
+			for (auto i = 0; i < dist; ++i)
+			{
+				writer.write('\0', 1);
+			}
+
+			writer.write(edgesSection, 4);
+			WriteUint32(writer, edges.size());
+			for (auto it = edges.begin(); it != edges.end(); ++it)
+			{
+				mmHalfEdge& edge = **it;
+				ptrdiff_t faceIndex = std::distance(faces.begin(), faces.find(edge.pFace));
+				ptrdiff_t nextIndex = std::distance(edges.begin(), edges.find(edge.pNext));
+				ptrdiff_t prevIndex = std::distance(edges.begin(), edges.find(edge.pPrev));
+				ptrdiff_t twinIndex = std::distance(edges.begin(), edges.find(edge.pTwin));
+				ptrdiff_t tailIndex = std::distance(vertices.begin(), vertices.find(edge.pTail));
+				WriteGsize(writer, faceIndex);
+				WriteGsize(writer, nextIndex);
+				WriteGsize(writer, prevIndex);
+				WriteGsize(writer, twinIndex);
+				WriteGsize(writer, tailIndex);
+			}
+
+			// Align to 4 bytes
+			newPos = writer.tellp();
+			dist = ((newPos - startPos) % 4) % 4;
+			for (auto i = 0; i < dist; ++i)
+			{
+				writer.write('\0', 1);
+			}
+
+			writer.write(facesSection, 4);
+			WriteUint32(writer, faces.size());
+			for (auto it = faces.begin(); it != faces.end(); ++it)
+			{
+				mmFace& face = **it;
+				ptrdiff_t edgeIndex = std::distance(edges.begin(), edges.find(face.pEdge));
+				WriteGsize(writer, edgeIndex);
+				WriteFloat(writer, face.normal.x);
+				WriteFloat(writer, face.normal.y);
+				WriteFloat(writer, face.normal.z);
+			}
+
+			writer.write("\n", 1);
+			++meshIndex;
+		}
+	}
+}
+
+/*--------------------------------------*/
+
+void RawMap::SaveMap(const char* path)
+{
+	ofstream writer;
+	writer.open(path, ios::binary | ios::out | ios::trunc);
+	
+	// info
+	WriteSectionStart(writer, infoSection);
+	WriteVersionInfo(writer);
+	WriteWorldInfo(writer);
+
+	// entity
+
+	// mesh
+	WriteSectionStart(writer, meshSection);
+	WriteMeshData(writer);
+
+	writer.close();
+}
+
 bool InfoSection(ifstream& reader)
 {
 	GameObject object = ReadObject(reader);
@@ -299,14 +379,19 @@ bool InfoSection(ifstream& reader)
 	{
 		return VerifyVersionInfo(object);
 	}
+	else if (!strcmp(object.name.c_str(), worldInfoStrings::worldInfo))
+	{
+		ReadWorldInfo(object);
+	}
 
 	return true;
 }
 
 void MeshSection(ifstream& reader)
 {
-	char c;
-	reader.read(&c, 1);
+	SkipWhitespace(reader);
+
+
 }
 
 void EntitySection(ifstream& reader)

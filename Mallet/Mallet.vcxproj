@@ -314,6 +314,7 @@
     <ClInclude Include="src\ui\windows\malletwindow.h" />
     <ClInclude Include="src\ui\windows\toolbar.h" />
     <ClInclude Include="src\ui\windows\viewport.h" />
+    <ClInclude Include="src\worldinfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\filemanagement\filemanager.cpp" />

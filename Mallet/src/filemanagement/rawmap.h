@@ -1,5 +1,7 @@
 #pragma once
 
+#include <common/types.h>
+
 #define FANCY_PRINTING
 
 typedef unsigned int version_t;
@@ -27,3 +29,33 @@ public:
 	void SaveMap(const char*);
 	void LoadMap(const char*);
 }; inline RawMap rawMap;
+
+inline void WriteUint32(std::ofstream& writer, const unsigned int& value)
+{
+	writer.write(reinterpret_cast<const char*>(&value), sizeof(unsigned int));
+}
+
+inline void WriteUint32(std::ofstream& writer, const size_t& value)
+{
+	WriteUint32(writer, static_cast<const unsigned int>(value));
+}
+
+inline void WriteFloat(std::ofstream& writer, const float& value)
+{
+	writer.write(reinterpret_cast<const char*>(&value), sizeof(float));
+}
+
+inline void WriteUint16(std::ofstream& writer, const unsigned short& value)
+{
+	writer.write(reinterpret_cast<const char*>(&value), sizeof(unsigned short));
+}
+
+inline void WriteGsize(std::ofstream& writer, const gSize_t& value)
+{
+	writer.write(reinterpret_cast<const char*>(&value), sizeof(gSize_t));
+}
+
+inline void WriteGsize(std::ofstream& writer, const ptrdiff_t& value)
+{
+	WriteGsize(writer, static_cast<gSize_t>(value));
+}

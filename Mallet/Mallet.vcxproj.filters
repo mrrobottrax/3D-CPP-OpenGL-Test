@@ -87,6 +87,7 @@
     <ClInclude Include="src\ui\windows\viewport.h">
       <Filter>ui\windows</Filter>
     </ClInclude>
+    <ClInclude Include="src\worldinfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\filemanagement\filemanager.cpp">
