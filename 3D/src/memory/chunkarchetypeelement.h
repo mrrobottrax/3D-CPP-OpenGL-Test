@@ -11,8 +11,11 @@ public:
 
 	~ChunkArchetypeElement();
 
+	// Previous and next archetypes in linked list
+	// TODO: Use dictionary or something with better access from component
 	ChunkArchetypeElement* pPrev;
 	ChunkArchetypeElement* pNext;
+
 	Chunk* pFirstChunk;
 	gSize_t maxEntities;
 

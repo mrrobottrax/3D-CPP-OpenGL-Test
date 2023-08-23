@@ -37,7 +37,7 @@
 
 #include <physics/halfedgemesh.h>
 #include <physics/quickhull.h>
-#include <meshwork/malletmesh.h>
+#include <world/worldutil.h>
 
 using namespace std;
 
@@ -83,7 +83,8 @@ void End()
 {
 	ImGuiTerminate();
 
-	MalletMesh::DeleteAllMeshes();
+	worldUtil.UnloadWorld();
+
 	entityManager.DeleteAllEntities();
 	console.DeleteCommands();
 	glfwTerminate();

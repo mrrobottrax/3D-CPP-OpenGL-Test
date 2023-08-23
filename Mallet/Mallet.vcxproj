@@ -314,7 +314,8 @@
     <ClInclude Include="src\ui\windows\malletwindow.h" />
     <ClInclude Include="src\ui\windows\toolbar.h" />
     <ClInclude Include="src\ui\windows\viewport.h" />
-    <ClInclude Include="src\worldinfo.h" />
+    <ClInclude Include="src\world\worldinfo.h" />
+    <ClInclude Include="src\world\worldutil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\filemanagement\filemanager.cpp" />
@@ -333,6 +334,7 @@
     <ClCompile Include="src\ui\windows\malletwindow.cpp" />
     <ClCompile Include="src\ui\windows\toolbar.cpp" />
     <ClCompile Include="src\ui\windows\viewport.cpp" />
+    <ClCompile Include="src\world\worldutil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\3D\vendor\Glad\Glad.vcxproj">

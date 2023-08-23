@@ -2,7 +2,8 @@
 #include "rawmap.h"
 #include <memory/entitymanager.h>
 #include <malletarchetypes.h>
-#include <worldinfo.h>
+#include <world/worldinfo.h>
+#include <world/worldutil.h>
 
 using namespace std;
 
@@ -641,6 +642,8 @@ void RawMap::LoadMap(const char* path)
 	ifstream reader;
 
 	reader.open(path, ios::binary | ios::in);
+
+	worldUtil.UnloadWorld();
 
 	if (LoadMapInternal(reader))
 	{

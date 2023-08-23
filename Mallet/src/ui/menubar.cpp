@@ -2,6 +2,7 @@
 #include "menubar.h"
 #include <gl/glutil.h>
 #include <filemanagement/filemanager.h>
+#include <world/worldutil.h>
 
 void FileMenu()
 {
@@ -10,6 +11,9 @@ void FileMenu()
 
 	if (ImGui::MenuItem("Save As", "Ctrl+S"))
 		fileManager.SaveAsDialog();
+
+	if (ImGui::MenuItem("Close"))
+		worldUtil.UnloadWorld();
 
 	ImGui::MenuItem("Export", "F9");
 }
