@@ -356,7 +356,7 @@ void WriteMeshData(ofstream& writer)
 			}
 
 			writer.write(positionSection, numChars);
-			WriteGsize(writer, positions.size());
+			WriteGsize(writer, static_cast<gSize_t>(positions.size()));
 			for (auto it = positions.begin(); it != positions.end(); ++it)
 			{
 				glm::vec3& vec = **it;
@@ -365,7 +365,7 @@ void WriteMeshData(ofstream& writer)
 			}
 
 			writer.write(vertexSection, numChars);
-			WriteGsize(writer, vertices.size());
+			WriteGsize(writer, static_cast<gSize_t>(vertices.size()));
 			for (auto it = vertices.begin(); it != vertices.end(); ++it)
 			{
 				mmVertex& vert = **it;
@@ -375,7 +375,7 @@ void WriteMeshData(ofstream& writer)
 			}
 
 			writer.write(edgeSection, numChars);
-			WriteGsize(writer, edges.size());
+			WriteGsize(writer, static_cast<gSize_t>(edges.size()));
 			for (auto it = edges.begin(); it != edges.end(); ++it)
 			{
 				mmHalfEdge& edge = **it;
@@ -389,7 +389,7 @@ void WriteMeshData(ofstream& writer)
 			}
 
 			writer.write(faceSection, numChars);
-			WriteGsize(writer, faces.size());
+			WriteGsize(writer, static_cast<gSize_t>(faces.size()));
 			for (auto it = faces.begin(); it != faces.end(); ++it)
 			{
 				mmFace& face = **it;

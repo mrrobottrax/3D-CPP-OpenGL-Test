@@ -30,14 +30,9 @@ public:
 	void LoadMap(const char*);
 }; inline RawMap rawMap;
 
-inline void WriteUint32(std::ofstream& writer, const unsigned int& value)
+inline void WriteUint32(std::ofstream& writer, const uint32_t& value)
 {
-	writer.write(reinterpret_cast<const char*>(&value), sizeof(unsigned int));
-}
-
-inline void WriteUint32(std::ofstream& writer, const size_t& value)
-{
-	WriteUint32(writer, static_cast<const unsigned int>(value));
+	writer.write(reinterpret_cast<const char*>(&value), sizeof(uint32_t));
 }
 
 inline void WriteFloat(std::ofstream& writer, const float& value)
@@ -45,24 +40,14 @@ inline void WriteFloat(std::ofstream& writer, const float& value)
 	writer.write(reinterpret_cast<const char*>(&value), sizeof(float));
 }
 
-inline void WriteUint16(std::ofstream& writer, const unsigned short& value)
+inline void WriteUint16(std::ofstream& writer, const uint16_t& value)
 {
-	writer.write(reinterpret_cast<const char*>(&value), sizeof(unsigned short));
+	writer.write(reinterpret_cast<const char*>(&value), sizeof(uint16_t));
 }
 
 inline void WriteGsize(std::ofstream& writer, const gSize_t& value)
 {
 	writer.write(reinterpret_cast<const char*>(&value), sizeof(gSize_t));
-}
-
-inline void WriteGsize(std::ofstream& writer, const ptrdiff_t& value)
-{
-	WriteGsize(writer, static_cast<gSize_t>(value));
-}
-
-inline void WriteGsize(std::ofstream& writer, const size_t& value)
-{
-	WriteGsize(writer, static_cast<gSize_t>(value));
 }
 
 inline gSize_t ReadGsize(std::ifstream& reader)
