@@ -287,9 +287,9 @@ void EntityManager::DeleteEntity(const Entity& entity)
 
 void EntityManager::DeleteChunk(Chunk* pChunk)
 {
-#ifdef DEBUG
+#ifdef COMPONENT_DEBUG
 	std::cout << "	Deleting chunk.		Entities: " << pChunk->numberOfEntities << "\n";
-#endif //DEBUG
+#endif // COMPONENT_DEBUG
 
 	if (pChunk->pPrev)
 		pChunk->pPrev->pNext = pChunk->pNext;
@@ -304,14 +304,14 @@ void EntityManager::DeleteChunk(Chunk* pChunk)
 
 void EntityManager::DeleteChunkArchetype(ChunkArchetypeElement* pArchetype)
 {
-#ifdef DEBUG
+#ifdef COMPONENT_DEBUG
 	std::cout << "Deleting chunk archetype of: ";
 	for (gSize_t i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
 	{
 		std::cout << (i != 0 ? ", " : "") << chunkArchetypeList->archetype.components[i].name;
 	}
 	std::cout << "\n";
-#endif // DEBUG
+#endif // COMPONENT_DEBUG
 
 	// Link around deleted element
 	if (pArchetype->pPrev)

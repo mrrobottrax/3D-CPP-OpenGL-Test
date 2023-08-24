@@ -2,6 +2,10 @@
 
 #include <common/types.h>
 
+#ifdef DEBUG
+//#define COMPONENT_DEBUG
+#endif
+
 struct Component
 {
 	template <class T>
@@ -11,11 +15,11 @@ struct Component
 	gSize_t offset;
 	size_t hash;
 
-#ifdef DEBUG
+#ifdef COMPONENT_DEBUG
 	// For debug only
 	// TODO: Remove
 	char name[32];
-#endif // DEBUG
+#endif // COMPONENT_DEBUG
 
 	bool operator==(const Component& other)
 	{
@@ -33,7 +37,7 @@ inline Component& Component::Init()
 	Component::hash = typeid(T).hash_code();
 	Component::size = sizeof(T);
 
-#ifdef DEBUG
+#ifdef COMPONENT_DEBUG
 	const char* name = typeid(T).name();
 	//TODO: remove
 	for (int i = 0; i < 32; i++)
@@ -44,7 +48,7 @@ inline Component& Component::Init()
 			break;
 		}
 	}
-#endif // DEBUG
+#endif // COMPONENT_DEBUG
 
 	return *this;
 }
