@@ -90,6 +90,7 @@
     <ClInclude Include="src\world\worldinfo.h" />
     <ClInclude Include="src\world\worldutil.h" />
     <ClInclude Include="src\tools\selecttool.h" />
+    <ClInclude Include="src\filemanagement\binarymap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\filemanagement\filemanager.cpp">
@@ -131,5 +132,6 @@
       <Filter>ui\windows</Filter>
     </ClCompile>
     <ClCompile Include="src\world\worldutil.cpp" />
+    <ClCompile Include="src\filemanagement\binarymap.cpp" />
   </ItemGroup>
 </Project>

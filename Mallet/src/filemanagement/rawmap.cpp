@@ -4,6 +4,7 @@
 #include <malletarchetypes.h>
 #include <world/worldinfo.h>
 #include <world/worldutil.h>
+#include "filemanager.h"
 
 using namespace std;
 
@@ -84,7 +85,7 @@ void WriteObjectEnd(ofstream& writer)
 
 void WriteProperty(ofstream& writer, const char*& name, const char*& value)
 {
-#ifdef FANCY_PRINTING
+#ifdef RMAP_FANCY_PRINTING
 	writer << "	" << name << ": " << value << "\n";
 #else
 	writer << name << ": " << value << "\n";
@@ -93,7 +94,7 @@ void WriteProperty(ofstream& writer, const char*& name, const char*& value)
 
 void WriteProperty(ofstream& writer, const char*& name, const char*&& value)
 {
-#ifdef FANCY_PRINTING
+#ifdef RMAP_FANCY_PRINTING
 	writer << "	" << name << ": " << value << "\n";
 #else
 	writer << name << ": " << value << "\n";

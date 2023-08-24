@@ -3,6 +3,7 @@
 #include <gl/glutil.h>
 #include <filemanagement/filemanager.h>
 #include <world/worldutil.h>
+#include <filemanagement/binarymap.h>
 
 void FileMenu()
 {
@@ -15,7 +16,8 @@ void FileMenu()
 	if (ImGui::MenuItem("Close"))
 		worldUtil.UnloadWorld();
 
-	ImGui::MenuItem("Export", "F9");
+	if (ImGui::MenuItem("Export", "F9"))
+		binaryMap.Export();
 }
 
 void MenuBar::Draw()
