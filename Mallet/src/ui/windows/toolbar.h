@@ -2,6 +2,7 @@
 #include "malletwindow.h"
 #include <tools/mallettool.h>
 #include <tools/blocktool.h>
+#include <tools/selecttool.h>
 
 class Toolbar : public MalletWindow
 {
@@ -15,6 +16,7 @@ public:
 public:
 	static inline MalletTool* pActiveTool;
 	static inline BlockTool blockTool = BlockTool();
+	static inline SelectTool selectTool = SelectTool();
 
 public:
 	void Draw() override;

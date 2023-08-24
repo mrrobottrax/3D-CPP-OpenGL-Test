@@ -305,6 +305,7 @@
     <ClInclude Include="src\meshwork\malletmeshcomponent.h" />
     <ClInclude Include="src\tools\blocktool.h" />
     <ClInclude Include="src\tools\mallettool.h" />
+    <ClInclude Include="src\tools\selecttool.h" />
     <ClInclude Include="src\ui\docking\dockingleaf.h" />
     <ClInclude Include="src\ui\docking\dockingnode.h" />
     <ClInclude Include="src\ui\docking\dockingsplit.h" />

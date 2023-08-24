@@ -13,7 +13,7 @@ void Toolbar::Draw()
 	ImGui::Begin(name.c_str(), (bool*)0, window_flags);
 
 	if (ImGui::Button("Select"))
-		SetActiveTool(nullptr);
+		SetActiveTool(&selectTool);
 
 	if (ImGui::Button("Block"))
 		SetActiveTool(&blockTool);

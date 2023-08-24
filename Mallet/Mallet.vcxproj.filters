@@ -89,6 +89,7 @@
     </ClInclude>
     <ClInclude Include="src\world\worldinfo.h" />
     <ClInclude Include="src\world\worldutil.h" />
+    <ClInclude Include="src\tools\selecttool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\filemanagement\filemanager.cpp">
