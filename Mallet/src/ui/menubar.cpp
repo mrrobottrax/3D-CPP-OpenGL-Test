@@ -17,7 +17,7 @@ void FileMenu()
 		worldUtil.UnloadWorld();
 
 	if (ImGui::MenuItem("Export", "F9"))
-		binaryMap.Export();
+		binaryMap.ExportDialog();
 }
 
 void MenuBar::Draw()

@@ -8,11 +8,6 @@
 
 #include <ui/windows/viewport.h>
 
-//Button mallet_buttons[MAX_BUTTONS_MALLET];
-//
-//void PanDown(Console& console) { inputManager->ButtonUp(mallet_buttons[Pan]); };
-//void PanUp(Console& console) { inputManager->ButtonUp(mallet_buttons[Pan]); };
-
 void SetupInputCallbacks(GLFWwindow* window)
 {
 	glfwSetWindowSizeCallback(window, MalletWindowSizeCallback);
@@ -22,15 +17,6 @@ void SetupInputCallbacks(GLFWwindow* window)
 	glfwSetCursorPosCallback(window, MalletMousePosCallback);
 	glfwSetScrollCallback(window, MalletScrollCallback);
 }
-
-//void AddInputCommands()
-//{
-//	inputManager->console.AddCommand("+pan", PanDown);
-//	inputManager->console.AddCommand("-pan", PanUp);
-//
-//	// TEMP
-//	inputManager->BindKey('r', "+pan");
-//}
 
 void MalletKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
 {

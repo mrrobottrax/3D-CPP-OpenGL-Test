@@ -3,5 +3,5 @@
 class BinaryMap
 {
 public:
-	void Export();
+	void ExportDialog();
 }; inline BinaryMap binaryMap;
