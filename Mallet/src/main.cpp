@@ -1,7 +1,5 @@
 #include <malletpch.h>
 
-#include <main.h>
-
 #include <gl/glutil.h>
 #include <input/malletinputlayer.h>
 
@@ -54,6 +52,14 @@ HalfEdgeMesh boxHull;
 
 void Init()
 {
+#ifdef DEBUG
+	AllocConsole();
+	FILE* fDummy;
+	freopen_s(&fDummy, "CONOUT$", "r", stdin);
+	freopen_s(&fDummy, "CONOUT$", "w", stdout);
+	freopen_s(&fDummy, "CONOUT$", "w", stderr);
+#endif // DEBUG
+
 	// Init OpenGL
 	InitializeWindow();
 	SetupInputCallbacks(pMainWindow);
@@ -89,10 +95,19 @@ void End()
 	console.DeleteCommands();
 	glfwTerminate();
 
+#ifdef DEBUG
+	FreeConsole();
+#endif // DEBUG
+
 	::exit(EXIT_SUCCESS);
 }
 
-int main()
+int CALLBACK WinMain(
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPSTR lpCmdLine,
+	_In_ int nShowCmd
+)
 {
 	// Memory leaks
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);

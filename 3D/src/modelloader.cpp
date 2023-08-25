@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "modelLoader.h"
+#include <input/console.h>
 
 namespace modelLoader {
 
@@ -13,14 +14,14 @@ namespace modelLoader {
 
 	void LoadModel(MeshObject& mesh, const char* path)
 	{
-		std::cout << "Loading model: " << path << "\n";
+		DEBUG_LOG("Loading model: " << path)
 
 		std::ifstream f;
 		f.open(path, std::ios::binary);
 
 		if (f.fail())
 		{
-			std::cout << "Failed to load model  " << path << "\n";
+			DEBUG_LOG_WARNING("Failed to load model  " << path)
 			// TODO: Add default error model
 			return;
 		}

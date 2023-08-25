@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Windows.h>
 #include <glm.hpp>
 #include <algorithm>
 #include <gtc/quaternion.hpp>
@@ -22,3 +23,9 @@
 // IMGUI should be loaded before OpenGL
 #include <imgui/imguiload.h>
 #include <gl/glload.h>
+
+// I want to kill myself
+#ifdef WIN32
+#undef min
+#undef max
+#endif

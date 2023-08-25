@@ -34,7 +34,7 @@ void InputSystem::BindKey(char key, const char* action)
 	strcpy_s(keys[key].binding, action);
 
 	char* keyname = KeycodeToName(key);
-	std::cout << "Bound " << keyname << " to " << action << "\n";
+	DEBUG_LOG("Bound " << keyname << " to " << action)
 }
 
 void InputSystem::BindToggleKey(char key, const char* cvar)
@@ -45,7 +45,7 @@ void InputSystem::BindToggleKey(char key, const char* cvar)
 	strcpy_s(keys[key].binding, "toggle ");
 	strcat_s(keys[key].binding, cvar);
 
-	std::cout << "Bound " << keyname << " to toggle " << cvar << "\n";
+	DEBUG_LOG("Bound " << keyname << " to toggle " << cvar)
 }
 
 KeyCode InputSystem::KeyboardInputToKeycode(int key)
@@ -239,7 +239,8 @@ void InputSystem::UpdateCursorDelta(double xPos, double yPos)
 	lastCursorPosX = xPos;
 	lastCursorPosY = yPos;
 
-	// Loop cursor TODO: This should probably be in mallet code
+	// Loop cursor
+	// TODO: This should probably be in mallet code
 	if (cursorLoop)
 	{
 		int windowSize[2]{};
@@ -255,13 +256,13 @@ void InputSystem::UpdateCursorDelta(double xPos, double yPos)
 		{
 			while (cursorPos[i] < loopMargin)
 			{
-				cursorPos[i] += (windowSize[i] - loopMargin * 2);
+				cursorPos[i] += static_cast<double>(windowSize[i]) - static_cast<double>(loopMargin) * 2.0;
 				looped = true;
 			}
 
-			while (cursorPos[i] > (windowSize[i] - loopMargin))
+			while (cursorPos[i] > (static_cast<double>(windowSize[i]) - static_cast<double>(loopMargin)))
 			{
-				cursorPos[i] -= (windowSize[i] - loopMargin * 2);
+				cursorPos[i] -= static_cast<double>(windowSize[i]) - static_cast<double>(loopMargin) * 2.0;
 				looped = true;
 			}
 		}

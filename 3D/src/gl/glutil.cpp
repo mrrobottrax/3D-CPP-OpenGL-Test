@@ -67,7 +67,7 @@ void InitializeWindow()
 		// Initialize GLEW to setup the OpenGL Function pointers 
 		if (GLEW_OK != glewInit())
 		{
-			std::cout << "Failed to initialize GLEW" << std::endl;
+			DEBUG_LOG_ERROR("Failed to initialize GLEW")
 			exit(EXIT_FAILURE);
 		}
 	#endif // USE_GLEW
@@ -76,7 +76,7 @@ void InitializeWindow()
 			// Initialize GLAD to setup the OpenGL Function pointers 
 			if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			{
-				std::cout << "Failed to initialize GLAD" << std::endl;
+				DEBUG_LOG_ERROR("Failed to initialize GLAD")
 				exit(EXIT_FAILURE);
 			}
 	#endif // USE_GLAD
@@ -172,7 +172,7 @@ GLuint CreateShader(GLenum eShaderType, const std::string& strShaderFile)
 		GLint infoLogLength;
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-		GLchar* strInfoLog = new GLchar[infoLogLength + 1];
+		GLchar* strInfoLog = new GLchar[static_cast<size_t>(infoLogLength) + 1];
 		glGetShaderInfoLog(shader, infoLogLength, NULL, strInfoLog);
 
 		const char* strShaderType = NULL;
@@ -206,7 +206,7 @@ GLuint CreateProgram(const std::vector<GLuint>& shaderList)
 		GLint infoLogLength;
 		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-		GLchar* strInfoLog = new GLchar[infoLogLength + 1];
+		GLchar* strInfoLog = new GLchar[static_cast<size_t>(infoLogLength) + 1];
 		glGetProgramInfoLog(program, infoLogLength, NULL, strInfoLog);
 		fprintf(stderr, "Linker failure: %s\n", strInfoLog);
 		delete[] strInfoLog;

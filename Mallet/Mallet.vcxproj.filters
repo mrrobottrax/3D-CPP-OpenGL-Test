@@ -28,10 +28,16 @@
     <Filter Include="ui\windows">
       <UniqueIdentifier>{1DCFE1FA-0987-2348-728E-FCA35E65BE38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="world">
+      <UniqueIdentifier>{6D35A710-D949-CFC1-A2CB-72210E9FCBF2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\debugtools\debugcolorcycle.h">
       <Filter>debugtools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\filemanagement\binarymap.h">
+      <Filter>filemanagement</Filter>
     </ClInclude>
     <ClInclude Include="src\filemanagement\filemanager.h">
       <Filter>filemanagement</Filter>
@@ -45,7 +51,6 @@
     <ClInclude Include="src\input\malletinputlayer.h">
       <Filter>input</Filter>
     </ClInclude>
-    <ClInclude Include="src\main.h" />
     <ClInclude Include="src\malletarchetypes.h" />
     <ClInclude Include="src\malletpch.h" />
     <ClInclude Include="src\meshwork\malletmesh.h">
@@ -58,6 +63,9 @@
       <Filter>tools</Filter>
     </ClInclude>
     <ClInclude Include="src\tools\mallettool.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tools\selecttool.h">
       <Filter>tools</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\docking\dockingleaf.h">
@@ -87,12 +95,17 @@
     <ClInclude Include="src\ui\windows\viewport.h">
       <Filter>ui\windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\world\worldinfo.h" />
-    <ClInclude Include="src\world\worldutil.h" />
-    <ClInclude Include="src\tools\selecttool.h" />
-    <ClInclude Include="src\filemanagement\binarymap.h" />
+    <ClInclude Include="src\world\worldinfo.h">
+      <Filter>world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\world\worldutil.h">
+      <Filter>world</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\filemanagement\binarymap.cpp">
+      <Filter>filemanagement</Filter>
+    </ClCompile>
     <ClCompile Include="src\filemanagement\filemanager.cpp">
       <Filter>filemanagement</Filter>
     </ClCompile>
@@ -131,7 +144,8 @@
     <ClCompile Include="src\ui\windows\viewport.cpp">
       <Filter>ui\windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\world\worldutil.cpp" />
-    <ClCompile Include="src\filemanagement\binarymap.cpp" />
+    <ClCompile Include="src\world\worldutil.cpp">
+      <Filter>world</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 #include "entitymanager.h"
 
 #include <components/idcomponent.h>
+#include <input/console.h>
 
 const Entity EntityManager::AddEntity(EntityArchetype& archetype)
 {
@@ -87,7 +88,7 @@ ChunkArchetypeElement* EntityManager::CreateChunkArchetype(EntityArchetype& arch
 
 	if (arraySize <= 0)
 	{
-		std::cout << "Tried to create a chunk archetype with no components!";
+		DEBUG_LOG("Tried to create a chunk archetype with no components!")
 		return nullptr;
 	}
 
@@ -243,9 +244,11 @@ void EntityManager::DeleteEntity(const Entity& entity)
 				const gSize_t& offset = archetype.components[i].offset;
 				const gSize_t& size = archetype.components[i].size;
 
-				char* thisComponentStream = pComponentStream + p.pChunk->pChunkArchetype->maxEntities * offset;
+				char* thisComponentStream = pComponentStream
+					+ static_cast<intptr_t>(p.pChunk->pChunkArchetype->maxEntities) * static_cast<intptr_t>(offset);
 
-				const void* source = thisComponentStream + (size * pLast.indexInChunk);
+				const void* source = thisComponentStream
+					+ (static_cast<intptr_t>(size) * static_cast<intptr_t>(pLast.indexInChunk));
 				void* dest = thisComponentStream + (size * p.indexInChunk);
 
 				memcpy(dest, source, size);
@@ -288,7 +291,7 @@ void EntityManager::DeleteEntity(const Entity& entity)
 void EntityManager::DeleteChunk(Chunk* pChunk)
 {
 #ifdef COMPONENT_DEBUG
-	std::cout << "	Deleting chunk.		Entities: " << pChunk->numberOfEntities << "\n";
+	DEBUG_LOG("	Deleting chunk.		Entities: " << pChunk->numberOfEntities)
 #endif // COMPONENT_DEBUG
 
 	if (pChunk->pPrev)
@@ -305,12 +308,12 @@ void EntityManager::DeleteChunk(Chunk* pChunk)
 void EntityManager::DeleteChunkArchetype(ChunkArchetypeElement* pArchetype)
 {
 #ifdef COMPONENT_DEBUG
-	std::cout << "Deleting chunk archetype of: ";
+	DEBUG_LOG_INLINE("Deleting chunk archetype of : ")
 	for (gSize_t i = 0; i < chunkArchetypeList->archetype.componentCount; i++)
 	{
-		std::cout << (i != 0 ? ", " : "") << chunkArchetypeList->archetype.components[i].name;
+		DEBUG_LOG_INLINE((i != 0 ? ", " : "") << chunkArchetypeList->archetype.components[i].name)
 	}
-	std::cout << "\n";
+	DEBUG_LOG_INLINE("\n")
 #endif // COMPONENT_DEBUG
 
 	// Link around deleted element

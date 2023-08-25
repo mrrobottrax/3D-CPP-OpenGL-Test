@@ -1,6 +1,7 @@
 #include <pch.h>
 
 #include <gl/shaderLoader.h>
+#include <input/console.h>
 
 namespace shaderLoader {
 	const char* LoadShader(const char* path)
@@ -10,7 +11,7 @@ namespace shaderLoader {
 
 		if (!f.good())
 		{
-			std::cout << "Failed to load shader file: " << path << "\n";
+			DEBUG_LOG_ERROR("Failed to load shader file: " << path)
 
 			std::string path_s(path);
 			std::string format = path_s.substr(path_s.find_last_of(".") + 1);
@@ -37,7 +38,7 @@ namespace shaderLoader {
 			return nullptr;
 		}
 
-		int length = (int)f.tellg();
+		auto length = static_cast<size_t>(f.tellg());
 
 		char* s = new char[length + 1];
 		f.seekg(0, std::ios::beg);

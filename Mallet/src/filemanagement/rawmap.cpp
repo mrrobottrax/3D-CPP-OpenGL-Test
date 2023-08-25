@@ -5,6 +5,7 @@
 #include <world/worldinfo.h>
 #include <world/worldutil.h>
 #include "filemanager.h"
+#include <input/console.h>
 
 using namespace std;
 
@@ -112,10 +113,10 @@ struct GameObject {
 
 	void Print()
 	{
-		std::cout << name << "\n";
+		DEBUG_LOG(name)
 		for (auto it = kv.begin(); it != kv.end(); ++it)
 		{
-			std::cout << "	" << it->first << ": " << it->second << "\n";
+			DEBUG_LOG("	" << it->first << ": " << it->second)
 		}
 	}
 };
@@ -207,7 +208,7 @@ bool VerifyVersionInfo(GameObject object)
 
 	if (fileFormatVersion != currentFormatVersion)
 	{
-		std::cout << "ERROR: Cannot open format version " << fileFormatVersion << ".\n";
+		DEBUG_LOG_ERROR("Cannot open format version " << fileFormatVersion << ".")
 		return false;
 	}
 
@@ -499,8 +500,8 @@ bool MeshSection(ifstream& reader)
 		}
 		else
 		{
-			std::cout << "Error reading mesh!\n";
-			std::cout << "Location: " << reader.tellg() << endl;
+			DEBUG_LOG_ERROR("Error reading mesh!")
+			DEBUG_LOG("Location: " << reader.tellg())
 			if (savedPositions)
 				delete[] savedPositions;
 			if (savedVerts)
@@ -648,11 +649,11 @@ void RawMap::LoadMap(const char* path)
 
 	if (LoadMapInternal(reader))
 	{
-		std::cout << "Successfully loaded map\n";
+		DEBUG_LOG("Successfully loaded map")
 	}
 	else
 	{
-		std::cout << "Could not load map!\n";
+		DEBUG_LOG_ERROR("Could not load map!")
 	}
 
 	reader.close();

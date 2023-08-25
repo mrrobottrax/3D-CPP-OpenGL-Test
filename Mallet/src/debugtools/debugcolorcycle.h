@@ -1,10 +1,11 @@
 #pragma once
 
 #include <iostream>
+#include <input/console.h>
 
 inline void HSVtoRGB(float H, float S, float V, float* R, float* G, float* B) {
     if (H > 360 || H < 0 || S>100 || S < 0 || V>100 || V < 0) {
-        std::cout << "The given HSV values are not in valid range" << std::endl;
+        DEBUG_LOG("The given HSV values are not in valid range")
         return;
     }
     float s = S / 100;

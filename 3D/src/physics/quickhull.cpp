@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "quickhull.h"
+#include <input/console.h>
 
 using namespace gMath;
 
@@ -139,9 +140,9 @@ void QuickHull::RemoveDuplicateVertices(std::list<glm::vec3>& vertices)
 			// Check if distance is less than epsilon
 			if (SqrDist(vertex, vertex2) <= sqrEpsilon)
 			{
-				std::cout << "QHULL WARNING: DUPLICATE VERTICES DETECTED AND REMOVED: "
+				DEBUG_LOG_WARNING("QHULL WARNING: DUPLICATE VERTICES DETECTED AND REMOVED: "
 					<< vertex[0] << ", " << vertex[1] << ", " << vertex[2] << " : "
-					<< vertex2[0] << ", " << vertex2[1] << ", " << vertex2[2] << "\n";
+					<< vertex2[0] << ", " << vertex2[1] << ", " << vertex2[2])
 
 				vertices.erase(it2++);
 			}
@@ -632,7 +633,7 @@ void QuickHull::Algorithm(const int vertCount, const glm::vec3* verticesArray, H
 
 		if (&face == nullptr)
 		{
-			std::cout << "QHULL ERROR: Face is null\n";
+			DEBUG_LOG_ERROR("QHULL ERROR: Face is null")
 			continue;
 		}
 
@@ -669,7 +670,7 @@ void QuickHull::Algorithm(const int vertCount, const glm::vec3* verticesArray, H
 
 			if (pEye == nullptr)
 			{
-				std::cout << "QHULL ERROR: COULDN'T FIND EYE POINT\n";
+				DEBUG_LOG_ERROR("QHULL ERROR: COULDN'T FIND EYE POINT")
 				continue;
 			}
 		}

@@ -183,34 +183,6 @@ void MalletMesh::UpdateRenderMesh(const EntityPointer& entity)
 	std::copy(indices.begin(), indices.end(), mesh.indices);
 
 	mesh.GenBuffers();
-
-	//std::cout << "POSITIONS: " << positions.size() << std::endl;
-	//for (auto it = positions.begin(); it != positions.end(); ++it)
-	//{
-	//	std::cout << (*it)->x << ", " << (*it)->y << ", " << (*it)->z << std::endl;
-	//}
-
-	//std::cout << "VERTS: " << mesh.vertsSize << std::endl;
-	//for (int i = 0; i < mesh.vertsSize; i += 3)
-	//{
-	//	std::cout << mesh.verts[i] << ", ";
-	//	std::cout << mesh.verts[i + 1] << ", ";
-	//	std::cout << mesh.verts[i + 2] << "\n";
-	//}
-
-	//std::cout << "NORMALS: " << mesh.normalsSize << std::endl;
-	//for (int i = 0; i < mesh.normalsSize; i += 3)
-	//{
-	//	std::cout << mesh.normals[i] << ", ";
-	//	std::cout << mesh.normals[i + 1] << ", ";
-	//	std::cout << mesh.normals[i + 2] << "\n";
-	//}
-
-	//std::cout << "INDICES: " << mesh.indicesCount << std::endl;
-	//for (int i = 0; i < mesh.indicesCount; ++i)
-	//{
-	//	std::cout << mesh.indices[i] << "\n";
-	//}
 }
 
 void MalletMesh::Validate(bool allowHoles)

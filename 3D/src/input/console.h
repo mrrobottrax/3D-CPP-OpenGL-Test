@@ -6,6 +6,22 @@ constexpr auto maxCommandNameLength = 32;
 constexpr auto maxCommandArgsLength = 256;
 constexpr auto maxConsoleInputLength = 1024;
 
+#ifdef DEBUG
+
+#define DEBUG_LOG(message) std::cout << message << std::endl;
+#define DEBUG_LOG_WARNING(message) std::cout << "WARNING: " << message << std::endl;
+#define DEBUG_LOG_ERROR(message) std::cout << "ERROR: " << message << std::endl;
+#define DEBUG_LOG_INLINE(message) std::cout << message;
+
+#else
+
+#define DEBUG_LOG(message)
+#define DEBUG_LOG_WARNING(message)
+#define DEBUG_LOG_ERROR(message)
+#define DEBUG_LOG_INLINE(message)
+
+#endif // DEBUG
+
 struct cmp_str
 {
 	bool operator()(char const* a, char const* b) const

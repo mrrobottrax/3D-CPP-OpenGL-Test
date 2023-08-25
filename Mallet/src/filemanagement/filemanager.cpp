@@ -1,6 +1,7 @@
 #include "malletpch.h"
 #include "filemanager.h"
 #include "rawmap.h"
+#include <input/console.h>
 
 void FileManager::SaveAsDialog()
 {
@@ -17,7 +18,7 @@ void FileManager::SaveAsDialog()
 	}
 	else
 	{
-		std::cout << "ERROR: " << NFD_GetError() << std::endl;
+		DEBUG_LOG_ERROR(NFD_GetError())
 	}
 
 	free(outPath);
@@ -38,7 +39,7 @@ void FileManager::OpenDialog()
 	}
 	else
 	{
-		std::cout << "ERROR: " << NFD_GetError() << std::endl;
+		DEBUG_LOG_ERROR(NFD_GetError())
 	}
 
 	free(outPath);
@@ -55,14 +56,14 @@ void FileManager::SaveToPath(const char* path)
 		fullPath += '.';
 		fullPath += rawMapExtension;
 	}
-	std::cout << "Saving map as: " << fullPath << std::endl;
+	DEBUG_LOG("Saving map as: " << fullPath)
 
 	rawMap.SaveMap(fullPath.c_str());
 }
 
 void FileManager::OpenPath(const char* path)
 {
-	std::cout << "Loading map: " << path << std::endl;
+	DEBUG_LOG("Loading map: " << path)
 
 	rawMap.LoadMap(path);
 }

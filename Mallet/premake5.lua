@@ -1,5 +1,5 @@
 project "Mallet"
-	kind "ConsoleApp"
+	kind "WindowedApp"
 	language "C++"
 
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
@@ -53,22 +53,15 @@ project "Mallet"
 
 	filter "configurations:Debug"
 		defines "DEBUG"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Test"
 		defines "DEBUG"
-		symbols "On"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Release"
 		defines "RELEASE"
+		runtime "Release"
 		optimize "On"
-
-	filter { "system:windows", "configurations:Debug" }
-		runtime "Debug"
-
-	filter { "system:windows", "configurations:Test" }
-		runtime "Release"
-
-	filter { "system:windows", "configurations:Release" }
-		runtime "Release"

@@ -10,7 +10,6 @@
     <ClInclude Include="src\input\gameinputlayer.h">
       <Filter>input</Filter>
     </ClInclude>
-    <ClInclude Include="src\main.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gamepch.cpp" />
