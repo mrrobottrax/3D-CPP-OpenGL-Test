@@ -65,7 +65,7 @@ void InitializeWindow()
 		glfwSetInputMode(pMainWindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 
 	glfwMakeContextCurrent(pMainWindow);
-	glfwSwapInterval(1);    // Vsync
+	glfwSwapInterval(0);    // No vsync
 
 	#ifdef USE_GLEW
 		// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions 

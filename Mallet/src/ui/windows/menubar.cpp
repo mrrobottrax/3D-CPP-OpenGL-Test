@@ -20,7 +20,7 @@ void FileMenu()
 	ImGui::Separator();
 
 	if (ImGui::MenuItem("Export", "F9"))
-		binaryMap.ExportDialog();
+		binaryMap.OpenExportDialog();
 }
 
 inline void AddWindow(MalletWindow* pMalletWindow)

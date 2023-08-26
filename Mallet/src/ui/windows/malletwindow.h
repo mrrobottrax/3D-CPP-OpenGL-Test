@@ -5,6 +5,8 @@
 struct GLFWwindow;
 
 constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoSavedSettings;
+constexpr ImGuiWindowFlags popup_flags = window_flags | ImGuiWindowFlags_NoResize 
+| ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking;
 
 #define MalletWindowBeginAndPop(name, stylesToPop) \
 std::ostringstream oss; \
