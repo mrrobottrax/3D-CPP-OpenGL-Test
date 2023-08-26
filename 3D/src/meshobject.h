@@ -5,23 +5,27 @@
 typedef GLshort meshIndex_t;
 typedef GLsizei meshSize_t;
 
+struct Vertex
+{
+	float position[3];
+	float normal[3];
+};
+
 struct MeshObject
 {
-	GLuint positionBufferObject;
-	GLuint normalBufferObject;
+	GLuint vertexBufferObject;
 	GLuint elementBufferObject;
 
-	meshSize_t vertsSize;
-	meshSize_t normalsSize;
+	meshSize_t vertCount;
 	meshSize_t indicesCount;
-	float* verts;
-	float* normals;
+	
+	Vertex* vertices;
 	meshIndex_t* indices;
 
 	~MeshObject();
-	MeshObject() : vertsSize(0), normalsSize(0), indicesCount(0),
-		verts(nullptr), indices(nullptr), normals(nullptr),
-		positionBufferObject(0), normalBufferObject(0), elementBufferObject(0) {};
+	MeshObject() : vertCount(0), indicesCount(0),
+		indices(nullptr), vertices(nullptr),
+		vertexBufferObject(0), elementBufferObject(0) {};
 
 	void GenBuffers();
 	void ClearBuffers();

@@ -119,11 +119,9 @@ void MalletMesh::UpdateRenderMesh(const EntityPointer& entity)
 
 	CollectSets(positions, vertices, edges, faces);
 
-	mesh.vertsSize = meshSize_t(vertices.size() * 3);
-	mesh.normalsSize = meshSize_t(vertices.size() * 3);
+	mesh.vertCount = meshSize_t(vertices.size());
 
-	mesh.verts = new float[mesh.vertsSize];
-	mesh.normals = new float[mesh.normalsSize];
+	mesh.vertices = new Vertex[mesh.vertCount];
 
 	std::vector<meshIndex_t> indices;
 
@@ -139,7 +137,7 @@ void MalletMesh::UpdateRenderMesh(const EntityPointer& entity)
 
 			// Create in index so that verts can be reused
 			const meshIndex_t index = static_cast<meshIndex_t>(std::distance(vertices.begin(), vertIt));
-			const meshSize_t vertIndex = index * 3;
+			const meshSize_t vertIndex = index;
 
 			// Keep track of the index of the first edge
 			// for triangularization
@@ -148,20 +146,18 @@ void MalletMesh::UpdateRenderMesh(const EntityPointer& entity)
 				startIndex = index;
 			}
 
-			assert(vertIndex + 2 < mesh.normalsSize);
-			assert(vertIndex + 2 < mesh.vertsSize);
-
 			const glm::vec3& tail = *pEdge->pTail->pPosition;
 
-			mesh.verts[vertIndex] = tail.x;
-			mesh.verts[vertIndex + 1] = tail.y;
-			mesh.verts[vertIndex + 2] = tail.z;
+			Vertex& vert = mesh.vertices[vertIndex];
+			vert.position[0] = tail.x;
+			vert.position[1] = tail.y;
+			vert.position[2] = tail.z;
 
 			const glm::vec3& normal = pEdge->pFace->normal;
 
-			mesh.normals[vertIndex] = normal.x;
-			mesh.normals[vertIndex + 1] = normal.y;
-			mesh.normals[vertIndex + 2] = normal.z;
+			vert.normal[0] = normal.x;
+			vert.normal[1] = normal.y;
+			vert.normal[2] = normal.z;
 
 			// Triangle
 			if (vertCounter >= 3)

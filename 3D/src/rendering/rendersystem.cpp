@@ -161,12 +161,7 @@ void RenderSystem::DrawBase(const Entity& entity)
 				normalMat = glm::mat3_cast(rotation.value);
 
 				// Draw object
-
-				// TODO: Use VAOs and glVertexAttribFormat and glBindVertexBuffer
-				glBindBuffer(GL_ARRAY_BUFFER, mesh.pMesh->positionBufferObject);
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); // in position
-				glBindBuffer(GL_ARRAY_BUFFER, mesh.pMesh->normalBufferObject);
-				glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, 0); // in normal
+				glBindVertexBuffer(0, mesh.pMesh->vertexBufferObject, 0, 24);
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.pMesh->elementBufferObject);
 
 				// TODO: Faster to have the cpu do this? Or maybe just give the gpu rotation, position, etc matrices?

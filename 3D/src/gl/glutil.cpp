@@ -155,13 +155,20 @@ void InitializeOpenGL()
 
 	solidColorUnif = glGetUniformLocation(solidShaderProgram, "fillColor");
 
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	// Create vao
+	glCreateVertexArrays(1, &vao);
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	// Enable position and normal in
+	glEnableVertexArrayAttrib(vao, 0);
+	glEnableVertexArrayAttrib(vao, 1);
 
-	glBindVertexArray(0);
+	// Set format
+	glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayAttribFormat(vao, 1, 3, GL_FLOAT, GL_TRUE, 12);
+
+	// Set buffer used
+	glVertexArrayAttribBinding(vao, 0, 0);
+	glVertexArrayAttribBinding(vao, 1, 0);
 }
 
 GLuint CreateShader(GLenum eShaderType, const std::string& strShaderFile)

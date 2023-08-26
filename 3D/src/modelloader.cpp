@@ -51,28 +51,33 @@ namespace modelLoader {
 		}
 		mesh.indices = indices;
 
-		// Positions
+		// Get buffers
 		Buffer b_positions(data, data["meshes"][0]["primitives"][0]["attributes"]["POSITION"]);
-		mesh.vertsSize = b_positions.count * 3;
-		f.seekg(static_cast<std::basic_istream<char, std::char_traits<char>>::off_type>(bufferStart) + b_positions.bufferOffset, std::ios::beg);
-		float* positions = new float[mesh.vertsSize];
-		for (int i = 0; i < mesh.vertsSize; ++i)
-		{
-			positions[i] = ParseFloat(f);
-		}
-		mesh.verts = positions;
-
-		// Normals
 		Buffer b_normals(data, data["meshes"][0]["primitives"][0]["attributes"]["NORMAL"]);
-		mesh.normalsSize = b_normals.count * 3;
-		f.seekg(static_cast<std::basic_istream<char, std::char_traits<char>>::off_type>(bufferStart) + b_normals.bufferOffset, std::ios::beg);
-		float* normals = new float[mesh.normalsSize];
-		for (int i = 0; i < mesh.normalsSize; ++i)
-		{
-			normals[i] = ParseFloat(f);
-		}
-		mesh.normals = normals;
 
+		// Create vertex array
+		mesh.vertCount = b_positions.count;
+		Vertex* vertices = new Vertex[mesh.vertCount];
+
+		// Add positions
+		f.seekg(static_cast<std::basic_istream<char, std::char_traits<char>>::off_type>(bufferStart) + b_positions.bufferOffset, std::ios::beg);
+		for (int i = 0; i < mesh.vertCount; ++i)
+		{
+			vertices[i].position[0] = ParseFloat(f);
+			vertices[i].position[1] = ParseFloat(f);
+			vertices[i].position[2] = ParseFloat(f);
+		}
+
+		// Add normals
+		f.seekg(static_cast<std::basic_istream<char, std::char_traits<char>>::off_type>(bufferStart) + b_normals.bufferOffset, std::ios::beg);
+		for (int i = 0; i < mesh.vertCount; ++i)
+		{
+			vertices[i].normal[0] = ParseFloat(f);
+			vertices[i].normal[1] = ParseFloat(f);
+			vertices[i].normal[2] = ParseFloat(f);
+		}
+
+		mesh.vertices = vertices;
 		mesh.GenBuffers();
 
 		delete[] str_json;
