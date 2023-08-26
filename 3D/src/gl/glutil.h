@@ -30,3 +30,13 @@ void InitializeOpenGL();
 
 GLuint CreateShader(GLenum, const std::string&);
 GLuint CreateProgram(const std::vector<GLuint>&);
+
+const inline float quadArray[] = {
+	-1, -1, 1,
+	 1,  1, 1,
+	-1,  1, 1,
+
+	 1,  1, 1,
+	-1, -1, 1,
+	 1, -1, 1,
+};

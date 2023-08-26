@@ -1,38 +1,51 @@
 #pragma once
 
-#include <imgui/imguiutil.h>
+#include <imgui.h>
 
-constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration |
-ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
-ImGuiWindowFlags_NoMove;
+struct GLFWwindow;
 
-struct DockingLeaf;
+constexpr ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoSavedSettings;
+
+#define MalletWindowBeginAndPop(name, stylesToPop) \
+std::ostringstream oss; \
+oss << this; \
+std::string address_a = oss.str(); \
+if (!ImGui::Begin((#name "##" + address_a).c_str(), &open, window_flags)) \
+{ \
+	ImGui::End(); \
+	ImGui::PopStyleVar(stylesToPop); \
+	return; \
+}
+
+#define MalletWindowBegin(name) \
+std::ostringstream oss; \
+oss << this; \
+std::string address_a = oss.str(); \
+if (!ImGui::Begin((#name "##" + address_a).c_str(), &open, window_flags)) \
+{ \
+	ImGui::End(); \
+	return; \
+}
 
 class MalletWindow
 {
 public:
-	MalletWindow() : selected(false), pLeaf()
+	MalletWindow() : open(true)
 	{};
 
 	virtual ~MalletWindow()
 	{};
 
 protected:
-	DockingLeaf* pLeaf;
-
-public:
-	bool selected;
-
-	void SetLeaf(DockingLeaf* pLeaf)
-	{
-		this->pLeaf = pLeaf;
-	}
+	bool open;
 
 public:
 	virtual void Draw();
-	virtual void OnSelect() {};
-	virtual void OnDeselect() {};
-	virtual void OnResize() {};
+
+	bool IsOpen()
+	{
+		return open;
+	}
 
 	virtual void KeyboardCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods) {};
 	virtual void MouseCallback(GLFWwindow* pWindow, int button, int action, int mods) {};

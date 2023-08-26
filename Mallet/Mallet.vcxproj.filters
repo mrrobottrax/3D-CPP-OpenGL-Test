@@ -45,9 +45,6 @@
     <ClInclude Include="src\filemanagement\rawmap.h">
       <Filter>filemanagement</Filter>
     </ClInclude>
-    <ClInclude Include="src\gl\malletglutil.h">
-      <Filter>gl</Filter>
-    </ClInclude>
     <ClInclude Include="src\input\malletinputlayer.h">
       <Filter>input</Filter>
     </ClInclude>
@@ -68,22 +65,10 @@
     <ClInclude Include="src\tools\selecttool.h">
       <Filter>tools</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\docking\dockingleaf.h">
-      <Filter>ui\docking</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\docking\dockingnode.h">
-      <Filter>ui\docking</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\docking\dockingsplit.h">
-      <Filter>ui\docking</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\docking\dockingtree.h">
-      <Filter>ui\docking</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui\malletuisystem.h">
       <Filter>ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\menubar.h">
+    <ClInclude Include="src\ui\windows\menubar.h">
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\windows\malletwindow.h">
@@ -112,9 +97,6 @@
     <ClCompile Include="src\filemanagement\rawmap.cpp">
       <Filter>filemanagement</Filter>
     </ClCompile>
-    <ClCompile Include="src\gl\malletglutil.cpp">
-      <Filter>gl</Filter>
-    </ClCompile>
     <ClCompile Include="src\input\malletinputlayer.cpp">
       <Filter>input</Filter>
     </ClCompile>
@@ -126,17 +108,11 @@
     <ClCompile Include="src\tools\blocktool.cpp">
       <Filter>tools</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\docking\dockingtree.cpp">
-      <Filter>ui\docking</Filter>
-    </ClCompile>
     <ClCompile Include="src\ui\malletuisystem.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\menubar.cpp">
+    <ClCompile Include="src\ui\windows\menubar.cpp">
       <Filter>ui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\windows\malletwindow.cpp">
-      <Filter>ui\windows</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\windows\toolbar.cpp">
       <Filter>ui\windows</Filter>
@@ -147,5 +123,6 @@
     <ClCompile Include="src\world\worldutil.cpp">
       <Filter>world</Filter>
     </ClCompile>
+    <ClCompile Include="SRC\UI\WINDOWS\malletwindow.cpp" />
   </ItemGroup>
 </Project>

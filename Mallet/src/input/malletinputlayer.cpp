@@ -3,15 +3,12 @@
 
 #include <imgui/imguiutil.h>
 #include <ui/malletuisystem.h>
-#include <gl/malletglutil.h>
 #include <input/inputsystem.h>
 
 #include <ui/windows/viewport.h>
 
 void SetupInputCallbacks(GLFWwindow* window)
 {
-	glfwSetWindowSizeCallback(window, MalletWindowSizeCallback);
-
 	glfwSetKeyCallback(window, MalletKeyCallback);
 	glfwSetMouseButtonCallback(window, MalletMouseCallback);
 	glfwSetCursorPosCallback(window, MalletMousePosCallback);
@@ -42,26 +39,42 @@ void MalletKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, i
 		return;
 	}
 
-	inputSystem.KeyCallback(key, scancode, action, mods);
+	// Try to apply input on each window
+	for (auto it = malletUI.windowPs.begin(); it != malletUI.windowPs.end(); ++it)
+	{
+		(*it)->KeyboardCallback(pWindow, key, scancode, action, mods);
+	}
 
-	malletUI.KeyCallback(pWindow, key, scancode, action, mods);
+	inputSystem.KeyCallback(key, scancode, action, mods);
 }
 
 void MalletMouseCallback(GLFWwindow* pWindow, int button, int action, int mods)
 {
-	inputSystem.MouseCallback(button, action);
+	// Try to apply input on each window
+	for (auto it = malletUI.windowPs.begin(); it != malletUI.windowPs.end(); ++it)
+	{
+		(*it)->MouseCallback(pWindow, button, action, mods);
+	}
 
-	malletUI.MouseCallback(pWindow, button, action, mods);
+	inputSystem.MouseCallback(button, action);
 }
 
 void MalletMousePosCallback(GLFWwindow* pWindow, double xPos, double yPos)
 {
-	malletUI.MousePosCallback(pWindow, xPos, yPos);
+	// Try to apply input on each window
+	for (auto it = malletUI.windowPs.begin(); it != malletUI.windowPs.end(); ++it)
+	{
+		(*it)->MousePosCallback(pWindow, xPos, yPos);
+	}
 }
 
 void MalletScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset)
 {
-	inputSystem.ScrollCallback(xOffset, yOffset);
+	// Try to apply input on each window
+	for (auto it = malletUI.windowPs.begin(); it != malletUI.windowPs.end(); ++it)
+	{
+		(*it)->ScrollCallback(pWindow, xOffset, yOffset);
+	}
 
-	malletUI.ScrollCallback(pWindow, xOffset, yOffset);
+	inputSystem.ScrollCallback(xOffset, yOffset);
 }

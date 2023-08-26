@@ -6,7 +6,8 @@
 #include <components/freecamcomponent.h>
 #include <components/cameracomponent.h>
 
-#include <ui/docking/dockingleaf.h>
+#include "malletwindow.h"
+#include <input/console.h>
 
 enum ViewportMode
 {
@@ -19,33 +20,30 @@ enum ViewportMode
 constexpr inline float maxGridSize = 65536.0f;
 constexpr inline float minGridSize = 0.0000152587890625f;
 
-const inline float quadArray[] = {
-	-1, -1, 1,
-	 1,  1, 1,
-	-1,  1, 1,
-
-	 1,  1, 1,
-	-1, -1, 1,
-	 1, -1, 1,
-};
+constexpr inline float dropDownX = 200;
+constexpr inline float dropDownY = 200;
 
 class Viewport : public MalletWindow
 {
 public:
-	Viewport(ViewportMode);
-	~Viewport() {};
+	Viewport(ViewportMode = perspective);
+	~Viewport()
+	{
+		glDeleteFramebuffers(1, &fbo);
+		glDeleteTextures(1, &tex);
+	};
+
+	void Init();
 
 	void Draw() override;
 	void Draw2DWireframe();
 	void Draw3DShaded();
-	void OnResize() override;
-	void OnSelect() override;
-	void OnDeselect() override;
 
 	void KeyboardCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods) override;
 	void MouseCallback(GLFWwindow* pWindow, int button, int action, int mods) override;
 	void MousePosCallback(GLFWwindow* pWindow, double xPos, double yPos) override;
 	void ScrollCallback(GLFWwindow* pWindow, double xOffset, double yOffset) override;
+
 	glm::vec2 Get2DPosition();
 	void Set2DPosition(glm::vec2 position);
 	glm::vec2 ScreenToWorld2D(float x, float y);
@@ -56,8 +54,17 @@ public:
 public:
 	ViewportMode mode;
 	static inline float baseGridSize = 1;
+	static inline bool toolInputFreeze;
 
 private:
+	bool hovered;
+	static inline bool panHeld;
+	static inline bool freecamming;
+
+	GLuint fbo;
+	GLuint rbo;
+	GLuint tex;
+
 	static inline bool glInit = false;
 	static inline GLuint gridVao;
 	static inline GLuint gridShaderProgram;
@@ -66,18 +73,17 @@ private:
 	static inline GLuint gridSizeUnif;
 	static inline GLuint gridOffsetUnif;
 
-public:
-	Entity cameraEntity;
-	FreecamComponent* pFreeCam;
-	CameraComponent* pCamera;
-	PositionComponent* pPosition;
+	void UpdateSize(GLsizei x, GLsizei y);
+
 	GLint viewPosX;
 	GLint viewPosY;
 	GLsizei viewSizeX;
 	GLsizei viewSizeY;
 
+public:
+	Entity cameraEntity;
+
 private:
-	void CalculateViewportVars(int, int);
 	void PanButton(int action);
 	void ZoomIn(float multiplier = 1);
 	void ZoomOut(float multiplier = 1);

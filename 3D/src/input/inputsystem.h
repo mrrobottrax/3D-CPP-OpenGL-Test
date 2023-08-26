@@ -2,6 +2,7 @@
 #include "keycodes.h"
 
 #include <systems/system.h>
+#include <gl/glutil.h>
 
 class InputSystem : public System
 {
@@ -53,6 +54,16 @@ public:
 	bool GetButtonDown(int);
 
 	void SetCursorLoop(bool);
+	static void DisableMouse()
+	{
+		glfwSetInputMode(pMainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
+	};
+	static void EnableMouse()
+	{
+		glfwSetInputMode(pMainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+	};
 
 	void Cleanup();
 

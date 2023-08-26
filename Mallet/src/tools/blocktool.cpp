@@ -36,9 +36,9 @@ void BlockTool::Draw(Viewport* pViewport)
 	glBindVertexArray(boxVao);
 
 	// Set uniforms
-	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &pViewport->pCamera->matrix[0][0]);
-	MatrixStack mStack;
 	EntityPointer cameraEntity = entityManager.GetEntityPointer(pViewport->cameraEntity);
+	glUniformMatrix4fv(sharedPerspectiveMatrixUnif, 1, GL_FALSE, &entityManager.GetComponent<CameraComponent>(cameraEntity).matrix[0][0]);
+	MatrixStack mStack;
 	mStack.Push();
 	mStack.ApplyMatrix(glm::mat4_cast(entityManager.GetComponent<RotationComponent>(cameraEntity).value));
 	mStack.Translate(-entityManager.GetComponent<PositionComponent>(cameraEntity).value);
@@ -111,6 +111,12 @@ void BlockTool::MouseCallback(Viewport* pViewport, GLFWwindow* pWindow, int butt
 			}
 
 			creatingBlock = true;
+
+			pViewport->toolInputFreeze = true;
+		}
+		else if (action == GLFW_RELEASE)
+		{
+			pViewport->toolInputFreeze = false;
 		}
 	}
 }

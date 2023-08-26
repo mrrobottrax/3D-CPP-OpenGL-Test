@@ -19,6 +19,7 @@
 #include <string>
 #include <stack>
 #include <list>
+#include <sstream>
 
 // IMGUI should be loaded before OpenGL
 #include <imgui/imguiload.h>

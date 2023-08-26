@@ -293,7 +293,6 @@
     <ClInclude Include="src\filemanagement\binarymap.h" />
     <ClInclude Include="src\filemanagement\filemanager.h" />
     <ClInclude Include="src\filemanagement\rawmap.h" />
-    <ClInclude Include="src\gl\malletglutil.h" />
     <ClInclude Include="src\input\malletinputlayer.h" />
     <ClInclude Include="src\malletarchetypes.h" />
     <ClInclude Include="src\malletpch.h" />
@@ -302,12 +301,8 @@
     <ClInclude Include="src\tools\blocktool.h" />
     <ClInclude Include="src\tools\mallettool.h" />
     <ClInclude Include="src\tools\selecttool.h" />
-    <ClInclude Include="src\ui\docking\dockingleaf.h" />
-    <ClInclude Include="src\ui\docking\dockingnode.h" />
-    <ClInclude Include="src\ui\docking\dockingsplit.h" />
-    <ClInclude Include="src\ui\docking\dockingtree.h" />
     <ClInclude Include="src\ui\malletuisystem.h" />
-    <ClInclude Include="src\ui\menubar.h" />
+    <ClInclude Include="src\ui\windows\menubar.h" />
     <ClInclude Include="src\ui\windows\malletwindow.h" />
     <ClInclude Include="src\ui\windows\toolbar.h" />
     <ClInclude Include="src\ui\windows\viewport.h" />
@@ -318,7 +313,6 @@
     <ClCompile Include="src\filemanagement\binarymap.cpp" />
     <ClCompile Include="src\filemanagement\filemanager.cpp" />
     <ClCompile Include="src\filemanagement\rawmap.cpp" />
-    <ClCompile Include="src\gl\malletglutil.cpp" />
     <ClCompile Include="src\input\malletinputlayer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\malletpch.cpp">
@@ -326,10 +320,9 @@
     </ClCompile>
     <ClCompile Include="src\meshwork\malletmesh.cpp" />
     <ClCompile Include="src\tools\blocktool.cpp" />
-    <ClCompile Include="src\ui\docking\dockingtree.cpp" />
     <ClCompile Include="src\ui\malletuisystem.cpp" />
-    <ClCompile Include="src\ui\menubar.cpp" />
-    <ClCompile Include="src\ui\windows\malletwindow.cpp" />
+    <ClCompile Include="SRC\UI\WINDOWS\malletwindow.cpp" />
+    <ClCompile Include="src\ui\windows\menubar.cpp" />
     <ClCompile Include="src\ui\windows\toolbar.cpp" />
     <ClCompile Include="src\ui\windows\viewport.cpp" />
     <ClCompile Include="src\world\worldutil.cpp" />

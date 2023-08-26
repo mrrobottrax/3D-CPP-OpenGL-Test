@@ -13,18 +13,13 @@
 
 Cvar r_draw = { "r_draw", 1 };
 
-void RenderSystem::SetMainCameraEntity(Entity& entity)
-{
-	RenderSystem::mainCameraEntity = entity;
-}
-
 void RenderSystem::CalcFrustumScale(CameraComponent& camera, const float fov)
 {
 	if (!camera.ortho)
 	{
-		const float degToRad = 3.14159f * 2.0f / 360.0f;
-		float fovRad = fov * degToRad;
-		float scale = 1.0f / tan(fovRad / 2.0f);
+		constexpr float degToRad = 3.14159f * 2.0f / 360.0f;
+		const float fovRad = fov * degToRad;
+		const float scale = 1.0f / tan(fovRad / 2.0f);
 
 		camera.frustumScale = scale;
 	}
@@ -66,16 +61,18 @@ void RenderSystem::Update()
 		return;
 	}
 
-	if (!entityManager.EntityExists(mainCameraEntity))
+	if (!HasMainCamera())
 	{
 		return;
 	}
 
-	DrawShaded();
+	assert(entityManager.EntityExists(mainCameraEntity));
+	
+	DrawShaded(mainCameraEntity);
 	debugDraw.Render();
 }
 
-void RenderSystem::DrawShaded()
+void RenderSystem::DrawShaded(const Entity& entity)
 {
 	if (!r_draw.value)
 	{
@@ -85,13 +82,13 @@ void RenderSystem::DrawShaded()
 	glUseProgram(standardShaderProgram);
 	glBindVertexArray(vao);
 
-	DrawBase();
+	DrawBase(entity);
 
 	glBindVertexArray(0);
 	glUseProgram(0);
 }
 
-void RenderSystem::DrawWireframe()
+void RenderSystem::DrawWireframe(const Entity& entity)
 {
 	glUseProgram(wireframeShaderProgram);
 	glBindVertexArray(vao);
@@ -99,7 +96,7 @@ void RenderSystem::DrawWireframe()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDisable(GL_CULL_FACE);
 
-	DrawBase();
+	DrawBase(entity);
 
 	glEnable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT, GL_FILL);
@@ -108,7 +105,7 @@ void RenderSystem::DrawWireframe()
 	glUseProgram(0);
 }
 
-void RenderSystem::DrawBase()
+void RenderSystem::DrawBase(const Entity& entity)
 {
 	EntityManager& em = entityManager;
 
@@ -117,7 +114,7 @@ void RenderSystem::DrawBase()
 		return;
 
 	MatrixStack mStack;
-	const EntityPointer mainCameraEntityP = em.GetEntityPointer(mainCameraEntity);
+	const EntityPointer mainCameraEntityP = em.GetEntityPointer(entity);
 
 	mStack.Push();
 	mStack.ApplyMatrix(glm::mat4_cast(em.GetComponent<RotationComponent>(mainCameraEntityP).value));

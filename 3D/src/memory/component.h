@@ -13,7 +13,7 @@ struct Component
 
 	gSize_t size;
 	gSize_t offset;
-	size_t hash;
+	size_t hash; // TODO: Store type_info instead?
 
 #ifdef COMPONENT_DEBUG
 	// For debug only

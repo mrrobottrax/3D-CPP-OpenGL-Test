@@ -20,6 +20,13 @@ void DefaultWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
 {
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 	RenderSystem& rs = renderSystem;
+
+	// Check if main camera exists
+	if (!rs.HasMainCamera())
+		return;
+
+	assert(entityManager.EntityExists(rs.mainCameraEntity));
+
 	CameraComponent& camera = entityManager.GetComponent<CameraComponent>(
 		entityManager.GetEntityPointer(rs.mainCameraEntity));
 	rs.UpdateMatrixAspect(camera, width, height);
