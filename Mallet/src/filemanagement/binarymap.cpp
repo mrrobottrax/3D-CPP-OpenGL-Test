@@ -11,5 +11,7 @@ void BinaryMap::StartExport()
 {
 	malletUI.enableExportDialog = false;
 
-	DEBUG_LOG("Starting export...")
+	DEBUG_LOG("Starting export...");
+
+
 }

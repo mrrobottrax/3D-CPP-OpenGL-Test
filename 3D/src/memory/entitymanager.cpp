@@ -88,7 +88,7 @@ ChunkArchetypeElement* EntityManager::CreateChunkArchetype(EntityArchetype& arch
 
 	if (arraySize <= 0)
 	{
-		DEBUG_LOG("Tried to create a chunk archetype with no components!")
+		DEBUG_LOG("Tried to create a chunk archetype with no components!");
 		return nullptr;
 	}
 

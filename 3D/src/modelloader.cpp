@@ -14,14 +14,14 @@ namespace modelLoader {
 
 	void LoadModel(MeshObject& mesh, const char* path)
 	{
-		DEBUG_LOG("Loading model: " << path)
+		DEBUG_LOG("Loading model: " << path);
 
 		std::ifstream f;
 		f.open(path, std::ios::binary);
 
 		if (f.fail())
 		{
-			DEBUG_LOG_WARNING("Failed to load model  " << path)
+			DEBUG_LOG_WARNING("Failed to load model  " << path);
 			// TODO: Add default error model
 			return;
 		}

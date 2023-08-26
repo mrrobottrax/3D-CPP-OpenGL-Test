@@ -142,7 +142,7 @@ void QuickHull::RemoveDuplicateVertices(std::list<glm::vec3>& vertices)
 			{
 				DEBUG_LOG_WARNING("QHULL WARNING: DUPLICATE VERTICES DETECTED AND REMOVED: "
 					<< vertex[0] << ", " << vertex[1] << ", " << vertex[2] << " : "
-					<< vertex2[0] << ", " << vertex2[1] << ", " << vertex2[2])
+					<< vertex2[0] << ", " << vertex2[1] << ", " << vertex2[2]);
 
 				vertices.erase(it2++);
 			}
@@ -633,7 +633,7 @@ void QuickHull::Algorithm(const int vertCount, const glm::vec3* verticesArray, H
 
 		if (&face == nullptr)
 		{
-			DEBUG_LOG_ERROR("QHULL ERROR: Face is null")
+			DEBUG_LOG_ERROR("QHULL ERROR: Face is null");
 			continue;
 		}
 
@@ -670,7 +670,7 @@ void QuickHull::Algorithm(const int vertCount, const glm::vec3* verticesArray, H
 
 			if (pEye == nullptr)
 			{
-				DEBUG_LOG_ERROR("QHULL ERROR: COULDN'T FIND EYE POINT")
+				DEBUG_LOG_ERROR("QHULL ERROR: COULDN'T FIND EYE POINT");
 				continue;
 			}
 		}

@@ -34,7 +34,7 @@ void InputSystem::BindKey(char key, const char* action)
 	strcpy_s(keys[key].binding, action);
 
 	char* keyname = KeycodeToName(key);
-	DEBUG_LOG("Bound " << keyname << " to " << action)
+	DEBUG_LOG("Bound " << keyname << " to " << action);
 }
 
 void InputSystem::BindToggleKey(char key, const char* cvar)
@@ -45,7 +45,7 @@ void InputSystem::BindToggleKey(char key, const char* cvar)
 	strcpy_s(keys[key].binding, "toggle ");
 	strcat_s(keys[key].binding, cvar);
 
-	DEBUG_LOG("Bound " << keyname << " to toggle " << cvar)
+	DEBUG_LOG("Bound " << keyname << " to toggle " << cvar);
 }
 
 KeyCode InputSystem::KeyboardInputToKeycode(int key)

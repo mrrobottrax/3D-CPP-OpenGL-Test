@@ -8,10 +8,10 @@ constexpr auto maxConsoleInputLength = 1024;
 
 #ifdef DEBUG
 
-#define DEBUG_LOG(message) std::cout << message << std::endl;
-#define DEBUG_LOG_WARNING(message) std::cout << "WARNING: " << message << std::endl;
-#define DEBUG_LOG_ERROR(message) std::cout << "ERROR: " << message << std::endl;
-#define DEBUG_LOG_INLINE(message) std::cout << message;
+#define DEBUG_LOG(message) std::cout << message << std::endl
+#define DEBUG_LOG_WARNING(message) std::cout << "WARNING: " << message << std::endl
+#define DEBUG_LOG_ERROR(message) std::cout << "ERROR: " << message << std::endl
+#define DEBUG_LOG_INLINE(message) std::cout << message
 
 #else
 

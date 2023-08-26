@@ -11,7 +11,7 @@ namespace shaderLoader {
 
 		if (!f.good())
 		{
-			DEBUG_LOG_ERROR("Failed to load shader file: " << path)
+			DEBUG_LOG_ERROR("Failed to load shader file: " << path);
 
 			std::string path_s(path);
 			std::string format = path_s.substr(path_s.find_last_of(".") + 1);

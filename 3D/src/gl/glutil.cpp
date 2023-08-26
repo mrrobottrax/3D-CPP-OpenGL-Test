@@ -18,7 +18,6 @@ void KeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mod
 
 void DefaultWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
 {
-	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 	RenderSystem& rs = renderSystem;
 
 	// Check if main camera exists
@@ -83,7 +82,7 @@ void InitializeWindow()
 			// Initialize GLAD to setup the OpenGL Function pointers 
 			if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			{
-				DEBUG_LOG_ERROR("Failed to initialize GLAD")
+				DEBUG_LOG_ERROR("Failed to initialize GLAD");
 				exit(EXIT_FAILURE);
 			}
 	#endif // USE_GLAD

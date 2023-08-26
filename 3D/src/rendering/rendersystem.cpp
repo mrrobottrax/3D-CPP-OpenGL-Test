@@ -68,12 +68,16 @@ void RenderSystem::Update()
 
 	assert(entityManager.EntityExists(mainCameraEntity));
 	
+	int w, h;
+	glfwGetWindowSize(pMainWindow, &w, &h);
+	glViewport(0, 0, w, h);
 	DrawShaded(mainCameraEntity);
-	debugDraw.Render();
 }
 
 void RenderSystem::DrawShaded(const Entity& entity)
 {
+	debugDraw.Render();
+
 	if (!r_draw.value)
 	{
 		return;

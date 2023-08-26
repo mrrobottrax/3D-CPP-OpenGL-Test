@@ -18,7 +18,7 @@ void FileManager::SaveAsDialog()
 	}
 	else
 	{
-		DEBUG_LOG_ERROR(NFD_GetError())
+		DEBUG_LOG_ERROR(NFD_GetError());
 	}
 
 	free(outPath);
@@ -39,7 +39,7 @@ void FileManager::OpenDialog()
 	}
 	else
 	{
-		DEBUG_LOG_ERROR(NFD_GetError())
+		DEBUG_LOG_ERROR(NFD_GetError());
 	}
 
 	free(outPath);
@@ -56,14 +56,14 @@ void FileManager::SaveToPath(const char* path)
 		fullPath += '.';
 		fullPath += rawMapExtension;
 	}
-	DEBUG_LOG("Saving map as: " << fullPath)
+	DEBUG_LOG("Saving map as: " << fullPath);
 
 	rawMap.SaveMap(fullPath.c_str());
 }
 
 void FileManager::OpenPath(const char* path)
 {
-	DEBUG_LOG("Loading map: " << path)
+	DEBUG_LOG("Loading map: " << path);
 
 	rawMap.LoadMap(path);
 }

@@ -113,10 +113,10 @@ struct GameObject {
 
 	void Print()
 	{
-		DEBUG_LOG(name)
+		DEBUG_LOG(name);
 		for (auto it = kv.begin(); it != kv.end(); ++it)
 		{
-			DEBUG_LOG("	" << it->first << ": " << it->second)
+			DEBUG_LOG("	" << it->first << ": " << it->second);
 		}
 	}
 };
@@ -208,7 +208,7 @@ bool VerifyVersionInfo(GameObject object)
 
 	if (fileFormatVersion != currentFormatVersion)
 	{
-		DEBUG_LOG_ERROR("Cannot open format version " << fileFormatVersion << ".")
+		DEBUG_LOG_ERROR("Cannot open format version " << fileFormatVersion << ".");
 		return false;
 	}
 
@@ -500,8 +500,8 @@ bool MeshSection(ifstream& reader)
 		}
 		else
 		{
-			DEBUG_LOG_ERROR("Error reading mesh!")
-			DEBUG_LOG("Location: " << reader.tellg())
+			DEBUG_LOG_ERROR("Error reading mesh!");
+			DEBUG_LOG("Location: " << reader.tellg());
 			if (savedPositions)
 				delete[] savedPositions;
 			if (savedVerts)
@@ -649,11 +649,11 @@ void RawMap::LoadMap(const char* path)
 
 	if (LoadMapInternal(reader))
 	{
-		DEBUG_LOG("Successfully loaded map")
+		DEBUG_LOG("Successfully loaded map");
 	}
 	else
 	{
-		DEBUG_LOG_ERROR("Could not load map!")
+		DEBUG_LOG_ERROR("Could not load map!");
 	}
 
 	reader.close();
