@@ -163,6 +163,7 @@
       <Filter>systems</Filter>
     </ClInclude>
     <ClInclude Include="src\timemanager.h" />
+    <ClInclude Include="src\datareader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common\math.cpp">

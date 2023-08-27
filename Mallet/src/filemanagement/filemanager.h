@@ -3,15 +3,32 @@
 #include <common/types.h>
 
 inline const char rawMapExtension[] = "rmap";
+inline const char mapExtension[] = "map";
 
 class FileManager
 {
 public:
 	void SaveAsDialog();
 	void OpenDialog();
+	void UpdateUI();
+
+	static inline bool enableExportDialog = false;
+	void OpenExportDialog();
 
 	void SaveToPath(const char*);
+	void Save();
 	void OpenPath(const char*);
+	std::string GetMapSaveName();
+
+	static bool DirectoryExists(const char* file)
+	{
+		struct stat sb;
+		return (stat(file, &sb) == 0 && !(sb.st_mode & S_IFDIR));
+	}
+
+private:
+	static inline std::string savepath;
+
 }; inline FileManager fileManager;
 
 inline void WriteUint32(std::ofstream& writer, const uint32_t& value)

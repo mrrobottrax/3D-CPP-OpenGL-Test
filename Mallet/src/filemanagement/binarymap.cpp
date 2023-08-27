@@ -1,17 +1,27 @@
 #include "malletpch.h"
 #include "binarymap.h"
 #include <ui/malletuisystem.h>
+#include <datareader.h>
+#include "filemanager.h"
 
-void BinaryMap::OpenExportDialog()
+void WriteMeshes(ofstream& writer)
 {
-	malletUI.enableExportDialog = true;
+
 }
 
 void BinaryMap::StartExport()
 {
-	malletUI.enableExportDialog = false;
+	FileManager::enableExportDialog = false;
 
 	DEBUG_LOG("Starting export...");
 
+	std::string file = (data_folder "maps/") + fileManager.GetMapSaveName() + "." + mapExtension;
+	DEBUG_LOG(file);
 
+	ofstream writer;
+	writer.open(file, ios::binary | ios::out | ios::trunc);
+
+	WriteMeshes(writer);
+
+	writer.close();
 }

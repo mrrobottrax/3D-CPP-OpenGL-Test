@@ -312,6 +312,7 @@
     <ClInclude Include="src\components\scalecomponent.h" />
     <ClInclude Include="src\components\unscaledvelocitycomponent.h" />
     <ClInclude Include="src\components\velocitycomponent.h" />
+    <ClInclude Include="src\datareader.h" />
     <ClInclude Include="src\gl\glload.h" />
     <ClInclude Include="src\gl\glutil.h" />
     <ClInclude Include="src\gl\shaderloader.h" />

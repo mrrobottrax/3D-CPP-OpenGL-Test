@@ -26,6 +26,4 @@ public:
 	MenuBar menuBar;
 	std::list<MalletWindow*> windowPs;
 
-	static inline bool enableExportDialog = false;
-
 }; inline MalletUiSystem malletUI;

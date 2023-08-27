@@ -11,7 +11,10 @@ void FileMenu()
 	if (ImGui::MenuItem("Open", "Ctrl+O"))
 		fileManager.OpenDialog();
 
-	if (ImGui::MenuItem("Save As", "Ctrl+S"))
+	if (ImGui::MenuItem("Save", "Ctrl+S"))
+		fileManager.Save();
+
+	if (ImGui::MenuItem("Save As.."))
 		fileManager.SaveAsDialog();
 
 	if (ImGui::MenuItem("Close"))
@@ -20,7 +23,7 @@ void FileMenu()
 	ImGui::Separator();
 
 	if (ImGui::MenuItem("Export", "F9"))
-		binaryMap.OpenExportDialog();
+		fileManager.OpenExportDialog();
 }
 
 inline void AddWindow(MalletWindow* pMalletWindow)

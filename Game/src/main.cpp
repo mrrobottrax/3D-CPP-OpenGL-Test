@@ -34,6 +34,7 @@
 
 #include <physics/halfedgemesh.h>
 #include <physics/quickhull.h>
+#include <datareader.h>
 
 using namespace std;
 
@@ -125,7 +126,7 @@ void Init()
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, 3.14f / 4.0f, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 1, 0, 0, 0 };
 
-		modelLoader::LoadModel(monkeyMesh, "../data/models/monkey.glb");
+		modelLoader::LoadModel(monkeyMesh, data_folder "models/monkey.glb");
 		em.GetComponent<MeshComponent>(entity) = { &monkeyMesh };
 	}
 	// Create map
@@ -160,12 +161,12 @@ void Init()
 		em.GetComponent<VelocityComponent>(entity) = { 0, 0, 0, 0, -0.1f, 0 };
 		em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
 
-		modelLoader::LoadModel(testMesh, "../data/models/teapot.glb");
+		modelLoader::LoadModel(testMesh, data_folder "models/teapot.glb");
 		em.GetComponent<MeshComponent>(entity) = { &testMesh };
 	}
 	// Create boxes
 	{
-		modelLoader::LoadModel(boxMesh, "../data/models/box.glb");
+		modelLoader::LoadModel(boxMesh, data_folder "models/box.glb");
 		Component components[] = {
 		Component().Init<IdComponent>(),
 		Component().Init<PositionComponent>(),
