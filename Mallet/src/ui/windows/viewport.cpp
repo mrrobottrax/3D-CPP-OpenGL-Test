@@ -256,9 +256,12 @@ void Viewport::Draw2DWireframe()
 
 	// Keep grid size at least 5px, but also a power of 2
 	float minVisibleGridSize = ppu * baseGridSize;
-	while (minVisibleGridSize < 5)
+	if (minVisibleGridSize >= 0.0001 && minVisibleGridSize <= 10000)
 	{
-		minVisibleGridSize *= 2;
+		while (minVisibleGridSize < 5)
+		{
+			minVisibleGridSize *= 2;
+		}
 	}
 
 	glUniform3f(gridColorUnif, 0.15f, 0.15f, 0.15f);
