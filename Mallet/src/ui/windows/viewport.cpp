@@ -254,9 +254,9 @@ void Viewport::Draw2DWireframe()
 
 	const float ppu = GetPixelsPerUnit();
 
-	// Keep grid size at least 8px, but also a power of 2
+	// Keep grid size at least 5px, but also a power of 2
 	float minVisibleGridSize = ppu * baseGridSize;
-	while (minVisibleGridSize < 8)
+	while (minVisibleGridSize < 5)
 	{
 		minVisibleGridSize *= 2;
 	}

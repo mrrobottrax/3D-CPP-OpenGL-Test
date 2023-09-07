@@ -103,7 +103,7 @@ void RenderSystem::DrawWireframe(const Entity& entity)
 	DrawBase(entity);
 
 	glEnable(GL_CULL_FACE);
-	glPolygonMode(GL_FRONT, GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	glBindVertexArray(0);
 	glUseProgram(0);
