@@ -223,8 +223,8 @@ void Init()
 		// Create throw box
 		{
 			Entity entity = em.AddEntity(boxArchetype);
-			em.GetComponent<PositionComponent>(entity) = { 1, 0.25f, -5 };
-			em.GetComponent<VelocityComponent>(entity) = { 10, 0, 0, 0, 0, 0 };
+			em.GetComponent<PositionComponent>(entity) = { 200, 0.25f, -5 };
+			em.GetComponent<VelocityComponent>(entity) = { -40, 25, 0, 0, 0, 0 };
 			em.GetComponent<RotationComponent>(entity) = { 0.7071068f, 0, 0.7071068f, 0 };
 			em.GetComponent<ScaleComponent>(entity) = { 0.5f, 0.5f, 0.5f };
 
